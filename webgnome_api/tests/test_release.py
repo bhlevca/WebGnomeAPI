@@ -8,12 +8,7 @@ class ReleaseTests(FunctionalTestBase):
     '''
         Tests out the Gnome Release object API
     '''
-    req_data = {'obj_type': u'gnome.spill.release.Release',
-                'json_': u'webapi',
-                'num_elements': 0,
-                'num_released': 0,
-                'release_time': '2014-04-14T11:00:10.860521',
-                'start_time_invalid': True,
+    req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
                 }
 
     def test_get_no_id(self):
@@ -29,17 +24,50 @@ class ReleaseTests(FunctionalTestBase):
         obj_id = 0xdeadbeef
         self.testapp.get('/release/{0}'.format(obj_id), status=404)
 
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        json_obj['num_elements'] = 100
+        json_obj['num_released'] = 50
+        json_obj['start_time_invalid'] = False
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        assert json_obj['num_elements'] == 100
+        assert json_obj['num_released'] == 50
+        assert json_obj['start_time_invalid'] == False
+
+
+class PointLineReleaseTests(ReleaseTests):
+    '''
+        Tests out the Gnome Release object API
+    '''
+    req_data = {
+                'obj_type': u'gnome.spill.release.PointLineRelease',
+                'json_': u'webapi',
+                'num_elements': 100,
+                'num_released': 0,
+                'release_time': '2014-04-15T13:22:20.930570',
+                'start_time_invalid': True,
+                'end_release_time': '2014-04-15T13:22:20.930570',
+                'end_position': (28.0, -78.0, 0.0),
+                'start_position': (28.0, -78.0, 0.0),
+                }
+
     def test_get_valid_id(self):
         # 1. create the object by performing a put with no id
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
         resp1 = self.testapp.put_json('/release', params=self.req_data)
-        print resp1
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/release/{0}'.format(obj_id))
-        print resp2
 
         assert resp2.json_body['id'] == obj_id
         assert resp2.json_body['obj_type'] == resp1.json_body['obj_type']
@@ -84,47 +112,34 @@ class ReleaseTests(FunctionalTestBase):
         req_data = resp.json_body
         self.perform_updates(req_data)
 
+        #sdhfdlskjr = {"num_elements": 1000,
+        #              "obj_type": "gnome.spill.release.PointLineRelease",
+        #              "end_position": [28.0, -78.0, 0.0],
+        #              "start_position": [28.0, -78.0, 0.0],
+        #              "json_": "webapi",
+        #              "release_time": null,
+        #              "end_release_time": "2014-04-15T13:22:20.930570",
+        #              "id": "5e78a342-c4fb-11e3-928f-3c075404121a"
+        #}
         resp = self.testapp.put_json('/release/{0}'.format(obj_id),
                                      params=req_data)
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
-        '''
-            We can overload this function when subclassing our tests
-            for new object types.
-        '''
-        json_obj['num_elements'] = 100
-        json_obj['num_released'] = 50
-        json_obj['start_time_invalid'] = False
-
-    def check_updates(self, json_obj):
-        '''
-            We can overload this function when subclassing our tests
-            for new object types.
-        '''
-        assert json_obj['num_elements'] == 100
-        assert json_obj['num_released'] == 50
-        assert json_obj['start_time_invalid'] == False
-
-
-class PointLineReleaseTests(ReleaseTests):
-    '''
-        Tests out the Gnome Release object API
-    '''
-    req_data = {
-                'obj_type': u'gnome.spill.release.PointLineRelease',
-                'json_': u'webapi',
-                'num_elements': 100,
-                'num_released': 0,
-                'release_time': '2014-04-15T13:22:20.930570',
-                'start_time_invalid': True,
-                'end_release_time': '2014-04-15T13:22:20.930570',
-                'end_position': (28.0, -78.0, 0.0),
-                'start_position': (28.0, -78.0, 0.0),
-                }
-
-    def perform_updates(self, json_obj):
         super(PointLineReleaseTests, self).perform_updates(json_obj)
+        json_obj['start_position'] = (100.0, 100.0, 0.0)
+        json_obj['end_position'] = (50.0, 50.0, 10.0)
 
     def check_updates(self, json_obj):
         super(PointLineReleaseTests, self).check_updates(json_obj)
+        print 'json_obj["start_position"] = ', json_obj['start_position']
+        assert all([i == j
+                    for i, j in zip(json_obj['start_position'],
+                                    (100.0, 100.0, 0.0))
+                    ])
+
+        print 'json_obj["end_position"] = ', json_obj['end_position']
+        assert all([i == j
+                    for i, j in zip(json_obj['end_position'],
+                                    (50.0, 50.0, 10.0))
+                    ])

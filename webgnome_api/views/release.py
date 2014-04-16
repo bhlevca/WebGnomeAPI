@@ -8,8 +8,7 @@ from cornice import Service
 release = Service(name='release', path='/release*obj_id',
               description="Release API")
 
-implemented_types = ('gnome.spill.release.Release',
-                     'gnome.spill.release.PointLineRelease',
+implemented_types = ('gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
                      )

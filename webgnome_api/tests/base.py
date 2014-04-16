@@ -9,7 +9,7 @@ from pyramid import testing
 from paste.deploy.loadwsgi import appconfig
 from webtest import TestApp
 
-from webgnome_data import main
+from webgnome_api import main
 
 
 class GnomeTestCase(TestCase):
