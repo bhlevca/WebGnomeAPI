@@ -24,6 +24,9 @@ class BaseMoverTests(FunctionalTestBase):
         obj_id = 0xdeadbeef
         self.testapp.get('/mover/{0}'.format(obj_id), status=404)
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/mover', status=400)
+
     def check_create_properties(self, response):
         assert 'id' in response.json_body
         assert 'obj_type' in response.json_body

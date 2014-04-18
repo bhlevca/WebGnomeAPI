@@ -51,6 +51,9 @@ class ModelTests(FunctionalTestBase):
     def test_get_model_valid_id(self):
         print 'Not Implemented'
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/model', status=400)
+
     def test_put_model_no_id(self):
         if False:
             print '\n\nModel Put Request payload: {0}'.format(self.req_data)

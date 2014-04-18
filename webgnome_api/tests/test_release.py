@@ -72,6 +72,9 @@ class PointLineReleaseTests(ReleaseTests):
         assert resp2.json_body['id'] == obj_id
         assert resp2.json_body['obj_type'] == resp1.json_body['obj_type']
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/release', status=400)
+
     def test_put_no_id(self):
         #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         resp = self.testapp.put_json('/release', params=self.req_data)
@@ -132,13 +135,11 @@ class PointLineReleaseTests(ReleaseTests):
 
     def check_updates(self, json_obj):
         super(PointLineReleaseTests, self).check_updates(json_obj)
-        print 'json_obj["start_position"] = ', json_obj['start_position']
         assert all([i == j
                     for i, j in zip(json_obj['start_position'],
                                     (100.0, 100.0, 0.0))
                     ])
 
-        print 'json_obj["end_position"] = ', json_obj['end_position']
         assert all([i == j
                     for i, j in zip(json_obj['end_position'],
                                     (50.0, 50.0, 10.0))

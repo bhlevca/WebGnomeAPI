@@ -47,6 +47,9 @@ class WeathererTests(FunctionalTestBase):
         assert resp2.json_body['active_start'] == resp1.json_body['active_start']
         assert resp2.json_body['on'] == resp1.json_body['on']
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/weatherer', status=400)
+
     def test_put_no_id(self):
         #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         resp = self.testapp.put_json('/weatherer', params=self.req_data)

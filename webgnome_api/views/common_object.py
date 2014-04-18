@@ -3,9 +3,10 @@ Common Gnome object request handlers.
 """
 import json
 
-from pyramid.httpexceptions import (HTTPNotFound,
-                                    HTTPNotImplemented,
-                                    HTTPUnsupportedMediaType)
+from pyramid.httpexceptions import (HTTPBadRequest,
+                                    HTTPNotFound,
+                                    HTTPUnsupportedMediaType,
+                                    HTTPNotImplemented)
 
 from .helpers import (JSONImplementsOneOf,
                       ObjectImplementsOneOf,
@@ -20,10 +21,8 @@ def get_object(request, implemented_types):
     if not obj_id:
         return get_specifications(request, implemented_types)
     else:
-        print '\nget_object(   {0} )'.format(obj_id)
         obj = get_session_object(obj_id, request.session)
         if obj:
-            print 'got object id={0}'.format(obj.id)
             if ObjectImplementsOneOf(obj, implemented_types):
                 return obj.serialize()
             else:
@@ -57,7 +56,10 @@ def get_specifications(request, implemented_types):
 
 def create_or_update_object(request, implemented_types):
     '''Creates or Updates a Gnome object.'''
-    json_request = json.loads(request.body)
+    try:
+        json_request = json.loads(request.body)
+    except:
+        raise HTTPBadRequest()
 
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise HTTPNotImplemented()

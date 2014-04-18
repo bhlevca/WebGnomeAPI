@@ -50,6 +50,9 @@ class WindTests(FunctionalTestBase):
         assert resp2.json_body['id'] == obj_id
         assert resp2.json_body['obj_type'] == resp1.json_body['obj_type']
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/environment', status=400)
+
     def test_put_no_id(self):
         #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         resp = self.testapp.put_json('/environment', params=self.req_data)
