@@ -13,7 +13,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 requires = [
             'waitress',
             'WebTest',
-	    'webhelpers2>=2.0b5',
+            'webhelpers2>=2.0b5',
             'pyramid_redis_sessions>=1.0a1',
             'cornice',
             ]
