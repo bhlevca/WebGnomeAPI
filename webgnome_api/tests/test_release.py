@@ -18,7 +18,8 @@ class ReleaseTests(FunctionalTestBase):
         obj_type = self.req_data['obj_type'].split('.')[-1]
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
-                            for name, obj in resp.json_body.iteritems()]
+                                        for name, obj
+                                        in resp.json_body.iteritems()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -115,15 +116,6 @@ class PointLineReleaseTests(ReleaseTests):
         req_data = resp.json_body
         self.perform_updates(req_data)
 
-        #sdhfdlskjr = {"num_elements": 1000,
-        #              "obj_type": "gnome.spill.release.PointLineRelease",
-        #              "end_position": [28.0, -78.0, 0.0],
-        #              "start_position": [28.0, -78.0, 0.0],
-        #              "json_": "webapi",
-        #              "release_time": null,
-        #              "end_release_time": "2014-04-15T13:22:20.930570",
-        #              "id": "5e78a342-c4fb-11e3-928f-3c075404121a"
-        #}
         resp = self.testapp.put_json('/release/{0}'.format(obj_id),
                                      params=req_data)
         self.check_updates(resp.json_body)
