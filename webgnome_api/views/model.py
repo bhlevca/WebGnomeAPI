@@ -7,10 +7,12 @@ from cornice import Service
 
 from .common_object import (get_object,
                             create_or_update_object,
+                            cors_policy,
                             get_session_object,
                             obj_id_from_url)
 
-model = Service(name='model', path='/model*obj_id', description="Model API")
+model = Service(name='model', path='/model*obj_id', description="Model API",
+                cors_policy=cors_policy)
 
 implemented_types = ('gnome.model.Model',
                      )

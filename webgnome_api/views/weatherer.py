@@ -1,12 +1,12 @@
 """
 Views for the Weatherer objects.
 """
-from .common_object import get_object, create_or_update_object
+from .common_object import (get_object, create_or_update_object, cors_policy)
 
 from cornice import Service
 
 env = Service(name='weatherer', path='/weatherer*obj_id',
-              description="Weatherer API")
+              description="Weatherer API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.weatherers.core.Weatherer',
                      )

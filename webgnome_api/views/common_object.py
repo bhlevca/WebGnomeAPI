@@ -15,6 +15,10 @@ from .helpers import (JSONImplementsOneOf,
                       PyClassFromName)
 
 
+cors_policy = {'origins': ('*',),
+               }
+
+
 def get_object(request, implemented_types):
     '''Returns a Gnome object in JSON.'''
     obj_id = obj_id_from_url(request)

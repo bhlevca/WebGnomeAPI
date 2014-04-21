@@ -1,12 +1,12 @@
 """
 Views for the Release objects.
 """
-from .common_object import get_object, create_or_update_object
+from .common_object import (get_object, create_or_update_object, cors_policy)
 
 from cornice import Service
 
 release = Service(name='release', path='/release*obj_id',
-              description="Release API")
+                  description="Release API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',

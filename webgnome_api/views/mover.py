@@ -2,12 +2,12 @@
 Views for the Mover objects.
 This currently includes ??? objects.
 """
-from .common_object import get_object, create_or_update_object
+from .common_object import (get_object, create_or_update_object, cors_policy)
 
 from cornice import Service
 
-env = Service(name='mover', path='/mover*obj_id',
-              description="Mover API")
+env = Service(name='mover', path='/mover*obj_id', description="Mover API",
+              cors_policy=cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.wind_movers.WindMover',
