@@ -31,8 +31,6 @@ class ReleaseTests(FunctionalTestBase):
             for new object types.
         '''
         json_obj['num_elements'] = 100
-        json_obj['num_released'] = 50
-        json_obj['start_time_invalid'] = False
 
     def check_updates(self, json_obj):
         '''
@@ -40,8 +38,6 @@ class ReleaseTests(FunctionalTestBase):
             for new object types.
         '''
         assert json_obj['num_elements'] == 100
-        assert json_obj['num_released'] == 50
-        assert json_obj['start_time_invalid'] == False
 
 
 class PointLineReleaseTests(ReleaseTests):
@@ -86,8 +82,6 @@ class PointLineReleaseTests(ReleaseTests):
         assert 'id' in resp.json_body
         assert 'obj_type' in resp.json_body
         assert 'num_elements' in resp.json_body
-        assert 'num_released' in resp.json_body
-        assert 'start_time_invalid' in resp.json_body
 
     def test_put_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -101,8 +95,6 @@ class PointLineReleaseTests(ReleaseTests):
         assert 'id' in resp.json_body
         assert 'obj_type' in resp.json_body
         assert 'num_elements' in resp.json_body
-        assert 'num_released' in resp.json_body
-        assert 'start_time_invalid' in resp.json_body
 
     def test_put_valid_id(self):
         # 1. create the object by performing a put with no id

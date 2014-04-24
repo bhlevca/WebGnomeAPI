@@ -4,12 +4,16 @@ Functional tests for the Gnome Initializer object Web API
 from base import FunctionalTestBase
 
 
-class InitBaseTests(FunctionalTestBase):
+class InitializerBase(FunctionalTestBase):
     '''
         Tests out the Gnome Initializer object API
     '''
     req_data = {'obj_type': u'gnome.spill.elements.InitWindages',
+                'json_': u'webapi',
+                'windage_range': (0.01, 0.04),
+                'windage_persist': 900,
                 }
+    fields_to_check = ('id', 'obj_type')
 
     def test_get_no_id(self):
         resp = self.testapp.get('/initializer')
@@ -25,35 +29,6 @@ class InitBaseTests(FunctionalTestBase):
         obj_id = 0xdeadbeef
         self.testapp.get('/initializer/{0}'.format(obj_id), status=404)
 
-    def test_put_no_payload(self):
-        self.testapp.put_json('/initializer', status=400)
-
-    def perform_updates(self, json_obj):
-        '''
-            We can overload this function when subclassing our tests
-            for new object types.
-        '''
-        pass
-
-    def check_updates(self, json_obj):
-        '''
-            We can overload this function when subclassing our tests
-            for new object types.
-        '''
-        pass
-
-
-class InitWindagesTests(InitBaseTests):
-    '''
-        Tests out the Gnome Release object API
-    '''
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitWindages',
-                'json_': u'webapi',
-                'windage_range': (0.01, 0.04),
-                'windage_persist': 900,
-                }
-
     def test_get_valid_id(self):
         # 1. create the object by performing a put with no id
         # 2. get the valid id from the response
@@ -64,29 +39,24 @@ class InitWindagesTests(InitBaseTests):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/initializer/{0}'.format(obj_id))
 
-        for k in ('id', 'obj_type', 'windage_range', 'windage_persist'):
+        for k in self.fields_to_check:
             assert resp2.json_body[k] == resp1.json_body[k]
 
+    def test_put_no_payload(self):
+        self.testapp.put_json('/initializer', status=400)
+
     def test_put_no_id(self):
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         resp = self.testapp.put_json('/initializer', params=self.req_data)
 
-        # Note: For this test, we just verify that an object with the right
-        #       properties is returned.  We will validate the content in
-        #       more elaborate tests.
-        for k in ('id', 'obj_type', 'windage_range', 'windage_persist'):
+        for k in self.fields_to_check:
             assert k in resp.json_body
 
     def test_put_invalid_id(self):
         obj_id = 0xdeadbeef
-
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         resp = self.testapp.put_json('/initializer/{0}'.format(obj_id),
                                      params=self.req_data)
 
-        # Note: This test is very similar to a put with no ID, and has the same
-        #       asserts.
-        for k in ('id', 'obj_type', 'windage_range', 'windage_persist'):
+        for k in self.fields_to_check:
             assert k in resp.json_body
 
     def test_put_valid_id(self):
@@ -106,6 +76,30 @@ class InitWindagesTests(InitBaseTests):
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        pass
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        pass
+
+
+class InitWindagesTests(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitWindages',
+                'json_': u'webapi',
+                'windage_range': (0.01, 0.04),
+                'windage_persist': 900,
+                }
+    fields_to_check = ('id', 'obj_type', 'windage_range', 'windage_persist')
+
+    def perform_updates(self, json_obj):
         super(InitWindagesTests, self).perform_updates(json_obj)
 
         json_obj['windage_range'] = (0.1, 0.4)
@@ -116,3 +110,45 @@ class InitWindagesTests(InitBaseTests):
 
         assert json_obj['windage_range'] == [0.1, 0.4]
         assert json_obj['windage_persist'] == 1000
+
+
+class InitMassComponentsFromOilPropsTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitMassComponentsFromOilProps',
+                'json_': u'webapi',
+                }
+
+
+class InitHalfLivesFromOilPropsTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitHalfLivesFromOilProps',
+                'json_': u'webapi',
+                }
+
+
+class InitMassFromTotalMassTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitMassFromTotalMass',
+                'json_': u'webapi',
+                }
+
+
+class InitMassFromVolumeTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitMassFromVolume',
+                'json_': u'webapi',
+                }
+
+
+class InitMassFromPlumeTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitMassFromPlume',
+                'json_': u'webapi',
+                }
+
+
+class InitRiseVelFromDistTest(InitializerBase):
+    req_data = {
+                'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
+                'json_': u'webapi',
+                }
