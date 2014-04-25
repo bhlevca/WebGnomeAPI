@@ -150,5 +150,21 @@ class InitMassFromPlumeTest(InitializerBase):
 class InitRiseVelFromDistTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
-                'json_': u'webapi',
+                'json_': u'save',
+                'distribution': {'obj_type': u'gnome.utilities.distributions.WeibullDistribution',
+                                 'json_': u'save',
+                                 'alpha': 1.8,
+                                 'lambda_': 1.22597478026,
+                                 }
+                }
+
+
+class InitRiseVelFromDropletSizeFromDistTest(InitializerBase):
+    json_str = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
+                'json_': u'save',
+                'distribution': {'obj_type': u'gnome.utilities.distributions.NormalDistribution',
+                                 'json_': u'save',
+                                 'mean': 0.0,
+                                 'sigma': 0.1
+                                 }
                 }
