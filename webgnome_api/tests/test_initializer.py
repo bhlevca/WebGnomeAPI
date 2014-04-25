@@ -157,6 +157,19 @@ class InitRiseVelFromDistTest(InitializerBase):
                                  'lambda_': 1.22597478026,
                                  }
                 }
+    fields_to_check = ('id', 'obj_type')
+
+    def perform_updates(self, json_obj):
+        super(InitRiseVelFromDistTest, self).perform_updates(json_obj)
+
+        json_obj['distribution']['alpha'] = 2.0
+        json_obj['distribution']['lambda_'] = 1.0
+
+    def check_updates(self, json_obj):
+        super(InitRiseVelFromDistTest, self).check_updates(json_obj)
+
+        assert json_obj['distribution']['alpha'] == 2.0
+        assert json_obj['distribution']['lambda_'] == 1.0
 
 
 class InitRiseVelFromDropletSizeFromDistTest(InitializerBase):
