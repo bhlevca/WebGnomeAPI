@@ -1,6 +1,9 @@
 """
 Functional tests for the Gnome Initializer object Web API
 """
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=4)
+
 from base import FunctionalTestBase
 
 
@@ -148,36 +151,80 @@ class InitMassFromPlumeTest(InitializerBase):
 
 
 class InitRiseVelFromDistTest(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
-                'json_': u'save',
-                'distribution': {'obj_type': u'gnome.utilities.distributions.WeibullDistribution',
-                                 'json_': u'save',
-                                 'alpha': 1.8,
-                                 'lambda_': 1.22597478026,
-                                 }
+    dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
+                 'json_': 'webapi',
+                 'alpha': 0.0,
+                 'lambda_': 1.0,
+                 'min_': 0.1,
+                 'max_': 0.5,
+                 }
+    req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
+                'json_': u'webapi',
+                'distribution': None
                 }
-    fields_to_check = ('id', 'obj_type')
+    fields_to_check = ('id', 'obj_type', 'distribution')
+
+    def test_get_valid_id(self):
+        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        resp1 = self.testapp.put_json('/initializer', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/initializer/{0}'.format(obj_id))
+
+        for k in self.fields_to_check:
+            assert resp2.json_body[k] == resp1.json_body[k]
+
+    def test_put_no_id(self):
+        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        resp = self.testapp.put_json('/initializer', params=self.req_data)
+
+        for k in self.fields_to_check:
+            assert k in resp.json_body
+
+    def test_put_invalid_id(self):
+        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        obj_id = 0xdeadbeef
+        resp = self.testapp.put_json('/initializer/{0}'.format(obj_id),
+                                     params=self.req_data)
+
+        for k in self.fields_to_check:
+            assert k in resp.json_body
+
+    def test_put_valid_id(self):
+        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+
+        resp = self.testapp.put_json('/initializer', params=self.req_data)
+
+        obj_id = resp.json_body['id']
+        req_data = resp.json_body
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/initializer/{0}'.format(obj_id),
+                                     params=req_data)
+        self.check_updates(resp.json_body)
+
+    def create_dist_obj(self, req_data):
+        resp = self.testapp.put_json('/distribution', params=req_data)
+        return resp.json_body
 
     def perform_updates(self, json_obj):
         super(InitRiseVelFromDistTest, self).perform_updates(json_obj)
-
-        json_obj['distribution']['alpha'] = 2.0
-        json_obj['distribution']['lambda_'] = 1.0
+        # there is nothing to update directly inside this object
 
     def check_updates(self, json_obj):
         super(InitRiseVelFromDistTest, self).check_updates(json_obj)
-
-        assert json_obj['distribution']['alpha'] == 2.0
-        assert json_obj['distribution']['lambda_'] == 1.0
+        # there is nothing to check directly inside this object
 
 
-class InitRiseVelFromDropletSizeFromDistTest(InitializerBase):
-    json_str = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
-                'json_': u'save',
-                'distribution': {'obj_type': u'gnome.utilities.distributions.NormalDistribution',
-                                 'json_': u'save',
-                                 'mean': 0.0,
-                                 'sigma': 0.1
-                                 }
+class InitRiseVelFromDropletSizeFromDistTest(InitRiseVelFromDistTest):
+    dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
+                 'json_': 'webapi',
+                 'alpha': 0.0,
+                 'lambda_': 1.0,
+                 'min_': 0.1,
+                 'max_': 0.5,
+                 }
+    req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
+                'json_': u'webapi',
+                'distribution': None
                 }

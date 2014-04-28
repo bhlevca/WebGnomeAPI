@@ -99,13 +99,13 @@ class UniformDistributionTests(DistributionBase):
     fields_to_check = ('id', 'obj_type', 'low', 'high')
 
     def perform_updates(self, json_obj):
-        super(NormalDistributionTests, self).perform_updates(json_obj)
+        super(UniformDistributionTests, self).perform_updates(json_obj)
 
         json_obj['low'] = 0.1
         json_obj['high'] = 0.2
 
     def check_updates(self, json_obj):
-        super(NormalDistributionTests, self).check_updates(json_obj)
+        super(UniformDistributionTests, self).check_updates(json_obj)
 
         assert json_obj['low'] == 0.1
         assert json_obj['high'] == 0.2
@@ -141,13 +141,13 @@ class LogNormalDistributionTests(DistributionBase):
     fields_to_check = ('id', 'obj_type', 'mean', 'sigma')
 
     def perform_updates(self, json_obj):
-        super(NormalDistributionTests, self).perform_updates(json_obj)
+        super(LogNormalDistributionTests, self).perform_updates(json_obj)
 
         json_obj['mean'] = 0.1
         json_obj['sigma'] = 0.2
 
     def check_updates(self, json_obj):
-        super(NormalDistributionTests, self).check_updates(json_obj)
+        super(LogNormalDistributionTests, self).check_updates(json_obj)
 
         assert json_obj['mean'] == 0.1
         assert json_obj['sigma'] == 0.2
@@ -158,23 +158,23 @@ class WeibullDistributionTests(DistributionBase):
                 'json_': 'webapi',
                 'alpha': 0.0,
                 'lambda_': 1.0,
-                'min_': None,
-                'max_': None,
+                'min_': 0.1,
+                'max_': 0.5,
                 }
     fields_to_check = ('id', 'obj_type', 'alpha', 'lambda_', 'min_', 'max_')
 
     def perform_updates(self, json_obj):
-        super(NormalDistributionTests, self).perform_updates(json_obj)
+        super(WeibullDistributionTests, self).perform_updates(json_obj)
 
-        json_obj['mean'] = 0.1
-        json_obj['sigma'] = 2.0
+        json_obj['alpha'] = 0.1
+        json_obj['lambda_'] = 2.0
         json_obj['min_'] = 0.001
         json_obj['max_'] = 0.005
 
     def check_updates(self, json_obj):
-        super(NormalDistributionTests, self).check_updates(json_obj)
+        super(WeibullDistributionTests, self).check_updates(json_obj)
 
-        assert json_obj['mean'] == 0.1
-        assert json_obj['sigma'] == 2.0
+        assert json_obj['alpha'] == 0.1
+        assert json_obj['lambda_'] == 2.0
         assert json_obj['min_'] == 0.001
         assert json_obj['max_'] == 0.005
