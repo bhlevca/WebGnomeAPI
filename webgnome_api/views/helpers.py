@@ -123,6 +123,11 @@ def LinkObjectChildren(obj_dict, all_objects):
         if (ValueIsJsonObject(v)
             and v['id'] in all_objects):
             obj_dict[k] = all_objects[v['id']]
+        elif (isinstance(v, dict)):
+            # we are dealing with an ordinary dict.
+            # We will try to link the dictionary items.
+            # TODO: We probably only want to recurse one level.
+            LinkObjectChildren(v, all_objects)
 
 
 def UpdateObject(obj, json_obj):
