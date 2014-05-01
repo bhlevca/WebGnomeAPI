@@ -71,7 +71,7 @@ def create_or_update_object(request, implemented_types):
     obj = get_session_object(obj_id_from_url(request), request.session)
     if obj:
         try:
-            UpdateObject(obj, json_request)
+            UpdateObject(obj, json_request, request.session['objects'])
         except ValueError as e:
             # TODO: We might want to log this message somewhere, as the
             # response is a bit vague

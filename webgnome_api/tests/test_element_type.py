@@ -100,29 +100,11 @@ class ElementTypeBase(FunctionalTestBase):
         pass
 
 
-class InitWindagesTests(ElementTypeBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitWindages',
-                'json_': u'webapi',
-                'windage_range': (0.01, 0.04),
-                'windage_persist': 900,
-                }
-    fields_to_check = ('id', 'obj_type', 'windage_range', 'windage_persist')
-
-    def perform_updates(self, json_obj):
-        super(InitWindagesTests, self).perform_updates(json_obj)
-
-        json_obj['windage_range'] = (0.1, 0.4)
-        json_obj['windage_persist'] = 1000
-
-    def check_updates(self, json_obj):
-        super(InitWindagesTests, self).check_updates(json_obj)
-
-        assert json_obj['windage_range'] == [0.1, 0.4]
-        assert json_obj['windage_persist'] == 1000
+class ElementTypeWithWindagesTests(ElementTypeBase):
+    pass
 
 
-class InitRiseVelFromDistTest(ElementTypeBase):
+class ElementTypeWithRiseVelDistTest(ElementTypeBase):
     dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
                  'json_': 'webapi',
                  'alpha': 0.0,
@@ -130,14 +112,26 @@ class InitRiseVelFromDistTest(ElementTypeBase):
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
+    init_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
                 'json_': u'webapi',
                 'distribution': None
                 }
-    fields_to_check = ('id', 'obj_type', 'distribution')
+    fields_to_check = ('id', 'obj_type', 'initializers')
+
+    def create_dist_obj(self, req_data):
+        resp = self.testapp.put_json('/distribution', params=req_data)
+        return resp.json_body
+
+    def create_init_obj(self, req_data, dist_obj=None):
+        if dist_obj:
+            req_data['distribution'] = dist_obj
+        resp = self.testapp.put_json('/initializer', params=req_data)
+        return {'rise_vel': resp.json_body}
 
     def test_get_valid_id(self):
-        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        dist_obj = self.create_dist_obj(self.dist_data)
+        init_obj = self.create_init_obj(self.init_data, dist_obj)
+        self.req_data['initializers'] = init_obj
         resp1 = self.testapp.put_json('/element_type', params=self.req_data)
 
         obj_id = resp1.json_body['id']
@@ -147,14 +141,18 @@ class InitRiseVelFromDistTest(ElementTypeBase):
             assert resp2.json_body[k] == resp1.json_body[k]
 
     def test_put_no_id(self):
-        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        dist_obj = self.create_dist_obj(self.dist_data)
+        init_obj = self.create_init_obj(self.init_data, dist_obj)
+        self.req_data['initializers'] = init_obj
         resp = self.testapp.put_json('/element_type', params=self.req_data)
 
         for k in self.fields_to_check:
             assert k in resp.json_body
 
     def test_put_invalid_id(self):
-        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        dist_obj = self.create_dist_obj(self.dist_data)
+        init_obj = self.create_init_obj(self.init_data, dist_obj)
+        self.req_data['initializers'] = init_obj
         obj_id = 0xdeadbeef
         resp = self.testapp.put_json('/element_type/{0}'.format(obj_id),
                                      params=self.req_data)
@@ -163,7 +161,9 @@ class InitRiseVelFromDistTest(ElementTypeBase):
             assert k in resp.json_body
 
     def test_put_valid_id(self):
-        self.req_data['distribution'] = self.create_dist_obj(self.dist_data)
+        dist_obj = self.create_dist_obj(self.dist_data)
+        init_obj = self.create_init_obj(self.init_data, dist_obj)
+        self.req_data['initializers'] = init_obj
 
         resp = self.testapp.put_json('/element_type', params=self.req_data)
 
@@ -175,14 +175,10 @@ class InitRiseVelFromDistTest(ElementTypeBase):
                                      params=req_data)
         self.check_updates(resp.json_body)
 
-    def create_dist_obj(self, req_data):
-        resp = self.testapp.put_json('/distribution', params=req_data)
-        return resp.json_body
-
     def perform_updates(self, json_obj):
-        super(InitRiseVelFromDistTest, self).perform_updates(json_obj)
+        super(ElementTypeWithRiseVelDistTest, self).perform_updates(json_obj)
         # there is nothing to update directly inside this object
 
     def check_updates(self, json_obj):
-        super(InitRiseVelFromDistTest, self).check_updates(json_obj)
+        super(ElementTypeWithRiseVelDistTest, self).check_updates(json_obj)
         # there is nothing to check directly inside this object

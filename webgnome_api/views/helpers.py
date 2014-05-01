@@ -112,7 +112,6 @@ def CreateObject(json_obj, all_objects):
     py_class = PyClassFromName(name, scope)
 
     obj_dict = py_class.deserialize(json_obj)
-
     LinkObjectChildren(obj_dict, all_objects)
 
     return py_class.new_from_dict(obj_dict)
@@ -130,7 +129,7 @@ def LinkObjectChildren(obj_dict, all_objects):
             LinkObjectChildren(v, all_objects)
 
 
-def UpdateObject(obj, json_obj):
+def UpdateObject(obj, json_obj, all_objects):
     '''
         Here we update our python object with a JSON payload
 
@@ -140,9 +139,10 @@ def UpdateObject(obj, json_obj):
     name, scope = FQNamesToList((json_obj['obj_type'],))[0]
     py_class = PyClassFromName(name, scope)
 
-    dict_ = py_class.deserialize(json_obj)
+    obj_dict = py_class.deserialize(json_obj)
+    LinkObjectChildren(obj_dict, all_objects)
 
-    return UpdateObjectAttributes(obj, dict_.iteritems())
+    return UpdateObjectAttributes(obj, obj_dict.iteritems())
 
 
 def UpdateObjectAttributes(obj, items):
