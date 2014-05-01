@@ -6,7 +6,7 @@ from .common_object import (get_object, create_or_update_object, cors_policy)
 from cornice import Service
 
 spill = Service(name='spill', path='/spill*obj_id',
-                  description="Spill API", cors_policy=cors_policy)
+                description="Spill API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.spill.spill.Spill',
                      )
