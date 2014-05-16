@@ -42,40 +42,29 @@ class WindTests(FunctionalTestBase):
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
-        resp1 = self.testapp.put_json('/environment', params=self.req_data)
+        resp1 = self.testapp.post_json('/environment', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/environment/{0}'.format(obj_id))
 
-        assert resp2.json_body['id'] == obj_id
-        assert resp2.json_body['obj_type'] == resp1.json_body['obj_type']
+        for k in ('id', 'obj_type'):
+            assert resp2.json_body[k] == resp1.json_body[k]
+
+    def test_post_no_payload(self):
+        self.testapp.post_json('/environment', status=400)
 
     def test_put_no_payload(self):
         self.testapp.put_json('/environment', status=400)
 
     def test_put_no_id(self):
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/environment', params=self.req_data)
-
-        # Note: For this test, we just verify that an object with the right
-        #       properties is returned.  We will validate the content in
-        #       more elaborate tests.
-        assert 'id' in resp.json_body
-        assert 'obj_type' in resp.json_body
-        assert 'timeseries' in resp.json_body
+        self.testapp.put_json('/environment', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
-        obj_id = 0xdeadbeef
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
 
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/environment/{0}'.format(obj_id),
-                                     params=self.req_data)
-
-        # Note: This test is very similar to a put with no ID, and has the same
-        #       asserts.
-        assert 'id' in resp.json_body
-        assert 'obj_type' in resp.json_body
-        assert 'timeseries' in resp.json_body
+        self.testapp.put_json('/environment', params=params, status=404)
 
     def test_put_valid_id(self):
         # 1. create the object by performing a put with no id
@@ -83,7 +72,7 @@ class WindTests(FunctionalTestBase):
         # 3. update the properties in the JSON response
         # 4. update the object by performing a put with a valid id
         # 5. check that our new properties are in the new JSON response
-        resp = self.testapp.put_json('/environment', params=self.req_data)
+        resp = self.testapp.post_json('/environment', params=self.req_data)
 
         obj_id = resp.json_body['id']
         req_data = resp.json_body

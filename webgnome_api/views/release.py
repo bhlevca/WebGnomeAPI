@@ -1,7 +1,8 @@
 """
 Views for the Release objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from .common_object import (get_object, create_object, update_object,
+                            cors_policy)
 
 from cornice import Service
 
@@ -15,12 +16,18 @@ implemented_types = ('gnome.spill.release.PointLineRelease',
 
 
 @release.get()
-def get_environment(request):
+def get_release(request):
     '''Returns a Gnome Release object in JSON.'''
     return get_object(request, implemented_types)
 
 
+@release.post()
+def create_release(request):
+    '''Creates a Gnome Release object.'''
+    return create_object(request, implemented_types)
+
+
 @release.put()
-def create_or_update_environment(request):
-    '''Creates or Updates a Gnome Release object.'''
-    return create_or_update_object(request, implemented_types)
+def update_release(request):
+    '''Updates a Gnome Release object.'''
+    return update_object(request, implemented_types)

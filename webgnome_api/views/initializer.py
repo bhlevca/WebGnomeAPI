@@ -1,7 +1,8 @@
 """
 Views for the Initializer objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from .common_object import (get_object, create_object, update_object,
+                            cors_policy)
 
 from cornice import Service
 
@@ -26,7 +27,13 @@ def get_initializer(request):
     return get_object(request, implemented_types)
 
 
+@initializer.post()
+def create_initializer(request):
+    '''Creates a Gnome Initializer object.'''
+    return create_object(request, implemented_types)
+
+
 @initializer.put()
-def create_or_update_initializer(request):
-    '''Creates or Updates a Gnome Initializer object.'''
-    return create_or_update_object(request, implemented_types)
+def update_initializer(request):
+    '''Updates a Gnome Initializer object.'''
+    return update_object(request, implemented_types)

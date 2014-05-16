@@ -1,8 +1,10 @@
-"""Main entry point
 """
-from pyramid.config import Configurator
+    Main entry point
+"""
+import logging
+logging.basicConfig()
 
-from webgnome.util import json_date_adapter, gnome_json
+from pyramid.config import Configurator
 
 
 def main(global_config, **settings):

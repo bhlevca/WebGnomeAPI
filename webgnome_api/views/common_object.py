@@ -58,8 +58,9 @@ def get_specifications(request, implemented_types):
     return specs
 
 
-def create_or_update_object(request, implemented_types):
-    '''Creates or Updates a Gnome object.'''
+def create_object(request, implemented_types):
+    '''Creates a Gnome object.'''
+    init_session_objects(request.session)
     try:
         json_request = json.loads(request.body)
     except:
@@ -68,7 +69,24 @@ def create_or_update_object(request, implemented_types):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise HTTPNotImplemented()
 
-    obj = get_session_object(obj_id_from_url(request), request.session)
+    obj = CreateObject(json_request, request.session['objects'])
+
+    set_session_object(obj, request.session)
+    return obj.serialize()
+
+
+def update_object(request, implemented_types):
+    '''Updates a Gnome object.'''
+    try:
+        json_request = json.loads(request.body)
+    except:
+        raise HTTPBadRequest()
+
+    if not JSONImplementsOneOf(json_request, implemented_types):
+        raise HTTPNotImplemented()
+
+    obj = get_session_object(obj_id_from_req_payload(json_request),
+                             request.session)
     if obj:
         try:
             UpdateObject(obj, json_request, request.session['objects'])
@@ -77,7 +95,7 @@ def create_or_update_object(request, implemented_types):
             # response is a bit vague
             raise HTTPUnsupportedMediaType(e)
     else:
-        obj = CreateObject(json_request, request.session['objects'])
+        raise HTTPNotFound()
 
     set_session_object(obj, request.session)
     return obj.serialize()
@@ -88,6 +106,10 @@ def obj_id_from_url(request):
     # matching items, at least when using the * wild card
     obj_id = request.matchdict.get('obj_id')
     return obj_id[0] if obj_id else None
+
+
+def obj_id_from_req_payload(json_request):
+    return json_request.get('id')
 
 
 def init_session_objects(session):

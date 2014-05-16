@@ -24,16 +24,15 @@ class BaseMoverTests(FunctionalTestBase):
         obj_id = 0xdeadbeef
         self.testapp.get('/mover/{0}'.format(obj_id), status=404)
 
+    def test_post_no_payload(self):
+        self.testapp.post_json('/mover', status=400)
+
     def test_put_no_payload(self):
         self.testapp.put_json('/mover', status=400)
 
     def check_create_properties(self, response):
-        assert 'id' in response.json_body
-        assert 'obj_type' in response.json_body
-
-        assert 'on' in response.json_body
-        assert 'active_start' in response.json_body
-        assert 'active_stop' in response.json_body
+        for k in ('id', 'obj_type', 'on', 'active_start', 'active_stop'):
+            assert k in response.json_body
 
 
 class SimpleMoverTests(BaseMoverTests):
@@ -54,7 +53,7 @@ class SimpleMoverTests(BaseMoverTests):
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
-        resp1 = self.testapp.put_json('/mover', params=self.req_data)
+        resp1 = self.testapp.post_json('/mover', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
@@ -63,19 +62,14 @@ class SimpleMoverTests(BaseMoverTests):
             assert resp2.json_body[a] == resp1.json_body[a]
 
     def test_put_no_id(self):
-        #print '\n\nMover Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/mover', params=self.req_data)
-
-        self.check_create_properties(resp)
+        self.testapp.put_json('/mover', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
-        obj_id = 0xdeadbeef
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
 
-        #print '\n\nMover Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/mover/{0}'.format(obj_id),
-                                     params=self.req_data)
-
-        self.check_create_properties(resp)
+        self.testapp.put_json('/mover', params=params, status=404)
 
     def test_put_valid_id(self):
         # 1. create the object by performing a put with no id
@@ -83,14 +77,12 @@ class SimpleMoverTests(BaseMoverTests):
         # 3. update the properties in the JSON response
         # 4. update the object by performing a put with a valid id
         # 5. check that our new properties are in the new JSON response
-        resp = self.testapp.put_json('/mover', params=self.req_data)
+        resp = self.testapp.post_json('/mover', params=self.req_data)
 
-        obj_id = resp.json_body['id']
         req_data = resp.json_body
         self.perform_updates(req_data)
 
-        resp = self.testapp.put_json('/mover/{0}'.format(obj_id),
-                                     params=req_data)
+        resp = self.testapp.put_json('/mover', params=req_data)
         self.check_updates(resp.json_body)
 
     def check_create_properties(self, response):
@@ -157,7 +149,7 @@ class WindMoverTests(BaseMoverTests):
         wind_obj = self.create_wind_obj(self.wind_req_data)
         self.req_data['wind'] = wind_obj
 
-        resp1 = self.testapp.put_json('/mover', params=self.req_data)
+        resp1 = self.testapp.post_json('/mover', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
@@ -177,20 +169,18 @@ class WindMoverTests(BaseMoverTests):
         wind_obj = self.create_wind_obj(self.wind_req_data)
         self.req_data['wind'] = wind_obj
 
-        resp = self.testapp.put_json('/mover', params=self.req_data)
-
-        self.check_create_properties(resp)
+        self.testapp.put_json('/mover', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
         # WindMover reauires a valid Wind object for creation
         wind_obj = self.create_wind_obj(self.wind_req_data)
         self.req_data['wind'] = wind_obj
 
-        obj_id = 0xdeadbeef
-        resp = self.testapp.put_json('/mover/{0}'.format(obj_id),
-                                     params=self.req_data)
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
 
-        self.check_create_properties(resp)
+        self.testapp.put_json('/mover', params=params, status=404)
 
     def test_put_valid_id(self):
         # 1. create a Wind object
@@ -204,18 +194,16 @@ class WindMoverTests(BaseMoverTests):
         wind_obj = self.create_wind_obj(self.wind_req_data)
         self.req_data['wind'] = wind_obj
 
-        resp = self.testapp.put_json('/mover', params=self.req_data)
+        resp = self.testapp.post_json('/mover', params=self.req_data)
 
-        obj_id = resp.json_body['id']
         req_data = resp.json_body
-
         self.perform_updates(req_data)
-        resp = self.testapp.put_json('/mover/{0}'.format(obj_id),
-                                     params=req_data)
+
+        resp = self.testapp.put_json('/mover', params=req_data)
         self.check_updates(resp.json_body)
 
     def create_wind_obj(self, req_data):
-        resp = self.testapp.put_json('/environment', params=req_data)
+        resp = self.testapp.post_json('/environment', params=req_data)
         return resp.json_body
 
     def check_create_properties(self, response):
