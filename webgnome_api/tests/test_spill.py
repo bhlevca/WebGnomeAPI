@@ -12,7 +12,6 @@ class SpillTests(FunctionalTestBase):
               like a consistent design.
     '''
     rel_req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
-                    'json_': u'webapi',
                     'num_elements': 100,
                     'num_released': 0,
                     'release_time': '2014-04-15T13:22:20.930570',
@@ -23,17 +22,14 @@ class SpillTests(FunctionalTestBase):
                     }
 
     init_req_data = {'obj_type': u'gnome.spill.elements.InitWindages',
-                     'json_': u'webapi',
                      'windage_range': (0.01, 0.04),
                      'windage_persist': 900,
                      }
     elem_type_req_data = {'obj_type': u'gnome.spill.elements.ElementType',
-                          'json_': u'webapi',
                           'initializers': None,
                           }
 
     req_data = {'obj_type': u'gnome.spill.spill.Spill',
-                'json_': u'webapi',
                 'release': None,
                 'element_type': None
                 }

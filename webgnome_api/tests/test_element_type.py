@@ -12,12 +12,10 @@ class ElementTypeBase(FunctionalTestBase):
         Tests out the Gnome ElementType object API
     '''
     init_data = {'obj_type': u'gnome.spill.elements.InitWindages',
-                'json_': u'webapi',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
     req_data = {'obj_type': u'gnome.spill.elements.ElementType',
-                'json_': u'webapi',
                 'initializers': None,
                 }
     fields_to_check = ('id', 'obj_type', 'initializers')
@@ -104,14 +102,12 @@ class ElementTypeWithWindagesTests(ElementTypeBase):
 
 class ElementTypeWithRiseVelDistTest(ElementTypeBase):
     dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
-                 'json_': 'webapi',
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
                  'max_': 0.5,
                  }
     init_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
-                'json_': u'webapi',
                 'distribution': None
                 }
     fields_to_check = ('id', 'obj_type', 'initializers')

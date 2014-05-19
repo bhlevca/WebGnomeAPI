@@ -10,7 +10,6 @@ class WindTests(FunctionalTestBase):
         Tests out the Gnome Wind object API
     '''
     req_data = {'obj_type': 'gnome.environment.Wind',
-                'json_': 'webapi',
                 'description': u'Wind Object',
                 'updated_at': '2014-03-26T14:52:45.385126',
                 'source_type': u'undefined',
@@ -105,7 +104,6 @@ class TideTests(WindTests):
         Tests out the Gnome Tide object API
     '''
     req_data = {'obj_type': 'gnome.environment.Tide',
-                'json_': 'webapi',
                 'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
                                ('2012-11-06T20:11:30', (1.0, 45.0)),
                                ('2012-11-06T20:12:30', (1.0, 90.0)),

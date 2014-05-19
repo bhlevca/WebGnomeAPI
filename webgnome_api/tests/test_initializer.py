@@ -12,7 +12,6 @@ class InitializerBase(FunctionalTestBase):
         Tests out the Gnome Initializer object API
     '''
     req_data = {'obj_type': u'gnome.spill.elements.InitWindages',
-                'json_': u'webapi',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
@@ -95,7 +94,6 @@ class InitializerBase(FunctionalTestBase):
 class InitWindagesTests(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitWindages',
-                'json_': u'webapi',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
@@ -117,48 +115,41 @@ class InitWindagesTests(InitializerBase):
 class InitMassComponentsFromOilPropsTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitMassComponentsFromOilProps',
-                'json_': u'webapi',
                 }
 
 
 class InitHalfLivesFromOilPropsTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitHalfLivesFromOilProps',
-                'json_': u'webapi',
                 }
 
 
 class InitMassFromTotalMassTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitMassFromTotalMass',
-                'json_': u'webapi',
                 }
 
 
 class InitMassFromVolumeTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitMassFromVolume',
-                'json_': u'webapi',
                 }
 
 
 class InitMassFromPlumeTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitMassFromPlume',
-                'json_': u'webapi',
                 }
 
 
 class InitRiseVelFromDistTest(InitializerBase):
     dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
-                 'json_': 'webapi',
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
                  'max_': 0.5,
                  }
     req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
-                'json_': u'webapi',
                 'distribution': None
                 }
     fields_to_check = ('id', 'obj_type', 'distribution')
@@ -216,13 +207,11 @@ class InitRiseVelFromDistTest(InitializerBase):
 
 class InitRiseVelFromDropletSizeFromDistTest(InitRiseVelFromDistTest):
     dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
-                 'json_': 'webapi',
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
                  'max_': 0.5,
                  }
     req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
-                'json_': u'webapi',
                 'distribution': None
                 }

@@ -17,7 +17,6 @@ class ReleaseTests(FunctionalTestBase):
     def test_options(self):
         resp = self.testapp.options('/release',
                                     headers=self.options_headers)
-        print 'json_body:\n', (resp.json_body,)
         resp_methods = set(resp.headers['Access-Control-Allow-Methods']
                            .lower().split(','))
         assert resp_methods == {'get', 'head', 'options', 'post', 'put'}
@@ -42,6 +41,16 @@ class ReleaseTests(FunctionalTestBase):
     def test_put_no_payload(self):
         self.testapp.put_json('/release', status=400)
 
+    def test_put_no_id(self):
+        self.testapp.put_json('/release', params=self.req_data, status=404)
+
+    def test_put_invalid_id(self):
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
+
+        self.testapp.put_json('/release', params=params, status=404)
+
     def perform_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests
@@ -63,7 +72,6 @@ class PointLineReleaseTests(ReleaseTests):
     '''
     req_data = {
                 'obj_type': u'gnome.spill.release.PointLineRelease',
-                'json_': u'webapi',
                 'num_elements': 100,
                 'num_released': 0,
                 'release_time': '2014-04-15T13:22:20.930570',
@@ -85,18 +93,6 @@ class PointLineReleaseTests(ReleaseTests):
 
         for k in ('id', 'obj_type'):
             assert resp2.json_body[k] == resp1.json_body[k]
-
-    def test_put_no_id(self):
-        self.testapp.put_json('/release', params=self.req_data, status=404)
-
-    def test_put_invalid_id(self):
-        params = {}
-        params.update(self.req_data)
-        params['id'] = str(0xdeadbeef)
-
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/release', params=params,
-                                     status=404)
 
     def test_put_valid_id(self):
         # 1. create the object by performing a put with no id
@@ -128,3 +124,19 @@ class PointLineReleaseTests(ReleaseTests):
                     for i, j in zip(json_obj['end_position'],
                                     (50.0, 50.0, 10.0))
                     ])
+
+
+class SpatialRelease(ReleaseTests):
+    '''
+        Tests out the Gnome Release object API
+    '''
+    req_data = {
+                'obj_type': u'gnome.spill.release.PointLineRelease',
+                'num_elements': 100,
+                'num_released': 0,
+                'release_time': '2014-04-15T13:22:20.930570',
+                'start_time_invalid': True,
+                'end_release_time': '2014-04-15T13:22:20.930570',
+                'end_position': (28.0, -78.0, 0.0),
+                'start_position': (28.0, -78.0, 0.0),
+                }

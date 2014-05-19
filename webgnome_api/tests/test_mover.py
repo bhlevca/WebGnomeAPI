@@ -40,7 +40,6 @@ class SimpleMoverTests(BaseMoverTests):
         Tests out the Gnome Simple Mover API
     '''
     req_data = {'obj_type': 'gnome.movers.simple_mover.SimpleMover',
-                'json_': 'webapi',
                 'active_start': '-inf',
                 'active_stop': 'inf',
                 'on': True,
@@ -113,7 +112,6 @@ class WindMoverTests(BaseMoverTests):
         Tests out the Gnome Wind Mover API
     '''
     wind_req_data = {'obj_type': 'gnome.environment.Wind',
-                     'json_': 'webapi',
                      'description': u'Wind Object',
                      'updated_at': '2014-03-26T14:52:45.385126',
                      'source_type': u'undefined',
@@ -128,7 +126,6 @@ class WindMoverTests(BaseMoverTests):
                      }
 
     req_data = {'obj_type': 'gnome.movers.wind_movers.WindMover',
-                'json_': 'webapi',
                 'active_start': '-inf',
                 'active_stop': 'inf',
                 'on': True,

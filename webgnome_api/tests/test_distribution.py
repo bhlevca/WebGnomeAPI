@@ -9,7 +9,6 @@ class DistributionBase(FunctionalTestBase):
         Tests out the Gnome Distribution object API
     '''
     req_data = {'obj_type': 'gnome.utilities.distributions.NormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -91,7 +90,6 @@ class DistributionBase(FunctionalTestBase):
 
 class UniformDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.UniformDistribution',
-                'json_': 'webapi',
                 'low': 0.0,
                 'high': 0.1
                 }
@@ -112,7 +110,6 @@ class UniformDistributionTests(DistributionBase):
 
 class NormalDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.NormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -133,7 +130,6 @@ class NormalDistributionTests(DistributionBase):
 
 class LogNormalDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.LogNormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -154,7 +150,6 @@ class LogNormalDistributionTests(DistributionBase):
 
 class WeibullDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
-                'json_': 'webapi',
                 'alpha': 0.0,
                 'lambda_': 1.0,
                 'min_': 0.1,
