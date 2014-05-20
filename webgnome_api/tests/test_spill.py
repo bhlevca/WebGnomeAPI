@@ -145,3 +145,61 @@ class SpillTests(FunctionalTestBase):
             and ElementType objects, and has no direct data properties
             that we can really tweak.
         '''
+
+
+#gnome.spill.spill.Spill(release={'obj_type': u'gnome.spill.release.PointLineRelease',
+#                                 'json_': u'webapi',
+#                                 'num_elements': 1000,
+#                                 'release_time': datetime.datetime(2013, 2, 13, 9, 0),
+#                                 'end_release_time': datetime.datetime(2013, 2, 13, 15, 0),
+#                                 'start_position': (144.664166, 13.441944, 0.0),
+#                                 'end_position': (144.664166, 13.441944, 0.0),
+#                                 },
+#                        element_type={'obj_type': u'gnome.spill.elements.ElementType',
+#                                      'json_': u'webapi',
+#                                      'initializers': {u'windages': {'obj_type': u'gnome.spill.elements.InitWindages',
+#                                                                     'json_': u'webapi',
+#                                                                     'windage_range': (0.01, 0.04),
+#                                                                     'windage_persist': 900}}},
+#                        on=True,
+#                        volume=None,
+#                        volume_units="m^3",
+#                        mass=None,
+#                        mass_units="g")
+
+
+class SpillNestedTests(FunctionalTestBase):
+    '''
+        Tests out the nested object creation for the Gnome Spill object API
+    '''
+    req_data = {"obj_type": "gnome.spill.spill.Spill",
+                "json_": "webapi",
+                "on": True,
+                "release": {"obj_type": "gnome.spill.release.PointLineRelease",
+                            "json_": "webapi",
+                            "num_elements": 1000,
+                            "num_released": 84,
+                            "release_time": "2013-02-13T09:00:00",
+                            "end_release_time": "2013-02-13T15:00:00",
+                            "start_time_invalid": False,
+                            "end_position": [144.664166, 13.441944, 0.0],
+                            "start_position": [144.664166, 13.441944, 0.0],
+                            },
+                "element_type": {"obj_type": "gnome.spill.elements.ElementType",
+                                 "json_": "webapi",
+                                 "initializers": {"windages": {"obj_type": "gnome.spill.elements.InitWindages",
+                                                               "json_": "webapi",
+                                                               "windage_range": [0.01, 0.04],
+                                                               "windage_persist": 900,
+                                                               }
+                                                  }
+                                 },
+                }
+
+    def test_get_valid_id(self):
+        resp1 = self.testapp.post_json('/spill', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/spill/{0}'.format(obj_id))
+
+        print resp2.json_body

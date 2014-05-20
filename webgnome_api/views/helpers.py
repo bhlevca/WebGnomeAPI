@@ -104,14 +104,18 @@ def PyClassFromName(name, scope):
     return getattr(my_module, name)
 
 
-def CreateObject(json_obj, all_objects):
+def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
         Here we create a python object from our JSON payload
     '''
     name, scope = FQNamesToList((json_obj['obj_type'],))[0]
     py_class = PyClassFromName(name, scope)
 
-    obj_dict = py_class.deserialize(json_obj)
+    if deserialize_obj:
+        obj_dict = py_class.deserialize(json_obj)
+    else:
+        obj_dict = json_obj
+
     LinkObjectChildren(obj_dict, all_objects)
 
     return py_class.new_from_dict(obj_dict)
@@ -119,13 +123,20 @@ def CreateObject(json_obj, all_objects):
 
 def LinkObjectChildren(obj_dict, all_objects):
     for k, v in obj_dict.items():
-        if (ValueIsJsonObject(v)
-            and v['id'] in all_objects):
-            obj_dict[k] = all_objects[v['id']]
+        if ValueIsJsonObject(v):
+            if 'id' in v and v['id'] in all_objects:
+                #print ('JSON object exists in session: '
+                #       '{0}({1})'.format(v['obj_type'], v['id']))
+                obj_dict[k] = all_objects[v['id']]
+            else:
+                #print ('JSON object does not exist in session: '
+                #       '{0}'.format(v['obj_type']))
+                obj = CreateObject(v, all_objects, False)
+                all_objects[obj.id] = obj
+                obj_dict[k] = obj
         elif (isinstance(v, dict)):
             # we are dealing with an ordinary dict.
             # We will try to link the dictionary items.
-            # TODO: We probably only want to recurse one level.
             LinkObjectChildren(v, all_objects)
 
 
@@ -165,7 +176,6 @@ def UpdateObjectAttribute(obj, attr, value):
 
 def ValueIsJsonObject(value):
     return (isinstance(value, dict)
-            and 'id' in value
             and 'obj_type' in value)
 
 
