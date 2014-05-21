@@ -1,8 +1,10 @@
 """
 Views for the ElementType objects.
 """
-from .common_object import (get_object, create_object, update_object,
-                            cors_policy)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy)
 
 from cornice import Service
 

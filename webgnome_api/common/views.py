@@ -9,11 +9,17 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotImplemented)
 
 from .helpers import (JSONImplementsOneOf,
-                      ObjectImplementsOneOf,
-                      UpdateObject, CreateObject,
                       FQNamesToList,
                       PyClassFromName)
 
+from .common_object import (CreateObject,
+                            UpdateObject,
+                            ObjectImplementsOneOf,
+                            obj_id_from_url,
+                            obj_id_from_req_payload,
+                            init_session_objects,
+                            get_session_object,
+                            set_session_object)
 
 cors_policy = {'origins': ('*',),
                }
@@ -40,18 +46,14 @@ def get_specifications(request, implemented_types):
     for t in implemented_types:
         try:
             name, scope = FQNamesToList((t,))[0]
-            cls = PyClassFromName(name, scope)
+            cls = PyClassFromName(t)
             if cls:
                 spec = dict([(n, None)
                              for n in cls._state.get_names(['read', 'update'])
                              ])
                 spec['obj_type'] = t
                 specs[name] = spec
-        except ValueError as e:
-            # - I think for right now, we will just continue on to the
-            #   next type.
-            # - There could be some exceptions raised that are not handled
-            #   here.
+        except ValueError:
             #print 'failed to get class for {0}'.format(t)
             #print 'error: {0}'.format(e)
             raise
@@ -91,48 +93,9 @@ def update_object(request, implemented_types):
         try:
             UpdateObject(obj, json_request, request.session['objects'])
         except ValueError as e:
-            # TODO: We might want to log this message somewhere, as the
-            # response is a bit vague
             raise HTTPUnsupportedMediaType(e)
     else:
         raise HTTPNotFound()
 
     set_session_object(obj, request.session)
     return obj.serialize()
-
-
-def obj_id_from_url(request):
-    # the pyramid URL parser returns a tuple of 0 or more
-    # matching items, at least when using the * wild card
-    obj_id = request.matchdict.get('obj_id')
-    return obj_id[0] if obj_id else None
-
-
-def obj_id_from_req_payload(json_request):
-    return json_request.get('id')
-
-
-def init_session_objects(session):
-    if not 'objects' in session:
-        session['objects'] = {}
-        session.changed()
-
-
-def get_session_object(obj_id, session):
-    init_session_objects(session)
-
-    if obj_id in session['objects']:
-        return session['objects'][obj_id]
-    else:
-        return None
-
-
-def set_session_object(obj, session):
-    init_session_objects(session)
-
-    try:
-        session['objects'][obj.id] = obj
-    except AttributeError:
-        session['objects'][id(obj)] = obj
-
-    session.changed()

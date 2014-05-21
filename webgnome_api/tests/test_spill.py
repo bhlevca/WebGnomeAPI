@@ -1,6 +1,9 @@
 """
 Functional tests for the Gnome Spill object Web API
 """
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
 from base import FunctionalTestBase
 
 
@@ -202,4 +205,8 @@ class SpillNestedTests(FunctionalTestBase):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/spill/{0}'.format(obj_id))
 
-        print resp2.json_body
+        pp.pprint(resp2.json_body)
+        assert 'id' in resp2.json_body
+        assert 'id' in resp2.json_body['release']
+        assert 'id' in resp2.json_body['element_type']
+        assert 'id' in resp2.json_body['element_type']['initializers']['windages']
