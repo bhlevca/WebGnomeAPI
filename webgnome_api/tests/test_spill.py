@@ -150,27 +150,6 @@ class SpillTests(FunctionalTestBase):
         '''
 
 
-#gnome.spill.spill.Spill(release={'obj_type': u'gnome.spill.release.PointLineRelease',
-#                                 'json_': u'webapi',
-#                                 'num_elements': 1000,
-#                                 'release_time': datetime.datetime(2013, 2, 13, 9, 0),
-#                                 'end_release_time': datetime.datetime(2013, 2, 13, 15, 0),
-#                                 'start_position': (144.664166, 13.441944, 0.0),
-#                                 'end_position': (144.664166, 13.441944, 0.0),
-#                                 },
-#                        element_type={'obj_type': u'gnome.spill.elements.ElementType',
-#                                      'json_': u'webapi',
-#                                      'initializers': {u'windages': {'obj_type': u'gnome.spill.elements.InitWindages',
-#                                                                     'json_': u'webapi',
-#                                                                     'windage_range': (0.01, 0.04),
-#                                                                     'windage_persist': 900}}},
-#                        on=True,
-#                        volume=None,
-#                        volume_units="m^3",
-#                        mass=None,
-#                        mass_units="g")
-
-
 class SpillNestedTests(FunctionalTestBase):
     '''
         Tests out the nested object creation for the Gnome Spill object API
