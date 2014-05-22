@@ -45,7 +45,7 @@ def get_specifications(request, implemented_types):
     specs = {}
     for t in implemented_types:
         try:
-            name, scope = FQNamesToList((t,))[0]
+            name = FQNamesToList((t,))[0][0]
             cls = PyClassFromName(t)
             if cls:
                 spec = dict([(n, None)

@@ -6,6 +6,8 @@
 '''
 import json
 
+from webgnome_api.common.common_object import ValueIsJsonObject
+
 
 class PyGnomeSchemaTweenFactory(object):
     def __init__(self, handler, registry):
@@ -14,6 +16,21 @@ class PyGnomeSchemaTweenFactory(object):
 
         # one-time configuration code goes here
 
+    def add_json_key(self, json_request):
+        modified = False
+
+        if ValueIsJsonObject(json_request):
+            if not 'json_' in json_request:
+                json_request['json_'] = 'webapi'
+                modified = True
+
+        if isinstance(json_request, dict):
+            for v in json_request.values():
+                if self.add_json_key(v):
+                    modified = True
+
+        return modified
+
     def before_the_handler(self, request):
         # code to be executed for each request
         # BEFORE the actual application code
@@ -21,8 +38,7 @@ class PyGnomeSchemaTweenFactory(object):
         if request.body:
             json_request = json.loads(request.body)
 
-            if not 'json_' in json_request:
-                json_request['json_'] = 'webapi'
+            if self.add_json_key(json_request):
                 # TODO: The tween seems like a logical place to do
                 #       Preprocessing on a request.
                 #       But it seems like a wasteful use of processing

@@ -72,7 +72,7 @@ def JSONImplementedType(json_obj, obj_types):
     if not 'obj_type' in json_obj:
         raise ValueError('JSON object needs to contain an obj_type')
 
-    name, scope = FQNameToNameAndScope(json_obj['obj_type'])
+    name = FQNameToNameAndScope(json_obj['obj_type'])[0]
     if name in FQNamesToDict(obj_types):
         return PyClassFromName(json_obj['obj_type'])
 
