@@ -15,7 +15,8 @@ from .helpers import (JSONImplementsOneOf,
                       PyClassFromName)
 
 
-cors_policy = {'origins': ('*',),
+cors_policy = {'origins': ('http://0.0.0.0:8080',),
+               'credentials': 'true'
                }
 
 
