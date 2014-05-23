@@ -20,7 +20,8 @@ def reconcile_directory_settings(settings, key):
 
         settings[key] = '\n'.join(resolved_dirs)
     else:
-        print 'Warning: key {0} not found in settings.'.format(key)
+        #print 'Warning: key {0} not found in settings.'.format(key)
+        pass
 
 
 def main(global_config, **settings):

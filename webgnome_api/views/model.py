@@ -5,11 +5,12 @@ Views for the Model object.
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
-from .common_object import (get_object,
-                            create_object, update_object,
-                            cors_policy,
-                            get_session_object,
-                            obj_id_from_url)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy,
+                                       get_session_object,
+                                       obj_id_from_url)
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
