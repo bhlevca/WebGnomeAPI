@@ -72,9 +72,18 @@ def create_object(request, implemented_types):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise HTTPNotImplemented()
 
-    obj = CreateObject(json_request, request.session['objects'])
+    gnome_sema = request.registry.settings['py_gnome_semaphore']
+    print 'create_object(): acquire semaphore...'
+    gnome_sema.acquire()
+
+    try:
+        obj = CreateObject(json_request, request.session['objects'])
+    finally:
+        print 'create_object(): release semaphore...'
+        gnome_sema.release()
 
     set_session_object(obj, request.session)
+
     return obj.serialize()
 
 
@@ -91,10 +100,17 @@ def update_object(request, implemented_types):
     obj = get_session_object(obj_id_from_req_payload(json_request),
                              request.session)
     if obj:
+        gnome_sema = request.registry.settings['py_gnome_semaphore']
+        print 'update_object(): acquire semaphore...'
+        gnome_sema.acquire()
+
         try:
             UpdateObject(obj, json_request, request.session['objects'])
         except ValueError as e:
             raise HTTPUnsupportedMediaType(e)
+        finally:
+            print 'update_object(): release semaphore...'
+            gnome_sema.release()
     else:
         raise HTTPNotFound()
 

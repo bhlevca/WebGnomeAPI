@@ -1,6 +1,7 @@
 """
 Views for the Spill objects.
 """
+import os
 import json
 
 from cornice import Service
@@ -46,8 +47,11 @@ def create_map(request):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise HTTPNotImplemented()
 
-    print 'data directory = ', request.registry.settings['model_data_dir']
-    print 'json map request:', json_request
+    # TODO: should we tie our data directory to the installation path?
+    #       or should we be more flexible?
+    map_dir = get_map_dir_from_config(request)
+    json_request['filename'] = os.path.join(map_dir, json_request['filename'])
+
     obj = CreateObject(json_request, request.session['objects'])
 
     set_session_object(obj, request.session)
@@ -77,3 +81,13 @@ def update_map(request):
 
     set_session_object(obj, request.session)
     return obj.serialize()
+
+
+def get_map_dir_from_config(request):
+    map_dir = request.registry.settings['model_data_dir']
+    if map_dir[0] == os.path.sep:
+        full_path = map_dir
+    else:
+        here = request.registry.settings['here']
+        full_path = os.path.join(here, map_dir)
+    return full_path

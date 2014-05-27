@@ -9,7 +9,7 @@ class MapTestBase(FunctionalTestBase):
         Tests out the Gnome Map object API
     '''
     req_data = {'obj_type': 'gnome.map.MapFromBNA',
-                'filename': 'MassBayMap.bna',
+                'filename': 'Test.bna',
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
@@ -40,6 +40,9 @@ class MapTestBase(FunctionalTestBase):
 
         for k in self.fields_to_check:
             assert resp2.json_body[k] == resp1.json_body[k]
+
+    def test_post_no_payload(self):
+        self.testapp.post_json('/map', status=400)
 
     def test_post_no_payload(self):
         self.testapp.post_json('/map', status=400)
