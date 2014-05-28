@@ -1,7 +1,10 @@
 """
 Views for the Distribution objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy)
 
 from cornice import Service
 
@@ -20,7 +23,13 @@ def get_distribution(request):
     return get_object(request, implemented_types)
 
 
+@distribution.post()
+def create_distribution(request):
+    '''Creates a Gnome Distribution object.'''
+    return create_object(request, implemented_types)
+
+
 @distribution.put()
-def create_or_update_distribution(request):
-    '''Creates or Updates a Gnome Distribution object.'''
-    return create_or_update_object(request, implemented_types)
+def update_distribution(request):
+    '''Updates a Gnome Distribution object.'''
+    return update_object(request, implemented_types)

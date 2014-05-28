@@ -9,7 +9,6 @@ class DistributionBase(FunctionalTestBase):
         Tests out the Gnome Distribution object API
     '''
     req_data = {'obj_type': 'gnome.utilities.distributions.NormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -30,11 +29,11 @@ class DistributionBase(FunctionalTestBase):
         self.testapp.get('/distribution/{0}'.format(obj_id), status=404)
 
     def test_get_valid_id(self):
-        # 1. create the object by performing a put with no id
+        # 1. create the object by performing a post
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
-        resp1 = self.testapp.put_json('/distribution', params=self.req_data)
+        resp1 = self.testapp.post_json('/distribution', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/distribution/{0}'.format(obj_id))
@@ -42,37 +41,36 @@ class DistributionBase(FunctionalTestBase):
         for k in self.fields_to_check:
             assert resp2.json_body[k] == resp1.json_body[k]
 
+    def test_post_no_payload(self):
+        self.testapp.post_json('/distribution', status=400)
+
     def test_put_no_payload(self):
         self.testapp.put_json('/distribution', status=400)
 
     def test_put_no_id(self):
-        resp = self.testapp.put_json('/distribution', params=self.req_data)
-
-        for k in self.fields_to_check:
-            assert k in resp.json_body
+        self.testapp.put_json('/distribution', params=self.req_data,
+                              status=404)
 
     def test_put_invalid_id(self):
-        obj_id = 0xdeadbeef
-        resp = self.testapp.put_json('/distribution/{0}'.format(obj_id),
-                                     params=self.req_data)
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
 
-        for k in self.fields_to_check:
-            assert k in resp.json_body
+        self.testapp.put_json('/distribution', params=params,
+                              status=404)
 
     def test_put_valid_id(self):
-        # 1. create the object by performing a put with no id
+        # 1. create the object by performing a post
         # 2. get the valid id from the response
         # 3. update the properties in the JSON response
         # 4. update the object by performing a put with a valid id
         # 5. check that our new properties are in the new JSON response
-        resp = self.testapp.put_json('/distribution', params=self.req_data)
+        resp = self.testapp.post_json('/distribution', params=self.req_data)
 
-        obj_id = resp.json_body['id']
         req_data = resp.json_body
         self.perform_updates(req_data)
 
-        resp = self.testapp.put_json('/distribution/{0}'.format(obj_id),
-                                     params=req_data)
+        resp = self.testapp.put_json('/distribution', params=req_data)
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
@@ -92,7 +90,6 @@ class DistributionBase(FunctionalTestBase):
 
 class UniformDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.UniformDistribution',
-                'json_': 'webapi',
                 'low': 0.0,
                 'high': 0.1
                 }
@@ -113,7 +110,6 @@ class UniformDistributionTests(DistributionBase):
 
 class NormalDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.NormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -134,7 +130,6 @@ class NormalDistributionTests(DistributionBase):
 
 class LogNormalDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.LogNormalDistribution',
-                'json_': 'webapi',
                 'mean': 0.0,
                 'sigma': 0.1
                 }
@@ -155,7 +150,6 @@ class LogNormalDistributionTests(DistributionBase):
 
 class WeibullDistributionTests(DistributionBase):
     req_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
-                'json_': 'webapi',
                 'alpha': 0.0,
                 'lambda_': 1.0,
                 'min_': 0.1,

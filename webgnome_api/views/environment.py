@@ -2,7 +2,10 @@
 Views for the Environment objects.
 This currently includes Wind and Tide objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy)
 
 from cornice import Service
 
@@ -21,7 +24,13 @@ def get_environment(request):
     return get_object(request, implemented_types)
 
 
+@env.post()
+def create_environment(request):
+    '''Creates an Environment object.'''
+    return create_object(request, implemented_types)
+
+
 @env.put()
-def create_or_update_environment(request):
-    '''Creates or Updates an Environment object.'''
-    return create_or_update_object(request, implemented_types)
+def update_environment(request):
+    '''Updates an Environment object.'''
+    return update_object(request, implemented_types)
