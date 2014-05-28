@@ -78,11 +78,11 @@ def create_object(request, implemented_types):
 
     try:
         obj = CreateObject(json_request, request.session['objects'])
+        set_session_object(obj, request.session)
     finally:
         gnome_sema.release()
         print 'create_object(): semaphore released...'
 
-    set_session_object(obj, request.session)
 
     return obj.serialize()
 
@@ -106,6 +106,7 @@ def update_object(request, implemented_types):
 
         try:
             UpdateObject(obj, json_request, request.session['objects'])
+            set_session_object(obj, request.session)
         except ValueError as e:
             raise HTTPUnsupportedMediaType(e)
         finally:
@@ -114,5 +115,4 @@ def update_object(request, implemented_types):
     else:
         raise HTTPNotFound()
 
-    set_session_object(obj, request.session)
     return obj.serialize()
