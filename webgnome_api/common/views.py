@@ -63,7 +63,9 @@ def get_specifications(request, implemented_types):
 
 def create_object(request, implemented_types):
     '''Creates a Gnome object.'''
-    init_session_objects(request.session)
+    log_prefix = 'req({0}): create_object():'.format(id(request))
+    print '>>', log_prefix
+
     try:
         json_request = json.loads(request.body)
     except:
@@ -74,21 +76,25 @@ def create_object(request, implemented_types):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print 'create_object(): semaphore acquired...'
+    print log_prefix, 'semaphore acquired...'
 
     try:
+        init_session_objects(request.session)
         obj = CreateObject(json_request, request.session['objects'])
         set_session_object(obj, request.session)
     finally:
         gnome_sema.release()
-        print 'create_object(): semaphore released...'
+        print log_prefix, 'semaphore released...'
 
-
+    print '<<', log_prefix
     return obj.serialize()
 
 
 def update_object(request, implemented_types):
     '''Updates a Gnome object.'''
+    log_prefix = 'req({0}): update_object():'.format(id(request))
+    print '>>', log_prefix
+
     try:
         json_request = json.loads(request.body)
     except:
@@ -102,7 +108,7 @@ def update_object(request, implemented_types):
     if obj:
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
-        print 'update_object(): semaphore acquired...'
+        print log_prefix, 'semaphore acquired...'
 
         try:
             UpdateObject(obj, json_request, request.session['objects'])
@@ -111,8 +117,9 @@ def update_object(request, implemented_types):
             raise HTTPUnsupportedMediaType(e)
         finally:
             gnome_sema.release()
-            print 'update_object(): semaphore released...'
+            print log_prefix, 'semaphore released...'
     else:
         raise HTTPNotFound()
 
+    print '<<', log_prefix
     return obj.serialize()
