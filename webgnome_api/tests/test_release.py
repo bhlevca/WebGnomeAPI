@@ -11,7 +11,7 @@ class ReleaseTests(FunctionalTestBase):
     req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
                 }
 
-    options_headers = {'Origin': 'someplaceelse.org',
+    options_headers = {'Origin': 'http://0.0.0.0:8080',
                        'Access-Control-Request-Method': 'GET'}
 
     def test_options(self):
