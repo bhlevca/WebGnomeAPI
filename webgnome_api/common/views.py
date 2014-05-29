@@ -76,7 +76,7 @@ def create_object(request, implemented_types):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print log_prefix, 'semaphore acquired...'
+    print '  ', log_prefix, 'semaphore acquired...'
 
     try:
         init_session_objects(request.session)
@@ -84,7 +84,7 @@ def create_object(request, implemented_types):
         set_session_object(obj, request.session)
     finally:
         gnome_sema.release()
-        print log_prefix, 'semaphore released...'
+        print '  ', log_prefix, 'semaphore released...'
 
     print '<<', log_prefix
     return obj.serialize()
@@ -108,7 +108,7 @@ def update_object(request, implemented_types):
     if obj:
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
-        print log_prefix, 'semaphore acquired...'
+        print '  ', log_prefix, 'semaphore acquired...'
 
         try:
             UpdateObject(obj, json_request, request.session['objects'])
@@ -117,7 +117,7 @@ def update_object(request, implemented_types):
             raise HTTPUnsupportedMediaType(e)
         finally:
             gnome_sema.release()
-            print log_prefix, 'semaphore released...'
+            print '  ', log_prefix, 'semaphore released...'
     else:
         raise HTTPNotFound()
 
