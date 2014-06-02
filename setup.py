@@ -42,5 +42,4 @@ setup(name='webgnome_api',
       [paste.app_factory]
       main = webgnome_api:main
       """,
-      paster_plugins=['pyramid'],
 )

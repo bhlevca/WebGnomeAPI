@@ -1,6 +1,9 @@
 """
 Functional tests for the Gnome Spill object Web API
 """
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
 from base import FunctionalTestBase
 
 
@@ -12,7 +15,6 @@ class SpillTests(FunctionalTestBase):
               like a consistent design.
     '''
     rel_req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
-                    'json_': u'webapi',
                     'num_elements': 100,
                     'num_released': 0,
                     'release_time': '2014-04-15T13:22:20.930570',
@@ -23,33 +25,30 @@ class SpillTests(FunctionalTestBase):
                     }
 
     init_req_data = {'obj_type': u'gnome.spill.elements.InitWindages',
-                     'json_': u'webapi',
                      'windage_range': (0.01, 0.04),
                      'windage_persist': 900,
                      }
     elem_type_req_data = {'obj_type': u'gnome.spill.elements.ElementType',
-                          'json_': u'webapi',
                           'initializers': None,
                           }
 
     req_data = {'obj_type': u'gnome.spill.spill.Spill',
-                'json_': u'webapi',
                 'release': None,
                 'element_type': None
                 }
     fields_to_check = ('id', 'obj_type', 'release', 'element_type')
 
     def create_release_obj(self, req_data):
-        resp = self.testapp.put_json('/release', params=req_data)
+        resp = self.testapp.post_json('/release', params=req_data)
         return resp.json_body
 
     def create_init_obj(self, req_data):
-        resp = self.testapp.put_json('/initializer', params=req_data)
+        resp = self.testapp.post_json('/initializer', params=req_data)
         return {'windages': resp.json_body}
 
     def create_elem_type_obj(self, req_data, init_obj):
         req_data['initializers'] = init_obj
-        resp = self.testapp.put_json('/element_type', params=req_data)
+        resp = self.testapp.post_json('/element_type', params=req_data)
         return resp.json_body
 
     def test_get_no_id(self):
@@ -81,7 +80,7 @@ class SpillTests(FunctionalTestBase):
         self.req_data['release'] = rel_obj
         self.req_data['element_type'] = elem_type_obj
 
-        resp1 = self.testapp.put_json('/spill', params=self.req_data)
+        resp1 = self.testapp.post_json('/spill', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/spill/{0}'.format(obj_id))
@@ -89,22 +88,21 @@ class SpillTests(FunctionalTestBase):
         for k in self.fields_to_check:
             assert resp2.json_body[k] == resp1.json_body[k]
 
+    def test_post_no_payload(self):
+        self.testapp.post_json('/spill', status=400)
+
     def test_put_no_payload(self):
         self.testapp.put_json('/spill', status=400)
 
     def test_put_no_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
-
         init_obj = self.create_init_obj(self.init_req_data)
         elem_type_obj = self.create_elem_type_obj(self.elem_type_req_data,
                                                   init_obj)
         self.req_data['release'] = rel_obj
         self.req_data['element_type'] = elem_type_obj
 
-        resp = self.testapp.put_json('/spill', params=self.req_data)
-
-        for k in self.fields_to_check:
-            assert k in resp.json_body
+        self.testapp.put_json('/spill', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
@@ -115,12 +113,10 @@ class SpillTests(FunctionalTestBase):
         self.req_data['release'] = rel_obj
         self.req_data['element_type'] = elem_type_obj
 
-        obj_id = 0xdeadbeef
-        resp = self.testapp.put_json('/spill/{0}'.format(obj_id),
-                                     params=self.req_data)
-
-        for k in self.fields_to_check:
-            assert k in resp.json_body
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
+        self.testapp.put_json('/spill', params=params, status=404)
 
     def test_put_valid_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
@@ -131,14 +127,12 @@ class SpillTests(FunctionalTestBase):
         self.req_data['release'] = rel_obj
         self.req_data['element_type'] = elem_type_obj
 
-        resp = self.testapp.put_json('/spill', params=self.req_data)
+        resp = self.testapp.post_json('/spill', params=self.req_data)
 
-        obj_id = resp.json_body['id']
         req_data = resp.json_body
         self.perform_updates(req_data)
 
-        resp = self.testapp.put_json('/spill/{0}'.format(obj_id),
-                                     params=req_data)
+        resp = self.testapp.put_json('/spill', params=req_data)
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
@@ -154,3 +148,72 @@ class SpillTests(FunctionalTestBase):
             and ElementType objects, and has no direct data properties
             that we can really tweak.
         '''
+
+
+class SpillNestedTests(FunctionalTestBase):
+    '''
+        Tests out the nested object creation for the Gnome Spill object API
+    '''
+    req_data = {"obj_type": "gnome.spill.spill.Spill",
+                "on": True,
+                "release": {"obj_type": "gnome.spill.release.PointLineRelease",
+                            "num_elements": 1000,
+                            "num_released": 84,
+                            "release_time": "2013-02-13T09:00:00",
+                            "end_release_time": "2013-02-13T15:00:00",
+                            "start_time_invalid": False,
+                            "end_position": [144.664166, 13.441944, 0.0],
+                            "start_position": [144.664166, 13.441944, 0.0],
+                            },
+                "element_type": {"obj_type": "gnome.spill.elements.ElementType",
+                                 "initializers": {"windages": {"obj_type": "gnome.spill.elements.InitWindages",
+                                                               "windage_range": [0.01, 0.04],
+                                                               "windage_persist": 900,
+                                                               }
+                                                  }
+                                 },
+                }
+
+    def test_get_valid_id(self):
+        resp1 = self.testapp.post_json('/spill', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/spill/{0}'.format(obj_id))
+
+        #print
+        #pp.pprint(resp2.json_body)
+
+        spill_body = resp2.json_body
+        assert 'id' in spill_body
+        assert 'id' in spill_body['release']
+        assert 'id' in spill_body['element_type']
+        assert 'id' in spill_body['element_type']['initializers']['windages']
+
+        obj_id = spill_body['release']['id']
+        resp2 = self.testapp.get('/release/{0}'.format(obj_id))
+        assert 'id' in resp2.json_body
+
+        obj_id = spill_body['element_type']['id']
+        resp2 = self.testapp.get('/element_type/{0}'.format(obj_id))
+        assert 'id' in resp2.json_body
+
+        obj_id = spill_body['element_type']['initializers']['windages']['id']
+        resp2 = self.testapp.get('/initializer/{0}'.format(obj_id))
+        assert 'id' in resp2.json_body
+
+    def test_put_valid_id(self):
+        resp1 = self.testapp.post_json('/spill', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/spill/{0}'.format(obj_id))
+
+        req2 = resp2.json_body
+        req2['on'] = False
+        req2['release']['num_elements'] = 200
+        req2['element_type']['initializers']['windages']['windage_range'] = [0.1, 0.2]
+
+        resp3 = self.testapp.put_json('/spill', params=req2)
+        upd_body = resp3.json_body
+        assert upd_body['on'] == False
+        assert upd_body['release']['num_elements'] == 200
+        assert upd_body['element_type']['initializers']['windages']['windage_range'] == [0.1, 0.2]

@@ -1,0 +1,44 @@
+    {
+        "coords": [-72.909057, 41.112463],
+        "steps": {
+            "welcome": {
+                "name": "Welcome to Central Long Island Sound, New York",
+                "buttons": ["Cancel","Next"],
+                "text": "You will need to do the following in order to set up the General NOAA 
+                		Operational Modeling Environment for Central Long Island Sound :
+                		1. Set the model run parameters.
+                		2. Input the wind conditions."
+            },
+            "model": {
+                "title": "Model Settings",
+                "buttons": ["Back","Next"]
+            },
+            "wind_type": {
+                "title": "Wind Type",
+                "buttons": ["Back","Next"],
+                "text": "Wind can significantly influence oil movement and can force oil
+                		to move in a different direction from the currents.
+
+                		You can choose wind that is constant in direction and
+                		speed for the entire model run, or you can choose wind
+                		that varies in direction and/or speed over time."
+            },
+            "wind": {
+                "type": "",
+                "title": "",
+                "buttons": ["Back","Next"]
+            },
+            "text": {
+                "title": "Almost Done",
+                "body": "",
+                "text": "You are ready to move to the Map Window to start your spill and run the
+                		model. Here are the tools you'll use : 
+                		
+                		To set the location of your spill(s), you will use the Spill Tool.
+                		
+                		To run the model, you will use GNOME's run controls:
+                		Run, Pause, and Step.",
+                "buttons": ["Back","To the Map Window"]
+            }
+        }
+    }

@@ -1,24 +1,33 @@
 """
 Views for the Weatherer objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy)
 
 from cornice import Service
 
-env = Service(name='weatherer', path='/weatherer*obj_id',
-              description="Weatherer API", cors_policy=cors_policy)
+weatherer = Service(name='weatherer', path='/weatherer*obj_id',
+                    description="Weatherer API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.weatherers.core.Weatherer',
                      )
 
 
-@env.get()
+@weatherer.get()
 def get_weatherer(request):
     '''Returns a Gnome Weatherer object in JSON.'''
     return get_object(request, implemented_types)
 
 
-@env.put()
-def create_or_update_weatherer(request):
-    '''Creates or Updates a Weatherer object.'''
-    return create_or_update_object(request, implemented_types)
+@weatherer.post()
+def create_weatherer(request):
+    '''Creates a Weatherer object.'''
+    return create_object(request, implemented_types)
+
+
+@weatherer.put()
+def update_weatherer(request):
+    '''Updates a Weatherer object.'''
+    return update_object(request, implemented_types)

@@ -2,12 +2,15 @@
 Views for the Mover objects.
 This currently includes ??? objects.
 """
-from .common_object import (get_object, create_or_update_object, cors_policy)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy)
 
 from cornice import Service
 
-env = Service(name='mover', path='/mover*obj_id', description="Mover API",
-              cors_policy=cors_policy)
+mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
+                cors_policy=cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.wind_movers.WindMover',
@@ -21,13 +24,19 @@ implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      )
 
 
-@env.get()
+@mover.get()
 def get_mover(request):
     '''Returns an Gnome Environment object in JSON.'''
     return get_object(request, implemented_types)
 
 
-@env.put()
-def create_or_update_mover(request):
-    '''Creates or Updates an Environment object.'''
-    return create_or_update_object(request, implemented_types)
+@mover.post()
+def create_mover(request):
+    '''Creates a Mover object.'''
+    return create_object(request, implemented_types)
+
+
+@mover.put()
+def update_mover(request):
+    '''Updates a Mover object.'''
+    return update_object(request, implemented_types)

@@ -11,6 +11,16 @@ class ReleaseTests(FunctionalTestBase):
     req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
                 }
 
+    options_headers = {'Origin': 'http://0.0.0.0:8080',
+                       'Access-Control-Request-Method': 'GET'}
+
+    def test_options(self):
+        resp = self.testapp.options('/release',
+                                    headers=self.options_headers)
+        resp_methods = set(resp.headers['Access-Control-Allow-Methods']
+                           .lower().split(','))
+        assert resp_methods == {'get', 'head', 'options', 'post', 'put'}
+
     def test_get_no_id(self):
         resp = self.testapp.get('/release')
 
@@ -24,6 +34,22 @@ class ReleaseTests(FunctionalTestBase):
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
         self.testapp.get('/release/{0}'.format(obj_id), status=404)
+
+    def test_post_no_payload(self):
+        self.testapp.post_json('/release', status=400)
+
+    def test_put_no_payload(self):
+        self.testapp.put_json('/release', status=400)
+
+    def test_put_no_id(self):
+        self.testapp.put_json('/release', params=self.req_data, status=404)
+
+    def test_put_invalid_id(self):
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
+
+        self.testapp.put_json('/release', params=params, status=404)
 
     def perform_updates(self, json_obj):
         '''
@@ -46,7 +72,6 @@ class PointLineReleaseTests(ReleaseTests):
     '''
     req_data = {
                 'obj_type': u'gnome.spill.release.PointLineRelease',
-                'json_': u'webapi',
                 'num_elements': 100,
                 'num_released': 0,
                 'release_time': '2014-04-15T13:22:20.930570',
@@ -61,40 +86,13 @@ class PointLineReleaseTests(ReleaseTests):
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
-        resp1 = self.testapp.put_json('/release', params=self.req_data)
+        resp1 = self.testapp.post_json('/release', params=self.req_data)
 
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/release/{0}'.format(obj_id))
 
-        assert resp2.json_body['id'] == obj_id
-        assert resp2.json_body['obj_type'] == resp1.json_body['obj_type']
-
-    def test_put_no_payload(self):
-        self.testapp.put_json('/release', status=400)
-
-    def test_put_no_id(self):
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/release', params=self.req_data)
-
-        # Note: For this test, we just verify that an object with the right
-        #       properties is returned.  We will validate the content in
-        #       more elaborate tests.
-        assert 'id' in resp.json_body
-        assert 'obj_type' in resp.json_body
-        assert 'num_elements' in resp.json_body
-
-    def test_put_invalid_id(self):
-        obj_id = 0xdeadbeef
-
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
-        resp = self.testapp.put_json('/release/{0}'.format(obj_id),
-                                     params=self.req_data)
-
-        # Note: This test is very similar to a put with no ID, and has the same
-        #       asserts.
-        assert 'id' in resp.json_body
-        assert 'obj_type' in resp.json_body
-        assert 'num_elements' in resp.json_body
+        for k in ('id', 'obj_type'):
+            assert resp2.json_body[k] == resp1.json_body[k]
 
     def test_put_valid_id(self):
         # 1. create the object by performing a put with no id
@@ -102,14 +100,12 @@ class PointLineReleaseTests(ReleaseTests):
         # 3. update the properties in the JSON response
         # 4. update the object by performing a put with a valid id
         # 5. check that our new properties are in the new JSON response
-        resp = self.testapp.put_json('/release', params=self.req_data)
+        resp = self.testapp.post_json('/release', params=self.req_data)
 
-        obj_id = resp.json_body['id']
         req_data = resp.json_body
         self.perform_updates(req_data)
 
-        resp = self.testapp.put_json('/release/{0}'.format(obj_id),
-                                     params=req_data)
+        resp = self.testapp.put_json('/release', params=req_data)
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
@@ -128,3 +124,19 @@ class PointLineReleaseTests(ReleaseTests):
                     for i, j in zip(json_obj['end_position'],
                                     (50.0, 50.0, 10.0))
                     ])
+
+
+class SpatialRelease(ReleaseTests):
+    '''
+        Tests out the Gnome Release object API
+    '''
+    req_data = {
+                'obj_type': u'gnome.spill.release.PointLineRelease',
+                'num_elements': 100,
+                'num_released': 0,
+                'release_time': '2014-04-15T13:22:20.930570',
+                'start_time_invalid': True,
+                'end_release_time': '2014-04-15T13:22:20.930570',
+                'end_position': (28.0, -78.0, 0.0),
+                'start_position': (28.0, -78.0, 0.0),
+                }
