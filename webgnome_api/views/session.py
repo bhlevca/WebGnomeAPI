@@ -11,11 +11,4 @@ session = Service(name='session', path='/session',
 
 @session.post()
 def get_info(request):
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-
-    request.session.changed()
-
-    gnome_sema.release()
-
-    return {'id': request.cookies['session']}
+    return {'id': request.session.session_id}
