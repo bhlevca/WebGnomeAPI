@@ -1,34 +1,34 @@
 """
 Views for the Location objects.
 """
-from os import listdir, walk
-from os.path import sep, isfile, isdir, join
+from os import walk
+from os.path import sep, join
 
 import json
+import slugify
 
 from cornice import Service
-from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPNotFound,
-                                    HTTPUnsupportedMediaType,
-                                    HTTPNotImplemented)
 
-from webgnome_api.common.views import (get_object,
-                                       cors_policy)
-
-from webgnome_api.common.common_object import (CreateObject,
-                                               UpdateObject,
-                                               obj_id_from_req_payload,
-                                               init_session_objects,
-                                               get_session_object,
-                                               set_session_object)
-
-from webgnome_api.common.helpers import JSONImplementsOneOf
+from webgnome_api.common.views import cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
                   description="Location API", cors_policy=cors_policy)
 
-#implemented_types = ('gnome.map.MapFromBNA',
-#                     )
+# We need to return a feature collection structure on a get with no
+# id specified
+#  {"type": "FeatureCollection",
+#   "features": [{"type": "Feature",
+#                 "properties": {"title": "Long Island Sound",
+#                                "slug": "long_island_sound",
+#                                "content": "History about Long Island Sound."
+#                                },
+#                 "geometry": {"type": "Point",
+#                              "coordinates": [-72.879489, 41.117006]
+#                              }
+#                 },
+#                 ...
+#                 ]
+#  }
 
 
 @location_api.get()
@@ -39,7 +39,6 @@ def get_location(request):
     # first, lets just query that we can get to the data
     locations_dir = get_locations_dir_from_config(request)
     base_len = len(locations_dir.split(sep))
-    print 'num path components:', base_len
     res = []
 
     for (path, dirnames, filenames) in walk(locations_dir):
@@ -48,37 +47,41 @@ def get_location(request):
             [res.append(json.load(open(join(path, f), 'r')))
              for f in filenames]
 
-    return res
+    return FeatureCollection(res).serialize()
 
 
-#{"type": "FeatureCollection",
-# "features": [{"type": "Feature",
-#               "properties": {"title": "Long Island Sound",
-#                              "content": "History about Long Island Sound.",
-#                              "slug": "long_island_sound"
-#                              },
-#               "geometry": {"type": "Point",
-#                            "coordinates": [-72.879489, 41.117006]
-#                            }
-#               }]
-#}
 class Feature(object):
-    def __init__(self, filename):
+    def __init__(self, json_body):
         self.type = 'Feature'
-        self.json_body = json.load(open(filename, 'r'))
-        self.properties = self.properties_from_json()
+        self.json_body = json_body
 
-    def properties_from_json(self):
-        ret = dict(title=self.json_body['name'],
-                   content=self
-                   )
+    @property
+    def properties(self):
+        return dict(title=self.json_body['name'],
+                    slug=slugify.slugify_url(self.json_body['name']),
+                    content='???')
+
+    @property
+    def geometry(self):
+        return dict(type='Point',
+                    coordinates=self.json_body['coords'])
+
+    def serialize(self):
+        return dict(type='Feature',
+                    properties=self.properties,
+                    geometry=self.geometry)
 
 
 class FeatureCollection(object):
-    def __init__(self, filename):
+    def __init__(self, json_list):
         self.type = 'FeatureCollection'
         self.features = []
-        self.features.append(Feature(filename))
+        for b in json_list:
+            self.features.append(Feature(b))
+
+    def serialize(self):
+        return dict(type='FeatureCollection',
+                    features=[f.serialize() for f in self.features])
 
 
 def get_locations_dir_from_config(request):
