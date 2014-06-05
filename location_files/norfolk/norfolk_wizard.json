@@ -4,10 +4,7 @@
             "welcome": {
                 "name": "Welcome to Norfolk, Virginia",
                 "buttons": ["Cancel","Next"],
-                "text": "You will need to do the following in order to set up the General NOAA 
-                		Operational Modeling Environment for Norfolk :
-                		1. Set the model run parameters.
-                		2. Input the wind conditions."
+                "text": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Norfolk :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"                		
             },
             "model": {
                 "title": "Model Settings",
@@ -16,12 +13,7 @@
             "wind_type": {
                 "title": "Wind Type",
                 "buttons": ["Back","Next"],
-                "text": "Wind can significantly influence oil movement and can force oil
-                		to move in a different direction from the currents.
-
-                		You can choose wind that is constant in direction and
-                		speed for the entire model run, or you can choose wind
-                		that varies in direction and/or speed over time."
+                "text": "<p>Wind can significantly influence oil movement and can force oil to move in a different direction from the currents.</p><p>You can choose wind that is constant in direction and speed for the entire model run, or you can choose wind that varies in direction and/or speed over time.</p>"
             },
             "wind": {
                 "type": "",
@@ -31,13 +23,7 @@
             "text": {
                 "title": "Almost Done",
                 "body": "",
-                "text": "You are ready to move to the Map Window to start your spill and run the
-                		model. Here are the tools you'll use : 
-                		
-                		To set the location of your spill(s), you will use the Spill Tool.
-                		
-                		To run the model, you will use GNOME's run controls:
-                		Run, Pause, and Step.",
+                "text": "<p>You are ready to move to the Map Window to start your spill and run the model. Here are the tools you'll use :</p><p>To set the location of your spill(s), you will use the Spill Tool.</p><p>To run the model, you will use GNOME's run controls: Run, Pause, and Step.</p>",
                 "buttons": ["Back","To the Map Window"]
             }
         }

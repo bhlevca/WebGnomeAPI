@@ -1,5 +1,5 @@
 """
-Views for the Spill objects.
+Views for the Map objects.
 """
 import os
 import json
