@@ -89,6 +89,6 @@ def get_locations_dir_from_config(request):
     if map_dir[0] == sep:
         full_path = map_dir
     else:
-        here = request.registry.settings['here']
+        here = request.registry.settings['install_path']
         full_path = join(here, map_dir)
     return full_path
