@@ -7,8 +7,10 @@ from os.path import sep, join
 import json
 import slugify
 
+from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
+from webgnome_api.common.common_object import obj_id_from_url
 from webgnome_api.common.views import cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
@@ -39,15 +41,25 @@ def get_location(request):
     # first, lets just query that we can get to the data
     locations_dir = get_locations_dir_from_config(request)
     base_len = len(locations_dir.split(sep))
-    res = []
+    location_content = []
 
     for (path, dirnames, filenames) in walk(locations_dir):
         if len(path.split(sep)) == base_len + 1:
-            filenames = [f for f in filenames if f[-12:] == '_wizard.json']
-            [res.append(json.load(open(join(path, f), 'r')))
-             for f in filenames]
+            [location_content.append(json.load(open(join(path, f), 'r')))
+             for f in filenames
+             if f[-12:] == '_wizard.json']
 
-    return FeatureCollection(res).serialize()
+    slug = obj_id_from_url(request)
+    if slug:
+        matching = [b for b in location_content
+                    if slugify.slugify_url(b['name']) == slug]
+        if matching:
+            return matching[0]
+        else:
+            return HTTPNotFound()
+        pass
+    else:
+        return FeatureCollection(location_content).serialize()
 
 
 class Feature(object):
