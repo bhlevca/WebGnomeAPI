@@ -32,6 +32,9 @@ class LocationTestBase(FunctionalTestBase):
     def test_get_valid_id(self):
         resp = self.testapp.get('/location/central-long-island-sound')
 
+        print resp.json_body
+        print resp.json_body['steps'].keys()
         assert 'name' in resp.json_body
         assert 'coords' in resp.json_body
         assert 'steps' in resp.json_body
+        raise
