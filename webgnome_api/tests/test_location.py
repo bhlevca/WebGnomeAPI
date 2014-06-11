@@ -21,7 +21,6 @@ class LocationTestBase(FunctionalTestBase):
             assert 'title' in f['properties']
             assert 'slug' in f['properties']
             assert 'content' in f['properties']
-            print 'slug:', f['properties']['slug']
 
             assert 'type' in f['geometry']
             assert 'coordinates' in f['geometry']
@@ -32,9 +31,6 @@ class LocationTestBase(FunctionalTestBase):
     def test_get_valid_id(self):
         resp = self.testapp.get('/location/central-long-island-sound')
 
-        print resp.json_body
-        print resp.json_body['steps'].keys()
         assert 'name' in resp.json_body
         assert 'coords' in resp.json_body
         assert 'steps' in resp.json_body
-        raise
