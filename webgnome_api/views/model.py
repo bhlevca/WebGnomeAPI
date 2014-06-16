@@ -63,9 +63,11 @@ def get_model(request):
 
 @model.post()
 def create_model(request):
-    resp = create_object(request, implemented_types)
-    set_active_model(request.session, resp['id'])
-    return resp
+    new_model = Model()
+    set_session_object(new_model, request.session)
+    set_session_object(new_model._map, request.session)
+    set_active_model(request.session, new_model.id)
+    return new_model.serialize()
 
 
 @model.put()
