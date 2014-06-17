@@ -26,6 +26,7 @@ map_api = Service(name='map', path='/map*obj_id',
                   description="Map API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.map.MapFromBNA',
+                     'gnome.map.GnomeMap'
                      )
 
 
