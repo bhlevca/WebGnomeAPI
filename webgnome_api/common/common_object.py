@@ -145,8 +145,8 @@ def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
 
-def init_session_objects(session):
-    if not 'objects' in session:
+def init_session_objects(session, force=False):
+    if (not 'objects' in session) or force:
         session['objects'] = {}
         session.changed()
 
