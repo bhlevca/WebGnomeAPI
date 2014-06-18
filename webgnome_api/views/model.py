@@ -84,9 +84,10 @@ def create_model(request):
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        json_request = None
 
-    if not JSONImplementsOneOf(json_request, implemented_types):
+    if json_request and not JSONImplementsOneOf(json_request,
+                                                implemented_types):
         raise HTTPNotImplemented()
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
@@ -95,7 +96,10 @@ def create_model(request):
 
     try:
         init_session_objects(request.session, force=True)
-        new_model = CreateObject(json_request, request.session['objects'])
+        if json_request:
+            new_model = CreateObject(json_request, request.session['objects'])
+        else:
+            new_model = Model()
         set_session_object(new_model, request.session)
         set_session_object(new_model._map, request.session)
         set_active_model(request.session, new_model.id)

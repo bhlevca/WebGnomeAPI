@@ -77,10 +77,30 @@ class ModelTests(FunctionalTestBase):
         assert model1['id'] == model2['id']
 
     def test_post_no_payload(self):
-        self.testapp.post_json('/model', status=400)
+        '''
+            This case is different than the other object create methods.
+            We would like to be able to post with no payload and receive
+            a newly created 'blank' Model.
+        '''
+        resp = self.testapp.post_json('/model')
+        model1 = resp.json_body
+
+        for k in ('id', 'start_time', 'time_step', 'duration',
+                  'cache_enabled', 'uncertain', 'map_id',
+                  'environment', 'spills', 'movers', 'weatherers'):
+            assert k in model1
 
     def test_put_no_payload(self):
         self.testapp.put_json('/model', status=400)
+
+    #def test_post_no_id(self):
+    #    resp = self.testapp.post_json('/model', params=self.req_data)
+    #    model1 = resp.json_body
+
+    #    resp = self.testapp.post_json('/model', params=self.req_data)
+    #    model2 = resp.json_body
+
+    #    assert model1['id'] != model2['id']
 
     def test_put_model_no_id(self):
         if False:
