@@ -24,19 +24,13 @@ class ModelTests(FunctionalTestBase):
 
     def test_get_model_no_id(self):
         resp = self.testapp.get('/model')
+        specs = resp.json_body
 
-        #pp.pprint(resp.json_body)
-        assert 'id' in resp.json_body
-        assert 'start_time' in resp.json_body
-        assert 'time_step' in resp.json_body
-        assert 'duration' in resp.json_body
-        assert 'cache_enabled' in resp.json_body
-        assert 'environment' in resp.json_body
-        assert 'spills' in resp.json_body
-        assert 'movers' in resp.json_body
-        assert 'weatherers' in resp.json_body
-        assert 'map_id' in resp.json_body
-        assert 'uncertain' in resp.json_body
+        assert 'id' in specs['Model']
+        for k in ('id', 'start_time', 'time_step', 'duration',
+                  'cache_enabled', 'uncertain', 'map',
+                  'environment', 'spills', 'movers', 'weatherers'):
+            assert k in specs['Model']
         # what other kinds of validation should we have here?
 
     def test_get_model_no_id_active(self):
@@ -44,7 +38,7 @@ class ModelTests(FunctionalTestBase):
             Here we test the get with no ID, but where an active model
             is attached to the session.
         '''
-        resp = self.testapp.get('/model')
+        resp = self.testapp.post_json('/model')
         model1 = resp.json_body
 
         resp = self.testapp.get('/model')
@@ -68,13 +62,16 @@ class ModelTests(FunctionalTestBase):
         self.testapp.get('/model/{0}'.format(obj_id), status=404)
 
     def test_get_model_valid_id(self):
-        resp = self.testapp.get('/model')
+        resp = self.testapp.post_json('/model')
         model1 = resp.json_body
 
         resp = self.testapp.get('/model/{0}'.format(model1['id']))
         model2 = resp.json_body
 
         assert model1['id'] == model2['id']
+
+    def test_put_no_payload(self):
+        self.testapp.put_json('/model', status=400)
 
     def test_post_no_payload(self):
         '''
@@ -86,21 +83,29 @@ class ModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         for k in ('id', 'start_time', 'time_step', 'duration',
-                  'cache_enabled', 'uncertain', 'map_id',
+                  'cache_enabled', 'uncertain', 'map',
                   'environment', 'spills', 'movers', 'weatherers'):
             assert k in model1
 
-    def test_put_no_payload(self):
-        self.testapp.put_json('/model', status=400)
+    def test_post_no_payload_twice(self):
+        resp = self.testapp.post_json('/model')
+        model1 = resp.json_body
 
-    #def test_post_no_id(self):
-    #    resp = self.testapp.post_json('/model', params=self.req_data)
-    #    model1 = resp.json_body
+        resp = self.testapp.post_json('/model')
+        model2 = resp.json_body
 
-    #    resp = self.testapp.post_json('/model', params=self.req_data)
-    #    model2 = resp.json_body
+        assert model1['id'] != model2['id']
 
-    #    assert model1['id'] != model2['id']
+    def test_post_with_payload_no_map(self):
+        resp = self.testapp.post_json('/model', params=self.req_data)
+        model1 = resp.json_body
+
+    def test_post_with_payload_none_map(self):
+        req_data = self.req_data.copy()
+        req_data['map'] = None
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
 
     def test_put_model_no_id(self):
         if False:
@@ -110,5 +115,29 @@ class ModelTests(FunctionalTestBase):
         else:
             print 'Not Implemented'
 
-        # TODO: This should be working, but we need to put some asserts
-        #       in here to validate what we are getting
+
+class NestedModelTests(FunctionalTestBase):
+    req_data = {'obj_type': u'gnome.model.Model',
+                'cache_enabled': False,
+                'duration': 86400.0,
+                'start_time': '2014-04-09T15:00:00',
+                'time_step': 900.0,
+                'uncertain': False,
+                'weathering_substeps': 1,
+                'environment': [],
+                'movers': [],
+                'outputters': [],
+                'spills': [],
+                'weatherers': [],
+                }
+
+    def test_post_with_payload_nested_map(self):
+        req_data = self.req_data.copy()
+        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+                           'filename': 'models/Test.bna',
+                           'refloat_halflife': 1.0
+                           }
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+

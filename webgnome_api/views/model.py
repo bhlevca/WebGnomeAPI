@@ -4,20 +4,19 @@ Views for the Model object.
 import json
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPUnsupportedMediaType,
-                                    HTTPBadRequest,
                                     HTTPNotImplemented)
 from cornice import Service
 
 from webgnome_api.common.views import (update_object,
                                        cors_policy,
+                                       get_specifications,
                                        get_session_object,
                                        obj_id_from_url)
 from webgnome_api.common.common_object import (CreateObject,
                                                ObjectImplementsOneOf,
                                                set_session_object,
                                                init_session_objects)
-from webgnome_api.common.helpers import (JSONImplementsOneOf,
-                                         )
+from webgnome_api.common.helpers import JSONImplementsOneOf
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
@@ -47,17 +46,8 @@ def get_model(request):
         if my_model:
             ret = my_model.serialize()
         else:
-            # - create a new blank model
-            # - add it to the session objects
-            # - add its map to the session objects
-            # - set it to the active_model
-            # = return it
-            new_model = Model()
-            #new_model = eval('{0}()'.format(implemented_types[0]))
-            set_session_object(new_model, request.session)
-            set_session_object(new_model._map, request.session)
-            set_active_model(request.session, new_model.id)
-            ret = new_model.serialize()
+            # - return a Model specification
+            ret = get_specifications(request, implemented_types)
     else:
         obj = get_session_object(obj_id, request.session)
         if obj:
