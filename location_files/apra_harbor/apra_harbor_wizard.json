@@ -1,0 +1,30 @@
+    {
+        "name": "Apra Harbor",
+        "coords": [144.648166, 13.451763],
+        "steps": {
+            "welcome": {
+                "name": "Welcome to Apra Harbor, Guam",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Apra Harbor :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+            },
+            "model": {
+                "title": "Model Settings",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            "wind_type": {
+                "title": "Wind Type",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "body": "<p>Wind can significantly influence oil movement and can force oil to move in a different direction from the currents.</p><p>You can choose wind that is constant in direction and speed for the entire model run, or you can choose wind that varies in direction and/or speed over time.</p>"
+            },
+            "wind": {
+                "type": "",
+                "title": "",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            "text": {
+                "title": "Almost Done",
+                "body": "<p>You are ready to move to the Map Window to start your spill and run the model. Here are the tools you'll use :</p><p>To set the location of your spill(s), you will use the Spill Tool.</p><p>To run the model, you will use GNOME's run controls: Run, Pause, and Step.</p>",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='finish'>To the Map Window</button>"
+            }
+        }
+    }

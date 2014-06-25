@@ -1,0 +1,33 @@
+{
+ "map": "gnome.map.MapFromBNA", 
+ "obj_type": "gnome.model.Model", 
+ "movers": {
+  "dtype": "<class 'gnome.movers.movers.Mover'>", 
+  "items": [
+   [
+    "gnome.movers.random_movers.RandomMover", 
+    "0"
+   ], 
+   [
+    "gnome.movers.current_movers.CatsMover", 
+    "1"
+   ],
+   [
+    "gnome.movers.current_movers.CatsMover", 
+    "2"
+   ]
+  ]
+ }, 
+ "environment": {
+  "dtype": "<class 'gnome.environment.environment.Environment'>", 
+  "items": [
+   [
+    "gnome.environment.tide.Tide", 
+    "0"
+   ]
+  ]
+ }, 
+ "cache_enabled": true, 
+ "time_step": 360.0, 
+ "json_": "save"
+}

@@ -2,13 +2,14 @@
  "obj_type": "gnome.movers.current_movers.CatsMover", 
  "scale": true, 
  "scale_refpoint": [
-  -72.705, 
-  41.2275, 
+  -66.116667, 
+  18.458333, 
   0.0
  ], 
- "filename": "LI_tidesWAC.cur", 
+ "filename": "EbbTides.cur", 
  "tide": 0, 
  "json_": "save", 
  "uncertain_eddy_diffusion": 100000.0, 
+ "uncertain_eddy_v0": 0.1, 
  "scale_value": 1.0
 }
