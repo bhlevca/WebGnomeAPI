@@ -14,6 +14,9 @@ import numpy
 np = numpy
 from numpy import ndarray, void
 
+from gnome.utilities.orderedcollection import OrderedCollection
+from gnome.spill_container import SpillContainerPair
+
 from .helpers import (FQNamesToDict,
                       PyClassFromName)
 
@@ -100,13 +103,21 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
             UpdateObject(getattr(obj, attr)[k], v, all_objects, False)
         return True
     elif isinstance(value, (list, tuple, ndarray, void)):
-        if type(getattr(obj, attr)) in (list, tuple):
+        obj_attr = getattr(obj, attr)
+
+        if type(obj_attr) in (ndarray, void):
+            value = np.array(value)
+            if not np.all(obj_attr == value):
+                obj_attr = value
+                return True
+        elif type(obj_attr) in (list, tuple,
+                                OrderedCollection, SpillContainerPair):
             if not all([v1 == v2
-                        for v1, v2 in zip(getattr(obj, attr), value)]):
+                        for v1, v2 in zip(obj_attr, value)]):
                 setattr(obj, attr, value)
                 return True
         else:
-            if not all(getattr(obj, attr) == value):
+            if not all(obj_attr == value):
                 setattr(obj, attr, value)
                 return True
 
@@ -149,6 +160,11 @@ def init_session_objects(session, force=False):
     if (not 'objects' in session) or force:
         session['objects'] = {}
         session.changed()
+
+
+def get_session_objects(session):
+    init_session_objects(session)
+    return session['objects']
 
 
 def get_session_object(obj_id, session):
