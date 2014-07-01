@@ -2,20 +2,23 @@
 Views for the Model object.
 """
 import json
-from pyramid.httpexceptions import (HTTPNotFound,
+from pyramid.httpexceptions import (HTTPBadRequest,
+                                    HTTPNotFound,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 from cornice import Service
 
-from webgnome_api.common.views import (update_object,
-                                       cors_policy,
-                                       get_specifications,
-                                       get_session_object,
-                                       obj_id_from_url)
+from webgnome_api.common.views import (cors_policy,
+                                       get_specifications)
 from webgnome_api.common.common_object import (CreateObject,
+                                               UpdateObject,
                                                ObjectImplementsOneOf,
-                                               set_session_object,
-                                               init_session_objects)
+                                               obj_id_from_url,
+                                               obj_id_from_req_payload,
+                                               init_session_objects,
+                                               get_session_objects,
+                                               get_session_object,
+                                               set_session_object)
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
@@ -34,7 +37,7 @@ def get_model(request):
         - This method varies slightly from the common object method in that
           if we don't specify a model ID, we:
           - return the current active model if it exists or...
-          - create a new blank model and return it.
+          - return the specification.
     '''
     ret = None
     obj_id = obj_id_from_url(request)
@@ -87,7 +90,8 @@ def create_model(request):
     try:
         init_session_objects(request.session, force=True)
         if json_request:
-            new_model = CreateObject(json_request, request.session['objects'])
+            new_model = CreateObject(json_request,
+                                     get_session_objects(request.session))
         else:
             new_model = Model()
         set_session_object(new_model, request.session)
@@ -103,9 +107,42 @@ def create_model(request):
 
 @model.put()
 def update_model(request):
-    resp = update_object(request, implemented_types)
-    set_active_model(request.session, resp['id'])
-    return resp
+    '''
+        Returns Model object in JSON.
+        - This method varies slightly from the common object method in that
+          if we don't specify a model ID, we:
+          - update the current active model if it exists or...
+          - generate a 'Not Found' exception.
+    '''
+    ret = None
+    try:
+        json_request = json.loads(request.body)
+    except:
+        raise HTTPBadRequest()
+
+    if not JSONImplementsOneOf(json_request, implemented_types):
+        raise HTTPNotImplemented()
+
+    gnome_sema = request.registry.settings['py_gnome_semaphore']
+    gnome_sema.acquire()
+
+    obj_id = obj_id_from_req_payload(json_request)
+    if obj_id:
+        my_model = get_session_object(obj_id, request.session)
+    else:
+        my_model = get_active_model(request.session)
+
+    if my_model:
+        UpdateObject(my_model, json_request,
+                     get_session_objects(request.session))
+        ret = my_model.serialize()
+    else:
+        gnome_sema.release()
+        raise HTTPNotFound()
+
+    gnome_sema.release()
+
+    return ret
 
 
 def get_active_model(session):
