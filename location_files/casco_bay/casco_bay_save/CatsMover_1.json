@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "WACFlood.cur", 
- "tide": 0, 
+ "tide": "Tide_0.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 100000.0, 
  "scale_value": 1.0
