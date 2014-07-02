@@ -104,26 +104,23 @@ class TideTests(WindTests):
         Tests out the Gnome Tide object API
     '''
     req_data = {'obj_type': 'gnome.environment.Tide',
-                'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
-                               ('2012-11-06T20:11:30', (1.0, 45.0)),
-                               ('2012-11-06T20:12:30', (1.0, 90.0)),
-                               ('2012-11-06T20:13:30', (1.0, 120.0)),
-                               ('2012-11-06T20:14:30', (1.0, 180.0)),
-                               ('2012-11-06T20:15:30', (1.0, 270.0))],
+                'filename': 'models/CLISShio.txt',
                 }
 
     def perform_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests
             for new object types.
+            Currently, it does not make sense to update any Tide object
+            attributes.
         '''
-        json_obj['timeseries'][0][1][1] = 10.0
+        pass
 
     def check_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests
             for new object types.
+            Currently, it does not make sense to update any Tide object
+            attributes.
         '''
-        assert 'id' in json_obj
-        assert 'obj_type' in json_obj
-        assert json_obj['timeseries'][0][1][1] == 10.0
+        pass

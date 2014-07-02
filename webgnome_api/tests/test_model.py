@@ -1,7 +1,6 @@
 """
 Functional tests for the Model Web API
 """
-import time
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
@@ -150,7 +149,7 @@ class NestedModelTests(FunctionalTestBase):
                 'weatherers': [],
                 }
 
-    def test_post_with_payload_nested_map(self):
+    def test_post_with_nested_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
                            'filename': 'models/Test.bna',
@@ -160,3 +159,22 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
+        assert 'filename' in model1['map']
+        assert 'refloat_halflife' in model1['map']
+
+    def test_put_with_nested_map(self):
+        req_data = self.req_data.copy()
+        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+                           'filename': 'models/Test.bna',
+                           'refloat_halflife': 1.0
+                           }
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        model1['map']['refloat_halflife'] = 2.0
+
+        resp = self.testapp.post_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['map']['refloat_halflife'] == 2.0

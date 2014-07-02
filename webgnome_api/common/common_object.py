@@ -5,7 +5,6 @@ import weakref
 
 from types import NoneType
 from datetime import datetime
-from itertools import izip_longest
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -41,12 +40,8 @@ def LinkObjectChildren(obj_dict, all_objects):
     for k, v in obj_dict.items():
         if ValueIsJsonObject(v):
             if 'id' in v and v['id'] in all_objects:
-                #print ('JSON object exists in session: '
-                #       '{0}({1})'.format(v['obj_type'], v['id']))
                 obj_dict[k] = all_objects[v['id']]
             else:
-                #print ('JSON object does not exist in session: '
-                #       '{0}'.format(v['obj_type']))
                 obj = CreateObject(v, all_objects, False)
                 all_objects[obj.id] = obj
                 obj_dict[k] = obj
@@ -107,8 +102,9 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
 
         if type(obj_attr) in (ndarray, void):
             value = np.array(value)
+
             if not np.all(obj_attr == value):
-                obj_attr = value
+                obj_attr[:] = value
                 return True
         elif type(obj_attr) in (list, tuple,
                                 OrderedCollection, SpillContainerPair):
