@@ -178,3 +178,29 @@ class NestedModelTests(FunctionalTestBase):
         model2 = resp.json_body
 
         assert model2['map']['refloat_halflife'] == 2.0
+
+    def test_post_with_nested_environment(self):
+        req_data = self.req_data.copy()
+        req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
+                                    'description': u'Wind Object',
+                                    'updated_at': '2014-03-26T14:52:45.385126',
+                                    'source_type': u'undefined',
+                                    'source_id': u'undefined',
+                                    'timeseries': [('2012-11-06T20:10:30',
+                                                    (1.0, 0.0)),
+                                                   ('2012-11-06T20:15:30',
+                                                    (1.0, 270.0))],
+                                    'units': u'meter per second'
+                                    }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        print 'Response:'
+        pp.pprint(model1)
+
+        assert 'environment' in model1
+        assert model1['environment'][0]['obj_type'] == 'gnome.environment.wind.Wind'
+        assert 'description' in model1['environment'][0]
+        assert 'timeseries' in model1['environment'][0]
+        assert 'units' in model1['environment'][0]

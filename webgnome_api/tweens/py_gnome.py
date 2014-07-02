@@ -28,6 +28,10 @@ class PyGnomeSchemaTweenFactory(object):
             for v in json_request.values():
                 if self.add_json_key(v):
                     modified = True
+        elif isinstance(json_request, (list, tuple)):
+            for v in json_request:
+                if self.add_json_key(v):
+                    modified = True
 
         return modified
 

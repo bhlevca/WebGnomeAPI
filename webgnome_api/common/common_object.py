@@ -26,12 +26,18 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
     py_class = PyClassFromName(json_obj['obj_type'])
 
+    print 'CreateObject(): json_obj:'
+    pp.pprint(json_obj)
     if deserialize_obj:
         obj_dict = py_class.deserialize(json_obj)
     else:
         obj_dict = json_obj
+    print 'CreateObject(): obj_dict:'
+    pp.pprint(obj_dict)
 
     LinkObjectChildren(obj_dict, all_objects)
+    print 'CreateObject(): linked obj_dict:'
+    pp.pprint(obj_dict)
 
     return py_class.new_from_dict(obj_dict)
 
@@ -49,6 +55,24 @@ def LinkObjectChildren(obj_dict, all_objects):
             # we are dealing with an ordinary dict.
             # We will try to link the dictionary items.
             LinkObjectChildren(v, all_objects)
+        elif (isinstance(v, (list, tuple))):
+            # we are dealing with a sequence.
+            # We will try to link the list items.
+            for i, v2 in enumerate(v):
+                if ValueIsJsonObject(v2):
+                    if 'id' in v2 and v2['id'] in all_objects:
+                        v[i] = all_objects[v2['id']]
+                    else:
+                        obj = CreateObject(v2, all_objects, False)
+                        all_objects[obj.id] = obj
+                        v[i] = obj
+
+            [LinkObjectChildren(i, all_objects) for i in v
+             if isinstance(i, dict)]
+        else:
+            print ('LinkObjectChildren(): do not know how to link (k,v):',
+                   (k, v, type(v))
+                   )
 
 
 def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
