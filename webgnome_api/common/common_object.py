@@ -58,6 +58,7 @@ def LinkObjectChildren(obj_dict, all_objects):
         elif (isinstance(v, (list, tuple))):
             # we are dealing with a sequence.
             # We will try to link the list items.
+            # TODO: this is kinda clunky, we should rethink and refactor
             for i, v2 in enumerate(v):
                 if ValueIsJsonObject(v2):
                     if 'id' in v2 and v2['id'] in all_objects:
@@ -178,6 +179,8 @@ def obj_id_from_req_payload(json_request):
 
 def init_session_objects(session, force=False):
     if (not 'objects' in session) or force:
+        print ('init_session_objects(): '
+               'object dict does not exist. initializing it.')
         session['objects'] = {}
         session.changed()
 
