@@ -196,9 +196,6 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        print 'Response:'
-        pp.pprint(model1)
-
         assert 'environment' in model1
         assert model1['environment'][0]['obj_type'] == 'gnome.environment.wind.Wind'
         assert 'description' in model1['environment'][0]
@@ -262,9 +259,6 @@ class NestedModelTests(FunctionalTestBase):
 
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
-
-        print 'Response:'
-        pp.pprint(model1)
 
         assert 'movers' in model1
         assert model1['movers'][0]['obj_type'] == 'gnome.movers.wind_movers.WindMover'
@@ -334,9 +328,6 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        print 'Response:'
-        pp.pprint(model1)
-
         assert 'weatherers' in model1
         assert model1['weatherers'][0]['obj_type'] == 'gnome.weatherers.core.Weatherer'
         assert 'active_start' in model1['weatherers'][0]
@@ -383,9 +374,6 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        print 'Response:'
-        pp.pprint(model1)
-
         assert 'outputters' in model1
         assert model1['outputters'][0]['obj_type'] == 'gnome.outputters.renderer.Renderer'
         assert 'name' in model1['outputters'][0]
@@ -419,8 +407,6 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        print 'Response:'
-        pp.pprint(model1)
         model1['outputters'][0]['output_last_step'] = False
 
         resp = self.testapp.post_json('/model', params=model1)
