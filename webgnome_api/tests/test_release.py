@@ -15,6 +15,10 @@ class ReleaseTests(FunctionalTestBase):
                        'Access-Control-Request-Method': 'GET'}
 
     def test_options(self):
+        '''
+            TODO: Maybe testing the options shoould be in a separate
+                  module that covers the options for all entry points.
+        '''
         resp = self.testapp.options('/release',
                                     headers=self.options_headers)
         resp_methods = set(resp.headers['Access-Control-Allow-Methods']

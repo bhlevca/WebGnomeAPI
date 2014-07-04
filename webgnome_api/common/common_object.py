@@ -4,7 +4,7 @@ Common Gnome object request handlers.
 import weakref
 
 from types import NoneType
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -26,18 +26,12 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
     py_class = PyClassFromName(json_obj['obj_type'])
 
-    print 'CreateObject(): json_obj:'
-    pp.pprint(json_obj)
     if deserialize_obj:
         obj_dict = py_class.deserialize(json_obj)
     else:
         obj_dict = json_obj
-    print 'CreateObject(): obj_dict:'
-    pp.pprint(obj_dict)
 
     LinkObjectChildren(obj_dict, all_objects)
-    print 'CreateObject(): linked obj_dict:'
-    pp.pprint(obj_dict)
 
     return py_class.new_from_dict(obj_dict)
 
@@ -114,7 +108,8 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
     elif isinstance(value, (int, float, long, complex,
                             str, unicode, bytearray, buffer,
                             set,
-                            bool, NoneType, weakref.ref, datetime)):
+                            bool, NoneType, weakref.ref,
+                            datetime, timedelta)):
         if not getattr(obj, attr) == value:
             setattr(obj, attr, value)
             return True
@@ -129,7 +124,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
             value = np.array(value)
 
             if not np.all(obj_attr == value):
-                obj_attr[:] = value
+                setattr(obj, attr, value)
                 return True
         elif type(obj_attr) in (list, tuple,
                                 OrderedCollection, SpillContainerPair):
@@ -141,6 +136,9 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
             if not all(obj_attr == value):
                 setattr(obj, attr, value)
                 return True
+    else:
+        print 'UpdateObjectAttribute(): do not know how to update', (obj, attr)
+        print '(current_value, new_value):', (getattr(obj, attr), value)
 
     return False
 
