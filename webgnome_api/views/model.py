@@ -133,8 +133,9 @@ def update_model(request):
         my_model = get_active_model(request.session)
 
     if my_model:
-        UpdateObject(my_model, json_request,
-                     get_session_objects(request.session))
+        if UpdateObject(my_model, json_request,
+                     get_session_objects(request.session)):
+            set_session_object(my_model, request.session)
         ret = my_model.serialize()
     else:
         gnome_sema.release()

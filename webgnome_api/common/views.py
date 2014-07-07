@@ -111,8 +111,8 @@ def update_object(request, implemented_types):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
-            UpdateObject(obj, json_request, request.session['objects'])
-            set_session_object(obj, request.session)
+            if UpdateObject(obj, json_request, request.session['objects']):
+                set_session_object(obj, request.session)
         except ValueError as e:
             raise HTTPUnsupportedMediaType(e)
         finally:
