@@ -174,7 +174,7 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['map']['refloat_halflife'] = 2.0
 
-        resp = self.testapp.post_json('/model', params=model1)
+        resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
         assert model2['map']['refloat_halflife'] == 2.0
@@ -221,7 +221,7 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['environment'][0]['units'] = 'knots'
 
-        resp = self.testapp.post_json('/model', params=model1)
+        resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
         assert model2['environment'][0]['units'] == 'knots'
@@ -312,7 +312,7 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['movers'][0]['wind']['units'] = 'knots'
 
-        resp = self.testapp.post_json('/model', params=model1)
+        resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
         assert model2['movers'][0]['wind']['units'] == 'knots'
@@ -347,7 +347,7 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['weatherers'][0]['on'] = False
 
-        resp = self.testapp.post_json('/model', params=model1)
+        resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
         assert model2['weatherers'][0]['on'] == False
@@ -409,7 +409,41 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['outputters'][0]['output_last_step'] = False
 
-        resp = self.testapp.post_json('/model', params=model1)
+        resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
         assert model2['outputters'][0]['output_last_step'] == False
+
+    def test_create_model_then_add_wind(self):
+        '''
+            TODO: Apparently, this works as a nested object of the model,
+                  But we don't have the standalone outputter methods yet.
+                  We need to do that.
+        '''
+        req_wind_data = {'obj_type': 'gnome.environment.Wind',
+                         'description': u'Wind Object',
+                         'updated_at': '2014-03-26T14:52:45.385126',
+                         'source_type': u'undefined',
+                         'source_id': u'undefined',
+                         'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
+                                        ('2012-11-06T20:15:30', (1.0, 270.0))],
+                         'units': u'meter per second'
+                         }
+
+        print 'creating model...'
+        resp = self.testapp.post_json('/model', params=self.req_data)
+        model1 = resp.json_body
+
+        print 'creating wind...'
+        resp = self.testapp.post_json('/environment', params=req_wind_data)
+        wind_data = resp.json_body
+
+        model1['environment'] = [{'obj_type': wind_data['obj_type'],
+                                  'id': wind_data['id']
+                                  }]
+
+        print 'updating model with sparse existing wind...'
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+        pp.pprint(model2)
+        raise

@@ -5,6 +5,7 @@ import weakref
 
 from types import NoneType
 from datetime import datetime, timedelta
+from itertools import izip_longest
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -92,11 +93,14 @@ def UpdateObjectAttributes(obj, items, all_objects):
                 for k, v in items])
 
 
+# TODO: This function has grown quite a bit in scope and should
+#       probably be refactored.  Let's start by separating the update
+#       functionality of the different data types.
 def UpdateObjectAttribute(obj, attr, value, all_objects):
     if attr in ('id', 'obj_type', 'json_'):
         return False
     elif ValueIsJsonObject(value):
-        if 'id' in value and value['id'] in all_objects:
+        if ObjectExists(value, all_objects):
             return UpdateObject(all_objects[value['id']], value, all_objects,
                                 False)
         else:
@@ -119,6 +123,9 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
         return True
     elif isinstance(value, (list, tuple, ndarray, void)):
         obj_attr = getattr(obj, attr)
+        if type(obj_attr) == tuple:
+            obj_attr = list(obj_attr)  # change it to a mutable
+            setattr(obj, attr, obj_attr)
 
         if type(obj_attr) in (ndarray, void):
             value = np.array(value)
@@ -128,10 +135,47 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                 return True
         elif type(obj_attr) in (list, tuple,
                                 OrderedCollection, SpillContainerPair):
-            if not all([v1 == v2
-                        for v1, v2 in zip(obj_attr, value)]):
-                setattr(obj, attr, value)
-                return True
+            ret_value = False
+            for i, (v1, v2) in enumerate(izip_longest(obj_attr, value)):
+                # So basically we are going to reconcile two lists
+                # this isn't too hard, but we want to return whether
+                # an update was performed.
+                # We are assuming that valid list items are not None
+                # and if we encounter a None value in either side, it
+                # means that one list was shorter than the other
+                if v1 == None:
+                    # Empty left index...
+                    if ValueIsJsonObject(v2):
+                        if ObjectExists(v2, all_objects):
+                            obj_attr.append[i] = all_objects[v2['id']]
+                            UpdateObject(all_objects[v2['id']], v2,
+                                         all_objects, False)
+                            ret_value = True
+                        else:
+                            # I dunno...we could create the object here.
+                            # for right now we will punt.
+                            print ('Warning: Cannot perform updates.  '
+                                   'Our child JSON object refers to a '
+                                   'py_gnome object that does not exist.')
+                    else:
+                        # TODO: lots of possible edge cases here.
+                        obj_attr.append(v2)
+                        ret_value = True
+                elif v2 == None:
+                    # Empty right index...truncate our left list and
+                    # exit our loop
+                    v1 = v1[:i]
+                    ret_value = True
+                    break
+                else:
+                    # left & right are both present...lets see if they match
+                    if ValueIsJsonObject(v2):
+                        ret_value = UpdateObject(v1, v2, all_objects, False)
+                    else:
+                        if obj_attr[i] != v2:
+                            obj_attr[i] = v2
+                            ret_value = True
+            return ret_value
         else:
             if not all(obj_attr == value):
                 setattr(obj, attr, value)
@@ -146,6 +190,18 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
 def ValueIsJsonObject(value):
     return (isinstance(value, dict)
             and 'obj_type' in value)
+
+
+def ObjectExists(value, all_objects):
+    try:
+        ident = value['id']  # JSON Object
+    except:
+        try:
+            ident = value.id  # Gnome Object
+        except:
+            ident = id(value)  # any other object
+
+    return ident in all_objects
 
 
 def ObjectImplementsOneOf(model_object, obj_types):
