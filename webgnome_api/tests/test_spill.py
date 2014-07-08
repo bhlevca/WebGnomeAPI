@@ -33,6 +33,7 @@ class SpillTests(FunctionalTestBase):
                           }
 
     req_data = {'obj_type': u'gnome.spill.spill.Spill',
+                'name': 'What a Name',
                 'release': None,
                 'element_type': None
                 }
@@ -154,21 +155,22 @@ class SpillNestedTests(FunctionalTestBase):
     '''
         Tests out the nested object creation for the Gnome Spill object API
     '''
-    req_data = {"obj_type": "gnome.spill.spill.Spill",
-                "on": True,
-                "release": {"obj_type": "gnome.spill.release.PointLineRelease",
-                            "num_elements": 1000,
-                            "num_released": 84,
-                            "release_time": "2013-02-13T09:00:00",
-                            "end_release_time": "2013-02-13T15:00:00",
-                            "start_time_invalid": False,
-                            "end_position": [144.664166, 13.441944, 0.0],
-                            "start_position": [144.664166, 13.441944, 0.0],
+    req_data = {'obj_type': 'gnome.spill.spill.Spill',
+                'name': 'What a Name',
+                'on': True,
+                'release': {'obj_type': 'gnome.spill.release.PointLineRelease',
+                            'num_elements': 1000,
+                            'num_released': 84,
+                            'release_time': '2013-02-13T09:00:00',
+                            'end_release_time': '2013-02-13T15:00:00',
+                            'start_time_invalid': False,
+                            'end_position': [144.664166, 13.441944, 0.0],
+                            'start_position': [144.664166, 13.441944, 0.0],
                             },
-                "element_type": {"obj_type": "gnome.spill.elements.ElementType",
-                                 "initializers": {"windages": {"obj_type": "gnome.spill.elements.InitWindages",
-                                                               "windage_range": [0.01, 0.04],
-                                                               "windage_persist": 900,
+                'element_type': {'obj_type': 'gnome.spill.elements.ElementType',
+                                 'initializers': {'windages': {'obj_type': 'gnome.spill.elements.InitWindages',
+                                                               'windage_range': [0.01, 0.04],
+                                                               'windage_persist': 900,
                                                                }
                                                   }
                                  },

@@ -130,12 +130,6 @@ class InitMassFromTotalMassTest(InitializerBase):
                 }
 
 
-class InitMassFromVolumeTest(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitMassFromVolume',
-                }
-
-
 class InitMassFromPlumeTest(InitializerBase):
     req_data = {
                 'obj_type': u'gnome.spill.elements.InitMassFromPlume',

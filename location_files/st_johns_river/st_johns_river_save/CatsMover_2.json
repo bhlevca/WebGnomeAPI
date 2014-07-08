@@ -1,0 +1,13 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -81.3713921, 
+  30.337140, 
+  0.0
+ ], 
+ "filename": "Offshore.cur", 
+ "tide": 0, 
+ "json_": "save", 
+ "scale_value": -0.15
+}

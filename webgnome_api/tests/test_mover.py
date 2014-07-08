@@ -155,7 +155,6 @@ class WindMoverTests(BaseMoverTests):
             assert resp2.json_body[a] == resp1.json_body[a]
 
         for a in ('uncertain_angle_scale',
-                  'uncertain_angle_units',
                   'uncertain_duration',
                   'uncertain_speed_scale',
                   'uncertain_time_delay'):

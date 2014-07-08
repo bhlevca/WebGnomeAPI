@@ -44,9 +44,6 @@ class MapTestBase(FunctionalTestBase):
     def test_post_no_payload(self):
         self.testapp.post_json('/map', status=400)
 
-    def test_post_no_payload(self):
-        self.testapp.post_json('/map', status=400)
-
     def test_put_no_payload(self):
         self.testapp.put_json('/map', status=400)
 

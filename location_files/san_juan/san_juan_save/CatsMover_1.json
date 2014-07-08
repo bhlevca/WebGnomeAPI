@@ -1,0 +1,15 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -66.116667, 
+  18.458333, 
+  0.0
+ ], 
+ "filename": "EbbTides.cur", 
+ "tide": "Tide_0.json", 
+ "json_": "save", 
+ "uncertain_eddy_diffusion": 100000.0, 
+ "uncertain_eddy_v0": 0.1, 
+ "scale_value": 1.0
+}

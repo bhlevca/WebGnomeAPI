@@ -6,8 +6,8 @@
   41.2275, 
   0.0
  ], 
- "filename": "LI_tidesWAC.CUR", 
- "tide": 1, 
+ "filename": "LI_tidesWAC.cur", 
+ "tide": "Tide_0.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 100000.0, 
  "scale_value": 1.0

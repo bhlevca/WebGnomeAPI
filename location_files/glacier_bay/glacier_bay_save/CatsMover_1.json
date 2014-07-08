@@ -1,0 +1,14 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -136.033333, 
+  58.466667, 
+  0.0
+ ], 
+ "filename": "WACFlood.cur", 
+ "tide": "Tide_0.json", 
+ "json_": "save", 
+ "uncertain_eddy_diffusion": 100000.0, 
+ "scale_value": 1.
+}

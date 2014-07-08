@@ -1,4 +1,4 @@
 Documentation
 =============
 
-Put a brief description of 'webgnome_data'.
+Put a brief description of 'webgnome_api'.
