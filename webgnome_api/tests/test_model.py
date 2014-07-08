@@ -55,8 +55,7 @@ class ModelTests(FunctionalTestBase):
             Here we test the get with an invalid ID, but where an active model
             is attached to the session.
         '''
-        resp = self.testapp.get('/model')
-        model1 = resp.json_body
+        self.testapp.get('/model')
 
         obj_id = 0xdeadbeef
         self.testapp.get('/model/{0}'.format(obj_id), status=404)
@@ -97,6 +96,8 @@ class ModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=self.req_data)
         model1 = resp.json_body
 
+        assert 'map' in model1
+
     def test_post_with_payload_none_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = None
@@ -104,12 +105,13 @@ class ModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
+        assert 'map' in model1
+
     def test_put_no_payload(self):
         self.testapp.put_json('/model', status=400)
 
     def test_put_no_id_no_active_model(self):
-        resp = self.testapp.put_json('/model', params=self.req_data,
-                                     status=404)
+        self.testapp.put_json('/model', params=self.req_data, status=404)
 
     def test_put_no_id_active_model(self):
         resp = self.testapp.post_json('/model', params=self.req_data)
@@ -367,8 +369,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'filename': ('models/Test.bna'),
                                    'images_dir': ('models/images'),
                                    'image_size': [800, 600],
-                                   'viewport': [[-71.2242987892, 42.1846263908],
-                                                [-70.4146871963, 42.6329573908]]
+                                   'viewport': [[-71.22429878, 42.18462639],
+                                                [-70.41468719, 42.63295739]]
                                    }]
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -400,8 +402,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'filename': ('models/Test.bna'),
                                    'images_dir': ('models/images'),
                                    'image_size': [800, 600],
-                                   'viewport': [[-71.2242987892, 42.1846263908],
-                                                [-70.4146871963, 42.6329573908]]
+                                   'viewport': [[-71.22429878, 42.18462639],
+                                                [-70.41468719, 42.63295739]]
                                    }]
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -439,11 +441,19 @@ class NestedModelTests(FunctionalTestBase):
         wind_data = resp.json_body
 
         model1['environment'] = [{'obj_type': wind_data['obj_type'],
-                                  'id': wind_data['id']
+                                  'id': wind_data['id'],
+                                  'name': 'Custom Wind',
                                   }]
 
         print 'updating model with sparse existing wind...'
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
-        pp.pprint(model2)
-        raise
+
+        assert model2['environment'][0]['id'] == wind_data['id']
+        assert model2['environment'][0]['name'] == 'Custom Wind'
+
+        resp = self.testapp.get('/model')
+        model3 = resp.json_body
+
+        assert model3['environment'][0]['id'] == wind_data['id']
+        assert model3['environment'][0]['name'] == 'Custom Wind'

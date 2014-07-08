@@ -134,7 +134,7 @@ def update_model(request):
 
     if my_model:
         if UpdateObject(my_model, json_request,
-                     get_session_objects(request.session)):
+                        get_session_objects(request.session)):
             set_session_object(my_model, request.session)
         ret = my_model.serialize()
     else:

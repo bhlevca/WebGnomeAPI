@@ -40,15 +40,13 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
 def LinkObjectChildren(obj_dict, all_objects):
     for k, v in obj_dict.items():
         if ValueIsJsonObject(v):
-            if 'id' in v and v['id'] in all_objects:
+            if ObjectExists(v, all_objects):
                 obj_dict[k] = all_objects[v['id']]
             else:
                 obj = CreateObject(v, all_objects, False)
                 all_objects[obj.id] = obj
                 obj_dict[k] = obj
         elif (isinstance(v, dict)):
-            # we are dealing with an ordinary dict.
-            # We will try to link the dictionary items.
             LinkObjectChildren(v, all_objects)
         elif (isinstance(v, (list, tuple))):
             # we are dealing with a sequence.
@@ -56,7 +54,7 @@ def LinkObjectChildren(obj_dict, all_objects):
             # TODO: this is kinda clunky, we should rethink and refactor
             for i, v2 in enumerate(v):
                 if ValueIsJsonObject(v2):
-                    if 'id' in v2 and v2['id'] in all_objects:
+                    if ObjectExists(v2, all_objects):
                         v[i] = all_objects[v2['id']]
                     else:
                         obj = CreateObject(v2, all_objects, False)
@@ -65,10 +63,6 @@ def LinkObjectChildren(obj_dict, all_objects):
 
             [LinkObjectChildren(i, all_objects) for i in v
              if isinstance(i, dict)]
-        else:
-            print ('LinkObjectChildren(): do not know how to link (k,v):',
-                   (k, v, type(v))
-                   )
 
 
 def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
@@ -78,6 +72,8 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
         For now, I don't think we will be too fancy about this.
         We will grow more sophistication as we need it.
     '''
+    FillSparseObjectChildren(json_obj, all_objects)
+
     py_class = PyClassFromName(json_obj['obj_type'])
 
     if deserialize_obj:
@@ -89,7 +85,7 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
 
 
 def UpdateObjectAttributes(obj, items, all_objects):
-    return all([UpdateObjectAttribute(obj, k, v, all_objects)
+    return any([UpdateObjectAttribute(obj, k, v, all_objects)
                 for k, v in items])
 
 
@@ -147,7 +143,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                     # Empty left index...
                     if ValueIsJsonObject(v2):
                         if ObjectExists(v2, all_objects):
-                            obj_attr.append[i] = all_objects[v2['id']]
+                            obj_attr.append(all_objects[v2['id']])
                             UpdateObject(all_objects[v2['id']], v2,
                                          all_objects, False)
                             ret_value = True
@@ -180,9 +176,6 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
             if not all(obj_attr == value):
                 setattr(obj, attr, value)
                 return True
-    else:
-        print 'UpdateObjectAttribute(): do not know how to update', (obj, attr)
-        print '(current_value, new_value):', (getattr(obj, attr), value)
 
     return False
 
@@ -262,3 +255,27 @@ def set_session_object(obj, session):
         session['objects'][id(obj)] = obj
 
     session.changed()
+
+
+def FillSparseObjectChildren(obj_dict, all_objects):
+    for v in obj_dict.values():
+        if ValueIsJsonObject(v):
+            FillSparseObject(v, all_objects)
+        elif (isinstance(v, dict)):
+            FillSparseObjectChildren(v, all_objects)
+        elif (isinstance(v, (list, tuple))):
+            for item in v:
+                if ValueIsJsonObject(item):
+                    FillSparseObject(item, all_objects)
+
+            [FillSparseObjectChildren(i, all_objects) for i in v
+             if isinstance(i, dict)]
+
+
+def FillSparseObject(obj_dict, all_objects):
+    if ObjectExists(obj_dict, all_objects):
+        found = all_objects[obj_dict['id']].serialize()
+
+        upd_items = [(k, v) for k, v in found.iteritems()
+                     if k not in obj_dict]
+        obj_dict.update(upd_items)
