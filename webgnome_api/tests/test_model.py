@@ -355,11 +355,6 @@ class NestedModelTests(FunctionalTestBase):
         assert model2['weatherers'][0]['on'] == False
 
     def test_post_with_nested_outputter(self):
-        '''
-            TODO: Apparently, this works as a nested object of the model,
-                  But we don't have the standalone outputter methods yet.
-                  We need to do that.
-        '''
         req_data = self.req_data.copy()
         req_data['outputters'] = [{'obj_type': 'gnome.outputters.renderer.Renderer',
                                    'name': 'Renderer',
@@ -388,11 +383,6 @@ class NestedModelTests(FunctionalTestBase):
         assert 'viewport' in model1['outputters'][0]
 
     def test_put_with_nested_outputter(self):
-        '''
-            TODO: Apparently, this works as a nested object of the model,
-                  But we don't have the standalone outputter methods yet.
-                  We need to do that.
-        '''
         req_data = self.req_data.copy()
         req_data['outputters'] = [{'obj_type': 'gnome.outputters.renderer.Renderer',
                                    'name': 'Renderer',
@@ -417,11 +407,6 @@ class NestedModelTests(FunctionalTestBase):
         assert model2['outputters'][0]['output_last_step'] == False
 
     def test_create_model_then_add_wind(self):
-        '''
-            TODO: Apparently, this works as a nested object of the model,
-                  But we don't have the standalone outputter methods yet.
-                  We need to do that.
-        '''
         req_wind_data = {'obj_type': 'gnome.environment.Wind',
                          'description': u'Wind Object',
                          'updated_at': '2014-03-26T14:52:45.385126',
@@ -457,3 +442,57 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model3['environment'][0]['id'] == wind_data['id']
         assert model3['environment'][0]['name'] == 'Custom Wind'
+
+    def test_create_model_then_replace_wind(self):
+        req_wind_data = {'obj_type': 'gnome.environment.Wind',
+                         'description': u'Wind Object',
+                         'updated_at': '2014-03-26T14:52:45.385126',
+                         'source_type': u'undefined',
+                         'source_id': u'undefined',
+                         'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
+                                        ('2012-11-06T20:15:30', (1.0, 270.0))],
+                         'units': u'meter per second'
+                         }
+
+        print 'creating model...'
+        resp = self.testapp.post_json('/model', params=self.req_data)
+        model1 = resp.json_body
+
+        print 'creating wind...'
+        resp = self.testapp.post_json('/environment', params=req_wind_data)
+        wind_data = resp.json_body
+
+        model1['environment'] = [{'obj_type': wind_data['obj_type'],
+                                  'id': wind_data['id'],
+                                  'name': 'Custom Wind',
+                                  }]
+
+        print 'updating model with sparse existing wind...'
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['environment'][0]['id'] == wind_data['id']
+        assert model2['environment'][0]['name'] == 'Custom Wind'
+
+        resp = self.testapp.get('/model')
+        model3 = resp.json_body
+
+        assert model3['environment'][0]['id'] == wind_data['id']
+        assert model3['environment'][0]['name'] == 'Custom Wind'
+
+        print 'creating new wind...'
+        resp = self.testapp.post_json('/environment', params=req_wind_data)
+        wind2_data = resp.json_body
+
+        model3['environment'] = [{'obj_type': wind2_data['obj_type'],
+                                  'id': wind2_data['id'],
+                                  'name': 'Custom Wind 2',
+                                  }]
+
+
+        print 'updating model with new existing wind...'
+        resp = self.testapp.put_json('/model', params=model3)
+        model4 = resp.json_body
+
+        assert model4['environment'][0]['id'] == wind2_data['id']
+        assert model4['environment'][0]['name'] == 'Custom Wind 2'

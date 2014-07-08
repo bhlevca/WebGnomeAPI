@@ -149,7 +149,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                             ret_value = True
                         else:
                             # I dunno...we could create the object here.
-                            # for right now we will punt.
+                            # But for right now we will punt.
                             print ('Warning: Cannot perform updates.  '
                                    'Our child JSON object refers to a '
                                    'py_gnome object that does not exist.')
@@ -166,7 +166,22 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                 else:
                     # left & right are both present...lets see if they match
                     if ValueIsJsonObject(v2):
-                        ret_value = UpdateObject(v1, v2, all_objects, False)
+                        if ObjectId(v1) == ObjectId(v2):
+                            #print 'left & right are the same object'
+                            ret_value = UpdateObject(v1, v2, all_objects,
+                                                     False)
+                        elif ObjectExists(v2, all_objects):
+                            #print ('left is different than right '
+                            #       'and right exists')
+                            obj_attr[i] = all_objects[v2['id']]
+                            UpdateObject(obj_attr[i], v2, all_objects, False)
+                            ret_value = True
+                        else:
+                            # I dunno...we could create the object here.
+                            # But for right now we will punt.
+                            print ('Warning: Cannot perform updates.  '
+                                   'Our child JSON object refers to a '
+                                   'py_gnome object that does not exist.')
                     else:
                         if obj_attr[i] != v2:
                             obj_attr[i] = v2
@@ -185,16 +200,20 @@ def ValueIsJsonObject(value):
             and 'obj_type' in value)
 
 
-def ObjectExists(value, all_objects):
+def ObjectId(obj):
     try:
-        ident = value['id']  # JSON Object
+        ident = obj['id']  # JSON Object
     except:
         try:
-            ident = value.id  # Gnome Object
+            ident = obj.id  # Gnome Object
         except:
-            ident = id(value)  # any other object
+            ident = id(obj)  # any other object
 
-    return ident in all_objects
+    return ident
+
+
+def ObjectExists(value, all_objects):
+    return ObjectId(value) in all_objects
 
 
 def ObjectImplementsOneOf(model_object, obj_types):
