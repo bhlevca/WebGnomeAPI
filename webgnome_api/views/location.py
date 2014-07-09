@@ -4,6 +4,8 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir
 from collections import OrderedDict
+import types
+from types import MethodType, FunctionType
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -19,7 +21,8 @@ from gnome.spill_container import SpillContainerPair
 from gnome.persist import load
 
 from webgnome_api.common.common_object import (obj_id_from_url,
-                                               set_session_object)
+                                               set_session_object,
+                                               set_active_model)
 from webgnome_api.common.views import cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
@@ -55,9 +58,8 @@ def get_location(request):
             location_file = location_file_dirs[matching[0][0]]
             if isdir(location_file):
                 obj = load(location_file)
-                print 'obj:'
-                pp.pprint(obj.serialize())
                 RegisterObject(obj, request.session)
+                set_active_model(request.session, obj.id)
 
             return matching[0][1]
         else:
@@ -68,23 +70,23 @@ def get_location(request):
 
 
 def RegisterObject(obj, session):
-    if hasattr(obj, 'id') and not obj.__class__.__name__ == 'type':
+    if (hasattr(obj, 'id')
+        and not obj.__class__.__name__ == 'type'):
         print 'RegisterObjects(): registering:', (obj.__class__.__name__,
                                                   obj.id)
         set_session_object(obj, session)
     #[RegisterObject(v, session) for v in obj.__dict__.values()]
-    if isinstance(obj, (list, tuple, OrderedCollection)):
+    if isinstance(obj, (list, tuple, OrderedCollection,
+                        SpillContainerPair)):
         for i in obj:
             RegisterObject(i, session)
         pass
     elif hasattr(obj, '__dict__'):
-        for k, v in obj.__dict__.iteritems():
-            if k.find('_') == 0:
-                pass
-            else:
-                print obj.__class__.__name__, 'Attr:', (k,)
-                print obj.__class__.__name__, 'Attr:', (k, v)
-                RegisterObject(v, session)
+        for k in dir(obj):
+            attr = getattr(obj, k)
+            if not (k.find('_') == 0
+                    or isinstance(attr, (MethodType, FunctionType))):
+                RegisterObject(attr, session)
 
 
 # We need to return a feature collection structure on a get with no

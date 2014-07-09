@@ -276,6 +276,20 @@ def set_session_object(obj, session):
     session.changed()
 
 
+def get_active_model(session):
+    if 'active_model' in session and session['active_model']:
+        return get_session_object(session['active_model'], session)
+    else:
+        return None
+
+
+def set_active_model(session, obj_id):
+    if not ('active_model' in session and
+            session['active_model'] == obj_id):
+        session['active_model'] = obj_id
+        session.changed()
+
+
 def FillSparseObjectChildren(obj_dict, all_objects):
     for v in obj_dict.values():
         if ValueIsJsonObject(v):
