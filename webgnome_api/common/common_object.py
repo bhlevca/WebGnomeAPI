@@ -158,8 +158,8 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                         obj_attr.append(v2)
                         ret_value = True
                 elif v2 == None:
-                    # Empty right index...truncate our left list and
-                    # exit our loop
+                    # Empty right index which means our right list is shorter.
+                    # truncate our left list and exit our loop
                     v1 = v1[:i]
                     ret_value = True
                     break

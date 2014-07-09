@@ -34,3 +34,4 @@ class LocationTestBase(FunctionalTestBase):
         assert 'name' in resp.json_body
         assert 'coords' in resp.json_body
         assert 'steps' in resp.json_body
+        raise
