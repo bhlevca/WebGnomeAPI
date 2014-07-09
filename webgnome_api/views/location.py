@@ -4,11 +4,7 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir
 from collections import OrderedDict
-import types
 from types import MethodType, FunctionType
-
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
 
 import json
 import slugify
@@ -56,11 +52,7 @@ def get_location(request):
                     if slugify.slugify_url(c['name']) == slug]
         if matching:
             location_file = location_file_dirs[matching[0][0]]
-            if isdir(location_file):
-                obj = load(location_file)
-                RegisterObject(obj, request.session)
-                set_active_model(request.session, obj.id)
-
+            load_location_file(location_file, request.session)
             return matching[0][1]
         else:
             return HTTPNotFound()
@@ -69,13 +61,36 @@ def get_location(request):
         return FeatureCollection(location_content).serialize()
 
 
+def get_locations_dir_from_config(request):
+    map_dir = request.registry.settings['locations_dir']
+    if map_dir[0] == sep:
+        full_path = map_dir
+    else:
+        here = request.registry.settings['install_path']
+        full_path = join(here, map_dir)
+    return full_path
+
+
+def load_location_file(location_file, session):
+    if isdir(location_file):
+        obj = load(location_file)
+        RegisterObject(obj, session)
+        set_active_model(session, obj.id)
+
+
 def RegisterObject(obj, session):
+    '''
+        Recursively register an object plus all contained child objects.
+        Registering means we put the object somewhere it can be looked up
+        in the Web API.
+        We would mainly like to register PyGnome objects.  Others
+        we probably don't care about.
+    '''
     if (hasattr(obj, 'id')
         and not obj.__class__.__name__ == 'type'):
         print 'RegisterObjects(): registering:', (obj.__class__.__name__,
                                                   obj.id)
         set_session_object(obj, session)
-    #[RegisterObject(v, session) for v in obj.__dict__.values()]
     if isinstance(obj, (list, tuple, OrderedCollection,
                         SpillContainerPair)):
         for i in obj:
@@ -95,17 +110,13 @@ def RegisterObject(obj, session):
 #   "features": [{"type": "Feature",
 #                 "properties": {"title": "Long Island Sound",
 #                                "slug": "long_island_sound",
-#                                "content": "History about Long Island Sound."
-#                                },
+#                                "content": "History about Long Island Sound"},
 #                 "geometry": {"type": "Point",
-#                              "coordinates": [-72.879489, 41.117006]
-#                              }
+#                              "coordinates": [-72.879489, 41.117006]}
 #                 },
 #                 ...
 #                 ]
 #  }
-
-
 class Feature(object):
     def __init__(self, json_body):
         self.type = 'Feature'
@@ -138,13 +149,3 @@ class FeatureCollection(object):
     def serialize(self):
         return dict(type='FeatureCollection',
                     features=[f.serialize() for f in self.features])
-
-
-def get_locations_dir_from_config(request):
-    map_dir = request.registry.settings['locations_dir']
-    if map_dir[0] == sep:
-        full_path = map_dir
-    else:
-        here = request.registry.settings['install_path']
-        full_path = join(here, map_dir)
-    return full_path
