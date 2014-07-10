@@ -51,8 +51,14 @@ def get_location(request):
         matching = [(i, c) for i, c in enumerate(location_content)
                     if slugify.slugify_url(c['name']) == slug]
         if matching:
-            location_file = location_file_dirs[matching[0][0]]
-            load_location_file(location_file, request.session)
+            gnome_sema = request.registry.settings['py_gnome_semaphore']
+            gnome_sema.acquire()
+            try:
+                location_file = location_file_dirs[matching[0][0]]
+                load_location_file(location_file, request.session)
+            finally:
+                gnome_sema.release()
+
             return matching[0][1]
         else:
             return HTTPNotFound()

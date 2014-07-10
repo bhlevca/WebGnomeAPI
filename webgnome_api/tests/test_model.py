@@ -199,7 +199,8 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'environment' in model1
-        assert model1['environment'][0]['obj_type'] == 'gnome.environment.wind.Wind'
+        assert model1['environment'][0]['obj_type'] == ('gnome.environment'
+                                                        '.wind.Wind')
         assert 'description' in model1['environment'][0]
         assert 'timeseries' in model1['environment'][0]
         assert 'units' in model1['environment'][0]
@@ -230,7 +231,8 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_mover(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': 'gnome.movers.wind_movers.WindMover',
+        req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
+                                            '.WindMover'),
                                'active_start': '-inf',
                                'active_stop': 'inf',
                                'on': True,
@@ -240,7 +242,7 @@ class NestedModelTests(FunctionalTestBase):
                                'uncertain_time_delay': 0.0,
                                'wind': {'obj_type': 'gnome.environment.Wind',
                                         'description': u'Wind Object',
-                                        'updated_at': '2014-03-26T14:52:45.385126',
+                                        'updated_at': '2014-03-26T14:52:45.39',
                                         'source_type': u'undefined',
                                         'source_id': u'undefined',
                                         'units': u'meter per second',
@@ -263,7 +265,8 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'movers' in model1
-        assert model1['movers'][0]['obj_type'] == 'gnome.movers.wind_movers.WindMover'
+        assert model1['movers'][0]['obj_type'] == ('gnome.movers.wind_movers'
+                                                   '.WindMover')
         assert 'active_start' in model1['movers'][0]
         assert 'active_stop' in model1['movers'][0]
         assert 'on' in model1['movers'][0]
@@ -280,7 +283,8 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_mover(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': 'gnome.movers.wind_movers.WindMover',
+        req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
+                                            '.WindMover'),
                                'active_start': '-inf',
                                'active_stop': 'inf',
                                'on': True,
@@ -290,7 +294,7 @@ class NestedModelTests(FunctionalTestBase):
                                'uncertain_time_delay': 0.0,
                                'wind': {'obj_type': 'gnome.environment.Wind',
                                         'description': u'Wind Object',
-                                        'updated_at': '2014-03-26T14:52:45.385126',
+                                        'updated_at': '2014-03-26T14:52:45.39',
                                         'source_type': u'undefined',
                                         'source_id': u'undefined',
                                         'units': u'meter per second',
@@ -321,7 +325,8 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.core.Weatherer',
+        req_data['weatherers'] = [{'obj_type': ('gnome.weatherers.core'
+                                                '.Weatherer'),
                                    'active_start': '-inf',
                                    'active_stop': 'inf',
                                    'on': True,
@@ -331,14 +336,16 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'weatherers' in model1
-        assert model1['weatherers'][0]['obj_type'] == 'gnome.weatherers.core.Weatherer'
+        assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers.core'
+                                                       '.Weatherer')
         assert 'active_start' in model1['weatherers'][0]
         assert 'active_stop' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.core.Weatherer',
+        req_data['weatherers'] = [{'obj_type': ('gnome.weatherers.core'
+                                                '.Weatherer'),
                                    'active_start': '-inf',
                                    'active_stop': 'inf',
                                    'on': True,
@@ -356,7 +363,8 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()
-        req_data['outputters'] = [{'obj_type': 'gnome.outputters.renderer.Renderer',
+        req_data['outputters'] = [{'obj_type': ('gnome.outputters.renderer'
+                                                '.Renderer'),
                                    'name': 'Renderer',
                                    'output_last_step': True,
                                    'output_zero_step': True,
@@ -372,7 +380,8 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'outputters' in model1
-        assert model1['outputters'][0]['obj_type'] == 'gnome.outputters.renderer.Renderer'
+        assert model1['outputters'][0]['obj_type'] == ('gnome.outputters'
+                                                       '.renderer.Renderer')
         assert 'name' in model1['outputters'][0]
         assert 'output_last_step' in model1['outputters'][0]
         assert 'output_zero_step' in model1['outputters'][0]
@@ -384,7 +393,8 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_outputter(self):
         req_data = self.req_data.copy()
-        req_data['outputters'] = [{'obj_type': 'gnome.outputters.renderer.Renderer',
+        req_data['outputters'] = [{'obj_type': ('gnome.outputters.renderer'
+                                                '.Renderer'),
                                    'name': 'Renderer',
                                    'output_last_step': True,
                                    'output_zero_step': True,
@@ -489,10 +499,101 @@ class NestedModelTests(FunctionalTestBase):
                                   'name': 'Custom Wind 2',
                                   }]
 
-
         print 'updating model with new existing wind...'
         resp = self.testapp.put_json('/model', params=model3)
         model4 = resp.json_body
 
         assert model4['environment'][0]['id'] == wind2_data['id']
         assert model4['environment'][0]['name'] == 'Custom Wind 2'
+
+    def test_post_with_nested_spill(self):
+        req_data = self.req_data.copy()
+        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+                       'name': 'What a Name',
+                       'on': True,
+                       'release': {'obj_type': ('gnome.spill.release'
+                                                '.PointLineRelease'),
+                                   'name': 'PointLineRelease',
+                                   'num_elements': 1000,
+                                   'release_time': '2013-02-13T09:00:00',
+                                   'end_release_time': '2013-02-13T15:00:00',
+                                   'start_position': [144.664166, 13.441944,
+                                                      0.0],
+                                   'end_position': [144.664166, 13.441944,
+                                                    0.0],
+                                   },
+                       'element_type': {'obj_type': ('gnome.spill.elements'
+                                                     '.ElementType'),
+                                        'initializers': {'windages': {'obj_type': 'gnome.spill.elements.InitWindages',
+                                                                      'windage_range': [0.01, 0.04],
+                                                                      'windage_persist': 900,
+                                                                      }
+                                                         }
+                                        },
+                       }]
+        req_data['spills'] = spill_data
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        assert 'spills' in model1
+        assert model1['spills'][0]['obj_type'] == ('gnome.spill.spill.Spill')
+
+        assert 'name' in model1['spills'][0]
+        assert 'on' in model1['spills'][0]
+        assert 'release' in model1['spills'][0]
+        assert 'element_type' in model1['spills'][0]
+
+        assert 'name' in model1['spills'][0]['release']
+        assert 'num_elements' in model1['spills'][0]['release']
+        assert 'release_time' in model1['spills'][0]['release']
+        assert 'end_release_time' in model1['spills'][0]['release']
+        assert 'start_position' in model1['spills'][0]['release']
+        assert 'end_position' in model1['spills'][0]['release']
+
+        assert 'initializers' in model1['spills'][0]['element_type']
+
+    def test_put_with_nested_spill(self):
+        req_data = self.req_data.copy()
+        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+                       'name': 'What a Name',
+                       'on': True,
+                       'release': {'obj_type': ('gnome.spill.release'
+                                                '.PointLineRelease'),
+                                   'name': 'PointLineRelease',
+                                   'num_elements': 1000,
+                                   'release_time': '2013-02-13T09:00:00',
+                                   'end_release_time': '2013-02-13T15:00:00',
+                                   'start_position': [144.664166, 13.441944,
+                                                      0.0],
+                                   'end_position': [144.664166, 13.441944,
+                                                    0.0],
+                                   },
+                       'element_type': {'obj_type': ('gnome.spill.elements'
+                                                     '.ElementType'),
+                                        'initializers': {'windages': {'obj_type': 'gnome.spill.elements.InitWindages',
+                                                                      'windage_range': [0.01, 0.04],
+                                                                      'windage_persist': 900,
+                                                                      }
+                                                         }
+                                        },
+                       }]
+        req_data['spills'] = spill_data
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        model1['spills'][0]['on'] = False
+        model1['spills'][0]['release']['num_elements'] = 2000
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['spills'][0]['on'] == False
+        assert model2['spills'][0]['release']['num_elements'] == 2000
+
+        resp = self.testapp.get('/model')
+        model3 = resp.json_body
+
+        assert model3['spills'][0]['on'] == False
+        assert model3['spills'][0]['release']['num_elements'] == 2000
