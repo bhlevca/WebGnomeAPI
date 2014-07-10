@@ -11,10 +11,10 @@ from cornice import Service
 outputter = Service(name='outputter', path='/outputter*obj_id',
                   description="Outputter API", cors_policy=cors_policy)
 
-implemented_types = (
-                     'gnome.outputters.outputter.Outputter',
+implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.renderer.Renderer',
-                     )
+                     'gnome.outputters.netcdf.NetCDFOutput',
+                     'gnome.outputters.geo_json.GeoJson')
 
 
 @outputter.get()

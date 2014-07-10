@@ -145,3 +145,52 @@ class RendererTests(OutputterTests):
 
         assert json_obj['viewport'] == [[-100.0, 100.0],
                                         [-100.0, 100.0]]
+
+
+class NetCDFOutputterTests(OutputterTests):
+    '''
+        Tests out the Gnome NetCDFOutput object API
+    '''
+    req_data = {'obj_type': u'gnome.outputters.netcdf.NetCDFOutput',
+                'name': u'sample_model.nc',
+                'netcdf_filename': u'sample_model.nc',
+                'compress': True,
+                'output_last_step': True,
+                'output_zero_step': True}
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'netcdf_filename',
+                  'compress', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+        json_obj['compress'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] == False
+        assert json_obj['output_zero_step'] == False
+        assert json_obj['compress'] == False
+
+
+class GeoJsonOutputterTests(OutputterTests):
+    '''
+        Tests out the Gnome GeoJson object API
+    '''
+    req_data = {'obj_type': u'gnome.outputters.geo_json.GeoJson',
+                'name': u'GeoJson',
+                'output_last_step': True,
+                'output_zero_step': True}
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] == False
+        assert json_obj['output_zero_step'] == False

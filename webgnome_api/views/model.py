@@ -18,7 +18,9 @@ from webgnome_api.common.common_object import (CreateObject,
                                                init_session_objects,
                                                get_session_objects,
                                                get_session_object,
-                                               set_session_object)
+                                               set_session_object,
+                                               get_active_model,
+                                               set_active_model)
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
@@ -144,17 +146,3 @@ def update_model(request):
     gnome_sema.release()
 
     return ret
-
-
-def get_active_model(session):
-    if 'active_model' in session and session['active_model']:
-        return get_session_object(session['active_model'], session)
-    else:
-        return None
-
-
-def set_active_model(session, obj_id):
-    if not ('active_model' in session and
-            session['active_model'] == obj_id):
-        session['active_model'] = obj_id
-        session.changed()
