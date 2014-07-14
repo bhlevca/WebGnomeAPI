@@ -17,6 +17,7 @@ from gnome.spill_container import SpillContainerPair
 from gnome.persist import load
 
 from webgnome_api.common.common_object import (obj_id_from_url,
+                                               init_session_objects,
                                                set_session_object,
                                                set_active_model)
 from webgnome_api.common.views import cors_policy
@@ -79,6 +80,7 @@ def get_locations_dir_from_config(request):
 
 def load_location_file(location_file, session):
     if isdir(location_file):
+        init_session_objects(session, force=True)
         obj = load(location_file)
         RegisterObject(obj, session)
         set_active_model(session, obj.id)
