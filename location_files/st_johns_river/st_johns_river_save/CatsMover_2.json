@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "Offshore.cur", 
- "tide": 0, 
+ "tide": "Tide_0.json", 
  "json_": "save", 
  "scale_value": -0.15
 }
