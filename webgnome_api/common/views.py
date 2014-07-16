@@ -1,6 +1,8 @@
 """
 Common Gnome object request handlers.
 """
+import sys
+import traceback
 import json
 
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -82,6 +84,13 @@ def create_object(request, implemented_types):
         init_session_objects(request.session)
         obj = CreateObject(json_request, request.session['objects'])
         set_session_object(obj, request.session)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+        http_exc = HTTPUnsupportedMediaType()
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+        raise http_exc
     finally:
         gnome_sema.release()
         print '  ', log_prefix, 'semaphore released...'
@@ -113,8 +122,14 @@ def update_object(request, implemented_types):
         try:
             if UpdateObject(obj, json_request, request.session['objects']):
                 set_session_object(obj, request.session)
-        except ValueError as e:
-            raise HTTPUnsupportedMediaType(e)
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            fmt = traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback)
+
+            http_exc = HTTPUnsupportedMediaType()
+            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+            raise http_exc
         finally:
             gnome_sema.release()
             print '  ', log_prefix, 'semaphore released...'
