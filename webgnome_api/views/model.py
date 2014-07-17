@@ -1,6 +1,9 @@
 """
 Views for the Model object.
 """
+import sys
+import traceback
+
 import json
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -99,6 +102,14 @@ def create_model(request):
         set_session_object(new_model, request.session)
         set_session_object(new_model._map, request.session)
         set_active_model(request.session, new_model.id)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value,
+                                         exc_traceback)
+
+        http_exc = HTTPUnsupportedMediaType()
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+        raise http_exc
     finally:
         gnome_sema.release()
         print '  ', log_prefix, 'semaphore released...'
@@ -135,14 +146,23 @@ def update_model(request):
         my_model = get_active_model(request.session)
 
     if my_model:
-        if UpdateObject(my_model, json_request,
-                        get_session_objects(request.session)):
-            set_session_object(my_model, request.session)
-        ret = my_model.serialize()
+        try:
+            if UpdateObject(my_model, json_request,
+                            get_session_objects(request.session)):
+                set_session_object(my_model, request.session)
+            ret = my_model.serialize()
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            fmt = traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback)
+
+            http_exc = HTTPUnsupportedMediaType()
+            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+            raise http_exc
+        finally:
+            gnome_sema.release()
     else:
         gnome_sema.release()
         raise HTTPNotFound()
-
-    gnome_sema.release()
 
     return ret
