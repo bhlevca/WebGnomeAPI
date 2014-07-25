@@ -35,17 +35,23 @@ class StepTest(FunctionalTestBase):
                                                     }
                                    },
                   }
-    outputter_data = {'obj_type': 'gnome.outputters.renderer.Renderer',
-                      'name': 'Renderer',
-                      'output_last_step': True,
-                      'output_zero_step': True,
-                      'draw_ontop': 'forecast',
-                      'filename': 'models/Test.bna',
-                      'images_dir': 'models/images',
-                      'image_size': [800, 600],
-                      'viewport': [[-71.2242987892, 42.1846263908],
-                                   [-70.4146871963, 42.6329573908]]
-                      }
+    renderer_data = {'obj_type': 'gnome.outputters.renderer.Renderer',
+                     'name': 'Renderer',
+                     'output_last_step': True,
+                     'output_zero_step': True,
+                     'draw_ontop': 'forecast',
+                     'filename': 'models/Test.bna',
+                     'images_dir': 'models/images',
+                     'image_size': [800, 600],
+                     'viewport': [[-71.2242987892, 42.1846263908],
+                                  [-70.4146871963, 42.6329573908]]
+                     }
+    geojson_data = {'obj_type': 'gnome.outputters.geo_json.GeoJson',
+                    'name': 'GeoJson',
+                    'output_last_step': True,
+                    'output_zero_step': True,
+                    'output_dir': 'models/images'
+                    }
 
     def test_first_step(self):
         # We are testing our ability to generate the first step in a model run
@@ -56,8 +62,6 @@ class StepTest(FunctionalTestBase):
         assert 'steps' in resp.json_body
 
         # OK, if we get this far, we should have an active model
-        #gc.collect()
-        gc.collect()
         print 'test_first_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
@@ -79,7 +83,7 @@ class StepTest(FunctionalTestBase):
 
         # - we need an outputter
         print 'test_first_step(): creating outputter...'
-        resp = self.testapp.post_json('/outputter', params=self.outputter_data)
+        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
         outputter = resp.json_body
         model1['outputters'] = [outputter]
 
@@ -97,4 +101,64 @@ class StepTest(FunctionalTestBase):
         first_step = resp.json_body
         print 'first_step:'
         pp.pprint(first_step)
+
+        assert first_step['GeoJson']['step_num'] == 0
+
+    def test_all_steps(self):
+        # We are testing our ability to generate the first step in a model run
+        resp = self.testapp.get('/location/central-long-island-sound')
+
+        assert 'name' in resp.json_body
+        assert 'coords' in resp.json_body
+        assert 'steps' in resp.json_body
+
+        # OK, if we get this far, we should have an active model
+        print 'test_all_steps(): getting model...'
+        resp = self.testapp.get('/model')
+        model1 = resp.json_body
+        duration = model1['duration']
+        time_step = model1['time_step']
+
+        # The location file we selected should have:
+        # - a registered map
+        # - a registered Tide
+        # - a registered RandomMover
+        # - a registered CatsMover
+
+        # so what do we still need?
+        # - maybe a wind and a windmover??? (optional)
+
+        # - we need a spill
+        print 'test_all_steps(): creating spill...'
+        resp = self.testapp.post_json('/spill', params=self.spill_data)
+        spill = resp.json_body
+        model1['spills'] = [spill]
+
+        # - we need an outputter
+        print 'test_all_steps(): creating outputter...'
+
+        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
+        outputter = resp.json_body
+        model1['outputters'] = [outputter]
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model1 = resp.json_body
+        print 'model1:'
+        pp.pprint(model1)
+
+        assert model1['spills'][0]['id'] == spill['id']
+        assert model1['outputters'][0]['id'] == outputter['id']
+
+        # Alright, now we can try to cycle through our steps.
+        num_steps = int(duration / time_step)
+        print 'num_steps = ', num_steps
+
+        resp = self.testapp.get('/step')
+        first_step = resp.json_body
+        print 'step number:', first_step
+
+        resp = self.testapp.get('/step')
+        first_step = resp.json_body
+        print 'step number:', first_step
+
         raise
