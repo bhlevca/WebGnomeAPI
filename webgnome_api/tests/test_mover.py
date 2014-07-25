@@ -9,6 +9,8 @@ class BaseMoverTests(FunctionalTestBase):
         Tests out the Gnome Mover common APIs
     '''
     req_data = {'obj_type': 'gnome.movers.simple_mover.SimpleMover',
+                'uncertainty_scale': 0.5,
+                'velocity': (1.0, 1.0, 1.0)
                 }
 
     def test_get_no_id(self):
@@ -24,11 +26,27 @@ class BaseMoverTests(FunctionalTestBase):
         obj_id = 0xdeadbeef
         self.testapp.get('/mover/{0}'.format(obj_id), status=404)
 
+    def test_get_valid_id(self):
+        # 1. create the object by performing a put with no id
+        # 2. get the valid id from the response
+        # 3. perform an additional get of the object with a valid id
+        # 4. check that our new JSON response matches the one from the create
+        resp1 = self.testapp.post_json('/mover', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
+
+        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
+            assert resp2.json_body[a] == resp1.json_body[a]
+
     def test_post_no_payload(self):
         self.testapp.post_json('/mover', status=400)
 
     def test_put_no_payload(self):
         self.testapp.put_json('/mover', status=400)
+
+    def test_put_no_id(self):
+        self.testapp.put_json('/mover', params=self.req_data, status=404)
 
     def check_create_properties(self, response):
         for k in ('id', 'obj_type', 'on', 'active_start', 'active_stop'):
@@ -46,22 +64,6 @@ class SimpleMoverTests(BaseMoverTests):
                 'uncertainty_scale': 0.5,
                 'velocity': (1.0, 1.0, 1.0)
                 }
-
-    def test_get_valid_id(self):
-        # 1. create the object by performing a put with no id
-        # 2. get the valid id from the response
-        # 3. perform an additional get of the object with a valid id
-        # 4. check that our new JSON response matches the one from the create
-        resp1 = self.testapp.post_json('/mover', params=self.req_data)
-
-        obj_id = resp1.json_body['id']
-        resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
-
-        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
-            assert resp2.json_body[a] == resp1.json_body[a]
-
-    def test_put_no_id(self):
-        self.testapp.put_json('/mover', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
         params = {}
@@ -222,3 +224,60 @@ class WindMoverTests(BaseMoverTests):
         assert json_obj['uncertain_duration'] == 2.0
         assert json_obj['uncertain_speed_scale'] == 3.0
         assert json_obj['uncertain_time_delay'] == 4.0
+
+
+class RandomMoverTests(BaseMoverTests):
+    '''
+        Tests out the Gnome Random Mover API
+    '''
+    req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover',
+                'name': u'RandomMover',
+                'active_start': '-inf',
+                'active_stop': 'inf',
+                'on': True,
+                'diffusion_coef': 100000.0,
+                'uncertain_factor': 2.0
+                }
+
+    def test_put_invalid_id(self):
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
+
+        self.testapp.put_json('/mover', params=params, status=404)
+
+    def test_put_valid_id(self):
+        # 1. create the object by performing a put with no id
+        # 2. get the valid id from the response
+        # 3. update the properties in the JSON response
+        # 4. update the object by performing a put with a valid id
+        # 5. check that our new properties are in the new JSON response
+        resp = self.testapp.post_json('/mover', params=self.req_data)
+
+        req_data = resp.json_body
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/mover', params=req_data)
+        self.check_updates(resp.json_body)
+
+    def check_create_properties(self, response):
+        super(SimpleMoverTests, self).check_create_properties(response)
+
+        # specific to SimpleMover()
+        assert 'velocity' in response.json_body
+
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        json_obj['diffusion_coef'] = 20000.0
+        json_obj['on'] = False
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        assert json_obj['diffusion_coef'] == 20000.0
+        assert json_obj['on'] == False
