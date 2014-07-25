@@ -306,11 +306,6 @@ class RandomVerticalMoverTests(BaseMoverTests):
         self.testapp.put_json('/mover', params=params, status=404)
 
     def test_put_valid_id(self):
-        # 1. create the object by performing a put with no id
-        # 2. get the valid id from the response
-        # 3. update the properties in the JSON response
-        # 4. update the object by performing a put with a valid id
-        # 5. check that our new properties are in the new JSON response
         resp = self.testapp.post_json('/mover', params=self.req_data)
 
         req_data = resp.json_body
@@ -319,8 +314,12 @@ class RandomVerticalMoverTests(BaseMoverTests):
         resp = self.testapp.put_json('/mover', params=req_data)
         self.check_updates(resp.json_body)
 
+        model_id = resp.json_body['id']
+        resp = self.testapp.get('/mover/{0}'.format(model_id))
+        self.check_updates(resp.json_body)
+
     def check_create_properties(self, response):
-        super(SimpleMoverTests, self).check_create_properties(response)
+        super(RandomVerticalMoverTests, self).check_create_properties(response)
 
         # specific to SimpleMover()
         assert 'velocity' in response.json_body
