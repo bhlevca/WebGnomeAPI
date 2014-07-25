@@ -1,6 +1,9 @@
 """
 Functional tests for the Mover Web API
 """
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2)
+
 from base import FunctionalTestBase
 
 
@@ -287,8 +290,7 @@ class RandomVerticalMoverTests(BaseMoverTests):
     '''
         Tests out the Gnome Random Vertical Mover API
     '''
-    req_data = {
-                'obj_type': u'gnome.movers.random_movers.RandomVerticalMover',
+    req_data = {'obj_type': u'gnome.movers.random_movers.RandomVerticalMover',
                 'name': u'RandomVerticalMover',
                 'active_start': '-inf',
                 'active_stop': 'inf',
@@ -307,6 +309,76 @@ class RandomVerticalMoverTests(BaseMoverTests):
 
     def test_put_valid_id(self):
         resp = self.testapp.post_json('/mover', params=self.req_data)
+
+        req_data = resp.json_body
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/mover', params=req_data)
+        self.check_updates(resp.json_body)
+
+        model_id = resp.json_body['id']
+        resp = self.testapp.get('/mover/{0}'.format(model_id))
+        self.check_updates(resp.json_body)
+
+    def check_create_properties(self, response):
+        super(RandomVerticalMoverTests, self).check_create_properties(response)
+
+        # specific to SimpleMover()
+        assert 'velocity' in response.json_body
+
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        json_obj['mixed_layer_depth'] = 20.0
+        json_obj['vertical_diffusion_coef_above_ml'] = 10.0
+        json_obj['vertical_diffusion_coef_below_ml'] = 0.22
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        assert json_obj['mixed_layer_depth'] == 20.0
+        assert json_obj['vertical_diffusion_coef_above_ml'] == 10.0
+        assert json_obj['vertical_diffusion_coef_below_ml'] == 0.22
+
+
+class CatsMoverTests(BaseMoverTests):
+    '''
+        Tests out the Gnome Cats Mover API
+        - Kinda needs a Tide object
+    '''
+    tide_data = {'obj_type': 'gnome.environment.Tide',
+                 'filename': 'models/CLISShio.txt',
+                 }
+
+    req_data = {'obj_type': u'gnome.movers.current_movers.CatsMover',
+                'filename': 'models/tidesWAC.CUR',
+                'scale': True,
+                'scale_value': 1.0,
+                }
+
+    def test_put_invalid_id(self):
+        params = {}
+        params.update(self.req_data)
+        params['id'] = str(0xdeadbeef)
+
+        self.testapp.put_json('/mover', params=params, status=404)
+
+    def test_put_valid_id(self):
+        req_data = {}
+        req_data.update(self.req_data)
+
+        resp = self.testapp.post_json('/environment', params=self.tide_data)
+        tide = resp.json_body
+        req_data['tide'] = tide
+
+        resp = self.testapp.post_json('/mover', params=req_data)
+        mover = resp.json_body
+        print "Our cats mover:"
+        pp.pprint(mover)
 
         req_data = resp.json_body
         self.perform_updates(req_data)
