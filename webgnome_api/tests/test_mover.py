@@ -377,13 +377,10 @@ class CatsMoverTests(BaseMoverTests):
 
         resp = self.testapp.post_json('/mover', params=req_data)
         mover = resp.json_body
-        print "Our cats mover:"
-        pp.pprint(mover)
 
-        req_data = resp.json_body
-        self.perform_updates(req_data)
+        self.perform_updates(mover)
 
-        resp = self.testapp.put_json('/mover', params=req_data)
+        resp = self.testapp.put_json('/mover', params=mover)
         self.check_updates(resp.json_body)
 
         model_id = resp.json_body['id']
@@ -401,15 +398,34 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        json_obj['mixed_layer_depth'] = 20.0
-        json_obj['vertical_diffusion_coef_above_ml'] = 10.0
-        json_obj['vertical_diffusion_coef_below_ml'] = 0.22
+        json_obj['scale'] = False
+        json_obj['scale_value'] = 2.0
+        json_obj['scale_refpoint'] = [-50.0, 50.0, 10.0]
+
+        json_obj['up_cur_uncertain'] = 0.5
+        json_obj['down_cur_uncertain'] = -0.5
+        json_obj['left_cur_uncertain'] = -0.5
+        json_obj['right_cur_uncertain'] = 0.5
+
+        json_obj['uncertain_duration'] = 60.0
+        json_obj['uncertain_eddy_diffusion'] = 1.0
+        #json_obj['uncertain_eddy_v0'] = 1.0  # failing
+        json_obj['uncertain_time_delay'] = 1.0
 
     def check_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['mixed_layer_depth'] == 20.0
-        assert json_obj['vertical_diffusion_coef_above_ml'] == 10.0
-        assert json_obj['vertical_diffusion_coef_below_ml'] == 0.22
+        assert json_obj['scale'] == False
+        assert json_obj['scale_value'] == 2.0
+        assert json_obj['scale_refpoint'] == [-50.0, 50.0, 10.0]
+
+        assert json_obj['up_cur_uncertain'] == 0.5
+        assert json_obj['down_cur_uncertain'] == -0.5
+        assert json_obj['left_cur_uncertain'] == -0.5
+        assert json_obj['right_cur_uncertain'] == 0.5
+
+        assert json_obj['uncertain_duration'] == 60.0
+        assert json_obj['uncertain_eddy_diffusion'] == 1.0
+        assert json_obj['uncertain_time_delay'] == 1.0

@@ -131,7 +131,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                 return True
         elif type(obj_attr) in (list, tuple,
                                 OrderedCollection, SpillContainerPair):
-            ret_value = False
+            updated = False
             for i, (v1, v2) in enumerate(izip_longest(obj_attr, value)):
                 # So basically we are going to reconcile two lists
                 # this isn't too hard, but we want to return whether
@@ -146,7 +146,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                             obj_attr.append(all_objects[v2['id']])
                             UpdateObject(all_objects[v2['id']], v2,
                                          all_objects, False)
-                            ret_value = True
+                            updated = True
                         else:
                             # I dunno...we could create the object here.
                             # But for right now we will punt.
@@ -156,26 +156,26 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                     else:
                         # TODO: lots of possible edge cases here.
                         obj_attr.append(v2)
-                        ret_value = True
+                        updated = True
                 elif v2 == None:
                     # Empty right index which means our right list is shorter.
                     # truncate our left list and exit our loop
                     v1 = v1[:i]
-                    ret_value = True
+                    updated = True
                     break
                 else:
                     # left & right are both present...lets see if they match
                     if ValueIsJsonObject(v2):
                         if ObjectId(v1) == ObjectId(v2):
                             #print 'left & right are the same object'
-                            ret_value = UpdateObject(v1, v2, all_objects,
+                            updated = UpdateObject(v1, v2, all_objects,
                                                      False)
                         elif ObjectExists(v2, all_objects):
                             #print ('left is different than right '
                             #       'and right exists')
                             obj_attr[i] = all_objects[v2['id']]
                             UpdateObject(obj_attr[i], v2, all_objects, False)
-                            ret_value = True
+                            updated = True
                         else:
                             # I dunno...we could create the object here.
                             # But for right now we will punt.
@@ -185,8 +185,15 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                     else:
                         if obj_attr[i] != v2:
                             obj_attr[i] = v2
-                            ret_value = True
-            return ret_value
+                            updated = True
+            if updated and isinstance(obj_attr, (list, tuple)):
+                # We have updated the individual elements of our sequence
+                # object, which should be good enough in most cases.
+                # However we sometimes deal with Cython objects that have
+                # properties that need to be explicitly set in order to
+                # propagate to the C++ object
+                setattr(obj, attr, obj_attr)
+            return updated
         else:
             if not all(obj_attr == value):
                 setattr(obj, attr, value)
