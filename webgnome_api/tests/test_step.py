@@ -153,12 +153,19 @@ class StepTest(FunctionalTestBase):
         num_steps = int(duration / time_step)
         print 'num_steps = ', num_steps
 
-        resp = self.testapp.get('/step')
-        first_step = resp.json_body
-        print 'step number:', first_step
+        for s in range(num_steps):
+            resp = self.testapp.get('/step')
+            step = resp.json_body
+            print 'step number:', step['GeoJson']['step_num']
 
+        # one last time
         resp = self.testapp.get('/step')
-        first_step = resp.json_body
-        print 'step number:', first_step
+        step = resp.json_body
+        print 'step number:', step
+
+        # one more time
+        resp = self.testapp.get('/step')
+        step = resp.json_body
+        print 'step number:', step
 
         raise

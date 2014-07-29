@@ -15,10 +15,12 @@ from webgnome_api.common.views import (get_object,
 
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
-                                               obj_id_from_req_payload,
-                                               init_session_objects,
-                                               get_session_object,
-                                               set_session_object)
+                                               obj_id_from_req_payload)
+
+from webgnome_api.common.session_management import (init_session_objects,
+                                                    get_session_objects,
+                                                    get_session_object,
+                                                    set_session_object)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
@@ -39,7 +41,7 @@ def get_map(request):
 @map_api.post()
 def create_map(request):
     '''Creates a Gnome Map object.'''
-    init_session_objects(request.session)
+    init_session_objects(request)
     try:
         json_request = json.loads(request.body)
     except:
@@ -53,9 +55,9 @@ def create_map(request):
     map_dir = get_map_dir_from_config(request)
     json_request['filename'] = os.path.join(map_dir, json_request['filename'])
 
-    obj = CreateObject(json_request, request.session['objects'])
+    obj = CreateObject(json_request, get_session_objects(request))
 
-    set_session_object(obj, request.session)
+    set_session_object(obj, request)
     return obj.serialize()
 
 
@@ -71,16 +73,16 @@ def update_map(request):
         raise HTTPNotImplemented()
 
     obj = get_session_object(obj_id_from_req_payload(json_request),
-                             request.session)
+                             request)
     if obj:
         try:
-            UpdateObject(obj, json_request, request.session['objects'])
+            UpdateObject(obj, json_request, get_session_objects(request))
         except ValueError as e:
             raise HTTPUnsupportedMediaType(e)
     else:
         raise HTTPNotFound()
 
-    set_session_object(obj, request.session)
+    set_session_object(obj, request)
     return obj.serialize()
 
 

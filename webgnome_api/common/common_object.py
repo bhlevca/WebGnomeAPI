@@ -37,6 +37,25 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
     return py_class.new_from_dict(obj_dict)
 
 
+def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
+    '''
+        Here we update our python object with a JSON payload
+
+        For now, I don't think we will be too fancy about this.
+        We will grow more sophistication as we need it.
+    '''
+    FillSparseObjectChildren(json_obj, all_objects)
+
+    py_class = PyClassFromName(json_obj['obj_type'])
+
+    if deserialize_obj:
+        obj_dict = py_class.deserialize(json_obj)
+    else:
+        obj_dict = json_obj
+
+    return UpdateObjectAttributes(obj, obj_dict.iteritems(), all_objects)
+
+
 def LinkObjectChildren(obj_dict, all_objects):
     for k, v in obj_dict.items():
         if ValueIsJsonObject(v):
@@ -63,25 +82,6 @@ def LinkObjectChildren(obj_dict, all_objects):
 
             [LinkObjectChildren(i, all_objects) for i in v
              if isinstance(i, dict)]
-
-
-def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
-    '''
-        Here we update our python object with a JSON payload
-
-        For now, I don't think we will be too fancy about this.
-        We will grow more sophistication as we need it.
-    '''
-    FillSparseObjectChildren(json_obj, all_objects)
-
-    py_class = PyClassFromName(json_obj['obj_type'])
-
-    if deserialize_obj:
-        obj_dict = py_class.deserialize(json_obj)
-    else:
-        obj_dict = json_obj
-
-    return UpdateObjectAttributes(obj, obj_dict.iteritems(), all_objects)
 
 
 def UpdateObjectAttributes(obj, items, all_objects):
@@ -248,53 +248,6 @@ def obj_id_from_url(request):
 
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
-
-
-def init_session_objects(session, force=False):
-    if (not 'objects' in session) or force:
-        print ('init_session_objects(): '
-               'object dict does not exist. initializing it.')
-        session['objects'] = {}
-        session.changed()
-
-
-def get_session_objects(session):
-    init_session_objects(session)
-    return session['objects']
-
-
-def get_session_object(obj_id, session):
-    init_session_objects(session)
-
-    if obj_id in session['objects']:
-        return session['objects'][obj_id]
-    else:
-        return None
-
-
-def set_session_object(obj, session):
-    init_session_objects(session)
-
-    try:
-        session['objects'][obj.id] = obj
-    except AttributeError:
-        session['objects'][id(obj)] = obj
-
-    session.changed()
-
-
-def get_active_model(session):
-    if 'active_model' in session and session['active_model']:
-        return get_session_object(session['active_model'], session)
-    else:
-        return None
-
-
-def set_active_model(session, obj_id):
-    if not ('active_model' in session and
-            session['active_model'] == obj_id):
-        session['active_model'] = obj_id
-        session.changed()
 
 
 def FillSparseObjectChildren(obj_dict, all_objects):

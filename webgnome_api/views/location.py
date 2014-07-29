@@ -16,10 +16,12 @@ from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
 from gnome.persist import load
 
-from webgnome_api.common.common_object import (obj_id_from_url,
-                                               init_session_objects,
-                                               set_session_object,
-                                               set_active_model)
+from webgnome_api.common.common_object import obj_id_from_url
+
+from webgnome_api.common.session_management import (init_session_objects,
+                                                    set_session_object,
+                                                    set_active_model)
+
 from webgnome_api.common.views import cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
@@ -56,7 +58,7 @@ def get_location(request):
             gnome_sema.acquire()
             try:
                 location_file = location_file_dirs[matching[0][0]]
-                load_location_file(location_file, request.session)
+                load_location_file(location_file, request)
             finally:
                 gnome_sema.release()
 
@@ -78,15 +80,15 @@ def get_locations_dir_from_config(request):
     return full_path
 
 
-def load_location_file(location_file, session):
+def load_location_file(location_file, request):
     if isdir(location_file):
-        init_session_objects(session, force=True)
+        init_session_objects(request, force=True)
         obj = load(location_file)
-        RegisterObject(obj, session)
-        set_active_model(session, obj.id)
+        RegisterObject(obj, request)
+        set_active_model(request, obj.id)
 
 
-def RegisterObject(obj, session):
+def RegisterObject(obj, request):
     '''
         Recursively register an object plus all contained child objects.
         Registering means we put the object somewhere it can be looked up
@@ -98,18 +100,18 @@ def RegisterObject(obj, session):
         and not obj.__class__.__name__ == 'type'):
         print 'RegisterObjects(): registering:', (obj.__class__.__name__,
                                                   obj.id)
-        set_session_object(obj, session)
+        set_session_object(obj, request)
     if isinstance(obj, (list, tuple, OrderedCollection,
                         SpillContainerPair)):
         for i in obj:
-            RegisterObject(i, session)
+            RegisterObject(i, request)
         pass
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
             if not (k.find('_') == 0
                     or isinstance(attr, (MethodType, FunctionType))):
-                RegisterObject(attr, session)
+                RegisterObject(attr, request)
 
 
 # We need to return a feature collection structure on a get with no

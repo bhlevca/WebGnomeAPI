@@ -17,13 +17,15 @@ from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
                                                ObjectImplementsOneOf,
                                                obj_id_from_url,
-                                               obj_id_from_req_payload,
-                                               init_session_objects,
-                                               get_session_objects,
-                                               get_session_object,
-                                               set_session_object,
-                                               get_active_model,
-                                               set_active_model)
+                                               obj_id_from_req_payload)
+
+from webgnome_api.common.session_management import (init_session_objects,
+                                                    get_session_objects,
+                                                    get_session_object,
+                                                    set_session_object,
+                                                    get_active_model,
+                                                    set_active_model)
+
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
@@ -50,17 +52,17 @@ def get_model(request):
     gnome_sema.acquire()
 
     if not obj_id:
-        my_model = get_active_model(request.session)
+        my_model = get_active_model(request)
         if my_model:
             ret = my_model.serialize()
         else:
             # - return a Model specification
             ret = get_specifications(request, implemented_types)
     else:
-        obj = get_session_object(obj_id, request.session)
+        obj = get_session_object(obj_id, request)
         if obj:
             if ObjectImplementsOneOf(obj, implemented_types):
-                set_active_model(request.session, obj.id)
+                set_active_model(request, obj.id)
                 ret = obj.serialize()
             else:
                 raise HTTPUnsupportedMediaType()
@@ -93,15 +95,15 @@ def create_model(request):
     print '  ', log_prefix, 'semaphore acquired...'
 
     try:
-        init_session_objects(request.session, force=True)
+        init_session_objects(request, force=True)
         if json_request:
             new_model = CreateObject(json_request,
-                                     get_session_objects(request.session))
+                                     get_session_objects(request))
         else:
             new_model = Model()
-        set_session_object(new_model, request.session)
-        set_session_object(new_model._map, request.session)
-        set_active_model(request.session, new_model.id)
+        set_session_object(new_model, request)
+        set_session_object(new_model._map, request)
+        set_active_model(request, new_model.id)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value,
@@ -141,15 +143,15 @@ def update_model(request):
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
-        my_model = get_session_object(obj_id, request.session)
+        my_model = get_session_object(obj_id, request)
     else:
-        my_model = get_active_model(request.session)
+        my_model = get_active_model(request)
 
     if my_model:
         try:
             if UpdateObject(my_model, json_request,
-                            get_session_objects(request.session)):
-                set_session_object(my_model, request.session)
+                            get_session_objects(request)):
+                set_session_object(my_model, request)
             ret = my_model.serialize()
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
