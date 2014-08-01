@@ -7,7 +7,7 @@ pp = PrettyPrinter(indent=2)
 from base import FunctionalTestBase
 
 
-class LocationTestBase(FunctionalTestBase):
+class LocationTest(FunctionalTestBase):
     '''
         Tests out the Gnome Location object API
     '''

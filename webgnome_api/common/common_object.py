@@ -37,6 +37,25 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
     return py_class.new_from_dict(obj_dict)
 
 
+def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
+    '''
+        Here we update our python object with a JSON payload
+
+        For now, I don't think we will be too fancy about this.
+        We will grow more sophistication as we need it.
+    '''
+    FillSparseObjectChildren(json_obj, all_objects)
+
+    py_class = PyClassFromName(json_obj['obj_type'])
+
+    if deserialize_obj:
+        obj_dict = py_class.deserialize(json_obj)
+    else:
+        obj_dict = json_obj
+
+    return UpdateObjectAttributes(obj, obj_dict.iteritems(), all_objects)
+
+
 def LinkObjectChildren(obj_dict, all_objects):
     for k, v in obj_dict.items():
         if ValueIsJsonObject(v):
@@ -65,25 +84,6 @@ def LinkObjectChildren(obj_dict, all_objects):
              if isinstance(i, dict)]
 
 
-def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
-    '''
-        Here we update our python object with a JSON payload
-
-        For now, I don't think we will be too fancy about this.
-        We will grow more sophistication as we need it.
-    '''
-    FillSparseObjectChildren(json_obj, all_objects)
-
-    py_class = PyClassFromName(json_obj['obj_type'])
-
-    if deserialize_obj:
-        obj_dict = py_class.deserialize(json_obj)
-    else:
-        obj_dict = json_obj
-
-    return UpdateObjectAttributes(obj, obj_dict.iteritems(), all_objects)
-
-
 def UpdateObjectAttributes(obj, items, all_objects):
     return any([UpdateObjectAttribute(obj, k, v, all_objects)
                 for k, v in items])
@@ -110,7 +110,10 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                             set,
                             bool, NoneType, weakref.ref,
                             datetime, timedelta)):
-        if not getattr(obj, attr) == value:
+        ro_attrs = [s.name
+                    for s in obj._state.get_field_by_attribute('read')]
+        if not (getattr(obj, attr) == value or
+                attr in ro_attrs):
             setattr(obj, attr, value)
             return True
     elif isinstance(value, (dict)):
@@ -131,7 +134,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                 return True
         elif type(obj_attr) in (list, tuple,
                                 OrderedCollection, SpillContainerPair):
-            ret_value = False
+            updated = False
             for i, (v1, v2) in enumerate(izip_longest(obj_attr, value)):
                 # So basically we are going to reconcile two lists
                 # this isn't too hard, but we want to return whether
@@ -146,7 +149,7 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                             obj_attr.append(all_objects[v2['id']])
                             UpdateObject(all_objects[v2['id']], v2,
                                          all_objects, False)
-                            ret_value = True
+                            updated = True
                         else:
                             # I dunno...we could create the object here.
                             # But for right now we will punt.
@@ -156,26 +159,26 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                     else:
                         # TODO: lots of possible edge cases here.
                         obj_attr.append(v2)
-                        ret_value = True
+                        updated = True
                 elif v2 == None:
                     # Empty right index which means our right list is shorter.
                     # truncate our left list and exit our loop
                     v1 = v1[:i]
-                    ret_value = True
+                    updated = True
                     break
                 else:
                     # left & right are both present...lets see if they match
                     if ValueIsJsonObject(v2):
                         if ObjectId(v1) == ObjectId(v2):
                             #print 'left & right are the same object'
-                            ret_value = UpdateObject(v1, v2, all_objects,
+                            updated = UpdateObject(v1, v2, all_objects,
                                                      False)
                         elif ObjectExists(v2, all_objects):
                             #print ('left is different than right '
                             #       'and right exists')
                             obj_attr[i] = all_objects[v2['id']]
                             UpdateObject(obj_attr[i], v2, all_objects, False)
-                            ret_value = True
+                            updated = True
                         else:
                             # I dunno...we could create the object here.
                             # But for right now we will punt.
@@ -185,8 +188,15 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                     else:
                         if obj_attr[i] != v2:
                             obj_attr[i] = v2
-                            ret_value = True
-            return ret_value
+                            updated = True
+            if updated and isinstance(obj_attr, (list, tuple)):
+                # We have updated the individual elements of our sequence
+                # object, which should be good enough in most cases.
+                # However we sometimes deal with Cython objects that have
+                # properties that need to be explicitly set in order to
+                # propagate to the C++ object
+                setattr(obj, attr, obj_attr)
+            return updated
         else:
             if not all(obj_attr == value):
                 setattr(obj, attr, value)
@@ -241,53 +251,6 @@ def obj_id_from_url(request):
 
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
-
-
-def init_session_objects(session, force=False):
-    if (not 'objects' in session) or force:
-        print ('init_session_objects(): '
-               'object dict does not exist. initializing it.')
-        session['objects'] = {}
-        session.changed()
-
-
-def get_session_objects(session):
-    init_session_objects(session)
-    return session['objects']
-
-
-def get_session_object(obj_id, session):
-    init_session_objects(session)
-
-    if obj_id in session['objects']:
-        return session['objects'][obj_id]
-    else:
-        return None
-
-
-def set_session_object(obj, session):
-    init_session_objects(session)
-
-    try:
-        session['objects'][obj.id] = obj
-    except AttributeError:
-        session['objects'][id(obj)] = obj
-
-    session.changed()
-
-
-def get_active_model(session):
-    if 'active_model' in session and session['active_model']:
-        return get_session_object(session['active_model'], session)
-    else:
-        return None
-
-
-def set_active_model(session, obj_id):
-    if not ('active_model' in session and
-            session['active_model'] == obj_id):
-        session['active_model'] = obj_id
-        session.changed()
 
 
 def FillSparseObjectChildren(obj_dict, all_objects):

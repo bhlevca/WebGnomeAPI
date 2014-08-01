@@ -18,13 +18,17 @@ from .common_object import (CreateObject,
                             UpdateObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
-                            obj_id_from_req_payload,
-                            init_session_objects,
-                            get_session_object,
-                            set_session_object)
+                            obj_id_from_req_payload)
 
-cors_policy = {'origins': ('http://0.0.0.0:8080',),
-               'credentials': 'true'
+from .session_management import (get_session_objects,
+                                 get_session_object,
+                                 set_session_object)
+
+cors_policy = {'origins': (
+                           'http://0.0.0.0:8080',
+                           'http://localhost:8080',
+                           ),
+               'credentials': True
                }
 
 
@@ -34,7 +38,7 @@ def get_object(request, implemented_types):
     if not obj_id:
         return get_specifications(request, implemented_types)
     else:
-        obj = get_session_object(obj_id, request.session)
+        obj = get_session_object(obj_id, request)
         if obj:
             if ObjectImplementsOneOf(obj, implemented_types):
                 return obj.serialize()
@@ -81,9 +85,8 @@ def create_object(request, implemented_types):
     print '  ', log_prefix, 'semaphore acquired...'
 
     try:
-        init_session_objects(request.session)
-        obj = CreateObject(json_request, request.session['objects'])
-        set_session_object(obj, request.session)
+        obj = CreateObject(json_request, get_session_objects(request))
+        set_session_object(obj, request)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -113,15 +116,15 @@ def update_object(request, implemented_types):
         raise HTTPNotImplemented()
 
     obj = get_session_object(obj_id_from_req_payload(json_request),
-                             request.session)
+                             request)
     if obj:
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
-            if UpdateObject(obj, json_request, request.session['objects']):
-                set_session_object(obj, request.session)
+            if UpdateObject(obj, json_request, get_session_objects(request)):
+                set_session_object(obj, request)
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             fmt = traceback.format_exception(exc_type, exc_value,
