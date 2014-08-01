@@ -1,10 +1,16 @@
 """
 Views for the Location objects.
 """
+import sys
+import traceback
+import json
+
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
-from pyramid.httpexceptions import HTTPPreconditionFailed
+from pyramid.httpexceptions import (HTTPNotFound,
+                                    HTTPPreconditionFailed,
+                                    HTTPUnprocessableEntity)
 from cornice import Service
 
 from webgnome_api.common.common_object import obj_id_from_url
@@ -26,7 +32,18 @@ def get_step(request):
     active_model = get_active_model(request)
     if active_model:
         # generate the next step in the sequence.
-        output = active_model.step()
+        try:
+            output = active_model.step()
+        except StopIteration:
+            raise HTTPNotFound
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+            http_exc = HTTPUnprocessableEntity()
+            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+            raise http_exc
+
         return output
     else:
         http_exc = HTTPPreconditionFailed()

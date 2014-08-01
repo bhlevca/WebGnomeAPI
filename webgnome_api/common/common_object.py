@@ -110,7 +110,10 @@ def UpdateObjectAttribute(obj, attr, value, all_objects):
                             set,
                             bool, NoneType, weakref.ref,
                             datetime, timedelta)):
-        if not getattr(obj, attr) == value:
+        ro_attrs = [s.name
+                    for s in obj._state.get_field_by_attribute('read')]
+        if not (getattr(obj, attr) == value or
+                attr in ro_attrs):
             setattr(obj, attr, value)
             return True
     elif isinstance(value, (dict)):

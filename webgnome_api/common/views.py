@@ -20,15 +20,15 @@ from .common_object import (CreateObject,
                             obj_id_from_url,
                             obj_id_from_req_payload)
 
-from .session_management import (init_session_objects,
-                                 get_session_objects,
+from .session_management import (get_session_objects,
                                  get_session_object,
                                  set_session_object)
 
 cors_policy = {'origins': (
                            'http://0.0.0.0:8080',
+                           'http://localhost:8080',
                            ),
-               'credentials': 'true'
+               'credentials': True
                }
 
 

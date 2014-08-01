@@ -89,8 +89,6 @@ class StepTest(FunctionalTestBase):
 
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
-        print 'model1:'
-        pp.pprint(model1)
 
         assert model1['spills'][0]['id'] == spill['id']
         assert model1['outputters'][0]['id'] == outputter['id']
@@ -99,8 +97,6 @@ class StepTest(FunctionalTestBase):
         # This does not(should not?) require a step_id
         resp = self.testapp.get('/step')
         first_step = resp.json_body
-        print 'first_step:'
-        pp.pprint(first_step)
 
         assert first_step['GeoJson']['step_num'] == 0
 
@@ -116,8 +112,7 @@ class StepTest(FunctionalTestBase):
         print 'test_all_steps(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
-        duration = model1['duration']
-        time_step = model1['time_step']
+        num_time_steps = model1['num_time_steps']
 
         # The location file we selected should have:
         # - a registered map
@@ -143,29 +138,20 @@ class StepTest(FunctionalTestBase):
 
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
-        print 'model1:'
-        pp.pprint(model1)
 
         assert model1['spills'][0]['id'] == spill['id']
         assert model1['outputters'][0]['id'] == outputter['id']
 
         # Alright, now we can try to cycle through our steps.
-        num_steps = int(duration / time_step)
-        print 'num_steps = ', num_steps
+        print 'num_steps = ', num_time_steps
 
-        for s in range(num_steps):
+        for s in range(num_time_steps):
             resp = self.testapp.get('/step')
             step = resp.json_body
-            print 'step number:', step['GeoJson']['step_num']
+            print '{0}, '.format(step['GeoJson']['step_num']),
+            assert step['GeoJson']['step_num'] == s
 
-        # one last time
-        resp = self.testapp.get('/step')
-        step = resp.json_body
-        print 'step number:', step
+        # an additional call to /step should generate a 404
+        resp = self.testapp.get('/step', status=404)
 
-        # one more time
-        resp = self.testapp.get('/step')
-        step = resp.json_body
-        print 'step number:', step
-
-        raise
+        print 'done!'
