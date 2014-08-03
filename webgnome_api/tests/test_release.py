@@ -130,17 +130,53 @@ class PointLineReleaseTests(ReleaseTests):
                     ])
 
 
-class SpatialRelease(ReleaseTests):
+class SpatialReleaseTests(ReleaseTests):
     '''
-        Tests out the Gnome Release object API
+        Tests out the Gnome Spatial Release object API
     '''
-    req_data = {
-                'obj_type': u'gnome.spill.release.PointLineRelease',
-                'num_elements': 100,
-                'num_released': 0,
-                'release_time': '2014-04-15T13:22:20.930570',
-                'start_time_invalid': True,
-                'end_release_time': '2014-04-15T13:22:20.930570',
-                'end_position': (28.0, -78.0, 0.0),
-                'start_position': (28.0, -78.0, 0.0),
+    req_data = {'obj_type': u'gnome.spill.release.SpatialRelease',
+                'name': u'SpatialRelease',
+                'release_time': '2014-08-02T21:20:50',
+                'start_position': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
                 }
+
+    def test_get_valid_id(self):
+        # 1. create the object by performing a put with no id
+        # 2. get the valid id from the response
+        # 3. perform an additional get of the object with a valid id
+        # 4. check that our new JSON response matches the one from the create
+        resp = self.testapp.post_json('/release', params=self.req_data)
+        rel1 = resp.json_body
+
+        obj_id = rel1['id']
+        resp = self.testapp.get('/release/{0}'.format(obj_id))
+        rel2 = resp.json_body
+
+        for k in ('id', 'obj_type'):
+            assert rel1[k] == rel2[k]
+
+    def test_put_valid_id(self):
+        # 1. create the object by performing a put with no id
+        # 2. get the valid id from the response
+        # 3. update the properties in the JSON response
+        # 4. update the object by performing a put with a valid id
+        # 5. check that our new properties are in the new JSON response
+        resp = self.testapp.post_json('/release', params=self.req_data)
+
+        req_data = resp.json_body
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/release', params=req_data)
+        self.check_updates(resp.json_body)
+
+    def perform_updates(self, json_obj):
+        json_obj['start_position'] = [[100.0, 100.0, 0.0],
+                                      [100.0, 100.0, 0.0]]
+
+    def check_updates(self, json_obj):
+        assert all([i == j
+                    for i, j in zip(json_obj['start_position'],
+                                    [[100.0, 100.0, 0.0],
+                                     [100.0, 100.0, 0.0]]
+                                    )
+                    ])
