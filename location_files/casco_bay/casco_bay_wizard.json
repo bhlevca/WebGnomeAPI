@@ -1,6 +1,8 @@
     {
         "name": "Casco Bay",
-        "coords": [-70.161365, 43.64786],
+        "geometry": {
+	        "coordinates": [-70.161365, 43.64786]
+        },
         "steps": [
             {
                 "type": "welcome",

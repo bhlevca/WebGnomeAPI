@@ -1,6 +1,8 @@
     {
         "name": "St Johns River",
-        "coords": [-81.542950, 30.386616],
+        "geometry": {
+            "coordinates": [-81.542950, 30.386616]
+        },
         "steps": [
             {
                 "type": "welcome",

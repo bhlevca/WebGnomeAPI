@@ -1,6 +1,8 @@
     {
         "name": "San Juan",
-        "coords": [-66.116430, 18.452761],
+        "geometry": {
+	        "coordinates": [-66.116430, 18.452761]
+        },
         "steps": [
             {   
                 "type": "welcome",

@@ -1,6 +1,8 @@
     {
         "name": "Central Long Island Sound",
-        "coords": [-72.909057, 41.112463],
+        "geometry": {
+	        "coordinates": [-72.909057, 41.112463]
+        },
         "steps": [
             {
                 "type": "welcome",

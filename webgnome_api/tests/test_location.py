@@ -35,8 +35,9 @@ class LocationTest(FunctionalTestBase):
         resp = self.testapp.get('/location/central-long-island-sound')
 
         assert 'name' in resp.json_body
-        assert 'coords' in resp.json_body
         assert 'steps' in resp.json_body
+        assert 'geometry' in resp.json_body
+        assert 'coordinates' in resp.json_body['geometry']
 
         # OK, if we get this far, we should have an active model
         resp = self.testapp.get('/model')

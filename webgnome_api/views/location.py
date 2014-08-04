@@ -16,6 +16,8 @@ from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
 from gnome.persist import load
 
+from webgnome_api.common.osgeo_helpers import (FeatureCollection,)
+
 from webgnome_api.common.common_object import obj_id_from_url
 
 from webgnome_api.common.session_management import (init_session_objects,
@@ -112,50 +114,3 @@ def RegisterObject(obj, request):
             if not (k.find('_') == 0
                     or isinstance(attr, (MethodType, FunctionType))):
                 RegisterObject(attr, request)
-
-
-# We need to return a feature collection structure on a get with no
-# id specified
-#  {"type": "FeatureCollection",
-#   "features": [{"type": "Feature",
-#                 "properties": {"title": "Long Island Sound",
-#                                "slug": "long_island_sound",
-#                                "content": "History about Long Island Sound"},
-#                 "geometry": {"type": "Point",
-#                              "coordinates": [-72.879489, 41.117006]}
-#                 },
-#                 ...
-#                 ]
-#  }
-class Feature(object):
-    def __init__(self, json_body):
-        self.type = 'Feature'
-        self.json_body = json_body
-
-    @property
-    def properties(self):
-        return dict(title=self.json_body['name'],
-                    slug=slugify.slugify_url(self.json_body['name']),
-                    content='???')
-
-    @property
-    def geometry(self):
-        return dict(type='Point',
-                    coordinates=self.json_body['coords'])
-
-    def serialize(self):
-        return dict(type='Feature',
-                    properties=self.properties,
-                    geometry=self.geometry)
-
-
-class FeatureCollection(object):
-    def __init__(self, json_list):
-        self.type = 'FeatureCollection'
-        self.features = []
-        for b in json_list:
-            self.features.append(Feature(b))
-
-    def serialize(self):
-        return dict(type='FeatureCollection',
-                    features=[f.serialize() for f in self.features])

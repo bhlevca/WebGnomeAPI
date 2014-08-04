@@ -1,6 +1,8 @@
     {
         "name": "Norfolk",
-        "coords": [-76.61153, 37.065615],
+        "geometry": {
+	        "coordinates": [-76.61153, 37.065615]
+        },
         "steps": [
             {  
                 "type": "welcome",

@@ -86,3 +86,28 @@ class MapTestBase(FunctionalTestBase):
             for new object types.
         '''
         pass
+
+
+class MapGeoJsonTest(FunctionalTestBase):
+    '''
+        Tests out the Gnome Map object API
+    '''
+    req_data = {'obj_type': 'gnome.map.MapFromBNA',
+                'filename': 'Test.bna',
+                'refloat_halflife': 1.0
+                }
+
+    def test_put_valid_id(self):
+        resp = self.testapp.post_json('/map', params=self.req_data)
+        map1 = resp.json_body
+
+        resp = self.testapp.get('/map/{0}/GeoJson'.format(map1['id']))
+        geo_json = resp.json_body
+
+        assert geo_json['type'] == 'FeatureCollection'
+        assert 'features' in geo_json
+
+        for f in geo_json['features']:
+            assert 'type' in f
+            assert 'geometry' in f
+            assert 'coordinates' in f['geometry']

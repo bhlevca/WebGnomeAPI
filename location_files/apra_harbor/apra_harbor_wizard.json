@@ -1,6 +1,8 @@
     {
         "name": "Apra Harbor",
-        "coords": [144.648166, 13.451763],
+        "geometry": {
+            "coordinates": [144.648166, 13.451763]
+        },
         "steps": [
             {
                 "type": "welcome",

@@ -10,11 +10,18 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
+from webgnome_api.common.osgeo_helpers import (ogr_open_file,
+                                               ogr_layers,
+                                               ogr_features,
+                                               FeatureCollection)
+
 from webgnome_api.common.views import (get_object,
                                        cors_policy)
 
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
+                                               ObjectImplementsOneOf,
+                                               obj_id_from_url,
                                                obj_id_from_req_payload)
 
 from webgnome_api.common.session_management import (init_session_objects,
@@ -35,7 +42,12 @@ implemented_types = ('gnome.map.MapFromBNA',
 @map_api.get()
 def get_map(request):
     '''Returns a Gnome Map object in JSON.'''
-    return get_object(request, implemented_types)
+    obj_ids = request.matchdict.get('obj_id')
+    if (len(obj_ids) >= 2 and
+        obj_ids[1] == 'GeoJson'):
+        return get_geojson(request, implemented_types)
+    else:
+        return get_object(request, implemented_types)
 
 
 @map_api.post()
@@ -84,6 +96,26 @@ def update_map(request):
 
     set_session_object(obj, request)
     return obj.serialize()
+
+
+def get_geojson(request, implemented_types):
+    '''Returns the GeoJson for a Gnome Map object.'''
+    obj_id = obj_id_from_url(request)
+
+    obj = get_session_object(obj_id, request)
+    if obj:
+        if ObjectImplementsOneOf(obj, implemented_types):
+            # Here is where we extract the GeoJson from our map object.
+            map_file = ogr_open_file(obj.filename)
+            features = []
+            for layer in ogr_layers(map_file):
+                for f in ogr_features(layer):
+                    features.append(json.loads(f.ExportToJson()))
+            return FeatureCollection(features).serialize()
+        else:
+            raise HTTPUnsupportedMediaType()
+    else:
+        raise HTTPNotFound()
 
 
 def get_map_dir_from_config(request):
