@@ -44,7 +44,7 @@ def get_map(request):
     '''Returns a Gnome Map object in JSON.'''
     obj_ids = request.matchdict.get('obj_id')
     if (len(obj_ids) >= 2 and
-        obj_ids[1] == 'GeoJson'):
+        obj_ids[1] == 'geojson'):
         return get_geojson(request, implemented_types)
     else:
         return get_object(request, implemented_types)
