@@ -107,11 +107,17 @@ def get_geojson(request, implemented_types):
         if ObjectImplementsOneOf(obj, implemented_types):
             # Here is where we extract the GeoJson from our map object.
             map_file = ogr_open_file(obj.filename)
-            features = []
+            shoreline_features = []
+            spillarea_features = []
             for layer in ogr_layers(map_file):
                 for f in ogr_features(layer):
-                    features.append(json.loads(f.ExportToJson()))
-            return FeatureCollection(features).serialize()
+                    primary_id = f.GetFieldAsString('Primary ID')
+                    if primary_id == 'SpillableArea':
+                        spillarea_features.append(json.loads(f.ExportToJson()))
+                    else:
+                        shoreline_features.append(json.loads(f.ExportToJson()))
+                        
+            return FeatureCollection(shoreline_features).serialize()
         else:
             raise HTTPUnsupportedMediaType()
     else:
