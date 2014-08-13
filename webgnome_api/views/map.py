@@ -110,19 +110,21 @@ def get_geojson(request, implemented_types):
             bounds_features = []
             shoreline_features = []
             spillarea_features = []
+
             for layer in ogr_layers(map_file):
                 for f in ogr_features(layer):
                     primary_id = f.GetFieldAsString('Primary ID')
+
                     if primary_id == 'SpillableArea':
                         spillarea_features.append(json.loads(f.ExportToJson()))
                     elif primary_id == 'Map Bounds':
                         bounds_features.append(json.loads(f.ExportToJson()))
                     else:
                         shoreline_features.append(json.loads(f.ExportToJson()))
-                        
+
             return FeatureCollection(shoreline_features).serialize()
         else:
-            raise HTTPUnsupportedMediaType()
+            raise HTTPNotImplemented()
     else:
         raise HTTPNotFound()
 

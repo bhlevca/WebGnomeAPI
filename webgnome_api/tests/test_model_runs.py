@@ -122,4 +122,3 @@ class ModelRunTest(FunctionalTestBase):
         open('models/images/done', 'w').write('done!\n')
         time.sleep(4)
         print 'done!'
-        raise

@@ -101,7 +101,7 @@ class MapGeoJsonTest(FunctionalTestBase):
         resp = self.testapp.post_json('/map', params=self.req_data)
         map1 = resp.json_body
 
-        resp = self.testapp.get('/map/{0}/GeoJson'.format(map1['id']))
+        resp = self.testapp.get('/map/{0}/geojson'.format(map1['id']))
         geo_json = resp.json_body
 
         assert geo_json['type'] == 'FeatureCollection'

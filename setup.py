@@ -29,9 +29,9 @@ setup(name='webgnome_api',
                    "Topic :: Internet :: WWW/HTTP",
                    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application"
                    ],
-      keywords="web services",
-      author='',
-      author_email='',
+      keywords="adios gnome oilspill weathering trajectory modeling",
+      author='ADIOS/GNOME team at NOAA ORR',
+      author_email='orr.gnome@noaa.gov',
       url='',
       packages=find_packages(),
       include_package_data=True,
@@ -39,8 +39,6 @@ setup(name='webgnome_api',
       install_requires=requires,
       tests_require=requires,
       test_suite='webgnome_api',
-      entry_points="""\
-      [paste.app_factory]
-      main = webgnome_api:main
-      """,
+      entry_points=('[paste.app_factory]\n'
+                    'main = webgnome_api:main\n'),
 )
