@@ -137,6 +137,7 @@ class StepTest(FunctionalTestBase):
 
         resp = self.testapp.post_json('/outputter', params=self.geojson_data)
         outputter = resp.json_body
+        outputter['output_timestep'] = 360.0
         model1['outputters'] = [outputter]
 
         resp = self.testapp.put_json('/model', params=model1)
