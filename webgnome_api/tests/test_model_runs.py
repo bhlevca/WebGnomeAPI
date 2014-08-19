@@ -31,11 +31,11 @@ class ModelRunTest(FunctionalTestBase):
                               },
                   'element_type': {'obj_type': ('gnome.spill.elements'
                                                 '.ElementType'),
-                                   'initializers': {'windages': {'obj_type': 'gnome.spill.elements.InitWindages',
-                                                                 'windage_range': [0.01, 0.04],
-                                                                 'windage_persist': 900,
-                                                                 }
-                                                    }
+                                   'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
+                                                     'windage_range': [0.01, 0.04],
+                                                     'windage_persist': 900,
+                                                     }
+                                                    ]
                                    },
                   }
     renderer_data = {'obj_type': 'gnome.outputters.renderer.Renderer',

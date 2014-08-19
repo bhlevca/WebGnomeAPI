@@ -1,7 +1,6 @@
 """
     Setup file.
 """
-
 import os
 from setuptools import setup, find_packages
 
@@ -10,14 +9,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
 
-requires = [
+requires = ['cornice',
             'waitress',
             'WebTest',
             'webhelpers2>=2.0b5',
             'pyramid_redis_sessions>=1.0a1',
-            'cornice',
-            'GDAL',
-            ]
+            'GDAL']
 
 
 setup(name='webgnome_api',
@@ -40,5 +37,5 @@ setup(name='webgnome_api',
       tests_require=requires,
       test_suite='webgnome_api',
       entry_points=('[paste.app_factory]\n'
-                    'main = webgnome_api:main\n'),
+                    '  main = webgnome_api:main\n'),
 )

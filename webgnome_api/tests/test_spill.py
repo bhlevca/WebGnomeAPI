@@ -45,7 +45,7 @@ class SpillTests(FunctionalTestBase):
 
     def create_init_obj(self, req_data):
         resp = self.testapp.post_json('/initializer', params=req_data)
-        return {'windages': resp.json_body}
+        return [resp.json_body]
 
     def create_elem_type_obj(self, req_data, init_obj):
         req_data['initializers'] = init_obj
@@ -168,11 +168,11 @@ class SpillNestedTests(FunctionalTestBase):
                             'start_position': [144.664166, 13.441944, 0.0],
                             },
                 'element_type': {'obj_type': 'gnome.spill.elements.ElementType',
-                                 'initializers': {'windages': {'obj_type': 'gnome.spill.elements.InitWindages',
-                                                               'windage_range': [0.01, 0.04],
-                                                               'windage_persist': 900,
-                                                               }
-                                                  }
+                                 'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
+                                                   'windage_range': [0.01, 0.04],
+                                                   'windage_persist': 900,
+                                                   }
+                                                  ]
                                  },
                 }
 
@@ -189,7 +189,7 @@ class SpillNestedTests(FunctionalTestBase):
         assert 'id' in spill_body
         assert 'id' in spill_body['release']
         assert 'id' in spill_body['element_type']
-        assert 'id' in spill_body['element_type']['initializers']['windages']
+        assert 'id' in spill_body['element_type']['initializers'][0]
 
         obj_id = spill_body['release']['id']
         resp2 = self.testapp.get('/release/{0}'.format(obj_id))
@@ -199,7 +199,7 @@ class SpillNestedTests(FunctionalTestBase):
         resp2 = self.testapp.get('/element_type/{0}'.format(obj_id))
         assert 'id' in resp2.json_body
 
-        obj_id = spill_body['element_type']['initializers']['windages']['id']
+        obj_id = spill_body['element_type']['initializers'][0]['id']
         resp2 = self.testapp.get('/initializer/{0}'.format(obj_id))
         assert 'id' in resp2.json_body
 
@@ -212,10 +212,10 @@ class SpillNestedTests(FunctionalTestBase):
         req2 = resp2.json_body
         req2['on'] = False
         req2['release']['num_elements'] = 200
-        req2['element_type']['initializers']['windages']['windage_range'] = [0.1, 0.2]
+        req2['element_type']['initializers'][0]['windage_range'] = [0.1, 0.2]
 
         resp3 = self.testapp.put_json('/spill', params=req2)
         upd_body = resp3.json_body
         assert upd_body['on'] == False
         assert upd_body['release']['num_elements'] == 200
-        assert upd_body['element_type']['initializers']['windages']['windage_range'] == [0.1, 0.2]
+        assert upd_body['element_type']['initializers'][0]['windage_range'] == [0.1, 0.2]

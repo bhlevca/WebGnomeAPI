@@ -69,6 +69,8 @@ class ElementTypeBase(FunctionalTestBase):
 
     def test_put_valid_id(self):
         self.req_data['initializers'] = self.create_init_obj(self.init_data)
+        print 'req_data:'
+        pp.pprint(self.req_data)
         resp = self.testapp.post_json('/element_type', params=self.req_data)
 
         req_data = resp.json_body
@@ -79,7 +81,7 @@ class ElementTypeBase(FunctionalTestBase):
 
     def create_init_obj(self, req_data):
         resp = self.testapp.post_json('/initializer', params=req_data)
-        return {'windages': resp.json_body}
+        return [resp.json_body]
 
     def perform_updates(self, json_obj):
         '''
@@ -120,7 +122,7 @@ class ElementTypeWithRiseVelDistTest(ElementTypeBase):
         if dist_obj:
             req_data['distribution'] = dist_obj
         resp = self.testapp.post_json('/initializer', params=req_data)
-        return {'rise_vel': resp.json_body}
+        return [resp.json_body]
 
     def test_get_valid_id(self):
         dist_obj = self.create_dist_obj(self.dist_data)

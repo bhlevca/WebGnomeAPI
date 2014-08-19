@@ -1,4 +1,4 @@
 WebGnomeAPI
 ===========
 
-The API service that interfaces with py_gnome
+A web service that interfaces with py_gnome
