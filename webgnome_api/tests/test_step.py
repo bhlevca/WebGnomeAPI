@@ -154,6 +154,7 @@ class StepTest(FunctionalTestBase):
             step = resp.json_body
             print '{0}, '.format(step['GeoJson']['step_num']),
             assert step['GeoJson']['step_num'] == s
+            assert 'feature_collection' in step['GeoJson']
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)

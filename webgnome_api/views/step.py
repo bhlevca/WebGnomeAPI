@@ -13,7 +13,6 @@ from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPUnprocessableEntity)
 from cornice import Service
 
-from webgnome_api.common.common_object import obj_id_from_url
 from webgnome_api.common.session_management import get_active_model
 
 from webgnome_api.common.views import cors_policy
@@ -41,7 +40,8 @@ def get_step(request):
             raise HTTPNotFound
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            fmt = traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback)
 
             http_exc = HTTPUnprocessableEntity()
             http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
@@ -62,7 +62,21 @@ def get_rewind(request):
     '''
     active_model = get_active_model(request)
     if active_model:
-        active_model.rewind()
+        gnome_sema = request.registry.settings['py_gnome_semaphore']
+        gnome_sema.acquire()
+
+        try:
+            active_model.rewind()
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            fmt = traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback)
+
+            http_exc = HTTPUnprocessableEntity()
+            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+            raise http_exc
+        finally:
+            gnome_sema.release()
     else:
         http_exc = HTTPPreconditionFailed()
         raise http_exc
