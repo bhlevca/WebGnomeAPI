@@ -32,6 +32,9 @@ def get_step(request):
     active_model = get_active_model(request)
     if active_model:
         # generate the next step in the sequence.
+        gnome_sema = request.registry.settings['py_gnome_semaphore']
+        gnome_sema.acquire()
+
         try:
             output = active_model.step()
         except StopIteration:
@@ -43,6 +46,8 @@ def get_step(request):
             http_exc = HTTPUnprocessableEntity()
             http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
             raise http_exc
+        finally:
+            gnome_sema.release()
 
         return output
     else:
