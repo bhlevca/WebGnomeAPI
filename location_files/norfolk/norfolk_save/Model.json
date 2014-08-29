@@ -3,7 +3,8 @@
  "map": {
   "json_": "save", 
   "obj_type": "gnome.map.MapFromBNA", 
-  "filename": "NorfolkMap.bna"
+  "filename": "NorfolkMap.bna",
+  "refloat_halflife": 1.0 
  }, 
 "movers": [
   {
