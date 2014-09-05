@@ -11,15 +11,17 @@ from cornice import Service
 initializer = Service(name='initializer', path='/initializer*obj_id',
                       description="Iinitializer API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.elements.InitWindages',
-                     'gnome.spill.elements.InitMassComponentsFromOilProps',
-                     'gnome.spill.elements.InitHalfLivesFromOilProps',
-                     'gnome.spill.elements.InitMassFromTotalMass',
-                     'gnome.spill.elements.InitMassFromPlume',
-                     'gnome.spill.elements.InitRiseVelFromDist',
-                     'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
-                     'gnome.spill.elements.InitHalfLivesFromOilProps',
-                     )
+module_name = 'gnome.spill.elements'
+module_attrs = ('InitWindages',
+                'InitArraysFromOilProps',
+                'InitMassFromSpillAmount',
+                'InitMassFromPlume',
+                'InitRiseVelFromDist',
+                'InitRiseVelFromDropletSizeFromDist',
+                )
+
+implemented_types = ['{0}.{1}'.format(module_name, a)
+                     for a in module_attrs]
 
 
 @initializer.get()

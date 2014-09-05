@@ -112,21 +112,15 @@ class InitWindagesTests(InitializerBase):
         assert json_obj['windage_persist'] == 1000
 
 
-class InitMassComponentsFromOilPropsTest(InitializerBase):
+class InitArraysFromOilPropsTest(InitializerBase):
     req_data = {
-                'obj_type': u'gnome.spill.elements.InitMassComponentsFromOilProps',
+                'obj_type': u'gnome.spill.elements.InitArraysFromOilProps',
                 }
 
 
-class InitHalfLivesFromOilPropsTest(InitializerBase):
+class InitMassFromSpillAmount(InitializerBase):
     req_data = {
-                'obj_type': u'gnome.spill.elements.InitHalfLivesFromOilProps',
-                }
-
-
-class InitMassFromTotalMassTest(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitMassFromTotalMass',
+                'obj_type': u'gnome.spill.elements.InitMassFromSpillAmount',
                 }
 
 
