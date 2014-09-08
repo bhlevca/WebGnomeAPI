@@ -17,7 +17,7 @@ class GnomeTestCase(TestCase):
         here = os.path.dirname(__file__)
         self.project_root = os.path.abspath(os.path.dirname(here))
 
-    def get_settings(self, config_file='../../test.ini'):
+    def get_settings(self, config_file='../../webgnome_api.ini#webgnome_api'):
         here = os.path.dirname(__file__)
         return appconfig('config:%s' % config_file, relative_to=here)
 
