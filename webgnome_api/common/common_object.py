@@ -39,21 +39,55 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
 
 def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
     '''
-        Here we update our python object with a JSON payload
+        The Main entry point to be used by our views.
 
-        For now, I don't think we will be too fancy about this.
-        We will grow more sophistication as we need it.
+        We want to be able to handle nested object payloads, so we need
+        to traverse to all leaf objects and update them first
     '''
-    FillSparseObjectChildren(json_obj, all_objects)
 
+    _DeserializeObject(json_obj)
+
+    # traverse our json_obj
+    print '\nComplete Payload:'
+    pp.pprint(json_obj)
+    for o in TraversePayloadForJsonObjects(json_obj):
+        print '\nTraversed Payload:'
+        pp.pprint(o)
+
+    return _UpdateObject(obj, json_obj, deserialize_obj=True)
+
+
+def _DeserializeObject(json_obj):
+    '''
+        The py_gnome deserialize method can handle nested payloads
+    '''
     py_class = PyClassFromName(json_obj['obj_type'])
 
-    if deserialize_obj:
-        obj_dict = py_class.deserialize(json_obj)
-    else:
-        obj_dict = json_obj
+    return py_class.deserialize(json_obj)
 
-    return UpdateObjectAttributes(obj, obj_dict.iteritems(), all_objects)
+
+def TraversePayloadForJsonObjects(function, payload,
+                                  parent=None, attr_name=None):
+    if (isinstance(payload, dict)):
+        for k, v in payload.items():
+            for o in TraversePayloadForJsonObjects(function, v, payload, k):
+                yield o
+        yield (payload, parent, attr_name)
+        # Alright, we would like to now apply actions against our
+        # json objects.
+        #
+        #  If we are performing an update:
+        #    - if the object exists:
+        #      - Update the existing object
+        #      - link the existing object in-place
+    elif (isinstance(payload, (list, tuple))):
+        for i, v in enumerate(payload):
+            for o in TraversePayloadForJsonObjects(function, v, payload, i):
+                yield o
+
+
+def _UpdateObject(obj, payload):
+    return obj.update_from_dict(payload)
 
 
 def LinkObjectChildren(obj_dict, all_objects):
@@ -82,127 +116,6 @@ def LinkObjectChildren(obj_dict, all_objects):
 
             [LinkObjectChildren(i, all_objects) for i in v
              if isinstance(i, dict)]
-
-
-def UpdateObjectAttributes(obj, items, all_objects):
-    return any([UpdateObjectAttribute(obj, k, v, all_objects)
-                for k, v in items])
-
-
-# TODO: This function has grown quite a bit in scope and should
-#       probably be refactored.  Let's start by separating the update
-#       functionality of the different data types.
-def UpdateObjectAttribute(obj, attr, value, all_objects):
-    if attr in ('id', 'obj_type', 'json_'):
-        return False
-    elif ValueIsJsonObject(value):
-        if ObjectExists(value, all_objects):
-            return UpdateObject(all_objects[value['id']], value, all_objects,
-                                False)
-        else:
-            # TODO: should we raise an exception here?
-            print ('Warning: Cannot perform updates.  '
-                   'Our child JSON object refers to a py_gnome object '
-                   'that does not exist.')
-            return False
-    elif isinstance(value, (int, float, long, complex,
-                            str, unicode, bytearray, buffer,
-                            set,
-                            bool, NoneType, weakref.ref,
-                            datetime, timedelta)):
-        ro_attrs = [s.name
-                    for s in obj._state.get_field_by_attribute('read')]
-        if not (getattr(obj, attr) == value or
-                attr in ro_attrs):
-            setattr(obj, attr, value)
-            return True
-    elif isinstance(value, (dict)):
-        for k, v in value.iteritems():
-            UpdateObject(getattr(obj, attr)[k], v, all_objects, False)
-        return True
-    elif isinstance(value, (list, tuple, ndarray, void)):
-        obj_attr = getattr(obj, attr)
-        if type(obj_attr) == tuple:
-            obj_attr = list(obj_attr)  # change it to a mutable
-            setattr(obj, attr, obj_attr)
-
-        if type(obj_attr) in (ndarray, void):
-            value = np.array(value)
-
-            if not np.all(obj_attr == value):
-                setattr(obj, attr, value)
-                return True
-        elif type(obj_attr) in (list, tuple,
-                                OrderedCollection, SpillContainerPair):
-            updated = False
-            for i, (v1, v2) in enumerate(izip_longest(obj_attr, value)):
-                # So basically we are going to reconcile two lists
-                # this isn't too hard, but we want to return whether
-                # an update was performed.
-                # We are assuming that valid list items are not None
-                # and if we encounter a None value in either side, it
-                # means that one list was shorter than the other
-                if v1 == None:
-                    # Empty left index...
-                    if ValueIsJsonObject(v2):
-                        if ObjectExists(v2, all_objects):
-                            obj_attr.append(all_objects[v2['id']])
-                            UpdateObject(all_objects[v2['id']], v2,
-                                         all_objects, False)
-                            updated = True
-                        else:
-                            # I dunno...we could create the object here.
-                            # But for right now we will punt.
-                            print ('Warning: Cannot perform updates.  '
-                                   'Our child JSON object refers to a '
-                                   'py_gnome object that does not exist.')
-                    else:
-                        # TODO: lots of possible edge cases here.
-                        obj_attr.append(v2)
-                        updated = True
-                elif v2 == None:
-                    # Empty right index which means our right list is shorter.
-                    # truncate our left list and exit our loop
-                    v1 = v1[:i]
-                    updated = True
-                    break
-                else:
-                    # left & right are both present...lets see if they match
-                    if ValueIsJsonObject(v2):
-                        if ObjectId(v1) == ObjectId(v2):
-                            #print 'left & right are the same object'
-                            updated = UpdateObject(v1, v2, all_objects,
-                                                     False)
-                        elif ObjectExists(v2, all_objects):
-                            #print ('left is different than right '
-                            #       'and right exists')
-                            obj_attr[i] = all_objects[v2['id']]
-                            UpdateObject(obj_attr[i], v2, all_objects, False)
-                            updated = True
-                        else:
-                            # I dunno...we could create the object here.
-                            # But for right now we will punt.
-                            print ('Warning: Cannot perform updates.  '
-                                   'Our child JSON object refers to a '
-                                   'py_gnome object that does not exist.')
-                    else:
-                        if obj_attr[i] != v2:
-                            obj_attr[i] = v2
-                            updated = True
-            if updated and isinstance(obj_attr, (list, tuple)):
-                # We have updated the individual elements of our sequence
-                # object, which should be good enough in most cases.
-                # However we sometimes deal with Cython objects that have
-                # properties that need to be explicitly set in order to
-                # propagate to the C++ object
-                setattr(obj, attr, obj_attr)
-            return updated
-        else:
-            if not all(obj_attr == value):
-                setattr(obj, attr, value)
-                return True
-
-    return False
 
 
 def ValueIsJsonObject(value):
@@ -251,27 +164,3 @@ def obj_id_from_url(request):
 
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
-
-
-def FillSparseObjectChildren(obj_dict, all_objects):
-    for v in obj_dict.values():
-        if ValueIsJsonObject(v):
-            FillSparseObject(v, all_objects)
-        elif (isinstance(v, dict)):
-            FillSparseObjectChildren(v, all_objects)
-        elif (isinstance(v, (list, tuple))):
-            for item in v:
-                if ValueIsJsonObject(item):
-                    FillSparseObject(item, all_objects)
-
-            [FillSparseObjectChildren(i, all_objects) for i in v
-             if isinstance(i, dict)]
-
-
-def FillSparseObject(obj_dict, all_objects):
-    if ObjectExists(obj_dict, all_objects):
-        found = all_objects[obj_dict['id']].serialize()
-
-        upd_items = [(k, v) for k, v in found.iteritems()
-                     if k not in obj_dict]
-        obj_dict.update(upd_items)
