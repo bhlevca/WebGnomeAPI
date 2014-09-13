@@ -86,7 +86,6 @@ def create_object(request, implemented_types):
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
-        set_session_object(obj, request)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -123,8 +122,7 @@ def update_object(request, implemented_types):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
-            if UpdateObject(obj, json_request, get_session_objects(request)):
-                set_session_object(obj, request)
+            UpdateObject(obj, json_request, get_session_objects(request))
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             fmt = traceback.format_exception(exc_type, exc_value,

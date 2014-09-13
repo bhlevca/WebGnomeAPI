@@ -438,6 +438,7 @@ class NestedModelTests(FunctionalTestBase):
         model1['environment'] = [{'obj_type': wind_data['obj_type'],
                                   'id': wind_data['id'],
                                   'name': 'Custom Wind',
+                                  'units': u'meter per second'
                                   }]
 
         print 'updating model with sparse existing wind...'
@@ -475,6 +476,7 @@ class NestedModelTests(FunctionalTestBase):
         model1['environment'] = [{'obj_type': wind_data['obj_type'],
                                   'id': wind_data['id'],
                                   'name': 'Custom Wind',
+                                  'units': u'meter per second'
                                   }]
 
         print 'updating model with sparse existing wind...'
@@ -497,6 +499,7 @@ class NestedModelTests(FunctionalTestBase):
         model3['environment'] = [{'obj_type': wind2_data['obj_type'],
                                   'id': wind2_data['id'],
                                   'name': 'Custom Wind 2',
+                                  'units': u'meter per second'
                                   }]
 
         print 'updating model with new existing wind...'
