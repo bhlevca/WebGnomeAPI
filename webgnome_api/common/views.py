@@ -26,6 +26,7 @@ from .session_management import (get_session_objects,
 
 cors_policy = {'origins': (
                            'http://0.0.0.0:8080',
+                           'http://hazweb2.orr.noaa.gov:7448',
                            'http://localhost:8080',
                            ),
                'credentials': True
