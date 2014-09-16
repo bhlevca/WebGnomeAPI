@@ -600,3 +600,54 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model3['spills'][0]['on'] == False
         assert model3['spills'][0]['release']['num_elements'] == 2000
+
+    def test_put_with_remove_spill(self):
+        req_data = self.req_data.copy()
+        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+                       'name': 'What a Name',
+                       'on': True,
+                       'release': {'obj_type': ('gnome.spill.release'
+                                                '.PointLineRelease'),
+                                   'name': 'PointLineRelease',
+                                   'num_elements': 1000,
+                                   'release_time': '2013-02-13T09:00:00',
+                                   'end_release_time': '2013-02-13T15:00:00',
+                                   'start_position': [144.664166, 13.441944,
+                                                      0.0],
+                                   'end_position': [144.664166, 13.441944,
+                                                    0.0],
+                                   },
+                       'element_type': {'obj_type': ('gnome.spill.elements'
+                                                     '.ElementType'),
+                                        'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
+                                                          'windage_range': [0.01, 0.04],
+                                                          'windage_persist': 900,
+                                                          }
+                                                         ]
+                                        },
+                       }]
+        req_data['spills'] = spill_data
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        model1['spills'][0]['on'] = False
+        model1['spills'][0]['release']['num_elements'] = 2000
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['spills'][0]['on'] == False
+        assert model2['spills'][0]['release']['num_elements'] == 2000
+
+        resp = self.testapp.get('/model')
+        model3 = resp.json_body
+
+        assert model3['spills'][0]['on'] == False
+        assert model3['spills'][0]['release']['num_elements'] == 2000
+
+        model3['spills'] = []
+        resp = self.testapp.put_json('/model', params=model3)
+        model4 = resp.json_body
+
+        assert len(model4['spills']) == 0
