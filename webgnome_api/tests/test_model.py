@@ -229,6 +229,42 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['environment'][0]['units'] == 'knots'
 
+    def test_put_with_sparse_environment(self):
+        '''
+            Sparse means that we have a previously created object (Wind),
+            and we update the model using just the obj_type and the id.
+        '''
+        req_data = self.req_data.copy()
+        wind_data = {'obj_type': 'gnome.environment.Wind',
+                     'description': u'Wind Object',
+                     'updated_at': '2014-03-26T14:52:45.385126',
+                     'source_type': u'undefined',
+                     'source_id': u'undefined',
+                     'timeseries': [('2012-11-06T20:10:30',
+                                     (1.0, 0.0)),
+                                    ('2012-11-06T20:15:30',
+                                     (1.0, 270.0))],
+                     'units': u'meter per second'
+                     }
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        resp = self.testapp.post_json('/environment', params=wind_data)
+        wind1 = resp.json_body
+
+        model1['environment'].append(
+                                     {'obj_type': wind1['obj_type'],
+                                      'id': wind1['id']
+                                      }
+                                     )
+        pp.pprint(model1)
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['environment'][0]['units'] == 'meter per second'
+
     def test_post_with_nested_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
