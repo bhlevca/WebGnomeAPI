@@ -359,6 +359,130 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['movers'][0]['wind']['units'] == 'knots'
 
+    def test_put_with_nested_sparse_wind_mover(self):
+        req_data = self.req_data.copy()
+        req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
+                                            '.WindMover'),
+                               'active_start': '-inf',
+                               'active_stop': 'inf',
+                               'on': True,
+                               'uncertain_angle_scale': 0.4,
+                               'uncertain_duration': 3.0,
+                               'uncertain_speed_scale': 2.0,
+                               'uncertain_time_delay': 0.0,
+                               'wind': {'obj_type': 'gnome.environment.Wind',
+                                        'description': u'Wind Object',
+                                        'updated_at': '2014-03-26T14:52:45.39',
+                                        'source_type': u'undefined',
+                                        'source_id': u'undefined',
+                                        'units': u'meter per second',
+                                        'timeseries': [('2012-11-06T20:10:30',
+                                                        (1.0, 0.0)),
+                                                       ('2012-11-06T20:11:30',
+                                                        (1.0, 45.0)),
+                                                       ('2012-11-06T20:12:30',
+                                                        (1.0, 90.0)),
+                                                       ('2012-11-06T20:13:30',
+                                                        (1.0, 120.0)),
+                                                       ('2012-11-06T20:14:30',
+                                                        (1.0, 180.0)),
+                                                       ('2012-11-06T20:15:30',
+                                                        (1.0, 270.0))],
+                                        }
+                               }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # create a sparse mover
+        mover = dict([(k, v)
+                      for k, v in model1['movers'][0].iteritems()
+                      if k in ('id', 'obj_type')])
+        model1['movers'][0] = mover
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['movers'][0]['wind']['units'] == 'meter per second'
+
+    def test_put_with_nested_sparse_random_mover(self):
+        req_data = self.req_data.copy()
+        req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
+                                            '.RandomMover'),
+                               'name': u'RandomMover',
+                               'active_start': '-inf',
+                               'active_stop': 'inf',
+                               'on': True,
+                               'diffusion_coef': 100000.0,
+                               'uncertain_factor': 2.0
+                               }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # create a sparse mover
+        mover = dict([(k, v)
+                      for k, v in model1['movers'][0].iteritems()
+                      if k in ('id', 'obj_type')])
+        model1['movers'][0] = mover
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['movers'][0]['diffusion_coef'] == 100000.0
+
+    def test_put_with_nested_sparse_random_vertical_mover(self):
+        req_data = self.req_data.copy()
+        req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
+                                            '.RandomVerticalMover'),
+                               'name': u'RandomVerticalMover',
+                               'active_start': '-inf',
+                               'active_stop': 'inf',
+                               'on': True,
+                               'mixed_layer_depth': 10.0,
+                               'vertical_diffusion_coef_above_ml': 5.0,
+                               'vertical_diffusion_coef_below_ml': 0.11
+                               }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # create a sparse mover
+        mover = dict([(k, v)
+                      for k, v in model1['movers'][0].iteritems()
+                      if k in ('id', 'obj_type')])
+        model1['movers'][0] = mover
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['movers'][0]['mixed_layer_depth'] == 10.0
+
+    def test_put_with_nested_sparse_cats_mover(self):
+        req_data = self.req_data.copy()
+        req_data['movers'] = [{'obj_type': u'gnome.movers.current_movers.CatsMover',
+                               'filename': 'models/tidesWAC.CUR',
+                               'scale': True,
+                               'scale_value': 1.0,
+                               'tide': {'obj_type': 'gnome.environment.Tide',
+                                        'filename': 'models/CLISShio.txt',
+                                        },
+                               }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # create a sparse mover
+        mover = dict([(k, v)
+                      for k, v in model1['movers'][0].iteritems()
+                      if k in ('id', 'obj_type')])
+        model1['movers'][0] = mover
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': ('gnome.weatherers.core'
