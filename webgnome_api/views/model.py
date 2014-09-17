@@ -111,11 +111,11 @@ def create_model(request):
 
         http_exc = HTTPUnsupportedMediaType()
 
-        for hdr_name in ('Access-Control-Allow-Credentials',
-                         'Access-Control-Allow-Origin'):
-            hdr_val = request.headers.get(hdr_name)
-            if hdr_val != None:
-                http_exc.headers.add(hdr_name, hdr_val)
+        hdr_val = request.headers.get('Origin')
+        if hdr_val != None:
+            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
         http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
 
         raise http_exc
@@ -167,11 +167,11 @@ def update_model(request):
 
             http_exc = HTTPUnsupportedMediaType()
 
-            for hdr_name in ('Access-Control-Allow-Credentials',
-                             'Access-Control-Allow-Origin'):
-                hdr_val = request.headers.get(hdr_name)
-                if hdr_val != None:
-                    http_exc.headers.add(hdr_name, hdr_val)
+            hdr_val = request.headers.get('Origin')
+            if hdr_val != None:
+                http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+                http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
             http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
 
             raise http_exc
