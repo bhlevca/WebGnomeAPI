@@ -136,6 +136,30 @@ class SpillTests(FunctionalTestBase):
         resp = self.testapp.put_json('/spill', params=req_data)
         self.check_updates(resp.json_body)
 
+    def test_put_sparse_element_type(self):
+        rel_obj = self.create_release_obj(self.rel_req_data)
+
+        init_obj = self.create_init_obj(self.init_req_data)
+        elem_type_obj = self.create_elem_type_obj(self.elem_type_req_data,
+                                                  init_obj)
+        self.req_data['release'] = rel_obj
+        self.req_data['element_type'] = elem_type_obj
+
+        resp = self.testapp.post_json('/spill', params=self.req_data)
+
+        req_data = resp.json_body
+
+        # create a sparse element type
+        elem_type = dict([(k, v)
+                          for k, v in req_data['element_type'].iteritems()
+                          if k in ('id', 'obj_type')])
+        req_data['element_type'] = elem_type
+
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/spill', params=req_data)
+        self.check_updates(resp.json_body)
+
     def perform_updates(self, json_obj):
         '''
             The Spill object is pretty much just a container for the Release
