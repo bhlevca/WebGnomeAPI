@@ -1,9 +1,6 @@
 """
 Views for the Model object.
 """
-import sys
-import traceback
-
 import json
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -11,7 +8,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotImplemented)
 from cornice import Service
 
-from webgnome_api.common.views import (cors_policy,
+from webgnome_api.common.views import (cors_exception,
+                                       cors_policy,
                                        get_specifications)
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
@@ -56,7 +54,6 @@ def get_model(request):
         if my_model:
             ret = my_model.serialize()
         else:
-            # - return a Model specification
             ret = get_specifications(request, implemented_types)
     else:
         obj = get_session_object(obj_id, request)
@@ -65,9 +62,10 @@ def get_model(request):
                 set_active_model(request, obj.id)
                 ret = obj.serialize()
             else:
-                raise HTTPUnsupportedMediaType()
+                # we refer to an object, but it is not a Model
+                raise cors_exception(request, HTTPBadRequest)
         else:
-            raise HTTPNotFound()
+            raise cors_exception(request, HTTPNotFound)
 
     gnome_sema.release()
     return ret
@@ -88,7 +86,7 @@ def create_model(request):
 
     if json_request and not JSONImplementsOneOf(json_request,
                                                 implemented_types):
-        raise HTTPNotImplemented()
+        raise cors_exception(request, HTTPNotImplemented)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
@@ -105,20 +103,8 @@ def create_model(request):
         set_session_object(new_model._map, request)
         set_active_model(request, new_model.id)
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value,
-                                         exc_traceback)
-
-        http_exc = HTTPUnsupportedMediaType()
-
-        hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-        raise http_exc
+        raise cors_exception(request, HTTPUnsupportedMediaType,
+                             with_stacktrace=True)
     finally:
         gnome_sema.release()
         print '  ', log_prefix, 'semaphore released...'
@@ -140,10 +126,10 @@ def update_model(request):
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        raise HTTPNotImplemented()
+        raise cors_exception(request, HTTPNotImplemented)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
@@ -161,24 +147,12 @@ def update_model(request):
                 set_session_object(my_model, request)
             ret = my_model.serialize()
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            fmt = traceback.format_exception(exc_type, exc_value,
-                                             exc_traceback)
-
-            http_exc = HTTPUnsupportedMediaType()
-
-            hdr_val = request.headers.get('Origin')
-            if hdr_val != None:
-                http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-                http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-            raise http_exc
+            raise cors_exception(request, HTTPUnsupportedMediaType,
+                                 with_stacktrace=True)
         finally:
             gnome_sema.release()
     else:
         gnome_sema.release()
-        raise HTTPNotFound()
+        raise cors_exception(request, HTTPNotFound)
 
     return ret

@@ -1,10 +1,7 @@
 """
 Views for the Map objects.
 """
-import sys
 import os
-import traceback
-
 import json
 
 from cornice import Service
@@ -18,7 +15,8 @@ from webgnome_api.common.osgeo_helpers import (ogr_open_file,
                                                ogr_features,
                                                FeatureCollection)
 
-from webgnome_api.common.views import (get_object,
+from webgnome_api.common.views import (cors_exception,
+                                       get_object,
                                        cors_policy)
 
 from webgnome_api.common.common_object import (CreateObject,
@@ -62,29 +60,10 @@ def create_map(request):
     try:
         json_request = json.loads(request.body)
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
-
-        http_exc = HTTPBadRequest()
-
-        hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-        raise http_exc
+        raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        http_exc = HTTPNotImplemented()
-
-        hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-        raise http_exc
+        raise cors_exception(request, HTTPNotImplemented)
 
     # TODO: should we tie our data directory to the installation path?
     #       or should we be more flexible?
@@ -100,19 +79,8 @@ def create_map(request):
     try:
         obj = CreateObject(json_request, get_session_objects(request))
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
-
-        http_exc = HTTPUnsupportedMediaType()
-
-        hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-        raise http_exc
+        raise cors_exception(request, HTTPUnsupportedMediaType,
+                             with_stacktrace=True)
     finally:
         gnome_sema.release()
         print '  ', log_prefix, 'semaphore released...'
@@ -127,20 +95,21 @@ def update_map(request):
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        raise HTTPNotImplemented()
+        raise cors_exception(request, HTTPNotImplemented)
 
     obj = get_session_object(obj_id_from_req_payload(json_request),
                              request)
     if obj:
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
-        except ValueError as e:
-            raise HTTPUnsupportedMediaType(e)
+        except:
+            raise cors_exception(request, HTTPUnsupportedMediaType,
+                                 with_stacktrace=True)
     else:
-        raise HTTPNotFound()
+        raise cors_exception(request, HTTPNotFound)
 
     set_session_object(obj, request)
     return obj.serialize()
@@ -172,9 +141,9 @@ def get_geojson(request, implemented_types):
 
             return FeatureCollection(shoreline_features).serialize()
         else:
-            raise HTTPNotImplemented()
+            raise cors_exception(request, HTTPNotImplemented)
     else:
-        raise HTTPNotFound()
+        raise cors_exception(request, HTTPNotFound)
 
 
 def get_map_dir_from_config(request):

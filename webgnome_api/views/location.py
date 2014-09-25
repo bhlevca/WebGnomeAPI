@@ -24,7 +24,7 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     set_session_object,
                                                     set_active_model)
 
-from webgnome_api.common.views import cors_policy
+from webgnome_api.common.views import cors_exception, cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
                   description="Location API", cors_policy=cors_policy)
@@ -66,8 +66,7 @@ def get_location(request):
 
             return matching[0][1]
         else:
-            return HTTPNotFound()
-        pass
+            raise cors_exception(request, HTTPNotFound)
     else:
         return FeatureCollection(location_content).serialize()
 

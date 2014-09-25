@@ -33,6 +33,22 @@ cors_policy = {'origins': (
                }
 
 
+def cors_exception(request, exception_class, with_stacktrace=False):
+        http_exc = exception_class()
+
+        hdr_val = request.headers.get('Origin')
+        if hdr_val != None:
+            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+
+        return http_exc
+
+
 def get_object(request, implemented_types):
     '''Returns a Gnome object in JSON.'''
     obj_id = obj_id_from_url(request)
@@ -44,9 +60,9 @@ def get_object(request, implemented_types):
             if ObjectImplementsOneOf(obj, implemented_types):
                 return obj.serialize()
             else:
-                raise HTTPUnsupportedMediaType()
+                raise cors_exception(request, HTTPUnsupportedMediaType)
         else:
-            raise HTTPNotFound()
+            raise cors_exception(request, HTTPNotFound)
 
 
 def get_specifications(request, implemented_types):
@@ -64,7 +80,7 @@ def get_specifications(request, implemented_types):
         except ValueError:
             #print 'failed to get class for {0}'.format(t)
             #print 'error: {0}'.format(e)
-            raise
+            raise cors_exception(request, HTTPNotImplemented)
     return specs
 
 
@@ -76,10 +92,10 @@ def create_object(request, implemented_types):
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        raise HTTPNotImplemented()
+        raise cors_exception(request, HTTPNotImplemented)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
@@ -88,19 +104,8 @@ def create_object(request, implemented_types):
     try:
         obj = CreateObject(json_request, get_session_objects(request))
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
-
-        http_exc = HTTPUnsupportedMediaType()
-
-        hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-        raise http_exc
+        raise cors_exception(request, HTTPUnsupportedMediaType,
+                             with_stacktrace=True)
     finally:
         gnome_sema.release()
         print '  ', log_prefix, 'semaphore released...'
@@ -117,10 +122,10 @@ def update_object(request, implemented_types):
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        raise HTTPNotImplemented()
+        raise cors_exception(request, HTTPNotImplemented)
 
     obj = get_session_object(obj_id_from_req_payload(json_request),
                              request)
@@ -132,25 +137,13 @@ def update_object(request, implemented_types):
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            fmt = traceback.format_exception(exc_type, exc_value,
-                                             exc_traceback)
-
-            http_exc = HTTPUnsupportedMediaType()
-
-            hdr_val = request.headers.get('Origin')
-            if hdr_val != None:
-                http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-                http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
-
-            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-
-            raise http_exc
+            raise cors_exception(request, HTTPUnsupportedMediaType,
+                                 with_stacktrace=True)
         finally:
             gnome_sema.release()
             print '  ', log_prefix, 'semaphore released...'
     else:
-        raise HTTPNotFound()
+        raise cors_exception(request, HTTPNotFound)
 
     print '<<', log_prefix
     return obj.serialize()

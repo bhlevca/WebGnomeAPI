@@ -1,13 +1,6 @@
 """
 Views for the Location objects.
 """
-import sys
-import traceback
-import json
-
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPPreconditionFailed,
                                     HTTPUnprocessableEntity)
@@ -15,7 +8,7 @@ from cornice import Service
 
 from webgnome_api.common.session_management import get_active_model
 
-from webgnome_api.common.views import cors_policy
+from webgnome_api.common.views import cors_exception, cors_policy
 
 step_api = Service(name='step', path='/step',
                   description="Model Step API", cors_policy=cors_policy)
@@ -37,22 +30,16 @@ def get_step(request):
         try:
             output = active_model.step()
         except StopIteration:
-            raise HTTPNotFound
+            raise cors_exception(request, HTTPNotFound)
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            fmt = traceback.format_exception(exc_type, exc_value,
-                                             exc_traceback)
-
-            http_exc = HTTPUnprocessableEntity()
-            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-            raise http_exc
+            raise cors_exception(request, HTTPUnprocessableEntity,
+                                 with_stacktrace=True)
         finally:
             gnome_sema.release()
 
         return output
     else:
-        http_exc = HTTPPreconditionFailed()
-        raise http_exc
+        raise cors_exception(request, HTTPPreconditionFailed)
 
 
 @rewind_api.get()
@@ -68,15 +55,9 @@ def get_rewind(request):
         try:
             active_model.rewind()
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            fmt = traceback.format_exception(exc_type, exc_value,
-                                             exc_traceback)
-
-            http_exc = HTTPUnprocessableEntity()
-            http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
-            raise http_exc
+            raise cors_exception(request, HTTPUnprocessableEntity,
+                                 with_stacktrace=True)
         finally:
             gnome_sema.release()
     else:
-        http_exc = HTTPPreconditionFailed()
-        raise http_exc
+        raise cors_exception(request, HTTPPreconditionFailed)
