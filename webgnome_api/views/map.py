@@ -1,7 +1,10 @@
 """
 Views for the Map objects.
 """
+import sys
 import os
+import traceback
+
 import json
 
 from cornice import Service
@@ -53,21 +56,66 @@ def get_map(request):
 @map_api.post()
 def create_map(request):
     '''Creates a Gnome Map object.'''
+    log_prefix = 'req({0}): create_object():'.format(id(request))
+
     init_session_objects(request)
     try:
         json_request = json.loads(request.body)
     except:
-        raise HTTPBadRequest()
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+        http_exc = HTTPBadRequest()
+
+        hdr_val = request.headers.get('Origin')
+        if hdr_val != None:
+            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+
+        raise http_exc
 
     if not JSONImplementsOneOf(json_request, implemented_types):
-        raise HTTPNotImplemented()
+        http_exc = HTTPNotImplemented()
+
+        hdr_val = request.headers.get('Origin')
+        if hdr_val != None:
+            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
+        raise http_exc
 
     # TODO: should we tie our data directory to the installation path?
     #       or should we be more flexible?
-    map_dir = get_map_dir_from_config(request)
-    json_request['filename'] = os.path.join(map_dir, json_request['filename'])
+    if 'filename' in json_request:
+        map_dir = get_map_dir_from_config(request)
+        json_request['filename'] = os.path.join(map_dir,
+                                                json_request['filename'])
 
-    obj = CreateObject(json_request, get_session_objects(request))
+    gnome_sema = request.registry.settings['py_gnome_semaphore']
+    gnome_sema.acquire()
+    print '  ', log_prefix, 'semaphore acquired...'
+
+    try:
+        obj = CreateObject(json_request, get_session_objects(request))
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+        http_exc = HTTPUnsupportedMediaType()
+
+        hdr_val = request.headers.get('Origin')
+        if hdr_val != None:
+            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+
+        raise http_exc
+    finally:
+        gnome_sema.release()
+        print '  ', log_prefix, 'semaphore released...'
 
     set_session_object(obj, request)
     return obj.serialize()
