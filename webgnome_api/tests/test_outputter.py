@@ -194,3 +194,25 @@ class GeoJsonOutputterTests(OutputterTests):
     def check_updates(self, json_obj):
         assert json_obj['output_last_step'] == False
         assert json_obj['output_zero_step'] == False
+
+
+class WeatheringOutputterTests(OutputterTests):
+    '''
+        Tests out the Gnome GeoJson object API
+    '''
+    req_data = {'obj_type': u'gnome.outputters.weathering.WeatheringOutput',
+                'name': u'WeatheringOutput',
+                'output_last_step': True,
+                'output_zero_step': True}
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] == False
+        assert json_obj['output_zero_step'] == False
