@@ -1,14 +1,14 @@
     {
-        "name": "Delaware Bay",
+        "name": "San Diego Bay",
         "geometry": {
-            "coordinates": [-75.215379, 39.119994]
+            "coordinates": [-117.150177, 32.683794]
         },
         "steps": [
             {
                 "type": "welcome",
-                "name": "Welcome to Delaware Bay",
+                "name": "Welcome to San Diego Bay",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Delaware Bay :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for San Diego Bay :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
             },
             {
                 "type": "model",
