@@ -15,5 +15,6 @@
  "pat2_speed": 19.44, 
  "pat2_speed_units": 1.0,
  "pat2_scale_to_value": 0.1, 
+ "scale_by": 2, 
  "json_": "save" 
 }
