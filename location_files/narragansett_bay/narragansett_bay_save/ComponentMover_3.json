@@ -1,0 +1,20 @@
+{
+ "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "name": "ComponentMover", 
+ "filename1": "WACLinWind20ktN2e-3.cur", 
+ "filename2": "WACLinWind20ktE2e-3.cur", 
+ "refpoint": [
+  -71.4, 
+  41.55 
+ ], 
+ "pat1_angle": 0.0, 
+ "pat1_speed": 20.0, 
+ "pat1_speed_units": 1.0, 
+ "pat1_scale_to_value": 0.2, 
+ "pat2_angle": 90.0, 
+ "pat2_speed": 20.0, 
+ "pat2_speed_units": 1.0,
+ "pat2_scale_to_value": 0.05, 
+ "scale_by":2, 
+ "json_": "save" 
+}
