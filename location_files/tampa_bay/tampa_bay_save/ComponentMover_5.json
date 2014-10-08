@@ -1,0 +1,15 @@
+{
+ "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "name": "ComponentMover", 
+ "filename1": "Offshore.cur", 
+ "refpoint": [
+  -83.0, 
+  27.667 
+ ], 
+ "pat1_angle": 180.0, 
+ "pat1_speed": 8.747, 
+ "pat1_speed_units": 1.0, 
+ "pat1_scale_to_value": 0.15, 
+ "scale_by": 1, 
+ "json_": "save" 
+}
