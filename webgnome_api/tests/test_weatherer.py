@@ -7,11 +7,11 @@ from datetime import datetime
 from base import FunctionalTestBase
 
 
-class WeathererTests(FunctionalTestBase):
+class BaseWeathererTests(FunctionalTestBase):
     '''
         Tests out the Gnome Wind object API
     '''
-    req_data = {'obj_type': u'gnome.weatherers.core.Weatherer',
+    req_data = {'obj_type': u'gnome.weatherers.Evaporation',
                 'json_': 'webapi',
                 'id': u'b505b505-c0fe-11e3-b8f2-3c075404121a',
                 'active_start': '-inf',
