@@ -34,9 +34,14 @@ class ModelRunTest(FunctionalTestBase):
                                    'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
                                                      'windage_range': [0.01, 0.04],
                                                      'windage_persist': 900,
-                                                     }
-                                                    ]
+                                                     },
+                                                    {'obj_type': 'gnome.spill.elements.InitMassFromSpillAmount'},
+                                                    {'obj_type': 'gnome.spill.elements.InitArraysFromOilProps'}
+                                                    ],
+                                   'substance': u'ALAMO'
                                    },
+                  'amount': 200,
+                  'units': 'tons'
                   }
     renderer_data = {'obj_type': 'gnome.outputters.renderer.Renderer',
                      'name': 'Renderer',
@@ -53,10 +58,31 @@ class ModelRunTest(FunctionalTestBase):
                     'name': 'GeoJson',
                     'output_last_step': True,
                     'output_zero_step': True,
-                    'output_dir': 'models/images'
                     }
+    evaporate_data = {'obj_type': 'gnome.weatherers.Evaporation',
+                      'name': 'Evaporation',
+                      'wind': {'obj_type': 'gnome.environment.Wind',
+                               'name': 'ConstantWind',
+                               'timeseries': [('2012-11-06T20:10:30',
+                                               (1.0, 0.0))],
+                               'units': u'meter per second'},
+                      'water': {'obj_type': 'gnome.environment.Water',
+                                'temperature': 46,
+                                'salinity': 32,
+                                'sediment': 5,
+                                'wave_height': 0,
+                                'fetch': 0,
+                                'units': {'temperature': 'F',
+                                          'salinity': 'psu',
+                                          'sediment': 'mg/l',
+                                          'wave_height': 'm',
+                                          'fetch': 'm'
+                                          }
+                                }
+                      }
 
     @pytest.mark.slow
+    @pytest.mark.parametrize()
     def test_full_run(self):
         # We are testing our ability to generate the first step in a model run
         resp = self.testapp.get('/location/central-long-island-sound')
@@ -70,6 +96,7 @@ class ModelRunTest(FunctionalTestBase):
         print 'test_all_steps(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
         print 'Our model:'
@@ -92,6 +119,11 @@ class ModelRunTest(FunctionalTestBase):
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
         model1['spills'] = [spill]
+
+        # add evaporation weatherer
+        resp = self.testapp.post_json('/weatherer', params=self.evaporate_data)
+        evaporate = resp.json_body
+        model1['weatherers'] = [evaporate]
 
         # - we need an outputter
         print 'test_all_steps(): creating outputter...'
@@ -119,6 +151,5 @@ class ModelRunTest(FunctionalTestBase):
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
 
-        open('models/images/done', 'w').write('done!\n')
         time.sleep(4)
         print 'done!'

@@ -12,6 +12,10 @@ weatherer = Service(name='weatherer', path='/weatherer*obj_id',
                     description="Weatherer API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.weatherers.core.Weatherer',
+                     'gnome.weatherers.Evaporation',
+                     'gnome.weatherers.Dispersion',
+                     'gnome.weatherers.Burn',
+                     'gnome.weatherers.Skimmer'
                      )
 
 

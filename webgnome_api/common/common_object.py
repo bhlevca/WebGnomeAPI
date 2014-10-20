@@ -69,7 +69,10 @@ def _CreateObject(payload, parent, attr_name, all_objects):
         Get the payload's associated object or create one.
         Then assign it to the parent (json)objects attribute
     '''
-    if ObjectExists(payload, all_objects):
+    if 'obj_type' not in payload:
+        'not a nested object, just pass the dict unchanged'
+        obj = payload
+    elif ObjectExists(payload, all_objects):
         obj = all_objects[ObjectId(payload)]
     else:
         py_class = PyClassFromName(payload['obj_type'])

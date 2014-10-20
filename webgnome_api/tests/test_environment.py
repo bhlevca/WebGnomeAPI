@@ -124,3 +124,42 @@ class TideTests(WindTests):
             attributes.
         '''
         pass
+
+
+class WaterTests(WindTests):
+    '''
+        Tests out the Gnome Water API - just include tests in base class for
+        now
+    '''
+    req_data = {'obj_type': 'gnome.environment.Water',
+                'temperature': 46,
+                'salinity': 32,
+                'sediment': 5,
+                'wave_height': 0,
+                'fetch': 0,
+                'units': {
+                    'temperature': 'F',
+                    'salinity': 'psu',
+                    'sediment': 'mg/l',
+                    'wave_height': 'm',
+                    'fetch': 'm'
+                    }
+                }
+
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+            Currently, it does not make sense to update any Tide object
+            attributes.
+        '''
+        pass
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+            Currently, it does not make sense to update any Tide object
+            attributes.
+        '''
+        pass

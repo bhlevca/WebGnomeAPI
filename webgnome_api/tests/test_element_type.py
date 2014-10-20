@@ -17,6 +17,7 @@ class ElementTypeBase(FunctionalTestBase):
                 }
     req_data = {'obj_type': u'gnome.spill.elements.ElementType',
                 'initializers': None,
+                'substance': u'ALAMO'
                 }
     fields_to_check = ('id', 'obj_type', 'initializers')
 
