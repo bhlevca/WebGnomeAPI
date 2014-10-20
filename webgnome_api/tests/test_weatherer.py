@@ -92,3 +92,39 @@ class BaseWeathererTests(FunctionalTestBase):
         '''
         assert json_obj['active_start'] == self.now
         assert json_obj['on'] == False
+
+
+class BurnTests(BaseWeathererTests):
+    '''
+        Mock objects at present so just test that they get created
+    '''
+    req_data = {'obj_type': u'gnome.weatherers.Burn',
+                'json_': 'webapi',
+                'active_start': '-inf',
+                'active_stop': 'inf',
+                'on': True,
+                }
+
+
+class SkimmerTests(BaseWeathererTests):
+    '''
+        Mock objects at present so just test that they get created
+    '''
+    req_data = {'obj_type': u'gnome.weatherers.Burn',
+                'json_': 'webapi',
+                'active_start': '-inf',
+                'active_stop': 'inf',
+                'on': True,
+                }
+
+
+class DispersionTests(BaseWeathererTests):
+    '''
+        Mock objects at present so just test that they get created
+    '''
+    req_data = {'obj_type': u'gnome.weatherers.Burn',
+                'json_': 'webapi',
+                'active_start': '-inf',
+                'active_stop': 'inf',
+                'on': True,
+                }
