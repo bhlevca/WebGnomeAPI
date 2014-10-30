@@ -29,8 +29,8 @@ def get_step(request):
 
         try:
             output = active_model.step()
-            low = dict(floating=output['WeatheringOutput']['0']['floating'])
-            high = dict(floating=output['WeatheringOutput']['0']['floating'])
+            low = output['WeatheringOutput']['0']
+            high = output['WeatheringOutput']['0']
             for i, run in output['WeatheringOutput'].iteritems():
                 if isinstance(run, dict):
                     if run['floating'] < low['floating']:
