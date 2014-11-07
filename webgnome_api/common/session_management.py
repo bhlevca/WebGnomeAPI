@@ -1,15 +1,14 @@
 """
 Common Gnome object request handlers.
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
+from gnome.multi_model_broadcast import ModelBroadcaster
 
 
 def init_session_objects(request, force=False):
     session = request.session
     obj_pool = request.registry.settings['objects']
 
-    if (not session.session_id in obj_pool) or force:
+    if (session.session_id not in obj_pool) or force:
         print ('init_session_objects(): '
                'initializing object dict.')
         obj_pool[session.session_id] = {}
@@ -52,3 +51,44 @@ def get_active_model(request):
         return get_session_object(session['active_model'], request)
     else:
         return None
+
+
+def get_uncertain_models(request):
+    session = request.session
+
+    if 'uncertain_models' in session and session['uncertain_models']:
+        return get_session_object(session['uncertain_models'], request)
+    else:
+        return None
+
+
+def create_uncertain_models(request):
+    '''
+        Create our uncertain models using our active model as a template.
+    '''
+    session = request.session
+
+    active_model = get_active_model(request)
+    if active_model:
+        model_broadcaster = ModelBroadcaster(active_model,
+                                             ('down', 'normal', 'up'),
+                                             ('down', 'normal', 'up'))
+        set_session_object(model_broadcaster, request)
+        session['uncertain_models'] = model_broadcaster.id
+        session.changed()
+
+
+def drop_uncertain_models(request):
+    '''
+        Stop and unregister our uncertain models.
+    '''
+    uncertain_models = get_uncertain_models(request)
+    if uncertain_models:
+        session = request.session
+        all_objects = get_session_objects(request)
+
+        uncertain_models.stop()
+        session['uncertain_models'] = None
+        del all_objects[uncertain_models.id]
+
+        session.changed()

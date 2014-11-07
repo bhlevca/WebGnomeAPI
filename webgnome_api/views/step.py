@@ -11,9 +11,9 @@ from webgnome_api.common.session_management import get_active_model
 from webgnome_api.common.views import cors_exception, cors_policy
 
 step_api = Service(name='step', path='/step',
-                  description="Model Step API", cors_policy=cors_policy)
+                   description="Model Step API", cors_policy=cors_policy)
 rewind_api = Service(name='rewind', path='/rewind',
-                  description="Model Rewind API", cors_policy=cors_policy)
+                     description="Model Rewind API", cors_policy=cors_policy)
 
 
 @step_api.get()

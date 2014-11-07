@@ -22,7 +22,7 @@ def FQNamesToList(names):
 def FilterFQNamesToIterList(names, name=None, namespace=None):
     for i in FQNamesToIterList(names):
         if ((name and i[0].find(name) >= 0) or
-            (namespace and i[1].find(namespace) >= 0)):
+                (namespace and i[1].find(namespace) >= 0)):
             yield i
 
 
@@ -37,7 +37,7 @@ def FQNamesToDict(names):
 
 def JSONImplementsOneOf(json_obj, obj_types):
     try:
-        return not JSONImplementedType(json_obj, obj_types) == None
+        return not JSONImplementedType(json_obj, obj_types) is None
     except:
         return False
 
@@ -69,7 +69,7 @@ def JSONImplementedType(json_obj, obj_types):
     if not type(json_obj) == dict:
         raise ValueError('JSON needs to be a dict')
 
-    if not 'obj_type' in json_obj:
+    if 'obj_type' not in json_obj:
         raise ValueError('JSON object needs to contain an obj_type')
 
     name = FQNameToNameAndScope(json_obj['obj_type'])[0]

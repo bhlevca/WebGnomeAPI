@@ -24,8 +24,7 @@ from .session_management import (get_session_objects,
                                  get_session_object,
                                  set_session_object)
 
-cors_policy = {'origins': (
-                           'http://0.0.0.0:8080',
+cors_policy = {'origins': ('http://0.0.0.0:8080',
                            'http://hazweb2.orr.noaa.gov:7448',
                            'http://localhost:8080',
                            ),
@@ -37,7 +36,7 @@ def cors_exception(request, exception_class, with_stacktrace=False):
         http_exc = exception_class()
 
         hdr_val = request.headers.get('Origin')
-        if hdr_val != None:
+        if hdr_val is not None:
             http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
             http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
@@ -78,8 +77,6 @@ def get_specifications(request, implemented_types):
                 spec['obj_type'] = t
                 specs[name] = spec
         except ValueError:
-            #print 'failed to get class for {0}'.format(t)
-            #print 'error: {0}'.format(e)
             raise cors_exception(request, HTTPNotImplemented)
     return specs
 
