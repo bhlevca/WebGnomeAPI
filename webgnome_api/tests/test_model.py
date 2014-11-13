@@ -253,8 +253,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/environment', params=wind_data)
         wind1 = resp.json_body
 
-        model1['environment'].append(
-                                     {'obj_type': wind1['obj_type'],
+        model1['environment'].append({'obj_type': wind1['obj_type'],
                                       'id': wind1['id']
                                       }
                                      )
@@ -485,8 +484,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': ('gnome.weatherers.core'
-                                                '.Weatherer'),
+        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
                                    'active_start': '-inf',
                                    'active_stop': 'inf',
                                    'on': True,
@@ -496,16 +494,16 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'weatherers' in model1
-        assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers.core'
-                                                       '.Weatherer')
+        assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers'
+                                                       '.evaporation'
+                                                       '.Evaporation')
         assert 'active_start' in model1['weatherers'][0]
         assert 'active_stop' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': ('gnome.weatherers.core'
-                                                '.Weatherer'),
+        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
                                    'active_start': '-inf',
                                    'active_stop': 'inf',
                                    'on': True,
@@ -519,7 +517,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['weatherers'][0]['on'] == False
+        assert model2['weatherers'][0]['on'] is False
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()
@@ -574,7 +572,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['outputters'][0]['output_last_step'] == False
+        assert model2['outputters'][0]['output_last_step'] is False
 
     def test_create_model_then_add_wind(self):
         req_wind_data = {'obj_type': 'gnome.environment.Wind',
@@ -662,6 +660,8 @@ class NestedModelTests(FunctionalTestBase):
                                   'units': u'meter per second'
                                   }]
 
+        print '\nwind_data id:', wind_data['id']
+        print 'wind2_data id:', wind2_data['id']
         print 'updating model with new existing wind...'
         resp = self.testapp.put_json('/model', params=model3)
         model4 = resp.json_body
@@ -752,13 +752,13 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['spills'][0]['on'] == False
+        assert model2['spills'][0]['on'] is False
         assert model2['spills'][0]['release']['num_elements'] == 2000
 
         resp = self.testapp.get('/model')
         model3 = resp.json_body
 
-        assert model3['spills'][0]['on'] == False
+        assert model3['spills'][0]['on'] is False
         assert model3['spills'][0]['release']['num_elements'] == 2000
 
     def test_put_with_nested_sparse_spill(self):
@@ -800,7 +800,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['spills'][0]['on'] == True
+        assert model2['spills'][0]['on']
         assert model2['spills'][0]['release']['num_elements'] == 1000
 
     def test_put_with_remove_spill(self):
@@ -839,13 +839,13 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['spills'][0]['on'] == False
+        assert model2['spills'][0]['on'] is False
         assert model2['spills'][0]['release']['num_elements'] == 2000
 
         resp = self.testapp.get('/model')
         model3 = resp.json_body
 
-        assert model3['spills'][0]['on'] == False
+        assert model3['spills'][0]['on'] is False
         assert model3['spills'][0]['release']['num_elements'] == 2000
 
         model3['spills'] = []

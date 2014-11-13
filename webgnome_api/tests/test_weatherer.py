@@ -12,8 +12,6 @@ class BaseWeathererTests(FunctionalTestBase):
         Tests out the Gnome Wind object API
     '''
     req_data = {'obj_type': u'gnome.weatherers.Evaporation',
-                'json_': 'webapi',
-                'id': u'b505b505-c0fe-11e3-b8f2-3c075404121a',
                 'active_start': '-inf',
                 'active_stop': 'inf',
                 'on': True,
@@ -26,7 +24,8 @@ class BaseWeathererTests(FunctionalTestBase):
         obj_type = self.req_data['obj_type'].split('.')[-1]
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
-                            for name, obj in resp.json_body.iteritems()]
+                                        for name, obj
+                                        in resp.json_body.iteritems()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -52,7 +51,6 @@ class BaseWeathererTests(FunctionalTestBase):
         self.testapp.put_json('/weatherer', status=400)
 
     def test_put_no_id(self):
-        #print '\n\nEnvironment Put Request payload: {0}'.format(self.req_data)
         self.testapp.put_json('/weatherer', params=self.req_data, status=404)
 
     def test_put_invalid_id(self):
@@ -91,7 +89,7 @@ class BaseWeathererTests(FunctionalTestBase):
             for new object types.
         '''
         assert json_obj['active_start'] == self.now
-        assert json_obj['on'] == False
+        assert json_obj['on'] is False
 
 
 class BurnTests(BaseWeathererTests):

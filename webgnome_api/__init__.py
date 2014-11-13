@@ -35,5 +35,6 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
     config.scan('webgnome_api.views')
+    print 'main(): cornice views:', config.registry.cornice_services
 
     return config.make_wsgi_app()

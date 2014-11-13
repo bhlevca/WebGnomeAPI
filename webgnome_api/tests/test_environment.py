@@ -20,7 +20,9 @@ class WindTests(FunctionalTestBase):
                                ('2012-11-06T20:13:30', (1.0, 120.0)),
                                ('2012-11-06T20:14:30', (1.0, 180.0)),
                                ('2012-11-06T20:15:30', (1.0, 270.0))],
-                'units': u'meter per second'
+                'units': u'meter per second',
+                'latitude': 90,
+                'longitude': 90,
                 }
 
     def test_get_no_id(self):
@@ -30,7 +32,8 @@ class WindTests(FunctionalTestBase):
         obj_type = self.req_data['obj_type'].split('.')[-1]
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
-                            for name, obj in resp.json_body.iteritems()]
+                                        for name, obj
+                                        in resp.json_body.iteritems()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -142,7 +145,9 @@ class WaterTests(WindTests):
                     'salinity': 'psu',
                     'sediment': 'mg/l',
                     'wave_height': 'm',
-                    'fetch': 'm'
+                    'fetch': 'm',
+                    'density': 'kg/m^3',
+                    'kinematic_viscosity': 'm^2/s'
                     }
                 }
 

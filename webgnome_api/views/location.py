@@ -4,7 +4,8 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir
 from collections import OrderedDict
-from types import MethodType, FunctionType
+from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
+from logging import Logger
 
 import json
 import slugify
@@ -98,9 +99,9 @@ def RegisterObject(obj, request):
         we probably don't care about.
     '''
     if (hasattr(obj, 'id')
-        and not obj.__class__.__name__ == 'type'):
-        print 'RegisterObjects(): registering:', (obj.__class__.__name__,
-                                                  obj.id)
+            and not obj.__class__.__name__ == 'type'):
+        # print 'RegisterObject(): registering:', (obj.__class__.__name__,
+        #                                           obj.id)
         set_session_object(obj, request)
     if isinstance(obj, (list, tuple, OrderedCollection,
                         SpillContainerPair)):
@@ -111,5 +112,10 @@ def RegisterObject(obj, request):
         for k in dir(obj):
             attr = getattr(obj, k)
             if not (k.find('_') == 0
-                    or isinstance(attr, (MethodType, FunctionType))):
+                    or isinstance(attr, (MethodType, FunctionType,
+                                         BuiltinFunctionType,
+                                         int, float, str, unicode, NoneType,
+                                         Logger)
+                                  )):
+                # print 'RegisterObject(): recursing attr:', (k, type(attr))
                 RegisterObject(attr, request)

@@ -29,18 +29,20 @@ def get_step(request):
 
         try:
             output = active_model.step()
-            low = output['WeatheringOutput']['0']
-            high = output['WeatheringOutput']['0']
-            for i, run in output['WeatheringOutput'].iteritems():
-                if isinstance(run, dict):
-                    if run['floating'] < low['floating']:
-                        low = run
 
-                    if run['floating'] > high['floating']:
-                        high = run
+            if 'WeatheringOutput' in output:
+                low = output['WeatheringOutput']['0']
+                high = output['WeatheringOutput']['0']
+                for i, run in output['WeatheringOutput'].iteritems():
+                    if isinstance(run, dict):
+                        if run['floating'] < low['floating']:
+                            low = run
 
-            output['WeatheringOutput']['low'] = low
-            output['WeatheringOutput']['high'] = high
+                        if run['floating'] > high['floating']:
+                            high = run
+
+                output['WeatheringOutput']['low'] = low
+                output['WeatheringOutput']['high'] = high
 
         except StopIteration:
             raise cors_exception(request, HTTPNotFound)

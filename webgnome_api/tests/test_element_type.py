@@ -12,13 +12,15 @@ class ElementTypeBase(FunctionalTestBase):
         Tests out the Gnome ElementType object API
     '''
     init_data = {'obj_type': u'gnome.spill.elements.InitWindages',
-                'windage_range': (0.01, 0.04),
-                'windage_persist': 900,
-                }
+                 'windage_range': (0.01, 0.04),
+                 'windage_persist': 900,
+                 }
+
     req_data = {'obj_type': u'gnome.spill.elements.ElementType',
                 'initializers': None,
                 'substance': u'ALAMO'
                 }
+
     fields_to_check = ('id', 'obj_type', 'initializers')
 
     def test_get_no_id(self):
@@ -104,15 +106,16 @@ class ElementTypeWithWindagesTests(ElementTypeBase):
 
 
 class ElementTypeWithRiseVelDistTest(ElementTypeBase):
-    dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
+    dist_data = {'obj_type': ('gnome.utilities.distributions'
+                              '.WeibullDistribution'),
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
                  'max_': 0.5,
                  }
     init_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDist',
-                'distribution': None
-                }
+                 'distribution': None
+                 }
     fields_to_check = ('id', 'obj_type', 'initializers')
 
     def create_dist_obj(self, req_data):

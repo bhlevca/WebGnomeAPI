@@ -33,19 +33,20 @@ cors_policy = {'origins': ('http://0.0.0.0:8080',
 
 
 def cors_exception(request, exception_class, with_stacktrace=False):
-        http_exc = exception_class()
+    depth = 2
+    http_exc = exception_class()
 
-        hdr_val = request.headers.get('Origin')
-        if hdr_val is not None:
-            http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-            http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+    hdr_val = request.headers.get('Origin')
+    if hdr_val is not None:
+        http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+        http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-2:])
+    http_exc.json_body = json.dumps([l.strip() for l in fmt][-depth:])
 
-        return http_exc
+    return http_exc
 
 
 def get_object(request, implemented_types):

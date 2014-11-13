@@ -43,6 +43,7 @@ def _DeserializeObject(json_obj):
         The py_gnome deserialize method can handle nested payloads
     '''
     py_class = PyClassFromName(json_obj['obj_type'])
+    print 'deserializing:', py_class
 
     return py_class.deserialize(json_obj)
 
@@ -96,6 +97,10 @@ def _UpdateObject(payload, parent, attr_name, all_objects):
     '''
     if ObjectExists(payload, all_objects):
         obj = all_objects[ObjectId(payload)]
+
+        print '\n_UpdateObject(): (obj, obj.id, payload["id"])'
+        pp.pprint((obj, obj.id, payload['id']))
+
         obj.update_from_dict(payload)
 
         # link the object to its associated parent attribute
