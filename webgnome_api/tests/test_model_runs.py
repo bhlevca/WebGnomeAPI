@@ -76,7 +76,9 @@ class ModelRunTest(FunctionalTestBase):
                                           'salinity': 'psu',
                                           'sediment': 'mg/l',
                                           'wave_height': 'm',
-                                          'fetch': 'm'
+                                          'fetch': 'm',
+                                          'density': 'kg/m^3',
+                                          'kinematic_viscosity': 'm^2/s'
                                           }
                                 }
                       }
