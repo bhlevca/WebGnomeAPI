@@ -5,9 +5,9 @@ Views for help documentation
 from cornice import Service
 from os.path import sep, join, isfile
 from pyramid.httpexceptions import HTTPNotFound
-from pyramid.response import FileResponse
+import urllib
 
-from webgnome_api.common.views import cors_exception, cors_policy
+from webgnome_api.common.views import cors_exception, cors_policy, cors_file
 
 help = Service(name='help', path='/help/*dir',
                        description="Help Documentation and Feedback API", cors_policy=cors_policy)
@@ -17,17 +17,21 @@ help = Service(name='help', path='/help/*dir',
 def get_help(request):
     '''Get the requested help file if it exists'''
     help_dir = get_help_dir_from_config(request)
-    requested_dir = sep.join(request.matchdict.get('dir'))
-    requested_file = join(help_dir, requested_dir) + '.html'
+    requested_dir = urllib.unquote(sep.join(request.matchdict.get('dir'))).encode('utf8')
+
+    if requested_dir[-5:] != '.html':
+        requested_dir = requested_dir + '.html'
+
+    requested_file = join(help_dir, requested_dir)
     
     if isfile(requested_file):
-        return FileResponse(requested_file, request)
+        return cors_file(request, requested_file)
     else:
         raise cors_exception(request, HTTPNotFound)
 
 @help.post()
 def create_help_feedback(request):
-    '''Creates a feeback entry for the given help section'''
+    '''Creates a feedback entry for the given help section'''
 
 
 

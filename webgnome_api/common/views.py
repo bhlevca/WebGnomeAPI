@@ -10,6 +10,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
+from pyramid.response import FileResponse
+
 from .helpers import (JSONImplementsOneOf,
                       FQNamesToList,
                       PyClassFromName)
@@ -48,6 +50,15 @@ def cors_exception(request, exception_class, with_stacktrace=False):
 
         return http_exc
 
+def cors_file(request, path):
+    http_exc = FileResponse(path)
+
+    hdr_val = request.headers.get('Origin')
+    if hdr_val != None:
+        http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
+        http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+
+    return http_exc
 
 def get_object(request, implemented_types):
     '''Returns a Gnome object in JSON.'''
