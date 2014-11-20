@@ -9,8 +9,6 @@ def init_session_objects(request, force=False):
     obj_pool = request.registry.settings['objects']
 
     if (session.session_id not in obj_pool) or force:
-        print ('init_session_objects(): '
-               'initializing object dict.')
         obj_pool[session.session_id] = {}
 
 

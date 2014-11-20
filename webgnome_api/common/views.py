@@ -22,7 +22,9 @@ from .common_object import (CreateObject,
 
 from .session_management import (get_session_objects,
                                  get_session_object,
-                                 set_session_object)
+                                 set_session_object,
+                                 drop_uncertain_models,
+                                 create_uncertain_models)
 
 cors_policy = {'origins': ('http://0.0.0.0:8080',
                            'http://hazweb2.orr.noaa.gov:7448',
@@ -134,6 +136,9 @@ def update_object(request, implemented_types):
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
+
+            drop_uncertain_models(request)
+            create_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

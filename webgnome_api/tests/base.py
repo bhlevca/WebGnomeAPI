@@ -9,6 +9,7 @@ from pyramid import testing
 from paste.deploy.loadwsgi import appconfig
 from webtest import TestApp
 
+from gnome.multi_model_broadcast import ModelBroadcaster
 from webgnome_api import main
 
 
@@ -32,9 +33,31 @@ class FunctionalTestBase(GnomeTestCase):
 
     def tearDown(self):
         'Clean up any images the model generated after running tests.'
+        print '>> FunctionalTestBase.tearDown()...'
         test_images_dir = os.path.join(self.project_root, 'static', 'img',
                                        self.settings['model_data_dir'])
         shutil.rmtree(test_images_dir, ignore_errors=True)
+
+        self.cleanup_web_app_upon_shutdown()
+
+    def cleanup_web_app_upon_shutdown(self):
+        '''
+            Every test case gets a new instantiated web application,
+            and there are some resources that our web application manages
+            that need to be cleaned up before the next one gets created.
+
+            It would be nice if pyramid would provide a cleanup method
+            upon shutdown.
+        '''
+        app = self.testapp.app
+
+        for session_values in app.registry.settings['objects'].values():
+            for v in session_values.values():
+                if isinstance(v, ModelBroadcaster):
+                    v.stop()
+
+        if hasattr(app.registry, '_redis_sessions'):
+            app.registry._redis_sessions.connection_pool.disconnect()
 
 
 class UnitTestBase(GnomeTestCase):
