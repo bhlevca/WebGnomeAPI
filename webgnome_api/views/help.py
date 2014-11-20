@@ -5,9 +5,10 @@ Views for help documentation
 from cornice import Service
 from os.path import sep, join, isfile
 from pyramid.httpexceptions import HTTPNotFound
+from docutils.core import publish_parts
 import urllib
 
-from webgnome_api.common.views import cors_exception, cors_policy, cors_file
+from webgnome_api.common.views import cors_exception, cors_policy
 
 help = Service(name='help', path='/help/*dir',
                        description="Help Documentation and Feedback API", cors_policy=cors_policy)
@@ -19,13 +20,19 @@ def get_help(request):
     help_dir = get_help_dir_from_config(request)
     requested_dir = urllib.unquote(sep.join(request.matchdict.get('dir'))).encode('utf8')
 
-    if requested_dir[-5:] != '.html':
-        requested_dir = requested_dir + '.html'
+    if requested_dir == '':
+        # aggrigate all the help files into one response.
+        requested_dir = 'mrgl'
+    elif requested_dir[-5:] != '.rst':
+        requested_dir = requested_dir + '.rst'
 
     requested_file = join(help_dir, requested_dir)
     
     if isfile(requested_file):
-        return cors_file(request, requested_file)
+        file = open(requested_file, 'r')
+        html = publish_parts(file.read(), writer_name='html')['html_body']
+        file.close()
+        return {'path': requested_file, 'html': html}
     else:
         raise cors_exception(request, HTTPNotFound)
 
