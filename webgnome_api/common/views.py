@@ -22,7 +22,6 @@ from .common_object import (CreateObject,
 
 from .session_management import (get_session_objects,
                                  get_session_object,
-                                 set_session_object,
                                  drop_uncertain_models,
                                  create_uncertain_models)
 

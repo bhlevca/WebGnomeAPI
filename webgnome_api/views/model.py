@@ -105,8 +105,9 @@ def create_model(request):
         set_session_object(new_model._map, request)
         set_active_model(request, new_model.id)
 
-        drop_uncertain_models(request)
-        create_uncertain_models(request)
+        if new_model.has_weathering:
+            drop_uncertain_models(request)
+            create_uncertain_models(request)
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
@@ -152,8 +153,9 @@ def update_model(request):
                 set_session_object(my_model, request)
             ret = my_model.serialize()
 
-            drop_uncertain_models(request)
-            create_uncertain_models(request)
+            if my_model.has_weathering:
+                drop_uncertain_models(request)
+                create_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

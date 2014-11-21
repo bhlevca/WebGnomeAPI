@@ -21,7 +21,7 @@ def reconcile_directory_settings(settings, key):
 
         settings[key] = '\n'.join(resolved_dirs)
     else:
-        #print 'Warning: key {0} not found in settings.'.format(key)
+        # print 'Warning: key {0} not found in settings.'.format(key)
         pass
 
 
@@ -35,6 +35,5 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
     config.scan('webgnome_api.views')
-    print 'main(): cornice views:', config.registry.cornice_services
 
     return config.make_wsgi_app()

@@ -2,6 +2,7 @@
 Functional tests for the Model Web API
 """
 from pprint import PrettyPrinter
+from gnome.multi_model_broadcast import ModelBroadcaster
 pp = PrettyPrinter(indent=2)
 
 from base import FunctionalTestBase
@@ -83,6 +84,13 @@ class ModelTests(FunctionalTestBase):
                   'environment', 'spills', 'movers', 'weatherers'):
             assert k in model1
 
+        # we should not have any adios uncertainty models if we
+        # have no weathering
+        app = self.testapp.app
+        assert not [v for s in app.registry.settings['objects'].values()
+                    for v in s.values()
+                    if isinstance(v, ModelBroadcaster)]
+
     def test_post_no_payload_twice(self):
         resp = self.testapp.post_json('/model')
         model1 = resp.json_body
@@ -134,6 +142,13 @@ class ModelTests(FunctionalTestBase):
 
         model2 = resp.json_body
         assert model2['time_step'] == 1800.0
+
+        # we should not have any adios uncertainty models if we
+        # have no weathering
+        app = self.testapp.app
+        assert not [v for s in app.registry.settings['objects'].values()
+                    for v in s.values()
+                    if isinstance(v, ModelBroadcaster)]
 
 
 class NestedModelTests(FunctionalTestBase):
@@ -501,6 +516,11 @@ class NestedModelTests(FunctionalTestBase):
         assert 'active_stop' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
+        app = self.testapp.app
+        assert [v for s in app.registry.settings['objects'].values()
+                for v in s.values()
+                if isinstance(v, ModelBroadcaster)]
+
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
@@ -518,6 +538,37 @@ class NestedModelTests(FunctionalTestBase):
         model2 = resp.json_body
 
         assert model2['weatherers'][0]['on'] is False
+
+    def test_put_with_added_weatherer(self):
+        req_data = self.req_data.copy()
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # we should not have any adios uncertainty runs yet
+        app = self.testapp.app
+        assert not [v for s in app.registry.settings['objects'].values()
+                    for v in s.values()
+                    if isinstance(v, ModelBroadcaster)]
+
+        weatherer = {'obj_type': u'gnome.weatherers.Evaporation',
+                     'active_start': '-inf',
+                     'active_stop': 'inf',
+                     'on': True,
+                     }
+        resp1 = self.testapp.post_json('/weatherer', params=weatherer)
+        weatherer = resp1.json_body
+
+        model1['weatherers'] = [weatherer]
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model2 = resp.json_body
+
+        assert model2['weatherers'][0]['on'] is True
+
+        # we should now see adios uncertainty runs
+        assert [v for s in app.registry.settings['objects'].values()
+                for v in s.values()
+                if isinstance(v, ModelBroadcaster)]
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()
