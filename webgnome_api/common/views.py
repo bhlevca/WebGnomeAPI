@@ -22,6 +22,7 @@ from .common_object import (CreateObject,
 
 from .session_management import (get_session_objects,
                                  get_session_object,
+                                 get_active_model,
                                  drop_uncertain_models,
                                  create_uncertain_models)
 
@@ -136,8 +137,17 @@ def update_object(request, implemented_types):
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
 
-            drop_uncertain_models(request)
-            create_uncertain_models(request)
+            active_model = get_active_model(request)
+            print 'update_object(): active_model = ', active_model
+            if active_model:
+                print ('update_object(): active_model.has_weathering = ',
+                       active_model.has_weathering)
+                if active_model.has_weathering:
+                    print ('update_object(): contains obj =',
+                           active_model.contains_object(obj.id))
+                    if active_model.contains_object(obj.id):
+                        drop_uncertain_models(request)
+                        create_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

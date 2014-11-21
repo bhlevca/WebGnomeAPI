@@ -244,6 +244,37 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['environment'][0]['units'] == 'knots'
 
+    def test_put_environment_inside_model(self):
+        req_data = self.req_data.copy()
+        req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
+                                    'description': u'Wind Object',
+                                    'updated_at': '2014-03-26T14:52:45.385126',
+                                    'source_type': u'undefined',
+                                    'source_id': u'undefined',
+                                    'timeseries': [('2012-11-06T20:10:30',
+                                                    (1.0, 0.0)),
+                                                   ('2012-11-06T20:15:30',
+                                                    (1.0, 270.0))],
+                                    'units': u'meter per second'
+                                    }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        environment = model1['environment'][0]
+        environment['units'] = 'knots'
+
+        resp = self.testapp.put_json('/environment', params=environment)
+        environment2 = resp.json_body
+
+        assert environment2['units'] == 'knots'
+
+        # we should not have any adios uncertainty runs yet
+        app = self.testapp.app
+        assert not [v for s in app.registry.settings['objects'].values()
+                    for v in s.values()
+                    if isinstance(v, ModelBroadcaster)]
+
     def test_put_with_sparse_environment(self):
         '''
             Sparse means that we have a previously created object (Wind),
@@ -569,6 +600,56 @@ class NestedModelTests(FunctionalTestBase):
         assert [v for s in app.registry.settings['objects'].values()
                 for v in s.values()
                 if isinstance(v, ModelBroadcaster)]
+
+    def test_put_weatherer_inside_model(self):
+        req_data = self.req_data.copy()
+        req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
+                                    'description': u'Wind Object',
+                                    'updated_at': '2014-03-26T14:52:45.385126',
+                                    'source_type': u'undefined',
+                                    'source_id': u'undefined',
+                                    'timeseries': [('2012-11-06T20:10:30',
+                                                    (1.0, 0.0)),
+                                                   ('2012-11-06T20:15:30',
+                                                    (1.0, 270.0))],
+                                    'units': u'meter per second'
+                                    }]
+        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+                                   'active_start': '-inf',
+                                   'active_stop': 'inf',
+                                   'on': True,
+                                   }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        # check our adios uncertainty runs
+        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
+        assert all(weatherer_vals)
+
+        weatherer = model1['weatherers'][0]
+        weatherer['on'] = False
+
+        resp = self.testapp.put_json('/weatherer', params=weatherer)
+        weatherer2 = resp.json_body
+
+        assert weatherer2['on'] is False
+
+        # check our adios uncertainty runs
+        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
+        assert not any(weatherer_vals)
+        raise
+
+    def check_adios_uncertainty_runs(self, app):
+        # check our adios uncertainty runs
+        broadcasters = [v for s in app.registry.settings['objects'].values()
+                        for v in s.values()
+                        if isinstance(v, ModelBroadcaster)]
+        if broadcasters:
+            broadcaster = broadcasters[0]
+            model_weatherer_vals = broadcaster.cmd('get_weatherer_attribute',
+                                                   dict(idx=0, attr='on'))
+            return model_weatherer_vals
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()
