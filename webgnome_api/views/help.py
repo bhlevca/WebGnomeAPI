@@ -6,7 +6,7 @@ from cornice import Service
 from os.path import sep, join, isfile
 from pyramid.httpexceptions import HTTPNotFound
 from docutils.core import publish_parts
-import urllib
+import urllib, time, json, redis
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
@@ -36,11 +36,24 @@ def get_help(request):
     else:
         raise cors_exception(request, HTTPNotFound)
 
+@help.put()
 @help.post()
 def create_help_feedback(request):
     '''Creates a feedback entry for the given help section'''
+    try:
+        json_request = json.loads(request.body)
+    except:
+        raise cors_exception(request, HTTPBadRequest)
 
+    json_request['ts'] = int(time.time())
+    client = redis.Redis('localhost')
 
+    if 'index' not in json_request:
+        index = client.incr('index')
+        json_request['index'] = index
+
+    client.set('feedback' + str(json_request['index']), json_request)
+    return json_request
 
 def get_help_dir_from_config(request):
     help_dir = request.registry.settings['help_dir']
