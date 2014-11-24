@@ -1,12 +1,15 @@
 """
 Views for the Location objects.
 """
+from collections import defaultdict
+
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPPreconditionFailed,
                                     HTTPUnprocessableEntity)
 from cornice import Service
 
-from webgnome_api.common.session_management import get_active_model
+from webgnome_api.common.session_management import (get_active_model,
+                                                    get_uncertain_models)
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
@@ -30,19 +33,31 @@ def get_step(request):
         try:
             output = active_model.step()
 
-            if 'WeatheringOutput' in output:
-                low = output['WeatheringOutput']['0']
-                high = output['WeatheringOutput']['0']
-                for i, run in output['WeatheringOutput'].iteritems():
-                    if isinstance(run, dict):
-                        if run['floating'] < low['floating']:
-                            low = run
+            steps = get_uncertain_steps(request)
+            if steps and 'WeatheringOutput' in output:
+                nominal = output['WeatheringOutput']
+                aggregate = defaultdict(list)
+                low = {}
+                high = {}
+                full_output = {}
 
-                        if run['floating'] > high['floating']:
-                            high = run
+                for idx, step_output in enumerate(steps):
+                    for k, v in step_output['WeatheringOutput'].iteritems():
+                        aggregate[k].append(v)
 
-                output['WeatheringOutput']['low'] = low
-                output['WeatheringOutput']['high'] = high
+                for k, v in aggregate.iteritems():
+                    low[k] = min(v)
+                    high[k] = max(v)
+
+                full_output = {'nominal': nominal,
+                               'step_num': nominal['step_num'],
+                               'time_stamp': nominal['time_stamp'],
+                               'low': low,
+                               'high': high}
+                for idx, step_output in enumerate(steps):
+                    full_output[idx] = step_output['WeatheringOutput']
+
+                output['WeatheringOutput'] = full_output
 
         except StopIteration:
             raise cors_exception(request, HTTPNotFound)
@@ -76,3 +91,12 @@ def get_rewind(request):
             gnome_sema.release()
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
+
+
+def get_uncertain_steps(request):
+    uncertain_models = get_uncertain_models(request)
+    if uncertain_models:
+        print 'uncertain_models:', uncertain_models
+        return uncertain_models.cmd('step', {})
+    else:
+        return None

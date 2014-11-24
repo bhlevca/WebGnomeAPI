@@ -638,7 +638,6 @@ class NestedModelTests(FunctionalTestBase):
         # check our adios uncertainty runs
         weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
         assert not any(weatherer_vals)
-        raise
 
     def check_adios_uncertainty_runs(self, app):
         # check our adios uncertainty runs

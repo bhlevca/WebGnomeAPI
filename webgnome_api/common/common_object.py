@@ -107,7 +107,7 @@ def _UpdateObject(payload, parent, attr_name, all_objects):
                 raise
         return obj
     else:
-        return None
+        return _CreateObject(payload, parent, attr_name, all_objects)
 
 
 def ValueIsJsonObject(value):

@@ -1,9 +1,6 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 import pytest
 
 from base import FunctionalTestBase
@@ -46,12 +43,22 @@ class StepTest(FunctionalTestBase):
                      'viewport': [[-71.2242987892, 42.1846263908],
                                   [-70.4146871963, 42.6329573908]]
                      }
+    weatherer_data = {'obj_type': u'gnome.weatherers.Evaporation',
+                      'active_start': '-inf',
+                      'active_stop': 'inf',
+                      'on': True,
+                      }
     geojson_data = {'obj_type': 'gnome.outputters.geo_json.GeoJson',
                     'name': 'GeoJson',
                     'output_last_step': True,
                     'output_zero_step': True,
                     'output_dir': 'models/images'
                     }
+    weathering_output_data = {'obj_type': (u'gnome.outputters.weathering'
+                                           '.WeatheringOutput'),
+                              'name': u'WeatheringOutput',
+                              'output_last_step': True,
+                              'output_zero_step': True}
 
     def test_first_step(self):
         # We are testing our ability to generate the first step in a model run
@@ -100,6 +107,53 @@ class StepTest(FunctionalTestBase):
         first_step = resp.json_body
 
         assert first_step['GeoJson']['step_num'] == 0
+
+    def test_weathering_step(self):
+        # We are testing our ability to generate the first step in a
+        # weathering model run
+        self.testapp.get('/location/central-long-island-sound')
+
+        # OK, if we get this far, we should have an active model
+        print 'test_weathering_step(): getting model...'
+        resp = self.testapp.get('/model')
+        model1 = resp.json_body
+
+        # The location file we selected should have:
+        # - a registered map
+        # - a registered Tide
+        # - a registered RandomMover
+        # - a registered CatsMover
+
+        # So what do we still need?
+        # - we need a spill
+        print 'test_weathering_step(): creating spill...'
+        model1['spills'] = [self.spill_data]
+
+        # - we need a weatherer
+        print 'test_weathering_step(): creating weatherer...'
+        model1['weatherers'] = [self.weatherer_data]
+
+        # - we need outputters
+        print 'test_weathering_step(): creating outputters...'
+        model1['outputters'] = [self.geojson_data,
+                                self.weathering_output_data]
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model1 = resp.json_body
+
+        assert 'id' in model1['spills'][0]
+        assert 'id' in model1['weatherers'][0]
+        assert 'id' in model1['outputters'][0]
+        assert 'id' in model1['outputters'][1]
+
+        resp = self.testapp.get('/step')
+        first_step = resp.json_body
+
+        assert first_step['GeoJson']['step_num'] == 0
+        assert first_step['WeatheringOutput']['step_num'] == 0
+        for v in first_step['WeatheringOutput'].values():
+            if isinstance(v, dict):
+                assert v['step_num'] == 0
 
     @pytest.mark.slow
     def test_all_steps(self):

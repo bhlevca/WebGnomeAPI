@@ -140,14 +140,10 @@ def update_object(request, implemented_types):
             active_model = get_active_model(request)
             print 'update_object(): active_model = ', active_model
             if active_model:
-                print ('update_object(): active_model.has_weathering = ',
-                       active_model.has_weathering)
-                if active_model.has_weathering:
-                    print ('update_object(): contains obj =',
-                           active_model.contains_object(obj.id))
-                    if active_model.contains_object(obj.id):
-                        drop_uncertain_models(request)
-                        create_uncertain_models(request)
+                if (active_model.has_weathering and
+                        active_model.contains_object(obj.id)):
+                    drop_uncertain_models(request)
+                    create_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
