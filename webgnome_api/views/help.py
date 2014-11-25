@@ -31,7 +31,6 @@ def get_help(request):
     elif isdir(requested_file):
         # a directory was requested
         # aggrigate the files contained with in the given directory and sub dirs.
-        hasdir = False
         for path, dirnames, filenames in walk(requested_file):
             html = ''
             for fname in filenames:
