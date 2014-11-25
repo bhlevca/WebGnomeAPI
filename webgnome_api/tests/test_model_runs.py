@@ -4,9 +4,6 @@ Functional tests for the Gnome Location object Web API
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
-import os
-import time
-
 import pytest
 
 from base import FunctionalTestBase
@@ -112,10 +109,6 @@ class ModelRunTest(FunctionalTestBase):
         # so what do we still need?
         # - maybe a wind and a windmover??? (optional)
 
-        #print 'our map:'
-        #pp.pprint(model1['map'])
-        #raise
-
         # - we need a spill
         print 'test_all_steps(): creating spill...'
         resp = self.testapp.post_json('/spill', params=self.spill_data)
@@ -153,5 +146,4 @@ class ModelRunTest(FunctionalTestBase):
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
 
-        time.sleep(4)
         print 'done!'

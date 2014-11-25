@@ -601,6 +601,41 @@ class NestedModelTests(FunctionalTestBase):
                 for v in s.values()
                 if isinstance(v, ModelBroadcaster)]
 
+    def test_put_with_removed_weatherer(self):
+        req_data = self.req_data.copy()
+        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+                                   'active_start': '-inf',
+                                   'active_stop': 'inf',
+                                   'on': True,
+                                   }]
+
+        resp = self.testapp.post_json('/model', params=req_data)
+        model1 = resp.json_body
+
+        assert 'weatherers' in model1
+        assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers'
+                                                       '.evaporation'
+                                                       '.Evaporation')
+        assert 'active_start' in model1['weatherers'][0]
+        assert 'active_stop' in model1['weatherers'][0]
+        assert 'on' in model1['weatherers'][0]
+
+        # we should see adios uncertainty runs
+        app = self.testapp.app
+        assert [v for s in app.registry.settings['objects'].values()
+                for v in s.values()
+                if isinstance(v, ModelBroadcaster)]
+
+        model1['weatherers'] = []
+
+        resp = self.testapp.post_json('/model', params=model1)
+        model1 = resp.json_body
+
+        # now we should not see adios uncertainty runs
+        assert not [v for s in app.registry.settings['objects'].values()
+                    for v in s.values()
+                    if isinstance(v, ModelBroadcaster)]
+
     def test_put_weatherer_inside_model(self):
         req_data = self.req_data.copy()
         req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',

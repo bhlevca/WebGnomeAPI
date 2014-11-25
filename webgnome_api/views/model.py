@@ -31,7 +31,6 @@ from webgnome_api.common.helpers import JSONImplementsOneOf
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
 
-import gnome
 from gnome.model import Model
 implemented_types = ('gnome.model.Model',
                      )
@@ -105,8 +104,9 @@ def create_model(request):
         set_session_object(new_model._map, request)
         set_active_model(request, new_model.id)
 
+        drop_uncertain_models(request)
+
         if new_model.has_weathering:
-            drop_uncertain_models(request)
             create_uncertain_models(request)
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
@@ -142,19 +142,20 @@ def update_model(request):
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
-        my_model = get_session_object(obj_id, request)
+        active_model = get_session_object(obj_id, request)
     else:
-        my_model = get_active_model(request)
+        active_model = get_active_model(request)
 
-    if my_model:
+    if active_model:
         try:
-            if UpdateObject(my_model, json_request,
+            if UpdateObject(active_model, json_request,
                             get_session_objects(request)):
-                set_session_object(my_model, request)
-            ret = my_model.serialize()
+                set_session_object(active_model, request)
+            ret = active_model.serialize()
 
-            if my_model.has_weathering:
-                drop_uncertain_models(request)
+            drop_uncertain_models(request)
+
+            if active_model.has_weathering:
                 create_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
