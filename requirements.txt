@@ -23,3 +23,4 @@ git+https://github.com/Pylons/colander.git#egg=colander
 ## Miscellaneous Stuff
 ##
 awesome-slugify
+docutils
