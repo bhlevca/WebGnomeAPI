@@ -83,6 +83,9 @@ def get_rewind(request):
         gnome_sema.acquire()
 
         try:
+            uncertain_models = get_uncertain_models(request)
+            if uncertain_models:
+                uncertain_models.cmd('rewind', {})
             active_model.rewind()
         except:
             raise cors_exception(request, HTTPUnprocessableEntity,
