@@ -530,11 +530,18 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
+
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
                                    'active_start': '-inf',
                                    'active_stop': 'inf',
                                    'on': True,
                                    }]
+
+        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+                                                '.WeatheringOutput'),
+                                   'name': u'WeatheringOutput',
+                                   'output_last_step': True,
+                                   'output_zero_step': True}]
 
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
@@ -591,6 +598,17 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['weatherers'] = [weatherer]
 
+        outputter = {'obj_type': (u'gnome.outputters.weathering'
+                                  '.WeatheringOutput'),
+                     'name': u'WeatheringOutput',
+                     'output_last_step': True,
+                     'output_zero_step': True}
+
+        resp1 = self.testapp.post_json('/outputter', params=outputter)
+        outputter = resp1.json_body
+
+        model1['outputters'] = [outputter]
+
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
@@ -608,6 +626,12 @@ class NestedModelTests(FunctionalTestBase):
                                    'active_stop': 'inf',
                                    'on': True,
                                    }]
+
+        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+                                                '.WeatheringOutput'),
+                                   'name': u'WeatheringOutput',
+                                   'output_last_step': True,
+                                   'output_zero_step': True}]
 
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
@@ -654,6 +678,12 @@ class NestedModelTests(FunctionalTestBase):
                                    'active_stop': 'inf',
                                    'on': True,
                                    }]
+
+        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+                                                '.WeatheringOutput'),
+                                   'name': u'WeatheringOutput',
+                                   'output_last_step': True,
+                                   'output_zero_step': True}]
 
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body

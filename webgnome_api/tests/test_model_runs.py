@@ -56,6 +56,14 @@ class ModelRunTest(FunctionalTestBase):
                     'output_last_step': True,
                     'output_zero_step': True,
                     }
+
+    weathering_out = {'obj_type': (u'gnome.outputters.weathering'
+                                   '.WeatheringOutput'),
+                      'name': u'WeatheringOutput',
+                      'output_last_step': True,
+                      'output_zero_step': True
+                      }
+
     evaporate_data = {'obj_type': 'gnome.weatherers.Evaporation',
                       'name': 'Evaporation',
                       'wind': {'obj_type': 'gnome.environment.Wind',
@@ -123,15 +131,23 @@ class ModelRunTest(FunctionalTestBase):
         # - we need an outputter
         print 'test_all_steps(): creating outputter...'
 
-        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
-        outputter = resp.json_body
-        model1['outputters'] = [outputter]
+        resp = self.testapp.post_json('/outputter',
+                                      params=self.geojson_data)
+        geojson_out = resp.json_body
+        model1['outputters'] = [geojson_out]
+
+        resp1 = self.testapp.post_json('/outputter',
+                                       params=self.weathering_out)
+        weathering_out = resp1.json_body
+
+        model1['outputters'].append(weathering_out)
 
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
 
         assert model1['spills'][0]['id'] == spill['id']
-        assert model1['outputters'][0]['id'] == outputter['id']
+        assert model1['outputters'][0]['id'] == geojson_out['id']
+        assert model1['outputters'][1]['id'] == weathering_out['id']
 
         # Alright, now we can try to cycle through our steps.
         print 'num_steps = ', num_time_steps
@@ -139,9 +155,12 @@ class ModelRunTest(FunctionalTestBase):
         for s in range(num_time_steps):
             resp = self.testapp.get('/step')
             step = resp.json_body
+
             print '{0}, '.format(step['GeoJson']['step_num']),
             assert step['GeoJson']['step_num'] == s
             assert 'feature_collection' in step['GeoJson']
+            if step['GeoJson']['step_num'] == 1:
+                print step
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
