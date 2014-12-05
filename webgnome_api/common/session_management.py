@@ -53,7 +53,7 @@ def get_active_model(request):
 
 def get_uncertain_models(request):
     session_id = request.session.session_id
-    uncertainty_models = request.registry.settings['uncertainty_models']
+    uncertainty_models = request.registry.settings['uncertain_models']
 
     if session_id in uncertainty_models:
         return uncertainty_models[session_id]

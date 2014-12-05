@@ -24,11 +24,15 @@ def get_step(request):
     '''
         Generates and returns an image corresponding to the step.
     '''
+    log_prefix = 'req({0}): get_step():'.format(id(request))
+    print '>>', log_prefix
+
     active_model = get_active_model(request)
     if active_model:
         # generate the next step in the sequence.
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
+        print '  ', log_prefix, 'semaphore acquired...'
 
         try:
             output = active_model.step()
@@ -60,12 +64,15 @@ def get_step(request):
                 output['WeatheringOutput'] = full_output
 
         except StopIteration:
+            print '  ', log_prefix, 'stop iteration exception...'
             raise cors_exception(request, HTTPNotFound)
         except:
+            print '  ', log_prefix, 'unknown exception...'
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
+            print '  ', log_prefix, 'semaphore released...'
 
         return output
     else:
