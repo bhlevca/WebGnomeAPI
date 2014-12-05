@@ -23,8 +23,8 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     set_session_object,
                                                     get_active_model,
                                                     set_active_model,
-                                                    drop_uncertain_models,
-                                                    create_uncertain_models)
+                                                    set_uncertain_models,
+                                                    drop_uncertain_models)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
@@ -107,7 +107,7 @@ def create_model(request):
         drop_uncertain_models(request)
 
         if new_model.has_weathering:
-            create_uncertain_models(request)
+            set_uncertain_models(request)
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
@@ -128,6 +128,9 @@ def update_model(request):
           - update the current active model if it exists or...
           - generate a 'Not Found' exception.
     '''
+    log_prefix = 'req({0}): update_model():'.format(id(request))
+    print '>>', log_prefix
+
     ret = None
     try:
         json_request = json.loads(request.body)
@@ -139,6 +142,7 @@ def update_model(request):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
+    print '  ', log_prefix, 'semaphore acquired...'
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
@@ -156,14 +160,17 @@ def update_model(request):
             drop_uncertain_models(request)
 
             if active_model.has_weathering:
-                create_uncertain_models(request)
+                set_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
+            print '  ', log_prefix, 'semaphore released...'
     else:
         gnome_sema.release()
+        print '  ', log_prefix, 'semaphore released...'
         raise cors_exception(request, HTTPNotFound)
 
+    print '<<', log_prefix
     return ret

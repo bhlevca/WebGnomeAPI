@@ -52,41 +52,33 @@ def get_active_model(request):
 
 
 def get_uncertain_models(request):
-    session = request.session
+    session_id = request.session.session_id
+    uncertainty_models = request.registry.settings['uncertainty_models']
 
-    if 'uncertain_models' in session and session['uncertain_models']:
-        return get_session_object(session['uncertain_models'], request)
+    if session_id in uncertainty_models:
+        return uncertainty_models[session_id]
     else:
         return None
 
 
-def create_uncertain_models(request):
-    '''
-        Create our uncertain models using our active model as a template.
-    '''
-    session = request.session
+def set_uncertain_models(request):
+    session_id = request.session.session_id
+    uncertain_models = request.registry.settings['uncertain_models']
 
     active_model = get_active_model(request)
     if active_model:
         model_broadcaster = ModelBroadcaster(active_model,
                                              ('down', 'normal', 'up'),
                                              ('down', 'normal', 'up'))
-        set_session_object(model_broadcaster, request)
-        session['uncertain_models'] = model_broadcaster.id
-        session.changed()
+
+        uncertain_models[session_id] = model_broadcaster
 
 
 def drop_uncertain_models(request):
-    '''
-        Stop and unregister our uncertain models.
-    '''
-    uncertain_models = get_uncertain_models(request)
-    if uncertain_models:
-        session = request.session
-        all_objects = get_session_objects(request)
+    session_id = request.session.session_id
+    uncertain_models = request.registry.settings['uncertain_models']
 
-        uncertain_models.stop()
-        session['uncertain_models'] = None
-        del all_objects[uncertain_models.id]
-
-        session.changed()
+    if (session_id in uncertain_models and
+            uncertain_models[session_id] is not None):
+        uncertain_models[session_id].stop()
+        uncertain_models[session_id] = None

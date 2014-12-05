@@ -25,8 +25,8 @@ from .common_object import (CreateObject,
 from .session_management import (get_session_objects,
                                  get_session_object,
                                  get_active_model,
-                                 drop_uncertain_models,
-                                 create_uncertain_models)
+                                 set_uncertain_models,
+                                 drop_uncertain_models)
 
 cors_policy = {'origins': ('http://0.0.0.0:8080',
                            'http://hazweb2.orr.noaa.gov:7448',
@@ -52,15 +52,17 @@ def cors_exception(request, exception_class, with_stacktrace=False):
 
     return http_exc
 
+
 def cors_file(request, path):
     http_exc = FileResponse(path)
 
     hdr_val = request.headers.get('Origin')
-    if hdr_val != None:
+    if hdr_val is not None:
         http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
     return http_exc
+
 
 def get_object(request, implemented_types):
     '''Returns a Gnome object in JSON.'''
@@ -113,6 +115,7 @@ def create_object(request, implemented_types):
     print '  ', log_prefix, 'semaphore acquired...'
 
     try:
+        print '  ', log_prefix, 'creating ', json_request['obj_type']
         obj = CreateObject(json_request, get_session_objects(request))
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
@@ -146,15 +149,18 @@ def update_object(request, implemented_types):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
+            print '  ', log_prefix, 'updating ', json_request['obj_type']
             UpdateObject(obj, json_request, get_session_objects(request))
 
             active_model = get_active_model(request)
-            print 'update_object(): active_model = ', active_model
-            if active_model:
-                if (active_model.has_weathering and
-                        active_model.contains_object(obj.id)):
-                    drop_uncertain_models(request)
-                    create_uncertain_models(request)
+            print '  ', log_prefix, 'active_model = ', active_model
+            if active_model is not None:
+                if active_model.contains_object(obj.id):
+                    if active_model.has_weathering:
+                        drop_uncertain_models(request)
+                        set_uncertain_models(request)
+                    else:
+                        drop_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

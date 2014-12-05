@@ -29,6 +29,7 @@ def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['py_gnome_semaphore'] = BoundedSemaphore(value=1)
     settings['objects'] = {}
+    settings['uncertain_models'] = {}
 
     reconcile_directory_settings(settings, 'data_dirs')
 
