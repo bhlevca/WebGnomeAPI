@@ -29,7 +29,14 @@ def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['py_gnome_semaphore'] = BoundedSemaphore(value=1)
     settings['objects'] = {}
+
     settings['uncertain_models'] = {}
+    try:
+        os.mkdir('ipc_files')
+    except OSError, e:
+        # it is ok if the folder already exists.
+        if e.errno != 17:
+            raise
 
     reconcile_directory_settings(settings, 'data_dirs')
 
