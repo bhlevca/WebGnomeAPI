@@ -50,10 +50,10 @@ class FunctionalTestBase(GnomeTestCase):
         '''
         app = self.testapp.app
 
-        for session_values in app.registry.settings['objects'].values():
-            for v in session_values.values():
-                if isinstance(v, ModelBroadcaster):
-                    v.stop()
+        for session_umodels in app.registry.settings['uncertain_models'].values():
+            print 'our session umodels object:', session_umodels
+            if session_umodels is not None:
+                session_umodels.stop()
 
         if hasattr(app.registry, '_redis_sessions'):
             app.registry._redis_sessions.connection_pool.disconnect()

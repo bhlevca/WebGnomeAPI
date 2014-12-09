@@ -1,6 +1,7 @@
 """
 Views for the Location objects.
 """
+import time
 from collections import defaultdict
 
 from pyramid.httpexceptions import (HTTPNotFound,
@@ -35,9 +36,13 @@ def get_step(request):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
+            begin = time.time()
             output = active_model.step()
 
+            begin_uncertain = time.time()
             steps = get_uncertain_steps(request)
+            end = time.time()
+
             if steps and 'WeatheringOutput' in output:
                 nominal = output['WeatheringOutput']
                 aggregate = defaultdict(list)
@@ -62,6 +67,8 @@ def get_step(request):
                     full_output[idx] = step_output['WeatheringOutput']
 
                 output['WeatheringOutput'] = full_output
+                output['uncertain_response_time'] = end - begin_uncertain
+                output['total_response_time'] = end - begin
 
         except StopIteration:
             print '  ', log_prefix, 'stop iteration exception...'
@@ -77,6 +84,7 @@ def get_step(request):
         return output
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
+
 
 
 @rewind_api.get()

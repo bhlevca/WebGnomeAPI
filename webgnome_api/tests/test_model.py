@@ -555,8 +555,7 @@ class NestedModelTests(FunctionalTestBase):
         assert 'on' in model1['weatherers'][0]
 
         app = self.testapp.app
-        assert [v for s in app.registry.settings['objects'].values()
-                for v in s.values()
+        assert [v for v in app.registry.settings['uncertain_models'].values()
                 if isinstance(v, ModelBroadcaster)]
 
     def test_put_with_nested_weatherer(self):
@@ -615,8 +614,7 @@ class NestedModelTests(FunctionalTestBase):
         assert model2['weatherers'][0]['on'] is True
 
         # we should now see adios uncertainty runs
-        assert [v for s in app.registry.settings['objects'].values()
-                for v in s.values()
+        assert [v for v in app.registry.settings['uncertain_models'].values()
                 if isinstance(v, ModelBroadcaster)]
 
     def test_put_with_removed_weatherer(self):
@@ -646,8 +644,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # we should see adios uncertainty runs
         app = self.testapp.app
-        assert [v for s in app.registry.settings['objects'].values()
-                for v in s.values()
+        assert [v for v in app.registry.settings['uncertain_models'].values()
                 if isinstance(v, ModelBroadcaster)]
 
         model1['weatherers'] = []
@@ -696,24 +693,40 @@ class NestedModelTests(FunctionalTestBase):
         weatherer['on'] = False
 
         resp = self.testapp.put_json('/weatherer', params=weatherer)
-        weatherer2 = resp.json_body
+        weatherer = resp.json_body
 
-        assert weatherer2['on'] is False
+        assert weatherer['on'] is False
 
         # check our adios uncertainty runs
         weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
         assert not any(weatherer_vals)
 
+        weatherer = model1['weatherers'][0]
+        weatherer['on'] = True
+
+        resp = self.testapp.put_json('/weatherer', params=weatherer)
+        weatherer = resp.json_body
+
+        assert weatherer['on'] is True
+
+        # check our adios uncertainty runs
+        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
+        assert any(weatherer_vals)
+
     def check_adios_uncertainty_runs(self, app):
         # check our adios uncertainty runs
-        broadcasters = [v for s in app.registry.settings['objects'].values()
-                        for v in s.values()
+        broadcasters = [v for v in
+                        app.registry.settings['uncertain_models'].values()
                         if isinstance(v, ModelBroadcaster)]
+
+        print 'check_adios_uncertainty_runs(): our broadcasters:', broadcasters
         if broadcasters:
             broadcaster = broadcasters[0]
             model_weatherer_vals = broadcaster.cmd('get_weatherer_attribute',
                                                    dict(idx=0, attr='on'))
             return model_weatherer_vals
+        else:
+            return [False]
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()

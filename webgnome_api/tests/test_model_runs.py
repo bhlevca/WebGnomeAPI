@@ -1,9 +1,6 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 import pytest
 
 from base import FunctionalTestBase
@@ -106,8 +103,6 @@ class ModelRunTest(FunctionalTestBase):
         model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
-        print 'Our model:'
-        pp.pprint(model1)
         # The location file we selected should have:
         # - a registered map
         # - a registered Tide
@@ -156,13 +151,9 @@ class ModelRunTest(FunctionalTestBase):
             resp = self.testapp.get('/step')
             step = resp.json_body
 
-            print '{0}, '.format(step['GeoJson']['step_num']),
             assert step['GeoJson']['step_num'] == s
             assert 'feature_collection' in step['GeoJson']
-            if step['GeoJson']['step_num'] == 1:
-                print step
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
-
         print 'done!'

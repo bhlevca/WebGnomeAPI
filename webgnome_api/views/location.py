@@ -85,7 +85,10 @@ def get_locations_dir_from_config(request):
 def load_location_file(location_file, request):
     if isdir(location_file):
         init_session_objects(request, force=True)
+
         obj = load(location_file)
+        obj._cache.enabled = False
+
         RegisterObject(obj, request)
         set_active_model(request, obj.id)
 
