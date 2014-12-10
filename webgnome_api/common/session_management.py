@@ -69,7 +69,8 @@ def set_uncertain_models(request):
     if active_model:
         model_broadcaster = ModelBroadcaster(active_model,
                                              ('down', 'normal', 'up'),
-                                             ('down', 'normal', 'up'))
+                                             ('down', 'normal', 'up'),
+                                             'ipc_files')
 
         uncertain_models[session_id] = model_broadcaster
 
