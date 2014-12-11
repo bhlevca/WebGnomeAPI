@@ -30,9 +30,8 @@ class ModelRunTest(FunctionalTestBase):
                                                      'windage_persist': 900,
                                                      },
                                                     {'obj_type': 'gnome.spill.elements.InitMassFromSpillAmount'},
-                                                    {'obj_type': 'gnome.spill.elements.InitArraysFromOilProps'}
                                                     ],
-                                   'substance': u'ALAMO'
+                                   'substance': {'name': u'ALAMO'}
                                    },
                   'amount': 200,
                   'units': 'tons'
