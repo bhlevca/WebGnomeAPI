@@ -92,8 +92,7 @@ class InitializerBase(FunctionalTestBase):
 
 
 class InitWindagesTests(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitWindages',
+    req_data = {'obj_type': u'gnome.spill.elements.InitWindages',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
@@ -112,26 +111,19 @@ class InitWindagesTests(InitializerBase):
         assert json_obj['windage_persist'] == 1000
 
 
-class InitArraysFromOilPropsTest(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitArraysFromOilProps',
-                }
-
-
 class InitMassFromSpillAmount(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitMassFromSpillAmount',
+    req_data = {'obj_type': u'gnome.spill.elements.InitMassFromSpillAmount',
                 }
 
 
 class InitMassFromPlumeTest(InitializerBase):
-    req_data = {
-                'obj_type': u'gnome.spill.elements.InitMassFromPlume',
+    req_data = {'obj_type': u'gnome.spill.elements.InitMassFromPlume',
                 }
 
 
 class InitRiseVelFromDistTest(InitializerBase):
-    dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
+    dist_data = {'obj_type': ('gnome.utilities.distributions'
+                              '.WeibullDistribution'),
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
@@ -194,12 +186,14 @@ class InitRiseVelFromDistTest(InitializerBase):
 
 
 class InitRiseVelFromDropletSizeFromDistTest(InitRiseVelFromDistTest):
-    dist_data = {'obj_type': 'gnome.utilities.distributions.WeibullDistribution',
+    dist_data = {'obj_type': ('gnome.utilities.distributions'
+                              '.WeibullDistribution'),
                  'alpha': 0.0,
                  'lambda_': 1.0,
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    req_data = {'obj_type': u'gnome.spill.elements.InitRiseVelFromDropletSizeFromDist',
+    req_data = {'obj_type': ('gnome.spill.elements'
+                             '.InitRiseVelFromDropletSizeFromDist'),
                 'distribution': None
                 }
