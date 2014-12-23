@@ -10,7 +10,9 @@ from pyramid.httpexceptions import (HTTPNotFound,
 from cornice import Service
 
 from webgnome_api.common.session_management import (get_active_model,
-                                                    get_uncertain_models)
+                                                    get_uncertain_models,
+                                                    drop_uncertain_models,
+                                                    set_uncertain_models)
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
@@ -36,6 +38,13 @@ def get_step(request):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
+            if active_model.current_time_step == -1:
+                # our first step, establish uncertain models
+                drop_uncertain_models(request)
+
+                if active_model.has_weathering:
+                    set_uncertain_models(request)
+
             begin = time.time()
             output = active_model.step()
 
@@ -86,7 +95,6 @@ def get_step(request):
         raise cors_exception(request, HTTPPreconditionFailed)
 
 
-
 @rewind_api.get()
 def get_rewind(request):
     '''
@@ -99,10 +107,6 @@ def get_rewind(request):
 
         try:
             active_model.rewind()
-
-            uncertain_models = get_uncertain_models(request)
-            if uncertain_models:
-                uncertain_models.cmd('rewind', {})
         except:
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)

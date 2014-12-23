@@ -22,9 +22,7 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_object,
                                                     set_session_object,
                                                     get_active_model,
-                                                    set_active_model,
-                                                    set_uncertain_models,
-                                                    drop_uncertain_models)
+                                                    set_active_model)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
@@ -103,11 +101,6 @@ def create_model(request):
         set_session_object(new_model, request)
         set_session_object(new_model._map, request)
         set_active_model(request, new_model.id)
-
-        drop_uncertain_models(request)
-
-        if new_model.has_weathering:
-            set_uncertain_models(request)
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
@@ -156,11 +149,6 @@ def update_model(request):
                             get_session_objects(request)):
                 set_session_object(active_model, request)
             ret = active_model.serialize()
-
-            drop_uncertain_models(request)
-
-            if active_model.has_weathering:
-                set_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

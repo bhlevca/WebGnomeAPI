@@ -22,11 +22,7 @@ from .common_object import (CreateObject,
                             obj_id_from_url,
                             obj_id_from_req_payload)
 
-from .session_management import (get_session_objects,
-                                 get_session_object,
-                                 get_active_model,
-                                 set_uncertain_models,
-                                 drop_uncertain_models)
+from .session_management import get_session_objects, get_session_object
 
 cors_policy = {'origins': ('http://0.0.0.0:8080',
                            'http://hazweb2.orr.noaa.gov:7448',
@@ -150,18 +146,7 @@ def update_object(request, implemented_types):
         print '  ', log_prefix, 'semaphore acquired...'
 
         try:
-            print '  ', log_prefix, 'updating ', json_request['obj_type']
             UpdateObject(obj, json_request, get_session_objects(request))
-
-            active_model = get_active_model(request)
-            print '  ', log_prefix, 'active_model = ', active_model
-            if active_model is not None:
-                if active_model.contains_object(obj.id):
-                    if active_model.has_weathering:
-                        drop_uncertain_models(request)
-                        set_uncertain_models(request)
-                    else:
-                        drop_uncertain_models(request)
         except:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
