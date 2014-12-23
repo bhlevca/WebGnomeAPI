@@ -81,6 +81,7 @@ def get_step(request):
 
         except StopIteration:
             print '  ', log_prefix, 'stop iteration exception...'
+            drop_uncertain_models(request)
             raise cors_exception(request, HTTPNotFound)
         except:
             print '  ', log_prefix, 'unknown exception...'
