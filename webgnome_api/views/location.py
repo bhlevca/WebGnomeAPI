@@ -23,12 +23,13 @@ from webgnome_api.common.common_object import obj_id_from_url
 
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_session_object,
-                                                    set_active_model)
+                                                    set_active_model,
+                                                    get_active_model)
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
 location_api = Service(name='location', path='/location*obj_id',
-                  description="Location API", cors_policy=cors_policy)
+                       description="Location API", cors_policy=cors_policy)
 
 
 @location_api.get()
@@ -83,14 +84,22 @@ def get_locations_dir_from_config(request):
 
 
 def load_location_file(location_file, request):
+    '''
+        We would like to merge the current active model into the new model
+        created by our location file prior to clearing our session
+    '''
     if isdir(location_file):
+        old_model = get_active_model(request)
+
+        new_model = load(location_file)
+        new_model._cache.enabled = False
+
+        if old_model is not None:
+            new_model.merge(old_model)
+
         init_session_objects(request, force=True)
-
-        obj = load(location_file)
-        obj._cache.enabled = False
-
-        RegisterObject(obj, request)
-        set_active_model(request, obj.id)
+        RegisterObject(new_model, request)
+        set_active_model(request, new_model.id)
 
 
 def RegisterObject(obj, request):

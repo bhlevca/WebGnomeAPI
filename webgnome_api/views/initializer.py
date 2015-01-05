@@ -13,7 +13,6 @@ initializer = Service(name='initializer', path='/initializer*obj_id',
 
 module_name = 'gnome.spill.elements'
 module_attrs = ('InitWindages',
-                'InitMassFromSpillAmount',
                 'InitMassFromPlume',
                 'InitRiseVelFromDist',
                 'InitRiseVelFromDropletSizeFromDist',
