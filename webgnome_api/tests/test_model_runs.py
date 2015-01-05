@@ -28,10 +28,9 @@ class ModelRunTest(FunctionalTestBase):
                                    'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
                                                      'windage_range': [0.01, 0.04],
                                                      'windage_persist': 900,
-                                                     },
-                                                    {'obj_type': 'gnome.spill.elements.InitMassFromSpillAmount'},
+                                                     }
                                                     ],
-                                   'substance': {'name': u'ALAMO'}
+                                   'substance': u'ALAMO'
                                    },
                   'amount': 200,
                   'units': 'tons'

@@ -554,10 +554,6 @@ class NestedModelTests(FunctionalTestBase):
         assert 'active_stop' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
-        app = self.testapp.app
-        assert [v for v in app.registry.settings['uncertain_models'].values()
-                if isinstance(v, ModelBroadcaster)]
-
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
@@ -580,12 +576,6 @@ class NestedModelTests(FunctionalTestBase):
         req_data = self.req_data.copy()
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
-
-        # we should not have any adios uncertainty runs yet
-        app = self.testapp.app
-        assert not [v for s in app.registry.settings['objects'].values()
-                    for v in s.values()
-                    if isinstance(v, ModelBroadcaster)]
 
         weatherer = {'obj_type': u'gnome.weatherers.Evaporation',
                      'active_start': '-inf',
@@ -613,10 +603,6 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['weatherers'][0]['on'] is True
 
-        # we should now see adios uncertainty runs
-        assert [v for v in app.registry.settings['uncertain_models'].values()
-                if isinstance(v, ModelBroadcaster)]
-
     def test_put_with_removed_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
@@ -642,20 +628,10 @@ class NestedModelTests(FunctionalTestBase):
         assert 'active_stop' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
-        # we should see adios uncertainty runs
-        app = self.testapp.app
-        assert [v for v in app.registry.settings['uncertain_models'].values()
-                if isinstance(v, ModelBroadcaster)]
-
         model1['weatherers'] = []
 
         resp = self.testapp.post_json('/model', params=model1)
         model1 = resp.json_body
-
-        # now we should not see adios uncertainty runs
-        assert not [v for s in app.registry.settings['objects'].values()
-                    for v in s.values()
-                    if isinstance(v, ModelBroadcaster)]
 
     def test_put_weatherer_inside_model(self):
         req_data = self.req_data.copy()
@@ -685,10 +661,6 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        # check our adios uncertainty runs
-        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
-        assert all(weatherer_vals)
-
         weatherer = model1['weatherers'][0]
         weatherer['on'] = False
 
@@ -697,10 +669,6 @@ class NestedModelTests(FunctionalTestBase):
 
         assert weatherer['on'] is False
 
-        # check our adios uncertainty runs
-        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
-        assert not any(weatherer_vals)
-
         weatherer = model1['weatherers'][0]
         weatherer['on'] = True
 
@@ -708,25 +676,6 @@ class NestedModelTests(FunctionalTestBase):
         weatherer = resp.json_body
 
         assert weatherer['on'] is True
-
-        # check our adios uncertainty runs
-        weatherer_vals = self.check_adios_uncertainty_runs(self.testapp.app)
-        assert any(weatherer_vals)
-
-    def check_adios_uncertainty_runs(self, app):
-        # check our adios uncertainty runs
-        broadcasters = [v for v in
-                        app.registry.settings['uncertain_models'].values()
-                        if isinstance(v, ModelBroadcaster)]
-
-        print 'check_adios_uncertainty_runs(): our broadcasters:', broadcasters
-        if broadcasters:
-            broadcaster = broadcasters[0]
-            model_weatherer_vals = broadcaster.cmd('get_weatherer_attribute',
-                                                   dict(idx=0, attr='on'))
-            return model_weatherer_vals
-        else:
-            return [False]
 
     def test_post_with_nested_outputter(self):
         req_data = self.req_data.copy()

@@ -111,11 +111,6 @@ class InitWindagesTests(InitializerBase):
         assert json_obj['windage_persist'] == 1000
 
 
-class InitMassFromSpillAmount(InitializerBase):
-    req_data = {'obj_type': u'gnome.spill.elements.InitMassFromSpillAmount',
-                }
-
-
 class InitMassFromPlumeTest(InitializerBase):
     req_data = {'obj_type': u'gnome.spill.elements.InitMassFromPlume',
                 }
