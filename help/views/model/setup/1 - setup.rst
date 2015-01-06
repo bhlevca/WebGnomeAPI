@@ -1,3 +1,0 @@
-Setup
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-Text about setup!
