@@ -11,7 +11,7 @@ import urllib, time, json, redis
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
-help = Service(name='help', path='/help/*dir',
+help = Service(name='help', path='/help*dir',
                        description="Help Documentation and Feedback API", cors_policy=cors_policy)
 
 
@@ -19,8 +19,7 @@ help = Service(name='help', path='/help/*dir',
 def get_help(request):
     '''Get the requested help file if it exists'''
     help_dir = get_help_dir_from_config(request)
-    requested_dir = urllib.unquote(sep.join(request.matchdict.get('dir'))).encode('utf8')
-
+    requested_dir = urllib.unquote(sep.join(request.matchdict['dir'])).encode('utf8')
     requested_file = join(help_dir, requested_dir)
     if isfile(requested_file + '.rst'):
         # a single help file was requested
@@ -28,9 +27,9 @@ def get_help(request):
         html = publish_parts(file.read(), writer_name='html')['html_body']
         file.close()
         return {'path': requested_file, 'html': html}
-    elif isdir(requested_file):
+    elif isdir(requested_file) and requested_dir is not '':
         # a directory was requested
-        # aggrigate the files contained with in the given directory and sub dirs.
+        # aggregate the files contained with in the given directory and sub dirs.
         for path, dirnames, filenames in walk(requested_file):
             html = ''
             for fname in filenames:
@@ -38,7 +37,17 @@ def get_help(request):
                 html += publish_parts(file.read(), writer_name='html')['html_body']
                 file.close()
             return {'path': requested_file, 'html': html}
-
+    elif isdir(requested_file) and requested_dir is '':
+        aggregate = []
+        for path, dirnames, filenames in walk(requested_file):
+            html = ''
+            for dname in dirnames:
+                for fname in filenames:
+                    file = open(join(path, fname), 'r')
+                    html += publish_parts(file.read(), writer_name='html')['html_body']
+                    file.close()
+                    aggregate.append({'path': join(path, fname.replace('.rst', '')) , 'html': html})
+        return aggregate
     else:
         raise cors_exception(request, HTTPNotFound)
 
