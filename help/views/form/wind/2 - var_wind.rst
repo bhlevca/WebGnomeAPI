@@ -1,5 +1,4 @@
 Variable Wind
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Variable Winds allows you to enter a series of wind information.

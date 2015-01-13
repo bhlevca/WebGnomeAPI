@@ -1,5 +1,4 @@
 Constant Wind
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Wind Direction and Speed can be entered either by typing a value or by clicking in the wind bullseye. 
