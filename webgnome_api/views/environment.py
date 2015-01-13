@@ -15,7 +15,8 @@ env = Service(name='environment', path='/environment*obj_id',
 
 implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Wind',
-                     'gnome.environment.Water'
+                     'gnome.environment.Water',
+                     'gnome.environment.Waves'
                      )
 
 
