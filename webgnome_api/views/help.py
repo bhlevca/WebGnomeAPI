@@ -40,13 +40,11 @@ def get_help(request):
     elif isdir(requested_file) and requested_dir is '':
         aggregate = []
         for path, dirnames, filenames in walk(requested_file):
-            html = ''
-            for dname in dirnames:
-                for fname in filenames:
-                    file = open(join(path, fname), 'r')
-                    html += publish_parts(file.read(), writer_name='html')['html_body']
-                    file.close()
-                    aggregate.append({'path': join(path, fname.replace('.rst', '')) , 'html': html})
+            for fname in filenames:
+                file = open(join(path, fname), 'r')
+                html = publish_parts(file.read(), writer_name='html')['html_body']
+                file.close()
+                aggregate.append({'path': join(path, fname.replace('.rst', '')) , 'html': html})
         return aggregate
     else:
         raise cors_exception(request, HTTPNotFound)
