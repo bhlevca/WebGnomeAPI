@@ -3,7 +3,7 @@
  "name": "ComponentMover", 
  "filename1": "NW30ktwinds.cur", 
  "filename2": "SW30ktwinds.cur", 
- "refpoint": [
+ "ref_point": [
   -75.263166, 
   39.142833 
  ], 

@@ -2,7 +2,7 @@
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
  "name": "ComponentMover", 
  "filename1": "OutsideDAC.cur", 
- "refpoint": [
+ "ref_point": [
   -157.737667, 
   21.534333 
  ], 

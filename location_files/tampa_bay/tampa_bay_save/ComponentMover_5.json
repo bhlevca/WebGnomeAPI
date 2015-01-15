@@ -2,7 +2,7 @@
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
  "name": "ComponentMover", 
  "filename1": "Offshore.cur", 
- "refpoint": [
+ "ref_point": [
   -83.0, 
   27.667 
  ], 

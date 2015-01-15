@@ -3,7 +3,7 @@
  "name": "ComponentMover", 
  "filename1": "NNWat15kt.cur", 
  "filename2": "WSWat15kt.cur", 
- "refpoint": [
+ "ref_point": [
   -117.1295, 
   32.644333 
  ], 

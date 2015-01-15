@@ -2,7 +2,7 @@
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
  "name": "ComponentMover", 
  "filename1": "NNW10.cur", 
- "refpoint": [
+ "ref_point": [
   49.744965, 
   27.285172 
  ], 
