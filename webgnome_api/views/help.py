@@ -6,14 +6,14 @@ from cornice import Service
 from os import walk
 from os.path import sep, join, isfile, isdir
 from pyramid.httpexceptions import HTTPNotFound
-from docutils.core import publish_parts
+from docutils.core import publish_parts, publish_string
 import urllib, time, json, redis
 
 from webgnome_api.common.views import cors_exception, cors_policy
+from webgnome_api.common.indexing import iter_keywords
 
 help = Service(name='help', path='/help*dir',
                        description="Help Documentation and Feedback API", cors_policy=cors_policy)
-
 
 @help.get()
 def get_help(request):
@@ -42,9 +42,13 @@ def get_help(request):
         for path, dirnames, filenames in walk(requested_file):
             for fname in filenames:
                 file = open(join(path, fname), 'r')
-                html = publish_parts(file.read(), writer_name='html')['html_body']
+                text = file.read()
                 file.close()
-                aggregate.append({'path': join(path, fname.replace('.rst', '')) , 'html': html})
+                parts_whole = publish_parts(text)
+                parts = publish_parts(text, writer_name='html')
+                html = parts['html_body']
+                keywords = iter_keywords(parts_whole['whole'])
+                aggregate.append({'path': join(path, fname.replace('.rst', '')) , 'html': html, 'keywords': keywords})
         return aggregate
     else:
         raise cors_exception(request, HTTPNotFound)
