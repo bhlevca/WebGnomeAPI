@@ -1,7 +1,7 @@
-Oil Query Form
+`Oil Query Form`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The `Oil Query Form` offers several ways to search for an Oil. You can search by name, location, category, `API`, or `viscosity`.
+The Oil Query Form offers several ways to search for an Oil. You can search by name, location, category, `API`, or v`iscosity`.
 
 * Use the search filed to search for an oil by name or location.
 * Use the Category drop-down menu to search by category.
@@ -9,6 +9,6 @@ The `Oil Query Form` offers several ways to search for an Oil. You can search by
 
 If your oil does not appear in the list, try alternate spellings of the oil or try broadening your search by setting the API and viscosity at their maximum ranges and choosing the Category All.
 
-Oils can be sorted by Name, location, `field name`, or API by clicking on the column label at the top of the table.
+Oils can be sorted by Name, location, field name, or API by clicking on the column label at the top of the table.
 
 Click on an oil in the list and select Oil Info to get General Info, Properties, `Distillation`, and other details. When you are satisfied with you choice, click the select button.
