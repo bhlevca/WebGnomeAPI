@@ -1,21 +1,6 @@
 '''
 Helper functions to be used by views.
 '''
-from nltk.corpus import stopwords
-import xml.etree.ElementTree as ET
-
-def RemoveHTMLTags(str):
-    return ' '.join(ET.fromstring(str).itertext())
-
-def RemoveCommonWords(str):
-    s = set(stopwords.words('english'))
-    uncommon_words_array = filter(lambda w: not w in s, str.split(' '))
-    return ' '.join(uncommon_words_array)
-
-def KeywordGenerator(str):
-    withoutHTMLString = RemoveHTMLTags(str)
-    return RemoveCommonWords(withoutHTMLString)
-
 def FQNameToNameAndScope(fully_qualified_name):
     fqn = fully_qualified_name
     return (list(reversed(fqn.rsplit('.', 1)))

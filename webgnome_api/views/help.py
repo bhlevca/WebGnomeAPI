@@ -6,7 +6,7 @@ from cornice import Service
 from os import walk
 from os.path import sep, join, isfile, isdir
 from pyramid.httpexceptions import HTTPNotFound
-from docutils.core import publish_parts, publish_string
+from docutils.core import publish_parts
 import urllib, time, json, redis
 
 from webgnome_api.common.views import cors_exception, cors_policy

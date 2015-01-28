@@ -2,17 +2,15 @@ from __future__ import print_function
 import docutils.core
 import pprint
 
-TEXT = "My `bonnie` lies over the `Pacific Ocean`."
-
-def iter_keywords(parts_whole):
-    lines = parts_whole.splitlines()
+def iter_keywords(str):
+    lines = str.splitlines()
     in_tr = False
     ret = set()
     for lin in lines:
         if in_tr:
             keyword = lin.strip().lower()
             ret.add(keyword)
-        if "<title_reference>" in lin:
+        if "keywords" in lin or "keyword" in lin:
             in_tr = True
         else:
             in_tr = False
