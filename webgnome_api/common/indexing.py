@@ -16,7 +16,7 @@ def iter_keywords(parts_whole):
             in_tr = True
         else:
             in_tr = False
-    return ' ,'.join(sorted(ret))
+    return ', '.join(sorted(ret))
 
 # NOTE: Use 'sorted(set(...)' to collapse duplicates.
 # NOTE: Use 'str.lower()' to standardize on lower case.
