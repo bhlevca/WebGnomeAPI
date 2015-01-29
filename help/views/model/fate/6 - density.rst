@@ -1,5 +1,5 @@
 .. keywords
-   density, duration, graph, spills, oil
+   density
 
 Density
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

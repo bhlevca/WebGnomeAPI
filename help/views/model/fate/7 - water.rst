@@ -1,5 +1,5 @@
 .. keywords
-   water, graph, duration, fraction
+   water, fraction
 
 Water
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

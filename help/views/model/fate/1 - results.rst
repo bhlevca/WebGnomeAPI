@@ -1,16 +1,16 @@
 .. keywords
-   evaluate, model, results, trajectory, weathering, csv, export, spreadsheet
+   evaluate, oil budget, graph, table, evaporation, density, water, viscosity, ics209, export, weathering, trajectory
 
 Evaluate Model Results
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The screen comprises eight tabs. Oil Budget - Table, Oil Budget - Graph, Evaporation, Dispersion, Density, Water, Viscosity, and ICS209.
 
-You may edit you model at any time, howver, switching from Weathering Only to Trajectory only or from Trajectory Only to Weathering Only may result in the model being reset and any data already entered being deleted. You do have the option of changing to a Weathering & Trajectory model without the loss of data.
+You may edit you model at any time, however, switching from Weathering Only to Trajectory only or from Trajectory Only to Weathering Only may result in the model being reset and any data already entered being deleted. You do have the option of changing to a Weathering & Trajectory model without the loss of data.
 
 When choosing Weathering & Trajectory, you have the option of switching between the Trajectory results (map) and the Weathering results. Click the small icons for Trajectory or Weathering in the top right corner to switch between these results.
 
-If for any reason this page does not respond as predeicted please refresh your browser window. This should take care of most problems. If you continue to have difficulties, please contact us.
+If for any reason this page does not respond as predicted, please refresh your browser window. This should take care of most problems. If you continue to have difficulties, please contact us.
 
 
 Export Options

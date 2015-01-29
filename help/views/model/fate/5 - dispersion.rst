@@ -1,5 +1,5 @@
 .. keywords
-   dispersion, dispersed, duration, uncertainty, graph
+   dispersion
 
 Dispersion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

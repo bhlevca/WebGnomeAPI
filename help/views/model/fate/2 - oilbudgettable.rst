@@ -1,5 +1,5 @@
 .. keywords
-   oil, budget, table, export, spreadsheet, csv
+   oil budget, table, export, csv, spreadsheet, time column
 
 Oil Budget - Table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

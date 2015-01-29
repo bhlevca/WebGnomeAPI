@@ -1,7 +1,7 @@
 .. keywords
-   model, setup, incident, weathering, trajectory, response
+   incident, weathering, trajectory, only, requested prediction, setup model, calendar
 
-Setup Your Model
+Setup Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Incident
@@ -15,7 +15,7 @@ Incident
 Requested Prediction
 ========================================
 
-**Weathering Only** predicts the fate and behavior of oil. This is location independent and therefore does not use a map or coordinates, however, it requires information on type and nature of the spill, wind, and water.
+**Weathering Only** predicts the fate and behavior of oil. This is location independent and therefore does not use a map or coordinates; however, it requires information on type and nature of the spill, wind, and water.
 
 **Trajectory Only** predicts the trajectory of spilled oil. This requires information on type and nature of the spill, wind, and location.
 
@@ -27,3 +27,4 @@ Requested Prediction
 * You can edit Spill, Wind, Water or Location data by clicking on the pencil icon in each box.
 
 Once all requirements are met, a Response Option graph will appear at the bottom of the screen. Click the plus sign to select an optional response option.
+

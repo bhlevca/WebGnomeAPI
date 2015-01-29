@@ -1,5 +1,5 @@
 .. keywords
-   advanced, model, map, movers, settings, environment, tide, wind, weatherers, spills
+   advanced, settings, map, movers, randommover, diffusion, catsmover, windmover, environment, tide, wind, water, weatherers, spills
 
 Advanced
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -8,7 +8,7 @@ The Advanced tab is located on the left side of the screen below the tool icons.
 
 **Model Settings** - These settings include Start Time, Max duration, Time Step, and the Minimum Regret option. Double-click on Start Time, Duration, or Time Step to access these options.
 
-**Map** - These settings show the map name, map bounds, and spillable area. These settings are not editable at this time.
+**Map** - These settings are not editable at this time.
 
 **Movers**
 
@@ -20,12 +20,12 @@ The Advanced tab is located on the left side of the screen below the tool icons.
 
 **Environment**
 
-* **Tide** - These settings include Filename, Name, and Scale Factor. These settings are not editable at this time.
+* **Tide** - These settings are not editable at this time.
 
 * **Wind** - Double-clicking on Wind or any setting under Wind except Timeseries opens the standard Wind form.
 
-* **Water** - These settings include json, obj_type, temperature, id, salinity, fetch, sediment, name, kinematic_viscosity. These settings are not editable at this time.
+* **Water** - These settings are not editable at this time.
 
 **Weatherers** - These settings include Evaporation, Dispersion, and Emulsification.
 
-**Spills** - These settings include Spill Name and On. These settings are not editable at this time.
+**Spills** - These settings are not editable at this time.

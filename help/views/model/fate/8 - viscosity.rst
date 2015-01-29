@@ -1,5 +1,5 @@
 .. keywords
-   viscosity, cst, graph, duration, spills
+   viscosity
 
 Viscosity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
