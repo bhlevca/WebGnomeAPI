@@ -47,7 +47,6 @@ translationstring==1.1
 unit-conversion==2.2
 venusian==1.0
 waitress==0.8.9
--e git+git@srccontrol.orr.noaa.gov:gnome/webgnomeapi.git@7f4ade023414cf8bfe7a4774c1bf7f9074b9eb94#egg=webgnome_api-master
 wsgiref==0.1.2
 zope.deprecation==4.1.1
 zope.interface==4.1.1
