@@ -3,9 +3,10 @@
  "name": "ComponentMover", 
  "filename1": "NNWat15kt.cur", 
  "filename2": "WSWat15kt.cur", 
- "ref_point": [
+ "scale_refpoint": [
   -117.1295, 
-  32.644333 
+  32.644333, 
+  0.0
  ], 
  "pat1_angle": 337.5, 
  "pat1_speed": 15.0, 
