@@ -2,7 +2,6 @@
    constant, wind, direction, speed, bull's-eye, target, rayleigh distribution
 
 Constant Wind
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Wind Direction and Speed can be entered either by typing a value or by clicking in the wind bull’s-eye. 
