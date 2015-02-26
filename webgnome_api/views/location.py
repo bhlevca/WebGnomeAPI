@@ -89,17 +89,19 @@ def load_location_file(location_file, request):
         created by our location file prior to clearing our session
     '''
     if isdir(location_file):
-        old_model = get_active_model(request)
+        active_model = get_active_model(request)
 
         new_model = load(location_file)
-        new_model._cache.enabled = False
 
-        if old_model is not None:
-            new_model.merge(old_model)
+        if active_model is not None:
+            active_model._map = new_model._map
+            active_model.merge(new_model)
+        else:
+            active_model = new_model
 
         init_session_objects(request, force=True)
-        RegisterObject(new_model, request)
-        set_active_model(request, new_model.id)
+        RegisterObject(active_model, request)
+        set_active_model(request, active_model.id)
 
 
 def RegisterObject(obj, request):
