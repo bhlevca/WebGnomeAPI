@@ -2,9 +2,10 @@
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
  "name": "ComponentMover", 
  "filename1": "OutsideDAC.cur", 
- "ref_point": [
+ "scale_refpoint": [
   -157.737667, 
-  21.534333 
+  21.534333, 
+  0.0
  ], 
  "pat1_angle": 135.0, 
  "pat1_speed": 20.0, 

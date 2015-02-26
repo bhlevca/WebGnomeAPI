@@ -2,7 +2,6 @@
    wind, nws
 
 Wind
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Wind is a required element for both weathering and trajectory models.

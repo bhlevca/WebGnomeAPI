@@ -3,9 +3,10 @@
  "name": "ComponentMover", 
  "filename1": "WACLinWind20ktN2e-3.cur", 
  "filename2": "WACLinWind20ktE2e-3.cur", 
- "ref_point": [
+ "scale_refpoint": [
   -71.4, 
-  41.55 
+  41.55, 
+  0.0
  ], 
  "pat1_angle": 0.0, 
  "pat1_speed": 20.0, 
