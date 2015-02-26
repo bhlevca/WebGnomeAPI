@@ -1,0 +1,17 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -74.144333, 
+  40.657666, 
+  0.0
+ ], 
+ "filename": "NewarkBay.cur", 
+ "tide": "Tide_8.json", 
+ "up_cur_uncertain": 0.5, 
+ "down_cur_uncertain": -0.5, 
+ "right_cur_uncertain": 0.2, 
+ "left_cur_uncertain": -0.2, 
+ "json_": "save", 
+ "scale_value": 1.0
+}

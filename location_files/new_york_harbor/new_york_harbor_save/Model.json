@@ -1,0 +1,124 @@
+{
+ "obj_type": "gnome.model.Model", 
+ "map": {
+  "json_": "save", 
+  "obj_type": "gnome.map.MapFromBNA", 
+  "filename": "NewYorkMap.bna",
+  "refloat_halflife": 6.0
+ }, 
+"movers": [
+  {
+   "id": "RandomMover_0.json", 
+   "obj_type": "gnome.movers.random_movers.RandomMover"
+  }, 
+  {
+   "id": "CatsMover_1.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_2.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_3.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_4.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_5.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_6.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_7.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_8.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_9.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_10.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_11.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_12.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_13.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  }
+ ], 
+ "environment": [
+  {
+   "id": "Tide_0.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_1.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_2.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_3.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_4.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_5.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_6.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_7.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_8.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_9.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_10.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_11.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  },
+  {
+   "id": "Tide_12.json", 
+   "obj_type": "gnome.environment.tide.Tide"
+  }
+ ], 
+ "cache_enabled": true, 
+ "time_step": 360.0, 
+ "json_": "save"
+}
