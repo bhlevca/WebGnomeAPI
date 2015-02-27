@@ -94,25 +94,32 @@ class BaseWeathererTests(FunctionalTestBase):
 
 class BurnTests(BaseWeathererTests):
     '''
-        Mock objects at present so just test that they get created
+    cleanup operations must have a valid datetime - cannot use -inf
+    Burn ignores active_stop if it is given since burn will stop when thickness
+    is 2mm
     '''
     req_data = {'obj_type': u'gnome.weatherers.Burn',
                 'json_': 'webapi',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_start': '2014-04-09T15:00:00',
                 'on': True,
+                'area': 10,         # assumed to be in m^2
+                'thickness': 1,     # assumed to be in m
                 }
 
 
 class SkimmerTests(BaseWeathererTests):
     '''
-        Mock objects at present so just test that they get created
+    cleanup operations must have a valid datetime - cannot use -inf and inf
+    active_start/active_stop is used to get the mass removal rate
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Burn',
+    req_data = {'obj_type': u'gnome.weatherers.Skimmer',
                 'json_': 'webapi',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_start': '2014-04-09T15:00:00',
+                'active_stop': '2014-04-09T19:00:00',
                 'on': True,
+                'amount': 100,
+                'units': 'm^3',
+                'efficiency': .3
                 }
 
 
@@ -120,7 +127,7 @@ class DispersionTests(BaseWeathererTests):
     '''
         Mock objects at present so just test that they get created
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Burn',
+    req_data = {'obj_type': u'gnome.weatherers.Dispersion',
                 'json_': 'webapi',
                 'active_start': '-inf',
                 'active_stop': 'inf',
