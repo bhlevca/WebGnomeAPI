@@ -2,7 +2,7 @@
 Views for the Location objects.
 """
 from os import walk
-from os.path import sep, join, isdir
+from os.path import sep, join, isdir, split
 from collections import OrderedDict
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
 from logging import Logger
@@ -92,10 +92,13 @@ def load_location_file(location_file, request):
         old_model = get_active_model(request)
 
         new_model = load(location_file)
+        name = split(location_file)[1]
         new_model._cache.enabled = False
 
         if old_model is not None:
             new_model.merge(old_model)
+            if name != '':
+                new_model.name = name
 
         init_session_objects(request, force=True)
         RegisterObject(new_model, request)
