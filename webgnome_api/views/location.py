@@ -100,6 +100,10 @@ def load_location_file(location_file, request):
         else:
             active_model = new_model
 
+        name = split(location_file)[1]
+        if name != '':
+            active_model.name = name
+
         init_session_objects(request, force=True)
         RegisterObject(active_model, request)
         set_active_model(request, active_model.id)
