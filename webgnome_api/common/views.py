@@ -24,12 +24,7 @@ from .common_object import (CreateObject,
 
 from .session_management import get_session_objects, get_session_object
 
-cors_policy = {'origins': ('http://0.0.0.0:8080',
-                           'http://hazweb2.orr.noaa.gov:7448',
-                           'http://localhost:8080',
-                           'http://localhost:7448'
-                           ),
-               'credentials': True
+cors_policy = {'credentials': True
                }
 
 

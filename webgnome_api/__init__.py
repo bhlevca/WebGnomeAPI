@@ -9,6 +9,8 @@ logging.basicConfig()
 
 from pyramid.config import Configurator
 
+from webgnome_api.common.views import cors_policy
+
 
 def reconcile_directory_settings(settings, key):
     if key in settings:
@@ -25,6 +27,12 @@ def reconcile_directory_settings(settings, key):
         pass
 
 
+def load_cors_origins(settings, key):
+    if key in settings:
+        origins = settings[key].split('\n')
+        cors_policy['origins'] = origins
+
+
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['py_gnome_semaphore'] = BoundedSemaphore(value=1)
@@ -39,6 +47,7 @@ def main(global_config, **settings):
             raise
 
     reconcile_directory_settings(settings, 'data_dirs')
+    load_cors_origins(settings, 'cors_policy.origins')
 
     config = Configurator(settings=settings)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')

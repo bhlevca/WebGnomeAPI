@@ -37,6 +37,9 @@ def get_location(request):
     '''
         Returns a List of Location objects in JSON if no object specified.
     '''
+    print ('location_api.cors_origins_for("get") = {0}'
+           .format(location_api.cors_origins_for('get')))
+
     # first, lets just query that we can get to the data
     locations_dir = get_locations_dir_from_config(request)
     base_len = len(locations_dir.split(sep))
