@@ -127,19 +127,43 @@ def get_geojson(request, implemented_types):
             bounds_features = []
             shoreline_features = []
             spillarea_features = []
+            shoreline_geo = ''
 
             for layer in ogr_layers(map_file):
                 for f in ogr_features(layer):
                     primary_id = f.GetFieldAsString('Primary ID')
 
-                    if primary_id == 'SpillableArea':
-                        spillarea_features.append(json.loads(f.ExportToJson()))
-                    elif primary_id == 'Map Bounds':
-                        bounds_features.append(json.loads(f.ExportToJson()))
-                    else:
-                        shoreline_features.append(json.loads(f.ExportToJson()))
+                    # robust but slow solution ~ 1 second processing time
+                    # if primary_id == 'SpillableArea':
+                    #     spillarea_features.append(json.loads(f.ExportToJson()))
+                    # elif primary_id == 'Map Bounds':
+                    #     bounds_features.append(json.loads(f.ExportToJson()))
+                    # else:
+                    #     shoreline_features.append(json.loads(f.ExportToJson()))
+                    #     shoreline_geo.append(json.loads(f.GetGeometryRef().ExportToJson())['coordinates'][0])
 
-            return FeatureCollection(shoreline_features).serialize()
+                    # only doing what we need at the moment
+                    # in the future we might need the other layers
+                    if primary_id != 'SpillableArea' and primary_id != 'Map Bounds':
+                        geom_json = f.GetGeometryRef().ExportToJson()
+                        geom_json = geom_json.replace('{ "type": "MultiPolygon", "coordinates": [' , '')
+                        geom_json = geom_json.replace('] }', '')
+                        shoreline_geo += geom_json + ', ';
+
+            # remove last comma from geometry
+            shoreline_geo = shoreline_geo[0:-2]
+
+            json_body = '{\
+                "properties": {\
+                    "name": "Shoreline"\
+                },\
+                "geometry": {\
+                    "type": "MultiPolygon",\
+                    "coordinates": [' + shoreline_geo + ']\
+                }\
+            }'
+            shoreline_feature = json.loads(json_body);
+            return FeatureCollection([shoreline_feature]).serialize()
         else:
             raise cors_exception(request, HTTPNotImplemented)
     else:
