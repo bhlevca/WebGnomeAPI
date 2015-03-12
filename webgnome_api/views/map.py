@@ -146,8 +146,7 @@ def get_geojson(request, implemented_types):
                     # in the future we might need the other layers
                     if primary_id != 'SpillableArea' and primary_id != 'Map Bounds':
                         geom_json = f.GetGeometryRef().ExportToJson()
-                        geom_json = geom_json.replace('{ "type": "MultiPolygon", "coordinates": [' , '')
-                        geom_json = geom_json.replace('] }', '')
+                        geom_json = geom_json[42: -4];
                         shoreline_geo += geom_json + ', ';
 
             # remove last comma from geometry
