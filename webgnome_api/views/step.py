@@ -42,7 +42,8 @@ def get_step(request):
                 # our first step, establish uncertain models
                 drop_uncertain_models(request)
 
-                if active_model.has_weathering:
+                print '\thas_weathering_uncertainty', active_model.has_weathering_uncertainty
+                if active_model.has_weathering_uncertainty:
                     set_uncertain_models(request)
 
             begin = time.time()
@@ -75,6 +76,16 @@ def get_step(request):
                 for idx, step_output in enumerate(steps):
                     full_output[idx] = step_output['WeatheringOutput']
 
+                output['WeatheringOutput'] = full_output
+                output['uncertain_response_time'] = end - begin_uncertain
+                output['total_response_time'] = end - begin
+            else:
+                nominal = output['WeatheringOutput']
+                full_output = {'nominal': nominal,
+                               'step_num': nominal['step_num'],
+                               'time_stamp': nominal['time_stamp'],
+                               'low': nominal,
+                               'high': nominal}
                 output['WeatheringOutput'] = full_output
                 output['uncertain_response_time'] = end - begin_uncertain
                 output['total_response_time'] = end - begin
