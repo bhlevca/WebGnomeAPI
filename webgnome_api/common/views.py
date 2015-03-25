@@ -4,6 +4,7 @@ Common Gnome object request handlers.
 import sys
 import traceback
 import json
+import logging
 
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -26,6 +27,8 @@ from .session_management import get_session_objects, get_session_object
 
 cors_policy = {'credentials': True
                }
+
+log = logging.getLogger(__name__)
 
 
 def cors_exception(request, exception_class, with_stacktrace=False):
@@ -92,7 +95,7 @@ def get_specifications(request, implemented_types):
 def create_object(request, implemented_types):
     '''Creates a Gnome object.'''
     log_prefix = 'req({0}): create_object():'.format(id(request))
-    print '>>', log_prefix
+    log.info('>>' + log_prefix)
 
     try:
         json_request = json.loads(request.body)
@@ -104,26 +107,26 @@ def create_object(request, implemented_types):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print '  ', log_prefix, 'semaphore acquired...'
+    log.info('  ' + log_prefix + 'semaphore acquired...')
 
     try:
-        print '  ', log_prefix, 'creating ', json_request['obj_type']
+        log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
         obj = CreateObject(json_request, get_session_objects(request))
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
         gnome_sema.release()
-        print '  ', log_prefix, 'semaphore released...'
+        log.info('  ' + log_prefix + 'semaphore released...')
 
-    print '<<', log_prefix
+    log.info('<<' + log_prefix)
     return obj.serialize()
 
 
 def update_object(request, implemented_types):
     '''Updates a Gnome object.'''
     log_prefix = 'req({0}): update_object():'.format(id(request))
-    print '>>', log_prefix
+    log.info('>>' + log_prefix)
 
     try:
         json_request = json.loads(request.body)
@@ -138,7 +141,7 @@ def update_object(request, implemented_types):
     if obj:
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
-        print '  ', log_prefix, 'semaphore acquired...'
+        log.info('  ' + log_prefix + 'semaphore acquired...')
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
@@ -147,9 +150,9 @@ def update_object(request, implemented_types):
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
-            print '  ', log_prefix, 'semaphore released...'
+            log.info('  ' + log_prefix + 'semaphore released...')
     else:
         raise cors_exception(request, HTTPNotFound)
 
-    print '<<', log_prefix
+    log.info('<<' + log_prefix)
     return obj.serialize()

@@ -3,6 +3,7 @@ Views for the Location objects.
 """
 import time
 from collections import defaultdict
+import logging
 
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPPreconditionFailed,
@@ -21,6 +22,8 @@ step_api = Service(name='step', path='/step',
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
 
+log = logging.getLogger(__name__)
+
 
 @step_api.get()
 def get_step(request):
@@ -28,21 +31,22 @@ def get_step(request):
         Generates and returns an image corresponding to the step.
     '''
     log_prefix = 'req({0}): get_step():'.format(id(request))
-    print '>>', log_prefix
+    log.info('>>' + log_prefix)
 
     active_model = get_active_model(request)
     if active_model:
         # generate the next step in the sequence.
         gnome_sema = request.registry.settings['py_gnome_semaphore']
         gnome_sema.acquire()
-        print '  ', log_prefix, 'semaphore acquired...'
+        log.info('  ' + log_prefix + 'semaphore acquired...')
 
         try:
             if active_model.current_time_step == -1:
                 # our first step, establish uncertain models
                 drop_uncertain_models(request)
 
-                print '\thas_weathering_uncertainty', active_model.has_weathering_uncertainty
+                log.info('\thas_weathering_uncertainty {0}'.
+                         format(active_model.has_weathering_uncertainty))
                 if active_model.has_weathering_uncertainty:
                     set_uncertain_models(request)
 
@@ -91,16 +95,16 @@ def get_step(request):
                 output['total_response_time'] = end - begin
 
         except StopIteration:
-            print '  ', log_prefix, 'stop iteration exception...'
+            log.info('  ' + log_prefix + 'stop iteration exception...')
             drop_uncertain_models(request)
             raise cors_exception(request, HTTPNotFound)
         except:
-            print '  ', log_prefix, 'unknown exception...'
+            log.info('  ' + log_prefix + 'unknown exception...')
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
-            print '  ', log_prefix, 'semaphore released...'
+            log.info('  ' + log_prefix + 'semaphore released...')
 
         return output
     else:

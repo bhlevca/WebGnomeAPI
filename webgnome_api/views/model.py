@@ -2,6 +2,7 @@
 Views for the Model object.
 """
 import json
+import logging
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPUnsupportedMediaType,
@@ -25,6 +26,8 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
+
+log = logging.getLogger(__name__)
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
@@ -76,7 +79,7 @@ def create_model(request):
         Creates a new model
     '''
     log_prefix = 'req({0}): create_object():'.format(id(request))
-    print '>>', log_prefix
+    log.info('>>' + log_prefix)
 
     try:
         json_request = json.loads(request.body)
@@ -89,7 +92,7 @@ def create_model(request):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print '  ', log_prefix, 'semaphore acquired...'
+    log.info('  ' + log_prefix + 'semaphore acquired...')
 
     try:
         init_session_objects(request, force=True)
@@ -106,9 +109,9 @@ def create_model(request):
                              with_stacktrace=True)
     finally:
         gnome_sema.release()
-        print '  ', log_prefix, 'semaphore released...'
+        log.info('  ' + log_prefix + 'semaphore released...')
 
-    print '<<', log_prefix
+    log.info('<<' + log_prefix)
     return new_model.serialize()
 
 
@@ -122,7 +125,7 @@ def update_model(request):
           - generate a 'Not Found' exception.
     '''
     log_prefix = 'req({0}): update_model():'.format(id(request))
-    print '>>', log_prefix
+    log.info('>>' + log_prefix)
 
     ret = None
     try:
@@ -135,7 +138,7 @@ def update_model(request):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print '  ', log_prefix, 'semaphore acquired...'
+    log.info('  ' + log_prefix + 'semaphore acquired...')
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
@@ -154,11 +157,12 @@ def update_model(request):
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
-            print '  ', log_prefix, 'semaphore released...'
+            log.info('  ' + log_prefix + 'semaphore released...')
     else:
         gnome_sema.release()
-        print '  ', log_prefix, 'semaphore released...'
+        log.info('  ' + log_prefix + 'semaphore released...')
+        log.error('  ' + log_prefix + 'raising cors_exception() ...')
         raise cors_exception(request, HTTPNotFound)
 
-    print '<<', log_prefix
+    log.info('<<' + log_prefix)
     return ret

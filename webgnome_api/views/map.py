@@ -3,6 +3,7 @@ Views for the Map objects.
 """
 import os
 import json
+import logging
 
 from cornice import Service
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -39,6 +40,8 @@ implemented_types = ('gnome.map.MapFromBNA',
                      'gnome.map.GnomeMap'
                      )
 
+log = logging.getLogger(__name__)
+
 
 @map_api.get()
 def get_map(request):
@@ -74,7 +77,7 @@ def create_map(request):
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    print '  ', log_prefix, 'semaphore acquired...'
+    log.info('  ' + log_prefix + 'semaphore acquired...')
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
@@ -83,7 +86,7 @@ def create_map(request):
                              with_stacktrace=True)
     finally:
         gnome_sema.release()
-        print '  ', log_prefix, 'semaphore released...'
+        log.info('  ' + log_prefix + 'semaphore released...')
 
     set_session_object(obj, request)
     return obj.serialize()

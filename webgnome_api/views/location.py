@@ -5,7 +5,7 @@ from os import walk
 from os.path import sep, join, isdir, split
 from collections import OrderedDict
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
-from logging import Logger
+from logging import Logger, getLogger
 
 import json
 import slugify
@@ -31,14 +31,16 @@ from webgnome_api.common.views import cors_exception, cors_policy
 location_api = Service(name='location', path='/location*obj_id',
                        description="Location API", cors_policy=cors_policy)
 
+log = getLogger(__name__)
+
 
 @location_api.get()
 def get_location(request):
     '''
         Returns a List of Location objects in JSON if no object specified.
     '''
-    print ('location_api.cors_origins_for("get") = {0}'
-           .format(location_api.cors_origins_for('get')))
+    log.info('location_api.cors_origins_for("get") = {0}'
+             .format(location_api.cors_origins_for('get')))
 
     # first, lets just query that we can get to the data
     locations_dir = get_locations_dir_from_config(request)

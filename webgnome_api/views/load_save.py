@@ -4,6 +4,7 @@ Views for the model load/save operations.
 import os
 import uuid
 import shutil
+import logging
 
 from cornice import Service
 from pyramid.response import Response
@@ -12,6 +13,8 @@ from webgnome_api.common.views import cors_exception, cors_policy
 
 load_api = Service(name='load_model', path='/load',
                    description="Model Load API", cors_policy=cors_policy)
+
+log = logging.getLogger(__name__)
 
 
 @load_api.post()
@@ -43,8 +46,8 @@ def load_model(request):
 
     # Now that we have our file, we will now try to load the model into
     # memory.
-    print '\tSuccessfully uploaded file "{0}"'.format(file_path)
-    print '\tNot doing anything with it yet, though.'
+    log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
+    log.info('\tNot doing anything with it yet, though.')
 
     # We will want to clean up our tempfile when we are done.
     # os.remove(file_path)
