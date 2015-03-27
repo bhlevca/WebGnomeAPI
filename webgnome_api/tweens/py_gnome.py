@@ -39,7 +39,9 @@ class PyGnomeSchemaTweenFactory(object):
         # code to be executed for each request
         # BEFORE the actual application code
         # goes here
-        if request.body:
+        if ('CONTENT_TYPE' in request.environ and
+                request.environ['CONTENT_TYPE'] == 'application/json' and
+                request.body):
             json_request = json.loads(request.body)
 
             if self.add_json_key(json_request):

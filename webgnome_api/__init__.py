@@ -12,19 +12,24 @@ from pyramid.config import Configurator
 from webgnome_api.common.views import cors_policy
 
 
-def reconcile_directory_settings(settings, key):
-    if key in settings:
-        data_dirs = settings[key].split('\n')
+def reconcile_directory_settings(settings):
+    save_file_dir = settings['save_file_dir']
 
-        resolved_dirs = [p for p in data_dirs if os.path.isdir(p)]
-        if resolved_dirs:
-            print 'We will use the following data directories:\n\t',
-            print '\n\t'.join(resolved_dirs), '\n'
+    if not os.path.exists(save_file_dir):
+        print 'Creating save files folder {0}'.format(save_file_dir)
+        os.mkdir(save_file_dir)
+    elif not os.path.isdir(save_file_dir):
+        raise EnvironmentError('Save files folder path {0} '
+                               'is not a directory!!'.format(save_file_dir))
 
-        settings[key] = '\n'.join(resolved_dirs)
-    else:
-        # print 'Warning: key {0} not found in settings.'.format(key)
-        pass
+    locations_dir = settings['locations_dir']
+
+    if not os.path.exists(locations_dir):
+        raise EnvironmentError('Location files folder path {0} '
+                               'does not exist!!'.format(locations_dir))
+    if not os.path.isdir(locations_dir):
+        raise EnvironmentError('Location files folder path {0} '
+                               'is not a directory!!'.format(locations_dir))
 
 
 def load_cors_origins(settings, key):
@@ -46,11 +51,13 @@ def main(global_config, **settings):
         if e.errno != 17:
             raise
 
-    reconcile_directory_settings(settings, 'data_dirs')
+    reconcile_directory_settings(settings)
     load_cors_origins(settings, 'cors_policy.origins')
 
     config = Configurator(settings=settings)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
+    config.add_route("load", "/load")
+
     config.scan('webgnome_api.views')
 
     return config.make_wsgi_app()
