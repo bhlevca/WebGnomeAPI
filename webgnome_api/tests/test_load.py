@@ -4,7 +4,6 @@ Functional tests for the Gnome Location object Web API
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
-import os
 from base import FunctionalTestBase
 
 
@@ -14,14 +13,27 @@ class LoadModelTest(FunctionalTestBase):
     '''
     def test_file_upload(self):
         # OK, if we get this far, we should have an active model
-        print 'current directory:', os.getcwd()
+        resp = self.testapp.get('/model')
+        model = resp.json_body
+        print 'initial model:'
+        pp.pprint(model)
+
+        for c in ('environment', 'map', 'water',
+                  'movers', 'outputters', 'spills', 'weatherers'):
+            assert model['Model'][c] is None
 
         field_name = 'new_model'
         file_name = 'models/Model.zip'
 
-        resp = self.testapp.post('/load',
-                                 upload_files=[(field_name, file_name,)]
-                                 )
+        self.testapp.post('/load',
+                          upload_files=[(field_name, file_name,)]
+                          )
 
-        print resp
-        raise
+        resp = self.testapp.get('/model')
+        model = resp.json_body
+        print 'new model:'
+        pp.pprint(model)
+
+        for c in ('environment', 'map', 'water',
+                  'movers', 'outputters', 'spills', 'weatherers'):
+            assert model[c] is not None

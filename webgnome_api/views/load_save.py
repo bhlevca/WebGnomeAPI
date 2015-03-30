@@ -10,6 +10,11 @@ from pyramid.view import view_config
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPBadRequest, HTTPInsufficientStorage
 
+from gnome.persist import load, is_savezip_valid
+from webgnome_api.common.common_object import RegisterObject
+from webgnome_api.common.session_management import (init_session_objects,
+                                                    set_active_model)
+
 log = logging.getLogger(__name__)
 
 
@@ -36,10 +41,12 @@ def load_model(request):
 
     input_file = request.POST['new_model'].file
 
-    # We first write to a temporary file to prevent incomplete files from
-    # being used.
-    file_name = '{0}.zip'.format(uuid.uuid4())
-    file_path = os.path.join(base_dir, file_name)
+    # select a unique filename and a folder to put it in
+    # folder name will be the same unique name as the file
+    folder_name = '{0}'.format(uuid.uuid4())
+    file_name = '{0}.zip'.format(folder_name)
+    folder_path = os.path.join(base_dir, folder_name)
+    file_path = os.path.join(folder_path, file_name)
 
     # check the size of our incoming file
     input_file.seek(0, 2)
@@ -56,6 +63,7 @@ def load_model(request):
         raise HTTPInsufficientStorage('Not enough space to save the file')
 
     # Finally write the data to a temporary file
+    os.mkdir(folder_path)
     input_file.seek(0)
     with open(file_path, 'wb') as output_file:
         shutil.copyfileobj(input_file, output_file)
@@ -63,9 +71,24 @@ def load_model(request):
     # Now that we have our file, we will now try to load the model into
     # memory.
     log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
-    log.info('\tNot doing anything with it yet, though.')
+
+    # Now that we have our file, is it a zipfile?
+    if not is_savezip_valid(file_path):
+        raise HTTPBadRequest('Incoming file is not a zipfile!')
+
+    # now we try to load our model from the zipfile.
+    try:
+        new_model = load(file_path)
+        new_model._cache.enabled = False
+    except:
+        raise HTTPBadRequest('Failed to load model from Incoming file!')
+
+    # Now we try to register our new model.
+    init_session_objects(request, force=True)
+    RegisterObject(new_model, request)
+    set_active_model(request, new_model.id)
 
     # We will want to clean up our tempfile when we are done.
-    # os.remove(file_path)
+    os.remove(file_path)
 
     return Response('OK')

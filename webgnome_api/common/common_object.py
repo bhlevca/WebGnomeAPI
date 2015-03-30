@@ -4,11 +4,18 @@ Common Gnome object request handlers.
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
+from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
+from logging import Logger
+
 import numpy
 np = numpy
 
-from .helpers import (FQNamesToDict,
-                      PyClassFromName)
+from .helpers import FQNamesToDict, PyClassFromName
+
+from gnome.utilities.orderedcollection import OrderedCollection
+from gnome.spill_container import SpillContainerPair
+
+from webgnome_api.common.session_management import set_session_object
 
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
@@ -145,6 +152,37 @@ def ObjectImplementsOneOf(model_object, obj_types):
         return True
 
     return False
+
+
+def RegisterObject(obj, request):
+    '''
+        Recursively register an object plus all contained child objects.
+        Registering means we put the object somewhere it can be looked up
+        in the Web API.
+        We would mainly like to register PyGnome objects.  Others
+        we probably don't care about.
+    '''
+    if (hasattr(obj, 'id')
+            and not obj.__class__.__name__ == 'type'):
+        # print 'RegisterObject(): registering:', (obj.__class__.__name__,
+        #                                           obj.id)
+        set_session_object(obj, request)
+    if isinstance(obj, (list, tuple, OrderedCollection,
+                        SpillContainerPair)):
+        for i in obj:
+            RegisterObject(i, request)
+        pass
+    elif hasattr(obj, '__dict__'):
+        for k in dir(obj):
+            attr = getattr(obj, k)
+            if not (k.find('_') == 0
+                    or isinstance(attr, (MethodType, FunctionType,
+                                         BuiltinFunctionType,
+                                         int, float, str, unicode, NoneType,
+                                         Logger)
+                                  )):
+                # print 'RegisterObject(): recursing attr:', (k, type(attr))
+                RegisterObject(attr, request)
 
 
 def obj_id_from_url(request):

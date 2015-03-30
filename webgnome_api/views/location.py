@@ -4,8 +4,7 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir, split
 from collections import OrderedDict
-from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
-from logging import Logger, getLogger
+from logging import getLogger
 
 import json
 import slugify
@@ -13,16 +12,11 @@ import slugify
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
-from gnome.utilities.orderedcollection import OrderedCollection
-from gnome.spill_container import SpillContainerPair
 from gnome.persist import load
 
-from webgnome_api.common.osgeo_helpers import (FeatureCollection,)
-
-from webgnome_api.common.common_object import obj_id_from_url
-
+from webgnome_api.common.osgeo_helpers import FeatureCollection
+from webgnome_api.common.common_object import obj_id_from_url, RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
-                                                    set_session_object,
                                                     set_active_model,
                                                     get_active_model)
 
@@ -112,34 +106,3 @@ def load_location_file(location_file, request):
         init_session_objects(request, force=True)
         RegisterObject(active_model, request)
         set_active_model(request, active_model.id)
-
-
-def RegisterObject(obj, request):
-    '''
-        Recursively register an object plus all contained child objects.
-        Registering means we put the object somewhere it can be looked up
-        in the Web API.
-        We would mainly like to register PyGnome objects.  Others
-        we probably don't care about.
-    '''
-    if (hasattr(obj, 'id')
-            and not obj.__class__.__name__ == 'type'):
-        # print 'RegisterObject(): registering:', (obj.__class__.__name__,
-        #                                           obj.id)
-        set_session_object(obj, request)
-    if isinstance(obj, (list, tuple, OrderedCollection,
-                        SpillContainerPair)):
-        for i in obj:
-            RegisterObject(i, request)
-        pass
-    elif hasattr(obj, '__dict__'):
-        for k in dir(obj):
-            attr = getattr(obj, k)
-            if not (k.find('_') == 0
-                    or isinstance(attr, (MethodType, FunctionType,
-                                         BuiltinFunctionType,
-                                         int, float, str, unicode, NoneType,
-                                         Logger)
-                                  )):
-                # print 'RegisterObject(): recursing attr:', (k, type(attr))
-                RegisterObject(attr, request)
