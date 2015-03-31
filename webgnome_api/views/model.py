@@ -161,7 +161,9 @@ def update_model(request):
     else:
         gnome_sema.release()
         log.info('  ' + log_prefix + 'semaphore released...')
-        log.error('  ' + log_prefix + 'raising cors_exception() ...')
+        msg = ("raising cors_exception() in update_model. "
+               "Updating model before it exists.")
+        log.warning('  ' + log_prefix + msg)
         raise cors_exception(request, HTTPNotFound)
 
     log.info('<<' + log_prefix)
