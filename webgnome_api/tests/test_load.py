@@ -1,8 +1,8 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
+import os
+import zipfile
 
 from base import FunctionalTestBase
 
@@ -12,11 +12,8 @@ class LoadModelTest(FunctionalTestBase):
         Tests out the Gnome Location object API
     '''
     def test_file_upload(self):
-        # OK, if we get this far, we should have an active model
         resp = self.testapp.get('/model')
         model = resp.json_body
-        print 'initial model:'
-        pp.pprint(model)
 
         for c in ('environment', 'map', 'water',
                   'movers', 'outputters', 'spills', 'weatherers'):
@@ -25,15 +22,51 @@ class LoadModelTest(FunctionalTestBase):
         field_name = 'new_model'
         file_name = 'models/Model.zip'
 
-        self.testapp.post('/load',
+        self.testapp.post('/upload',
                           upload_files=[(field_name, file_name,)]
                           )
 
         resp = self.testapp.get('/model')
         model = resp.json_body
-        print 'new model:'
-        pp.pprint(model)
 
         for c in ('environment', 'map', 'water',
                   'movers', 'outputters', 'spills', 'weatherers'):
             assert model[c] is not None
+
+    def test_file_download(self):
+        # first we load the model from our zipfile.
+        field_name = 'new_model'
+        test_file = 'models/Model.zip'
+        save_file = 'SaveModel.zip'
+
+        self.testapp.post('/upload',
+                          upload_files=[(field_name, test_file,)]
+                          )
+
+        resp = self.testapp.get('/model')
+        model = resp.json_body
+
+        for c in ('environment', 'map', 'water',
+                  'movers', 'outputters', 'spills', 'weatherers'):
+            assert model[c] is not None
+
+        # next, we download the model as a zipfile.
+        resp = self.testapp.get('/download')
+
+        with open(save_file, 'wb') as file_:
+            file_.write(resp.body)
+
+        assert zipfile.is_zipfile(save_file)
+
+        z_in = zipfile.ZipFile(test_file)
+        z_out = zipfile.ZipFile(save_file)
+
+        for info_in, info_out in zip(z_in.infolist(), z_out.infolist()):
+            assert info_in.filename == info_out.filename
+            assert info_in.file_size == info_out.file_size
+            assert info_in.CRC == info_out.CRC
+
+        z_in.close()
+        z_out.close()
+
+        os.remove(save_file)

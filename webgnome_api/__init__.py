@@ -15,12 +15,13 @@ from webgnome_api.common.views import cors_policy
 def reconcile_directory_settings(settings):
     save_file_dir = settings['save_file_dir']
 
-    if not os.path.exists(save_file_dir):
-        print 'Creating save files folder {0}'.format(save_file_dir)
-        os.mkdir(save_file_dir)
-    elif not os.path.isdir(save_file_dir):
-        raise EnvironmentError('Save files folder path {0} '
-                               'is not a directory!!'.format(save_file_dir))
+    for d in (save_file_dir,):
+        if not os.path.exists(d):
+            print 'Creating folder {0}'.format(d)
+            os.mkdir(d)
+        elif not os.path.isdir(d):
+            raise EnvironmentError('Folder path {0} '
+                                   'is not a directory!!'.format(d))
 
     locations_dir = settings['locations_dir']
 
@@ -56,7 +57,8 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
-    config.add_route("load", "/load")
+    config.add_route("upload", "/upload")
+    config.add_route("download", "/download")
 
     config.scan('webgnome_api.views')
 
