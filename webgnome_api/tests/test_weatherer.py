@@ -102,8 +102,10 @@ class BurnTests(BaseWeathererTests):
                 'json_': 'webapi',
                 'active_start': '2014-04-09T15:00:00',
                 'on': True,
-                'area': 10,         # assumed to be in m^2
-                'thickness': 1,     # assumed to be in m
+                'area': 10,
+                'area_units': 'm^2',
+                'thickness': 1,
+                'thickness_units': 'm'
                 }
 
 
