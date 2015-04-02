@@ -49,6 +49,8 @@ def get_step(request):
                          format(active_model.has_weathering_uncertainty))
                 if active_model.has_weathering_uncertainty:
                     set_uncertain_models(request)
+                else:
+                    log.info('Model does not have weathering uncertainty')
 
             begin = time.time()
             output = active_model.step()
