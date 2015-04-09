@@ -18,8 +18,23 @@ from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
+from webgnome_api.common.views import cors_response
 
 log = logging.getLogger(__name__)
+
+
+@view_config(route_name='upload', request_method='OPTIONS')
+def upload_model_options(request):
+    req_origin = request.headers.get('Origin')
+    if req_origin is not None:
+        request.response.headers.add('Access-Control-Allow-Origin', req_origin)
+        request.response.headers.add('Access-Control-Allow-Credentials',
+                                     'true')
+        req_headers = request.headers.get('Access-Control-Request-Headers')
+        request.response.headers.add('Access-Control-Allow-Headers',
+                                     req_headers)
+
+    return request.response
 
 
 @view_config(route_name='upload', request_method='POST')
@@ -95,7 +110,7 @@ def upload_model(request):
     # We will want to clean up our tempfile when we are done.
     os.remove(file_path)
 
-    return Response('OK')
+    return cors_response(request, Response('OK'))
 
 
 @view_config(route_name='download')
