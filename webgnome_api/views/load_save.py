@@ -37,9 +37,9 @@ def upload_model(request):
     '''
     # ``input_file`` contains the actual file data which needs to be
     # stored somewhere.
-    base_dir = os.path.join(request.registry.settings['here'],
-                            request.registry.settings['save_file_dir'])
+    base_dir = request.registry.settings['save_file_dir']
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+
     log.info('save_file_dir: {0}'.format(base_dir))
     log.info('max_upload_size: {0}'.format(max_upload_size))
 

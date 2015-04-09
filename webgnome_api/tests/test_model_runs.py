@@ -30,7 +30,7 @@ class ModelRunTest(FunctionalTestBase):
                                                      'windage_persist': 900,
                                                      }
                                                     ],
-                                   'substance': u'ALAMO'
+                                   'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE)'
                                    },
                   'amount': 200,
                   'units': 'tons'
