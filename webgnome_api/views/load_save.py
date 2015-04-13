@@ -8,7 +8,7 @@ import logging
 import tempfile
 
 from pyramid.view import view_config
-from pyramid.response import Response, FileResponse
+from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPInsufficientStorage,
                                     HTTPNotFound)
@@ -127,9 +127,15 @@ def download_model(request):
         dir_name = os.path.dirname(tf.name)
 
         my_model.save(saveloc=dir_name, name=base_name)
+        response_filename = ('{0}.zip'.format(my_model.name))
 
-        return FileResponse(tf.name,
-                            request=request,
-                            content_type='application/octet-stream')
+        tf.seek(0)
+
+        response = request.response
+        response.content_type = 'application/zip'
+        response.content_disposition = ('attachment; filename={0}'
+                                        .format(response_filename))
+        response.app_iter = FileIter(tf)
+        return response
     else:
         raise HTTPNotFound('No Active Model!')
