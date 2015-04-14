@@ -118,17 +118,15 @@ class StepTest(FunctionalTestBase):
         spill = resp.json_body
         model1['spills'] = [spill]
 
-        # - we need an outputter
-        print 'test_first_step(): creating outputter...'
-        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
-        outputter = resp.json_body
-        model1['outputters'] = [outputter]
+        # - we need outputters
+        print 'test_first_step(): creating outputters...'
+        model1['outputters'] = [self.geojson_data,
+                                self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
 
         assert model1['spills'][0]['id'] == spill['id']
-        assert model1['outputters'][0]['id'] == outputter['id']
 
         # Alright, now we can try a first step.
         # This does not(should not?) require a step_id
@@ -205,6 +203,7 @@ class StepTest(FunctionalTestBase):
         # - we need a spill
         print 'test_weathering_step(): creating spill...'
         model1['spills'] = [self.spill_data]
+        model1['spills'][0]['amount_uncertainty_scale'] = 0.5
 
         model1['environment'].append(self.wind_data)
         model1['environment'].append(self.water_data)
@@ -292,6 +291,11 @@ class StepTest(FunctionalTestBase):
         print 'test_all_steps(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+
+        model1['time_step'] = 900
+        resp = self.testapp.put_json('/model', params=model1)
+        model1 = resp.json_body
+
         num_time_steps = model1['num_time_steps']
 
         # The location file we selected should have:
@@ -311,17 +315,15 @@ class StepTest(FunctionalTestBase):
 
         # - we need an outputter
         print 'test_all_steps(): creating outputter...'
-
-        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
-        outputter = resp.json_body
-        outputter['output_timestep'] = 360.0
-        model1['outputters'] = [outputter]
+        # - we need outputters
+        print 'test_weathering_step(): creating outputters...'
+        model1['outputters'] = [self.geojson_data,
+                                self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
 
         assert model1['spills'][0]['id'] == spill['id']
-        assert model1['outputters'][0]['id'] == outputter['id']
 
         # Alright, now we can try to cycle through our steps.
         print 'num_steps = ', num_time_steps

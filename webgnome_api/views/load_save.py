@@ -8,18 +8,34 @@ import logging
 import tempfile
 
 from pyramid.view import view_config
-from pyramid.response import Response, FileResponse
+from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPInsufficientStorage,
                                     HTTPNotFound)
+from pyramid_redis_sessions.session import RedisSession
 
 from gnome.persist import load, is_savezip_valid
 from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
+from webgnome_api.common.views import cors_response
 
 log = logging.getLogger(__name__)
+
+
+@view_config(route_name='upload', request_method='OPTIONS')
+def upload_model_options(request):
+    req_origin = request.headers.get('Origin')
+    if req_origin is not None:
+        request.response.headers.add('Access-Control-Allow-Origin', req_origin)
+        request.response.headers.add('Access-Control-Allow-Credentials',
+                                     'true')
+        req_headers = request.headers.get('Access-Control-Request-Headers')
+        request.response.headers.add('Access-Control-Allow-Headers',
+                                     req_headers)
+
+    return request.response
 
 
 @view_config(route_name='upload', request_method='POST')
@@ -35,15 +51,26 @@ def upload_model(request):
         and if you write to an untrusted location you will need to do
         some extra work to prevent symlink attacks.
     '''
-    # ``input_file`` contains the actual file data which needs to be
-    # stored somewhere.
-    base_dir = os.path.join(request.registry.settings['here'],
-                            request.registry.settings['save_file_dir'])
+    base_dir = request.registry.settings['save_file_dir']
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+
     log.info('save_file_dir: {0}'.format(base_dir))
     log.info('max_upload_size: {0}'.format(max_upload_size))
 
     input_file = request.POST['new_model'].file
+
+    # For some reason, the multipart form does not contain
+    # a session cookie, and Nathan so far has not been able to explicitly
+    # set it.  So a workaround is to put the session ID in the form as
+    # hidden POST content.
+    # Note: This could break in the future if the RedisSession API changes.
+    redis_session_id = request.POST['session']
+    if redis_session_id in request.session.redis.keys():
+        redis_session = RedisSession(request.session.redis,
+                                     redis_session_id,
+                                     request.session.timeout,
+                                     request.session.delete_cookie)
+        request.session = redis_session
 
     # select a unique filename and a folder to put it in
     # folder name will be the same unique name as the file
@@ -81,21 +108,30 @@ def upload_model(request):
         raise HTTPBadRequest('Incoming file is not a valid zipfile!')
 
     # now we try to load our model from the zipfile.
+    gnome_sema = request.registry.settings['py_gnome_semaphore']
+    gnome_sema.acquire()
+    log.info('semaphore acquired.')
     try:
+        log.info('loading our model from zip...')
         new_model = load(file_path)
         new_model._cache.enabled = False
+
+        # Now we try to register our new model.
+        init_session_objects(request, force=True)
+        RegisterObject(new_model, request)
+
+        log.info('setting active model...')
+        set_active_model(request, new_model.id)
     except:
         raise HTTPBadRequest('Failed to load model from Incoming file!')
-
-    # Now we try to register our new model.
-    init_session_objects(request, force=True)
-    RegisterObject(new_model, request)
-    set_active_model(request, new_model.id)
+    finally:
+        gnome_sema.release()
+        log.info('semaphore released.')
 
     # We will want to clean up our tempfile when we are done.
     os.remove(file_path)
 
-    return Response('OK')
+    return cors_response(request, Response('OK'))
 
 
 @view_config(route_name='download')
@@ -112,9 +148,15 @@ def download_model(request):
         dir_name = os.path.dirname(tf.name)
 
         my_model.save(saveloc=dir_name, name=base_name)
+        response_filename = ('{0}.zip'.format(my_model.name))
 
-        return FileResponse(tf.name,
-                            request=request,
-                            content_type='application/octet-stream')
+        tf.seek(0)
+
+        response = request.response
+        response.content_type = 'application/zip'
+        response.content_disposition = ('attachment; filename={0}'
+                                        .format(response_filename))
+        response.app_iter = FileIter(tf)
+        return response
     else:
         raise HTTPNotFound('No Active Model!')

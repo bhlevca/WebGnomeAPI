@@ -79,7 +79,7 @@ class ModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model')
         model1 = resp.json_body
 
-        for k in ('id', 'start_time', 'time_step', 'duration',
+        for k in ('id', 'start_time', 'duration',
                   'cache_enabled', 'uncertain', 'map',
                   'environment', 'spills', 'movers', 'weatherers'):
             assert k in model1
@@ -526,7 +526,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+        assert model2['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()

@@ -48,15 +48,24 @@ def cors_exception(request, exception_class, with_stacktrace=False):
     return http_exc
 
 
-def cors_file(request, path):
-    http_exc = FileResponse(path)
+def cors_response(request, response):
+    hdr_val = request.headers.get('Origin')
+    if hdr_val is not None:
+        response.headers.add('Access-Control-Allow-Origin', hdr_val)
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+
+    return response
+
+
+def cors_file_response(request, path):
+    file_response = FileResponse(path)
 
     hdr_val = request.headers.get('Origin')
     if hdr_val is not None:
-        http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
-        http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
+        file_response.headers.add('Access-Control-Allow-Origin', hdr_val)
+        file_response.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    return http_exc
+    return file_response
 
 
 def get_object(request, implemented_types):
