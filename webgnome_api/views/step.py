@@ -85,7 +85,7 @@ def get_step(request):
                 output['WeatheringOutput'] = full_output
                 output['uncertain_response_time'] = end - begin_uncertain
                 output['total_response_time'] = end - begin
-            else:
+            elif 'WeatheringOutput' in output:
                 nominal = output['WeatheringOutput']
                 full_output = {'nominal': nominal,
                                'step_num': nominal['step_num'],
