@@ -37,7 +37,7 @@ def get_location(request):
              .format(location_api.cors_origins_for('get')))
 
     # first, lets just query that we can get to the data
-    locations_dir = get_locations_dir_from_config(request)
+    locations_dir = request.registry.settings['locations_dir']
     base_len = len(locations_dir.split(sep))
     location_content = []
     location_file_dirs = []
@@ -70,16 +70,6 @@ def get_location(request):
             raise cors_exception(request, HTTPNotFound)
     else:
         return FeatureCollection(location_content).serialize()
-
-
-def get_locations_dir_from_config(request):
-    map_dir = request.registry.settings['locations_dir']
-    if map_dir[0] == sep:
-        full_path = map_dir
-    else:
-        here = request.registry.settings['install_path']
-        full_path = join(here, map_dir)
-    return full_path
 
 
 def load_location_file(location_file, request):
