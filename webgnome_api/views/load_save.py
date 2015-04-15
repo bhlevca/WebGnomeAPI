@@ -164,4 +164,4 @@ def download_model(request):
         response.app_iter = FileIter(tf)
         return response
     else:
-        raise HTTPNotFound('No Active Model!')
+        raise cors_response(request, HTTPNotFound('No Active Model!'))
