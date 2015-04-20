@@ -22,7 +22,7 @@ class GlobalIONamespace(BaseNamespace, BroadcastMixin):
     def recv_connect(self):
         print "CONNNNNNNN"
         self.emit("you_just_connected", {'bravo': 'kid'})
-        self.spawn(self.cpu_checker_process)
+        self.emit('{0}'.format(self.__dict__))
 
     def recv_json(self, data):
         self.emit("got_some_json", data)
@@ -31,60 +31,15 @@ class GlobalIONamespace(BaseNamespace, BroadcastMixin):
         self.broadcast_event('broadcasted', args)
         self.socket['/chat'].emit('bob')
 
-    def cpu_checker_process(self):
-        """This will be a greenlet"""
-        ret = os.system("cat /proc/cpu/stuff")
-        self.emit("cpu_value", ret)
+
+nsmap = {'/logger': GlobalIONamespace,
+         }
 
 
-class ChatIONamespace(BaseNamespace, RoomsMixin):
-    def on_mymessage(self, msg):
-        print "In on_mymessage"
-        self.send("little message back")
-        self.send({'blah': 'blah'}, json=True)
-        for x in xrange(2):
-            self.emit("pack", {'the': 'more', 'you': 'can'})
-
-    def on_my_callback(self, packet):
-        return (1, 2)
-
-    def on_trigger_server_callback(self, superbob):
-        def cb():
-            print "OK, WE WERE CALLED BACK BY THE ACK! THANKS :)"
-        self.emit('callmeback', 'this is a first param',
-                  'this is the last param', callback=cb)
-
-        def cb2(param1, param2):
-            print "OK, GOT THOSE VALUES BACK BY CB", param1, param2
-        self.emit('callmeback', 'this is a first param',
-                  'this is the last param', callback=cb2)
-
-    def on_rtc_invite(self, sdp):
-        print "Got an RTC invite, now pushing to others..."
-        self.emit_to_room('room1', 'rtc_invite', self.session['nickname'],
-                          sdp)
-
-    def recv_connect(self):
-        self.session['nickname'] = 'guest123'
-        self.join('room1')
-
-    def recv_message(self, data):
-        print "Received a 'message' with data:", data
-
-    def on_disconnect_me(self, data):
-        print "Disconnecting you buddy", data
-        self.disconnect()
-
-
-nsmap = {'': GlobalIONamespace,
-         '/logger': ChatIONamespace}
-
-
-@view_config(route_name='logger')
+@view_config(route_name='socket.io')
 def socketio_service(request):
     """ The view that will launch the socketio listener """
 
-    pp.pprint(request.environ)
     socketio_manage(request.environ, namespaces=nsmap, request=request)
 
     return {}
