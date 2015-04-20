@@ -21,8 +21,9 @@ class GlobalIONamespace(BaseNamespace, BroadcastMixin):
 
     def recv_connect(self):
         print "CONNNNNNNN"
-        self.emit("you_just_connected", {'bravo': 'kid'})
-        self.emit('{0}'.format(self.__dict__))
+        self.emit("you_just_connected",
+                  {'bravo': 'kid'}
+                  )
 
     def recv_json(self, data):
         self.emit("got_some_json", data)
