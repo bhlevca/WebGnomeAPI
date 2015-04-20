@@ -19,7 +19,7 @@ from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
-from webgnome_api.common.views import cors_response
+from webgnome_api.common.views import cors_response, cors_exception
 
 log = logging.getLogger(__name__)
 
@@ -85,13 +85,16 @@ def upload_model(request):
     log.info('Incoming file size: {0}'.format(size))
 
     if size > max_upload_size:
-        raise HTTPBadRequest('file is too big!  Max size = {0}'
-                             .format(max_upload_size))
+        raise cors_response(request,
+                            HTTPBadRequest('file is too big!  Max size = {0}'
+                                           .format(max_upload_size)))
 
     # now we check if we have enough space to save the file.
     free_bytes = os.statvfs(base_dir).f_bfree
     if size >= free_bytes:
-        raise HTTPInsufficientStorage('Not enough space to save the file')
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to save the file'))
 
     # Finally write the data to a temporary file
     os.mkdir(folder_path)
@@ -105,7 +108,9 @@ def upload_model(request):
 
     # Now that we have our file, is it a zipfile?
     if not is_savezip_valid(file_path):
-        raise HTTPBadRequest('Incoming file is not a valid zipfile!')
+        raise cors_response(request,
+                            HTTPBadRequest('Incoming file is not a '
+                                           'valid zipfile!'))
 
     # now we try to load our model from the zipfile.
     gnome_sema = request.registry.settings['py_gnome_semaphore']
@@ -123,7 +128,7 @@ def upload_model(request):
         log.info('setting active model...')
         set_active_model(request, new_model.id)
     except:
-        raise HTTPBadRequest('Failed to load model from Incoming file!')
+        raise cors_exception(request, HTTPBadRequest)
     finally:
         gnome_sema.release()
         log.info('semaphore released.')
@@ -159,4 +164,4 @@ def download_model(request):
         response.app_iter = FileIter(tf)
         return response
     else:
-        raise HTTPNotFound('No Active Model!')
+        raise cors_response(request, HTTPNotFound('No Active Model!'))
