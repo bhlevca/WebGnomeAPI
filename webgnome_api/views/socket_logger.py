@@ -1,7 +1,6 @@
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
-from threading import Timer
 from pygtail import Pygtail
 
 from pyramid.view import view_config
@@ -11,36 +10,33 @@ from gevent import socket
 
 from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
-from socketio.mixins import RoomsMixin, BroadcastMixin
 
 
-class GlobalIONamespace(BaseNamespace, BroadcastMixin):
+class LoggerNamespace(BaseNamespace):
     def recv_connect(self):
         print "CONNNNNNNN"
         self.emit("you_just_connected",
                   {'bravo': 'kid'}
                   )
-        self.tail_file = Pygtail('webgnome_api.log')
 
-        self.timer = Timer(1, self.on_timer)
-        self.timer.start()
-
-    def recv_json(self, data):
-        self.emit("got_some_json", data)
-
-    def on_timer(self):
-        print 'on_timer called back...'
-        for line in self.tail_file:
-            self.send(line)
-
-
-nsmap = {'/logger': GlobalIONamespace,
-         }
+        def send_logs():
+            while True:
+                for line in Pygtail('webgnome_api.log'):
+                    self.emit('log',
+                              {'session_id': self.request.session.session_id,
+                               'message': line}
+                              )
+                gevent.sleep(0.1)
+        self.spawn(send_logs)
 
 
 @view_config(route_name='socket.io')
 def socketio_service(request):
     """ The view that will launch the socketio listener """
 
-    socketio_manage(request.environ, namespaces=nsmap, request=request)
-
+    resp = socketio_manage(request.environ,
+                           namespaces={'/logger': LoggerNamespace,
+                                       },
+                           request=request)
+    print 'socketio_manage() returned:', resp
+    return resp
