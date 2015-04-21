@@ -1,7 +1,8 @@
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
-import os
+from threading import Timer
+from pygtail import Pygtail
 
 from pyramid.view import view_config
 
@@ -14,23 +15,23 @@ from socketio.mixins import RoomsMixin, BroadcastMixin
 
 
 class GlobalIONamespace(BaseNamespace, BroadcastMixin):
-    def on_chat(self, *args):
-        self.emit("bob", {'hello': 'world'})
-        print "Received chat message", args
-        self.broadcast_event_not_me('chat', *args)
-
     def recv_connect(self):
         print "CONNNNNNNN"
         self.emit("you_just_connected",
                   {'bravo': 'kid'}
                   )
+        self.tail_file = Pygtail('webgnome_api.log')
+
+        self.timer = Timer(1, self.on_timer)
+        self.timer.start()
 
     def recv_json(self, data):
         self.emit("got_some_json", data)
 
-    def on_bob(self, *args):
-        self.broadcast_event('broadcasted', args)
-        self.socket['/chat'].emit('bob')
+    def on_timer(self):
+        print 'on_timer called back...'
+        for line in self.tail_file:
+            self.send(line)
 
 
 nsmap = {'/logger': GlobalIONamespace,
@@ -43,4 +44,3 @@ def socketio_service(request):
 
     socketio_manage(request.environ, namespaces=nsmap, request=request)
 
-    return {}
