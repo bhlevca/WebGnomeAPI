@@ -1,5 +1,6 @@
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
+import re
+import base64
+import hashlib
 
 from pygtail import Pygtail
 
@@ -20,12 +21,23 @@ class LoggerNamespace(BaseNamespace):
                   )
 
         def send_logs():
+            hasher = hashlib.sha1(self.request.session.session_id)
+            session_hash = base64.urlsafe_b64encode(hasher.digest())
+
             while True:
                 for line in Pygtail('webgnome_api.log'):
-                    self.emit('log',
-                              {'session_id': self.request.session.session_id,
-                               'message': line}
-                              )
+                    if line.find(session_hash) >= 0:
+                        pattern = re.compile('^(?P<date>.*?)\s+'
+                                             '(?P<time>.*?)\s+'
+                                             '(?P<level>.*?)\s+'
+                                             '(?P<session_hash>.*?)\s+'
+                                             '(?P<name>.*?)\s+'
+                                             '(?P<message>.*?)$')
+                        msg_obj = pattern.match(line).groupdict()
+                        del msg_obj['session_hash']
+
+                        self.emit('log', msg_obj)
+
                 gevent.sleep(0.1)
         self.spawn(send_logs)
 
