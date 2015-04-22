@@ -4,6 +4,9 @@
     so that it will be more easily digestible to py_gnome.
     This will make it so the Web Client doesn't have to work quite as hard.
 '''
+import base64
+import hashlib
+
 import json
 
 from webgnome_api.common.common_object import ValueIsJsonObject
@@ -20,7 +23,7 @@ class PyGnomeSchemaTweenFactory(object):
         modified = False
 
         if ValueIsJsonObject(json_request):
-            if not 'json_' in json_request:
+            if 'json_' not in json_request:
                 json_request['json_'] = 'webapi'
                 modified = True
 
@@ -34,6 +37,11 @@ class PyGnomeSchemaTweenFactory(object):
                     modified = True
 
         return modified
+
+    def generate_short_session_id(self, request):
+        if hasattr(request, 'session'):
+            hasher = hashlib.sha1(request.session.session_id)
+            request.session_hash = base64.urlsafe_b64encode(hasher.digest())
 
     def before_the_handler(self, request):
         # code to be executed for each request
@@ -53,6 +61,8 @@ class PyGnomeSchemaTweenFactory(object):
                 #       I tried just leaving it as a JSON object, but the
                 #       request body doesn't accept anything but a string.
                 request.body = json.dumps(json_request)
+
+        self.generate_short_session_id(request)
 
     def after_the_handler(self, response):
         # code to be executed for each request
