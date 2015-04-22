@@ -23,16 +23,16 @@ class LoggerNamespace(BaseNamespace):
         def send_logs():
             hasher = hashlib.sha1(self.request.session.session_id)
             session_hash = base64.urlsafe_b64encode(hasher.digest())
+            pattern = re.compile('^(?P<date>.*?)\s+'
+                                 '(?P<time>.*?)\s+'
+                                 '(?P<level>.*?)\s+'
+                                 '(?P<session_hash>.*?)\s+'
+                                 '(?P<name>.*?)\s+'
+                                 '(?P<message>.*?)$')
 
             while True:
                 for line in Pygtail('webgnome_api.log'):
                     if line.find(session_hash) >= 0:
-                        pattern = re.compile('^(?P<date>.*?)\s+'
-                                             '(?P<time>.*?)\s+'
-                                             '(?P<level>.*?)\s+'
-                                             '(?P<session_hash>.*?)\s+'
-                                             '(?P<name>.*?)\s+'
-                                             '(?P<message>.*?)$')
                         msg_obj = pattern.match(line).groupdict()
                         del msg_obj['session_hash']
 
