@@ -135,3 +135,20 @@ class DispersionTests(BaseWeathererTests):
                 'active_stop': 'inf',
                 'on': True,
                 }
+
+
+class BeachingTests(BaseWeathererTests):
+    '''
+        Mock objects at present so just test that they get created
+    '''
+    req_data = {'obj_type': 'gnome.weatherers.manual_beaching.Beaching',
+                'active_start': '-inf',
+                'active_stop': 'inf',
+                'on': True,
+                'name': 'Beaching',
+                'units': 'm^3',
+                'timeseries': [['2015-04-27T10:00:00', [16]],
+                               ['2015-04-27T16:00:00', [17]],
+                               ['2015-04-27T22:00:00', [19]],
+                               ['2015-04-28T04:00:00', [15]]]
+                }
