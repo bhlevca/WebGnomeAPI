@@ -16,9 +16,7 @@ from socketio.namespace import BaseNamespace
 class LoggerNamespace(BaseNamespace):
     def recv_connect(self):
         print "CONNNNNNNN"
-        self.emit("you_just_connected",
-                  {'bravo': 'kid'}
-                  )
+        self.emit("connected")
 
         def send_logs():
             hasher = hashlib.sha1(self.request.session.session_id)
@@ -31,7 +29,7 @@ class LoggerNamespace(BaseNamespace):
                                  '(?P<message>.*?)$')
 
             while True:
-                for line in Pygtail('webgnome_api.log'):
+                for line in Pygtail('messages.log'):
                     if line.find(session_hash) >= 0:
                         msg_obj = pattern.match(line).groupdict()
                         del msg_obj['session_hash']
