@@ -90,7 +90,8 @@ def upload_model(request):
                                            .format(max_upload_size)))
 
     # now we check if we have enough space to save the file.
-    free_bytes = os.statvfs(base_dir).f_bfree
+    stat_vfs = os.statvfs(base_dir)
+    free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
     if size >= free_bytes:
         raise cors_response(request,
                             HTTPInsufficientStorage('Not enough space '
