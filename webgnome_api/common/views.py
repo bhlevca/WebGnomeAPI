@@ -40,10 +40,11 @@ def cors_exception(request, exception_class, with_stacktrace=False):
         http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    exc_type, exc_value, exc_traceback = sys.exc_info()
-    fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+    if with_stacktrace:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-    http_exc.json_body = json.dumps([l.strip() for l in fmt][-depth:])
+        http_exc.json_body = json.dumps([l.strip() for l in fmt][-depth:])
 
     return http_exc
 
