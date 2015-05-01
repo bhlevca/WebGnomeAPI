@@ -17,7 +17,8 @@ implemented_types = ('gnome.weatherers.core.Weatherer',
                      'gnome.weatherers.Emulsification',
                      'gnome.weatherers.Burn',
                      'gnome.weatherers.Skimmer',
-                     'gnome.weatherers.NaturalDispersion'
+                     'gnome.weatherers.NaturalDispersion',
+                     'gnome.weatherers.ChemicalDispersion'
                      )
 
 
