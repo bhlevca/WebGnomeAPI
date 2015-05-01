@@ -23,7 +23,8 @@ class BaseMoverTests(FunctionalTestBase):
         obj_type = self.req_data['obj_type'].split('.')[-1]
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
-                            for name, obj in resp.json_body.iteritems()]
+                                        for name, obj
+                                        in resp.json_body.iteritems()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -109,7 +110,7 @@ class SimpleMoverTests(BaseMoverTests):
             for new object types.
         '''
         assert json_obj[u'velocity'] == [10.0, 10.0, 10.0]
-        assert json_obj['on'] == False
+        assert json_obj['on'] is False
 
 
 class WindMoverTests(BaseMoverTests):
@@ -283,7 +284,7 @@ class RandomMoverTests(BaseMoverTests):
             for new object types.
         '''
         assert json_obj['diffusion_coef'] == 20000.0
-        assert json_obj['on'] == False
+        assert json_obj['on'] is False
 
 
 class RandomVerticalMoverTests(BaseMoverTests):
@@ -409,7 +410,7 @@ class CatsMoverTests(BaseMoverTests):
 
         json_obj['uncertain_duration'] = 60.0
         json_obj['uncertain_eddy_diffusion'] = 1.0
-        #json_obj['uncertain_eddy_v0'] = 1.0  # failing
+        # json_obj['uncertain_eddy_v0'] = 1.0  # failing
         json_obj['uncertain_time_delay'] = 1.0
 
     def check_updates(self, json_obj):
@@ -417,7 +418,7 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['scale'] == False
+        assert json_obj['scale'] is False
         assert json_obj['scale_value'] == 2.0
         assert json_obj['scale_refpoint'] == [-50.0, 50.0, 10.0]
 
@@ -429,3 +430,74 @@ class CatsMoverTests(BaseMoverTests):
         assert json_obj['uncertain_duration'] == 60.0
         assert json_obj['uncertain_eddy_diffusion'] == 1.0
         assert json_obj['uncertain_time_delay'] == 1.0
+
+
+class AggregateCurrentInfoTests(FunctionalTestBase):
+    '''
+        Tests out the API for getting the aggregate current info
+        from all movers in the model.
+    '''
+    req_data = {'obj_type': u'gnome.model.Model',
+                'cache_enabled': False,
+                'duration': 86400.0,
+                'start_time': '2014-04-09T15:00:00',
+                'time_step': 900.0,
+                'uncertain': False,
+                'weathering_substeps': 1,
+                'environment': [],
+                'movers': [],
+                'weatherers': [],
+                'outputters': [],
+                'spills': [],
+                }
+    req_data['movers'] = [{'obj_type': u'gnome.movers.CatsMover',
+                           'filename': 'models/tidesWAC.CUR',
+                           'scale': True,
+                           'scale_value': 1.0,
+                           'tide': {'obj_type': 'gnome.environment.Tide',
+                                    'filename': 'models/CLISShio.txt',
+                                    },
+                           }]
+
+    def test_get_incomplete_paths(self):
+        params = {}
+        params.update(self.req_data)
+
+        # step 1: we create a model that contains a current mover.
+        resp = self.testapp.post_json('/model', params=params)
+        model = resp.json_body
+
+        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+
+        # step 2: we perform some gets that have incomplete urls
+        self.testapp.get('/mover/{0}'.format('current'), status=404)
+        self.testapp.get('/mover/{0}/'.format('current'), status=404)
+        self.testapp.get('/mover/{0}/{1}'.format('current', 'bogus'),
+                         status=404)
+        self.testapp.get('/mover/{0}/{1}/'.format('current', 'bogus'),
+                         status=404)
+
+    def test_get_complete_path(self):
+        '''
+            We are not done here, but this is about as far as we can go
+            for now.
+        '''
+        params = {}
+        params.update(self.req_data)
+
+        # step 1: we create a model that contains a current mover.
+        resp = self.testapp.post_json('/model', params=params)
+        model = resp.json_body
+
+        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+
+        # step 2: we perform some gets that have complete urls
+        resp = self.testapp.get('/mover/{0}/{1}'.format('current', 'geojson'))
+        current_info = resp.json_body
+        for attr in ('name', 'tide_values'):
+            assert attr in current_info[0]
+
+        resp = self.testapp.get('/mover/{0}/{1}/'.format('current', 'geojson'))
+        current_info = resp.json_body
+        for attr in ('name', 'tide_values'):
+            assert attr in current_info[0]
