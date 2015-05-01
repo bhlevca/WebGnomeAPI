@@ -1,5 +1,5 @@
 .. keywords
-   constant, wind, direction, speed, bull's-eye, target, rayleigh distribution
+   constant, wind, direction, speed, bullseye, bull's-eye, bulls-eye, target, rayleigh distribution
 
 Constant Wind
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
