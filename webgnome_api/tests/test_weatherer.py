@@ -125,15 +125,17 @@ class SkimmerTests(BaseWeathererTests):
                 }
 
 
-class DispersionTests(BaseWeathererTests):
+class ChemicalDispersionTests(BaseWeathererTests):
     '''
         Mock objects at present so just test that they get created
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Dispersion',
+    req_data = {'obj_type': u'gnome.weatherers.ChemicalDispersion',
                 'json_': 'webapi',
                 'active_start': '-inf',
                 'active_stop': 'inf',
                 'on': True,
+                'fraction_sprayed': 0.2,
+                'efficiency': 1.0,
                 }
 
 
@@ -147,8 +149,8 @@ class BeachingTests(BaseWeathererTests):
                 'on': True,
                 'name': 'Beaching',
                 'units': 'm^3',
-                'timeseries': [['2015-04-27T10:00:00', [16]],
-                               ['2015-04-27T16:00:00', [17]],
-                               ['2015-04-27T22:00:00', [19]],
-                               ['2015-04-28T04:00:00', [15]]]
+                'timeseries': [('2015-04-27T10:00:00', 16),
+                               ('2015-04-27T16:00:00', 17),
+                               ('2015-04-27T22:00:00', 19),
+                               ('2015-04-28T04:00:00', 15)]
                 }
