@@ -88,7 +88,8 @@ def get_aggregate_current_info(request):
             for m in active_model.movers:
                 if hasattr(m, 'tide') and m.tide is not None:
                     triangle_multipolygon = get_triangle_multipolygon(m)
-                    features.append(Feature(geometry=triangle_multipolygon))
+                    features.append(Feature(geometry=triangle_multipolygon,
+                                            id="1"))
 
             return FeatureCollection(features)
         else:
@@ -114,7 +115,7 @@ def get_triangle_multipolygon(mover):
     multi_poly = []
     for ti in triangle_data:
         coords = points[list(ti)[:3]].tolist()
-        multi_poly.append(coords)
+        multi_poly.append([coords])
 
     print 'creating multipolygon'
     return MultiPolygon(coordinates=multi_poly)
