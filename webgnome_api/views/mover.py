@@ -2,13 +2,15 @@
 Views for the Mover objects.
 This currently includes ??? objects.
 """
-
 import logging
+
+import numpy
+np = numpy
+
+from geojson import Feature, FeatureCollection, MultiPolygon
 
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
-
-from gnome.utilities import time_utils
 
 from webgnome_api.common.views import (get_object,
                                        create_object,
@@ -41,7 +43,7 @@ def get_mover(request):
 
     if (len(content_requested) > 1 and
             content_requested[0] == 'current' and
-            content_requested[1] == 'geojson'):
+            content_requested[1] == 'grid'):
         return get_aggregate_current_info(request)
     else:
         return get_object(request, implemented_types)
@@ -60,6 +62,11 @@ def update_mover(request):
 
 
 def get_aggregate_current_info(request):
+    '''
+        Outputs GNOME aggreregate current information in a geojson format.
+        The output is a collection of Features.
+        The Features contain a MultiPolygon
+    '''
     log_prefix = 'req({0}): get_aggregate_current_info():'.format(id(request))
     log.info('>>' + log_prefix)
 
@@ -70,26 +77,20 @@ def get_aggregate_current_info(request):
     try:
         active_model = get_active_model(request)
         if active_model:
-            start = active_model.start_time
-            start_seconds = time_utils.date_to_sec(start)
-            num_hours = active_model.duration.total_seconds() / 60 / 60
+            # start = active_model.start_time
+            # start_seconds = time_utils.date_to_sec(start)
+            # num_hours = active_model.duration.total_seconds() / 60 / 60
+            #
+            # times = [start_seconds + 3600. * dt
+            #          for dt in range(int(num_hours))]
 
-            times = [start_seconds + 3600. * dt
-                     for dt in range(int(num_hours))]
-
-            res = []
+            features = []
             for m in active_model.movers:
                 if hasattr(m, 'tide') and m.tide is not None:
-                    log.info('  {0} adding tide mover {1}'
-                             .format(log_prefix, m.name))
+                    triangle_multipolygon = get_triangle_multipolygon(m)
+                    features.append(Feature(geometry=triangle_multipolygon))
 
-                    mover_name = m.name
-                    tide_values = m._tide.cy_obj.get_time_value(times)['u']
-
-                    res.append(dict(name=mover_name,
-                                    tide_values=tide_values.tolist()))
-
-            return res
+            return FeatureCollection(features)
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
@@ -98,3 +99,47 @@ def get_aggregate_current_info(request):
         log.info('  ' + log_prefix + 'semaphore released...')
 
     log.info('<<' + log_prefix)
+
+
+def get_triangle_multipolygon(mover):
+    '''
+        The triangle data that we get from the mover is in the form of
+        indices into the points array.
+        So we get our triangle data and points array, and then build our
+        triangle coordinates by reference.
+    '''
+    triangle_data = get_triangle_data(mover)
+    points = get_points(mover)
+
+    multi_poly = []
+    for ti in triangle_data:
+        coords = points[list(ti)[:3]].tolist()
+        multi_poly.append(coords)
+
+    print 'creating multipolygon'
+    return MultiPolygon(coordinates=multi_poly)
+
+
+def get_triangle_data(mover):
+    return mover.mover._get_triangle_data()
+
+
+def get_points(mover):
+    points = (mover.mover._get_points()
+              .astype([('long', '<f8'), ('lat', '<f8')]))
+    points['long'] /= 10 ** 6
+    points['lat'] /= 10 ** 6
+
+    return points
+
+
+def get_center_points(mover):
+    return mover.mover._get_center_points()
+
+
+def get_velocities(mover):
+    return mover.mover._get_velocity_handle()
+
+
+def get_tide_values(mover, times):
+    return mover._tide.cy_obj.get_time_value(times)

@@ -1,9 +1,6 @@
 """
 Functional tests for the Mover Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 from base import FunctionalTestBase
 
 
@@ -492,12 +489,36 @@ class AggregateCurrentInfoTests(FunctionalTestBase):
         assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
         # step 2: we perform some gets that have complete urls
-        resp = self.testapp.get('/mover/{0}/{1}'.format('current', 'geojson'))
+        resp = self.testapp.get('/mover/{0}/{1}'.format('current', 'grid'))
         current_info = resp.json_body
-        for attr in ('name', 'tide_values'):
-            assert attr in current_info[0]
+        assert 'features' in current_info
+        assert 'type' in current_info
+        assert current_info['type'] == 'FeatureCollection'
 
-        resp = self.testapp.get('/mover/{0}/{1}/'.format('current', 'geojson'))
+        features = current_info['features']
+        for f in features:
+            assert 'type' in f
+            assert f['type'] == 'Feature'
+
+            assert 'geometry' in f
+            geo = f['geometry']
+            assert 'coordinates' in geo
+            assert 'type' in geo
+            assert geo['type'] == 'MultiPolygon'
+
+        resp = self.testapp.get('/mover/{0}/{1}/'.format('current', 'grid'))
         current_info = resp.json_body
-        for attr in ('name', 'tide_values'):
-            assert attr in current_info[0]
+        assert 'features' in current_info
+        assert 'type' in current_info
+        assert current_info['type'] == 'FeatureCollection'
+
+        features = current_info['features']
+        for f in features:
+            assert 'type' in f
+            assert f['type'] == 'Feature'
+
+            assert 'geometry' in f
+            geo = f['geometry']
+            assert 'coordinates' in geo
+            assert 'type' in geo
+            assert geo['type'] == 'MultiPolygon'
