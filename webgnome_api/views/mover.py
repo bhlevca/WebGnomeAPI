@@ -18,7 +18,7 @@ from webgnome_api.common.views import (get_object,
                                        cors_policy,
                                        cors_exception)
 
-from webgnome_api.common.session_management import get_active_model
+from webgnome_api.common.session_management import get_session_object
 
 log = logging.getLogger(__name__)
 
@@ -42,9 +42,8 @@ def get_mover(request):
     content_requested = request.matchdict.get('obj_id')
 
     if (len(content_requested) > 1 and
-            content_requested[0] == 'current' and
             content_requested[1] == 'grid'):
-        return get_aggregate_current_info(request)
+        return get_current_info(request)
     else:
         return get_object(request, implemented_types)
 
@@ -61,22 +60,25 @@ def update_mover(request):
     return update_object(request, implemented_types)
 
 
-def get_aggregate_current_info(request):
+def get_current_info(request):
     '''
-        Outputs GNOME aggreregate current information in a geojson format.
+        Outputs GNOME current information for a particular current mover
+        in a geojson format.
         The output is a collection of Features.
         The Features contain a MultiPolygon
     '''
-    log_prefix = 'req({0}): get_aggregate_current_info():'.format(id(request))
+    log_prefix = 'req({0}): get_current_info():'.format(id(request))
     log.info('>>' + log_prefix)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    log.info('  {0} {1}'.format(log_prefix, 'semaphore acquired...'))
 
     try:
-        active_model = get_active_model(request)
-        if active_model:
+        obj_id = request.matchdict.get('obj_id')[0]
+        mover = get_session_object(obj_id, request)
+
+        if mover:
             # start = active_model.start_time
             # start_seconds = time_utils.date_to_sec(start)
             # num_hours = active_model.duration.total_seconds() / 60 / 60
@@ -85,11 +87,10 @@ def get_aggregate_current_info(request):
             #          for dt in range(int(num_hours))]
 
             features = []
-            for m in active_model.movers:
-                if hasattr(m, 'tide') and m.tide is not None:
-                    triangle_multipolygon = get_triangle_multipolygon(m)
-                    features.append(Feature(geometry=triangle_multipolygon,
-                                            id="1"))
+            if hasattr(mover, 'tide') and mover.tide is not None:
+                triangle_multipolygon = get_triangle_multipolygon(mover)
+                features.append(Feature(geometry=triangle_multipolygon,
+                                        id='1'))
 
             return FeatureCollection(features)
         else:
