@@ -177,6 +177,6 @@ def get_map_dir_from_config(request):
     if map_dir[0] == os.path.sep:
         full_path = map_dir
     else:
-        here = request.registry.settings['here']
+        here = request.registry.settings['install_path']
         full_path = os.path.join(here, map_dir)
     return full_path
