@@ -88,9 +88,11 @@ def get_current_info(request):
 
             features = []
             if hasattr(mover, 'tide') and mover.tide is not None:
+                signature = get_grid_signature(mover)
                 triangle_multipolygon = get_triangle_multipolygon(mover)
                 features.append(Feature(geometry=triangle_multipolygon,
-                                        id='1'))
+                                        id='1',
+                                        properties={'signature': signature}))
 
             return FeatureCollection(features)
         else:
@@ -101,6 +103,23 @@ def get_current_info(request):
         log.info('  ' + log_prefix + 'semaphore released...')
 
     log.info('<<' + log_prefix)
+
+
+def get_grid_signature(mover):
+    '''
+        Here we are trying to get an n-dimensional signature of our
+        grid data.
+        We will for the moment get the vector magnitudes of all sequential
+        point differences and sum them.
+    '''
+    points = get_points(mover)
+
+    rawpoints = np.array(zip(points['long'], points['lat']), dtype=np.double)
+    point_diffs = rawpoints[1:] - rawpoints[:-1]
+
+    magnitude_sum = abs(point_diffs.view(dtype=np.complex)).sum()
+
+    return magnitude_sum
 
 
 def get_triangle_multipolygon(mover):
