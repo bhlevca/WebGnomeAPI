@@ -109,17 +109,15 @@ def get_grid_signature(mover):
     '''
         Here we are trying to get an n-dimensional signature of our
         grid data.
-        We will for the moment get the vector magnitudes of all sequential
-        point differences and sum them.
+        There may be a better way to do this, but for now we will get the
+        euclidian distances between all sequential points and sum them.
     '''
     points = get_points(mover)
 
     rawpoints = np.array(zip(points['long'], points['lat']), dtype=np.double)
     point_diffs = rawpoints[1:] - rawpoints[:-1]
 
-    magnitude_sum = abs(point_diffs.view(dtype=np.complex)).sum()
-
-    return magnitude_sum
+    return abs(point_diffs.view(dtype=np.complex)).sum()
 
 
 def get_triangle_multipolygon(mover):
