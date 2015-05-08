@@ -70,13 +70,13 @@ class StepTest(FunctionalTestBase):
                         'on': True,
                         }
 
-    dispersion_data = {'obj_type': u'gnome.weatherers.Dispersion',
+    dispersion_data = {'obj_type': u'gnome.weatherers.NaturalDispersion',
                        'active_start': '2013-02-13T15:00:00',
                        'active_stop': '2013-02-13T21:00:00',
                        'on': True,
                        }
 
-    geojson_data = {'obj_type': 'gnome.outputters.geo_json.GeoJson',
+    geojson_data = {'obj_type': 'gnome.outputters.GeoJsonTrajectoryOut',
                     'name': 'GeoJson',
                     'output_last_step': True,
                     'output_zero_step': True,
@@ -133,7 +133,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['GeoJson']['step_num'] == 0
+        assert first_step['GeoJsonTrajectoryOut']['step_num'] == 0
 
     def test_weathering_step(self):
         # We are testing our ability to generate the first step in a
@@ -177,7 +177,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['GeoJson']['step_num'] == 0
+        assert first_step['GeoJsonTrajectoryOut']['step_num'] == 0
         assert first_step['WeatheringOutput']['step_num'] == 0
         for v in first_step['WeatheringOutput'].values():
             if isinstance(v, dict):
@@ -240,7 +240,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['GeoJson']['step_num'] == 0
+        assert first_step['GeoJsonTrajectoryOut']['step_num'] == 0
         assert first_step['WeatheringOutput']['step_num'] == 0
 
         weathering_out = [v for v in first_step['WeatheringOutput'].values()
@@ -252,7 +252,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         second_step = resp.json_body
 
-        assert second_step['GeoJson']['step_num'] == 1
+        assert second_step['GeoJsonTrajectoryOut']['step_num'] == 1
         assert second_step['WeatheringOutput']['step_num'] == 1
 
         weathering_out = [v for v in second_step['WeatheringOutput'].values()
@@ -268,7 +268,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         rewound_step = resp.json_body
 
-        assert rewound_step['GeoJson']['step_num'] == 0
+        assert rewound_step['GeoJsonTrajectoryOut']['step_num'] == 0
         assert rewound_step['WeatheringOutput']['step_num'] == 0
 
         weathering_out = [v for v in rewound_step['WeatheringOutput'].values()
@@ -331,9 +331,9 @@ class StepTest(FunctionalTestBase):
         for s in range(num_time_steps):
             resp = self.testapp.get('/step')
             step = resp.json_body
-            print '{0}, '.format(step['GeoJson']['step_num']),
-            assert step['GeoJson']['step_num'] == s
-            assert 'feature_collection' in step['GeoJson']
+            print '{0}, '.format(step['GeoJsonTrajectoryOut']['step_num']),
+            assert step['GeoJsonTrajectoryOut']['step_num'] == s
+            assert 'feature_collection' in step['GeoJsonTrajectoryOut']
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)

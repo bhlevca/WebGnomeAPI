@@ -178,7 +178,7 @@ class GeoJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.geo_json.GeoJson',
+    req_data = {'obj_type': u'gnome.outputters.GeoJsonTrajectoryOut',
                 'name': u'GeoJson',
                 'output_last_step': True,
                 'output_zero_step': True}
