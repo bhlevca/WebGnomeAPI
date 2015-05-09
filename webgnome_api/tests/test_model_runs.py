@@ -46,7 +46,7 @@ class ModelRunTest(FunctionalTestBase):
                      'viewport': [[-71.2242987892, 42.1846263908],
                                   [-70.4146871963, 42.6329573908]]
                      }
-    geojson_data = {'obj_type': 'gnome.outputters.GeoJsonTrajectoryOut',
+    geojson_data = {'obj_type': 'gnome.outputters.TrajectoryGeoJsonOutput',
                     'name': 'GeoJson',
                     'output_last_step': True,
                     'output_zero_step': True,
@@ -149,8 +149,8 @@ class ModelRunTest(FunctionalTestBase):
             resp = self.testapp.get('/step')
             step = resp.json_body
 
-            assert step['GeoJsonTrajectoryOut']['step_num'] == s
-            assert 'feature_collection' in step['GeoJsonTrajectoryOut']
+            assert step['TrajectoryGeoJsonOutput']['step_num'] == s
+            assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
