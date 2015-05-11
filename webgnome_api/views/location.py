@@ -9,7 +9,7 @@ from logging import getLogger
 import json
 import slugify
 
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPInternalServerError
 from cornice import Service
 
 from gnome.persist import load
@@ -62,6 +62,9 @@ def get_location(request):
             try:
                 location_file = location_file_dirs[matching[0][0]]
                 load_location_file(location_file, request)
+            except:
+                raise cors_exception(request, HTTPInternalServerError,
+                                     with_stacktrace=True)
             finally:
                 gnome_sema.release()
 
