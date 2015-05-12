@@ -1,6 +1,9 @@
 """
 Functional tests for the Gnome Location object Web API
 """
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2, width=120)
+
 import pytest
 
 from base import FunctionalTestBase
@@ -26,7 +29,8 @@ class StepTest(FunctionalTestBase):
                   'element_type': {'obj_type': ('gnome.spill.elements'
                                                 '.ElementType'),
                                    'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                     'windage_range': [0.01, 0.04],
+                                                     'windage_range': [0.01,
+                                                                       0.04],
                                                      'windage_persist': 900,
                                                      }
                                                     ]
@@ -76,12 +80,20 @@ class StepTest(FunctionalTestBase):
                        'on': True,
                        }
 
-    geojson_data = {'obj_type': 'gnome.outputters.TrajectoryGeoJsonOutput',
-                    'name': 'GeoJson',
-                    'output_last_step': True,
-                    'output_zero_step': True,
-                    'output_dir': 'models/images'
-                    }
+    geojson_output_data = {'obj_type': ('gnome.outputters'
+                                        '.TrajectoryGeoJsonOutput'),
+                           'name': 'GeoJson',
+                           'output_last_step': True,
+                           'output_zero_step': True,
+                           'output_dir': 'models/images'
+                           }
+
+    current_output_data = {'obj_type': ('gnome.outputters'
+                                        '.CurrentGridGeoJsonOutput'),
+                           'name': 'CurrentGrid',
+                           'output_last_step': True,
+                           'output_zero_step': True,
+                           }
 
     weathering_output_data = {'obj_type': (u'gnome.outputters.weathering'
                                            '.WeatheringOutput'),
@@ -120,7 +132,7 @@ class StepTest(FunctionalTestBase):
 
         # - we need outputters
         print 'test_first_step(): creating outputters...'
-        model1['outputters'] = [self.geojson_data,
+        model1['outputters'] = [self.geojson_output_data,
                                 self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)
@@ -163,7 +175,7 @@ class StepTest(FunctionalTestBase):
 
         # - we need outputters
         print 'test_weathering_step(): creating outputters...'
-        model1['outputters'] = [self.geojson_data,
+        model1['outputters'] = [self.geojson_output_data,
                                 self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)
@@ -226,7 +238,7 @@ class StepTest(FunctionalTestBase):
 
         # - we need outputters
         print 'test_weathering_step(): creating outputters...'
-        model1['outputters'] = [self.geojson_data,
+        model1['outputters'] = [self.geojson_output_data,
                                 self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)
@@ -277,6 +289,130 @@ class StepTest(FunctionalTestBase):
         for v in weathering_out:
             assert v['step_num'] == 0
 
+    def test_current_output_step(self):
+        # We are testing our ability to generate the first step in a
+        # weathering model run
+        self.testapp.get('/location/central-long-island-sound')
+
+        # OK, if we get this far, we should have an active model
+        print 'test_weathering_step(): getting model...'
+        resp = self.testapp.get('/model')
+        model1 = resp.json_body
+
+        # The location file we selected should have:
+        # - a registered map
+        # - a registered Tide
+        # - a registered RandomMover
+        # - a registered CatsMover
+
+        # So what do we still need?
+        # - we need a spill
+        print 'test_weathering_step(): creating spill...'
+        model1['spills'] = [self.spill_data]
+        model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+
+        model1['environment'].append(self.wind_data)
+        model1['environment'].append(self.water_data)
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model1 = resp.json_body
+
+        # - we need weatherers
+        wind_data = [e for e in model1['environment']
+                     if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
+        water_data = [e for e in model1['environment']
+                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      ][0]
+
+        print 'test_weathering_step(): creating weatherer...'
+        self.evaporation_data['wind'] = wind_data
+        self.evaporation_data['water'] = water_data
+        model1['weatherers'] = [self.evaporation_data,
+                                self.dispersion_data]
+
+        # - we need outputters
+        print 'test_weathering_step(): creating outputters...'
+        self.current_output_data['current_mover'] = model1['movers'][1]
+
+        # print 'our current outputter data'
+        # pp.pprint(self.current_output_data)
+
+        model1['outputters'] = [self.geojson_output_data,
+                                self.current_output_data,
+                                self.weathering_output_data]
+
+        resp = self.testapp.put_json('/model', params=model1)
+        model1 = resp.json_body
+
+        assert 'id' in model1['spills'][0]
+        assert 'id' in model1['weatherers'][0]
+        assert 'id' in model1['outputters'][0]
+        assert 'id' in model1['outputters'][1]
+        assert 'id' in model1['outputters'][2]
+
+        resp = self.testapp.get('/step')
+        first_step = resp.json_body
+
+        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
+        assert first_step['CurrentGridGeoJsonOutput']['step_num'] == 0
+        assert first_step['WeatheringOutput']['step_num'] == 0
+
+        current_grid_out = first_step['CurrentGridGeoJsonOutput']
+        fc = current_grid_out['feature_collection']
+        assert 'type' in fc
+        assert fc['type'] == 'FeatureCollection'
+        assert 'features' in fc
+        assert len(fc['features']) > 0
+
+        for feature in fc['features']:
+            assert 'type' in feature
+            assert feature['type'] == 'Feature'
+
+            assert 'properties' in feature
+            assert 'velocity' in feature['properties']
+
+            assert 'geometry' in feature
+            assert len(feature['geometry']) > 0
+
+            geometry = feature['geometry']
+            assert 'type' in geometry
+            assert geometry['type'] == 'Point'
+
+            assert 'coordinates' in geometry
+            assert len(geometry['coordinates']) == 2
+
+        resp = self.testapp.get('/step')
+        second_step = resp.json_body
+
+        assert second_step['TrajectoryGeoJsonOutput']['step_num'] == 1
+        assert second_step['CurrentGridGeoJsonOutput']['step_num'] == 1
+        assert second_step['WeatheringOutput']['step_num'] == 1
+
+        current_grid_out = second_step['CurrentGridGeoJsonOutput']
+        fc = current_grid_out['feature_collection']
+        assert 'type' in fc
+        assert fc['type'] == 'FeatureCollection'
+        assert 'features' in fc
+        assert len(fc['features']) > 0
+
+        for feature in fc['features']:
+            assert 'type' in feature
+            assert feature['type'] == 'Feature'
+
+            assert 'properties' in feature
+            assert 'velocity' in feature['properties']
+
+            assert 'geometry' in feature
+            assert len(feature['geometry']) > 0
+
+            geometry = feature['geometry']
+            assert 'type' in geometry
+            assert geometry['type'] == 'Point'
+
+            assert 'coordinates' in geometry
+            assert len(geometry['coordinates']) == 2
+
+
     @pytest.mark.slow
     def test_all_steps(self):
         # We are testing our ability to generate the first step in a model run
@@ -317,7 +453,7 @@ class StepTest(FunctionalTestBase):
         print 'test_all_steps(): creating outputter...'
         # - we need outputters
         print 'test_weathering_step(): creating outputters...'
-        model1['outputters'] = [self.geojson_data,
+        model1['outputters'] = [self.geojson_output_data,
                                 self.weathering_output_data]
 
         resp = self.testapp.put_json('/model', params=model1)

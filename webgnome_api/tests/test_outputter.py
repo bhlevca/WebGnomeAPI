@@ -195,6 +195,37 @@ class GeoJsonOutputterTests(OutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
+class CurrentGridOutputterTests(OutputterTests):
+    '''
+        Tests out the Gnome GeoJson object API
+    '''
+    req_data = {'obj_type': u'gnome.outputters.CurrentGridGeoJsonOutput',
+                'name': u'CurrentGrid',
+                'output_last_step': True,
+                'output_zero_step': True,
+                'current_mover': {'obj_type': u'gnome.movers.CatsMover',
+                                  'filename': 'models/tidesWAC.CUR',
+                                  'scale': True,
+                                  'scale_value': 1.0,
+                                  'tide': {'obj_type': 'gnome.environment.Tide',
+                                           'filename': 'models/CLISShio.txt',
+                                           },
+                                  }
+                }
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
+
+
 class WeatheringOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
