@@ -11,8 +11,7 @@ class OutputterTests(FunctionalTestBase):
     '''
         Tests out the Gnome Outputter object API
     '''
-    req_data = {
-                'obj_type': u'gnome.outputters.outputter.Outputter',
+    req_data = {'obj_type': u'gnome.outputters.outputter.Outputter',
                 'name': u'Outputter',
                 'output_timestep': 1800.0,
                 'output_last_step': True,
@@ -98,8 +97,8 @@ class OutputterTests(FunctionalTestBase):
             for new object types.
         '''
         assert json_obj['output_timestep'] == 1200.0
-        assert json_obj['output_last_step'] == False
-        assert json_obj['output_zero_step'] == False
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
 
 
 class RendererTests(OutputterTests):
@@ -138,8 +137,8 @@ class RendererTests(OutputterTests):
                                 [-100.0, 100.0]]
 
     def check_updates(self, json_obj):
-        assert json_obj['output_last_step'] == False
-        assert json_obj['output_zero_step'] == False
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
         assert json_obj['draw_ontop'] == 'uncertain'
         assert json_obj['image_size'] == [1000, 1000]
 
@@ -169,16 +168,16 @@ class NetCDFOutputterTests(OutputterTests):
         json_obj['compress'] = False
 
     def check_updates(self, json_obj):
-        assert json_obj['output_last_step'] == False
-        assert json_obj['output_zero_step'] == False
-        assert json_obj['compress'] == False
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
+        assert json_obj['compress'] is False
 
 
 class GeoJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.geo_json.GeoJson',
+    req_data = {'obj_type': u'gnome.outputters.TrajectoryGeoJsonOutput',
                 'name': u'GeoJson',
                 'output_last_step': True,
                 'output_zero_step': True}
@@ -192,8 +191,39 @@ class GeoJsonOutputterTests(OutputterTests):
         json_obj['output_zero_step'] = False
 
     def check_updates(self, json_obj):
-        assert json_obj['output_last_step'] == False
-        assert json_obj['output_zero_step'] == False
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
+
+
+class CurrentGridOutputterTests(OutputterTests):
+    '''
+        Tests out the Gnome GeoJson object API
+    '''
+    req_data = {'obj_type': u'gnome.outputters.CurrentGridGeoJsonOutput',
+                'name': u'CurrentGrid',
+                'output_last_step': True,
+                'output_zero_step': True,
+                'current_mover': {'obj_type': u'gnome.movers.CatsMover',
+                                  'filename': 'models/tidesWAC.CUR',
+                                  'scale': True,
+                                  'scale_value': 1.0,
+                                  'tide': {'obj_type': 'gnome.environment.Tide',
+                                           'filename': 'models/CLISShio.txt',
+                                           },
+                                  }
+                }
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
 
 
 class WeatheringOutputterTests(OutputterTests):
@@ -214,5 +244,5 @@ class WeatheringOutputterTests(OutputterTests):
         json_obj['output_zero_step'] = False
 
     def check_updates(self, json_obj):
-        assert json_obj['output_last_step'] == False
-        assert json_obj['output_zero_step'] == False
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False

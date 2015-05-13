@@ -1,5 +1,5 @@
 .. keywords
-   oil, oil query form, api, viscosity
+   oil, oil query form, api, viscosity, red text
 
 Oil Query Form
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -14,5 +14,5 @@ If your oil does not appear in the list, try alternate spellings of the oil or t
 
 Oils can be sorted by Name, location, field name, or API by clicking on the column label at the top of the table.
 
-Click on an oil in the list and select Oil Info to get General Info, Properties, Distillation, and other details. When you are satisfied with you choice, click the select button.
+Click on an oil in the list and select Oil Info to get General Info, Properties, Distillation, and other details. Estimated values appear as highlighted red text. When you are satisfied with your choice, click the select button.
 

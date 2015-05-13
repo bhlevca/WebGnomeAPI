@@ -14,7 +14,8 @@ outputter = Service(name='outputter', path='/outputter*obj_id',
 implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.renderer.Renderer',
                      'gnome.outputters.netcdf.NetCDFOutput',
-                     'gnome.outputters.geo_json.GeoJson',
+                     'gnome.outputters.geo_json.TrajectoryGeoJsonOutput',
+                     'gnome.outputters.geo_json.CurrentGridGeoJsonOutput',
                      'gnome.outputters.weathering.WeatheringOutput')
 
 

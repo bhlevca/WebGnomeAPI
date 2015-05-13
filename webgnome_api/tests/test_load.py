@@ -22,7 +22,7 @@ class LoadModelTest(FunctionalTestBase):
         field_name = 'new_model'
         file_name = 'models/Model.zip'
 
-        self.testapp.post('/upload',
+        self.testapp.post('/upload', {'session': '1234'},
                           upload_files=[(field_name, file_name,)]
                           )
 
@@ -39,7 +39,10 @@ class LoadModelTest(FunctionalTestBase):
         test_file = 'models/Model.zip'
         save_file = 'SaveModel.zip'
 
-        self.testapp.post('/upload',
+        resp = self.testapp.post_json('/session')
+        req_session = resp.json_body['id']
+
+        self.testapp.post('/upload', {'session': req_session},
                           upload_files=[(field_name, test_file,)]
                           )
 
@@ -62,6 +65,9 @@ class LoadModelTest(FunctionalTestBase):
         z_out = zipfile.ZipFile(save_file)
 
         for info_in, info_out in zip(z_in.infolist(), z_out.infolist()):
+            print ((info_in.filename, info_out.filename),
+                   (info_in.file_size, info_out.file_size)
+                   )
             assert info_in.filename == info_out.filename
             assert info_in.file_size == info_out.file_size
             assert info_in.CRC == info_out.CRC

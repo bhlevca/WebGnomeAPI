@@ -13,12 +13,12 @@ weatherer = Service(name='weatherer', path='/weatherer*obj_id',
 
 implemented_types = ('gnome.weatherers.core.Weatherer',
                      'gnome.weatherers.Evaporation',
-                     'gnome.weatherers.Dispersion',
                      'gnome.weatherers.Emulsification',
                      'gnome.weatherers.Burn',
                      'gnome.weatherers.Skimmer',
                      'gnome.weatherers.NaturalDispersion',
-                     'gnome.weatherers.Beaching'
+                     'gnome.weatherers.Beaching',
+                     'gnome.weatherers.ChemicalDispersion'
                      )
 
 
