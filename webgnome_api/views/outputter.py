@@ -15,7 +15,7 @@ implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.renderer.Renderer',
                      'gnome.outputters.netcdf.NetCDFOutput',
                      'gnome.outputters.geo_json.TrajectoryGeoJsonOutput',
-                     'gnome.outputters.geo_json.CurrentGridGeoJsonOutput',
+                     'gnome.outputters.geo_json.CurrentGeoJsonOutput',
                      'gnome.outputters.weathering.WeatheringOutput')
 
 
