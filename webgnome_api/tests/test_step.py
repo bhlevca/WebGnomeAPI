@@ -89,7 +89,7 @@ class StepTest(FunctionalTestBase):
                            }
 
     current_output_data = {'obj_type': ('gnome.outputters'
-                                        '.CurrentGridGeoJsonOutput'),
+                                        '.CurrentGeoJsonOutput'),
                            'name': 'CurrentGrid',
                            'output_last_step': True,
                            'output_zero_step': True,
@@ -332,7 +332,7 @@ class StepTest(FunctionalTestBase):
 
         # - we need outputters
         print 'test_weathering_step(): creating outputters...'
-        self.current_output_data['current_mover'] = model1['movers'][1]
+        self.current_output_data['current_movers'] = [model1['movers'][1]]
 
         # print 'our current outputter data'
         # pp.pprint(self.current_output_data)
@@ -354,64 +354,72 @@ class StepTest(FunctionalTestBase):
         first_step = resp.json_body
 
         assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert first_step['CurrentGridGeoJsonOutput']['step_num'] == 0
+        assert first_step['CurrentGeoJsonOutput']['step_num'] == 0
         assert first_step['WeatheringOutput']['step_num'] == 0
 
-        current_grid_out = first_step['CurrentGridGeoJsonOutput']
-        fc = current_grid_out['feature_collection']
-        assert 'type' in fc
-        assert fc['type'] == 'FeatureCollection'
-        assert 'features' in fc
-        assert len(fc['features']) > 0
+        current_grid_out = first_step['CurrentGeoJsonOutput']
+        fcs = current_grid_out['feature_collections']
 
-        for feature in fc['features']:
-            assert 'type' in feature
-            assert feature['type'] == 'Feature'
+        # Verify that our output keys reference real movers
+        for fc_id in fcs.keys():
+            assert fc_id in [m['id'] for m in model1['movers']]
 
-            assert 'properties' in feature
-            assert 'velocity' in feature['properties']
+        # Verify the data structure
+        for fc in fcs.values():
+            assert 'type' in fc
+            assert fc['type'] == 'FeatureCollection'
+            assert 'features' in fc
+            assert len(fc['features']) > 0
 
-            assert 'geometry' in feature
-            assert len(feature['geometry']) > 0
+            for feature in fc['features']:
+                assert 'type' in feature
+                assert feature['type'] == 'Feature'
 
-            geometry = feature['geometry']
-            assert 'type' in geometry
-            assert geometry['type'] == 'Point'
+                assert 'properties' in feature
+                assert 'velocity' in feature['properties']
 
-            assert 'coordinates' in geometry
-            assert len(geometry['coordinates']) == 2
+                assert 'geometry' in feature
+                assert len(feature['geometry']) > 0
+
+                geometry = feature['geometry']
+                assert 'type' in geometry
+                assert geometry['type'] == 'Point'
+
+                assert 'coordinates' in geometry
+                assert len(geometry['coordinates']) == 2
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
 
         assert second_step['TrajectoryGeoJsonOutput']['step_num'] == 1
-        assert second_step['CurrentGridGeoJsonOutput']['step_num'] == 1
+        assert second_step['CurrentGeoJsonOutput']['step_num'] == 1
         assert second_step['WeatheringOutput']['step_num'] == 1
 
-        current_grid_out = second_step['CurrentGridGeoJsonOutput']
-        fc = current_grid_out['feature_collection']
-        assert 'type' in fc
-        assert fc['type'] == 'FeatureCollection'
-        assert 'features' in fc
-        assert len(fc['features']) > 0
+        current_grid_out = second_step['CurrentGeoJsonOutput']
+        fcs = current_grid_out['feature_collections']
 
-        for feature in fc['features']:
-            assert 'type' in feature
-            assert feature['type'] == 'Feature'
+        for fc in fcs.values():
+            assert 'type' in fc
+            assert fc['type'] == 'FeatureCollection'
+            assert 'features' in fc
+            assert len(fc['features']) > 0
 
-            assert 'properties' in feature
-            assert 'velocity' in feature['properties']
+            for feature in fc['features']:
+                assert 'type' in feature
+                assert feature['type'] == 'Feature'
 
-            assert 'geometry' in feature
-            assert len(feature['geometry']) > 0
+                assert 'properties' in feature
+                assert 'velocity' in feature['properties']
 
-            geometry = feature['geometry']
-            assert 'type' in geometry
-            assert geometry['type'] == 'Point'
+                assert 'geometry' in feature
+                assert len(feature['geometry']) > 0
 
-            assert 'coordinates' in geometry
-            assert len(geometry['coordinates']) == 2
+                geometry = feature['geometry']
+                assert 'type' in geometry
+                assert geometry['type'] == 'Point'
 
+                assert 'coordinates' in geometry
+                assert len(geometry['coordinates']) == 2
 
     @pytest.mark.slow
     def test_all_steps(self):
