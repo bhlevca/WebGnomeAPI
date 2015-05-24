@@ -9,13 +9,14 @@ from webgnome_api.common.views import (get_object,
 from cornice import Service
 
 outputter = Service(name='outputter', path='/outputter*obj_id',
-                  description="Outputter API", cors_policy=cors_policy)
+                    description="Outputter API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.renderer.Renderer',
                      'gnome.outputters.netcdf.NetCDFOutput',
                      'gnome.outputters.geo_json.TrajectoryGeoJsonOutput',
                      'gnome.outputters.geo_json.CurrentGeoJsonOutput',
+                     'gnome.outputters.geo_json.IceGeoJsonOutput',
                      'gnome.outputters.weathering.WeatheringOutput')
 
 

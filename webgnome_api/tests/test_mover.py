@@ -1,6 +1,10 @@
 """
 Functional tests for the Mover Web API
 """
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2, width=120)
+
+import pytest
 from base import FunctionalTestBase
 
 
@@ -431,8 +435,8 @@ class CatsMoverTests(BaseMoverTests):
 
 class CurrentInfoTests(FunctionalTestBase):
     '''
-        Tests out the API for getting the aggregate current info
-        from all movers in the model.
+        Tests out the API for getting the current info from the
+        current movers in the model.
     '''
     req_data = {'obj_type': u'gnome.model.Model',
                 'cache_enabled': False,
@@ -577,3 +581,209 @@ class CurrentInfoTests(FunctionalTestBase):
 
         features = current_info['features']
         assert features == []
+
+
+class IceInfoTests(FunctionalTestBase):
+    '''
+        Tests out the API for getting the ice info from the ice movers
+        in the model.
+    '''
+    movers_data = [{'obj_type': u'gnome.movers.simple_mover.SimpleMover',
+                    'name': u'SimpleMover',
+                    'active_start': '-inf',
+                    'active_stop': 'inf',
+                    'on': True,
+                    'uncertainty_scale': 0.5,
+                    'velocity': (1.0, -1.0, 0.0)},
+                   {'obj_type': u'gnome.movers.IceMover',
+                    'name': u'IceMover',
+                    'active_start': '-inf',
+                    'active_stop': 'inf',
+                    'on': True,
+                    'current_scale': 1.0,
+                    'filename': u'models/acnfs_example.nc',
+                    'topology_file': u'models/acnfs_topo.dat',
+                    'uncertain_along': 0.5,
+                    'uncertain_cross': 0.25,
+                    'uncertain_duration': 24.0,
+                    'uncertain_time_delay': 0.0}]
+
+    outputters_data = [{'obj_type': u'gnome.outputters.IceGeoJsonOutput',
+                        'name': u'IceGeoJsonOutput',
+                        'on': True,
+                        'output_last_step': True,
+                        'output_zero_step': True,
+                        'ice_movers': [],
+                        }]
+
+    spills_data = [{'obj_type': u'gnome.spill.spill.Spill',
+                    'name': u'Point/Line Release',
+                    'on': True,
+                    'amount_uncertainty_scale': 0.0,
+                    'element_type': {'obj_type': ('gnome.spill.elements'
+                                                  '.element_type.ElementType'),
+                                     'name': u'ElementType',
+                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
+                                                       'name': u'windages',
+                                                       'windage_persist': 900,
+                                                       'windage_range': (0.01,
+                                                                         0.04)}
+                                                      ],
+                                     },
+                    'release': {'end_position': (-164.01696, 72.921024, 0.0),
+                                'end_release_time': None,
+                                'name': u'PointLineRelease',
+                                'num_elements': 1,
+                                'obj_type': ('gnome.spill.release'
+                                             '.PointLineRelease'),
+                                'release_time': '2015-05-14T00:00:00',
+                                'start_position': (-164.01696, 72.921024, 0.0)}
+                    },
+                   {'obj_type': u'gnome.spill.spill.Spill',
+                    'name': u'Spill',
+                    'on': True,
+                    'amount_uncertainty_scale': 0.0,
+                    'element_type': {'obj_type': ('gnome.spill.elements'
+                                                  '.element_type.ElementType'),
+                                     'name': u'ElementType',
+                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
+                                                       'name': u'windages',
+                                                       'windage_persist': 900,
+                                                       'windage_range': (0.01,
+                                                                         0.04)}
+                                                      ],
+                                     },
+                    'release': {'obj_type': ('gnome.spill.release'
+                                             '.SpatialRelease'),
+                                'name': u'SpatialRelease',
+                                'release_time': '2015-05-14T00:00:00',
+                                'start_position': [(-127.1, 47.93, 0.0),
+                                                   (-127.033, 47.948, 0.0),
+                                                   (-126.967, 47.968, 0.0),
+                                                   (-126.9, 47.987, 0.0),
+                                                   (-126.833, 48.0056, 0.0),
+                                                   (-126.767, 48.024, 0.0),
+                                                   (-126.7, 48.043, 0.0),
+                                                   (-126.633, 48.062, 0.0),
+                                                   (-126.567, 48.081, 0.0),
+                                                   (-126.5, 48.1, 0.0)]
+                                }
+                    }
+                   ]
+
+    req_data = {'obj_type': u'gnome.model.Model',
+                'name': u'Model',
+                'start_time': '2015-05-14T00:00:00',
+                'duration': 3600.0,
+                'time_step': 900.0,
+                'num_time_steps': 5,
+                'weathering_substeps': 1,
+                'cache_enabled': True,
+                'make_default_refs': True,
+                'uncertain': True,
+                'valid': True,
+                'map': {'obj_type': u'gnome.map.MapFromBNA',
+                        'name': u'MapBounds_Island.bna',
+                        'filename': 'models/MapBounds_Island.bna',
+                        'refloat_halflife': 6.0,
+                        'map_bounds': [(-127.465333, 48.3294),
+                                       (-126.108847, 48.3294),
+                                       (-126.108847, 47.44727),
+                                       (-127.465333, 47.44727)],
+                        'spillable_area': [(-127.0, 48.1),
+                                           (-126.6, 48.1),
+                                           (-126.3, 47.8),
+                                           (-126.6, 47.6),
+                                           (-127.0, 47.6),
+                                           (-127.25, 47.8)]},
+                'environment': [],
+                'weatherers': [],
+                'movers': movers_data,
+                'spills': spills_data,
+                'outputters': [],
+                }
+
+    def test_get_incomplete_paths(self):
+        params = {}
+        params.update(self.req_data)
+
+        # step 1: we create a model that contains a current mover.
+        resp = self.testapp.post_json('/model', params=params)
+        model = resp.json_body
+
+        assert model['movers'][1]['filename'] == 'models/acnfs_example.nc'
+        assert model['movers'][1]['topology_file'] == 'models/acnfs_topo.dat'
+
+        # step 2: we perform some gets that have incomplete urls
+        self.testapp.get('/mover/{0}'.format('current'), status=404)
+        self.testapp.get('/mover/{0}/'.format('current'), status=404)
+        self.testapp.get('/mover/{0}/{1}'.format('current', 'bogus'),
+                         status=404)
+        self.testapp.get('/mover/{0}/{1}/'.format('current', 'bogus'),
+                         status=404)
+
+    def test_get_wrong_mover(self):
+        '''
+            Test the attempt to get a current grid from a mover that is
+            not a current mover.
+        '''
+        params = {}
+        params.update(self.req_data)
+
+        # step 1: we create a model that contains a current mover.
+        resp = self.testapp.post_json('/model', params=params)
+        model = resp.json_body
+
+        assert model['movers'][0]['velocity'] == [1.0, -1.0, 0.0]
+
+        # step 2: we perform some gets that have complete urls
+        mover_id = model['movers'][0]['id']
+        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
+        current_info = resp.json_body
+
+        assert 'features' in current_info
+        assert 'type' in current_info
+        assert current_info['type'] == 'FeatureCollection'
+
+        assert len(current_info['features']) == 0
+
+    @pytest.mark.slow
+    def test_get_complete_path(self):
+        '''
+            Test the successful retrieval of the current grid
+        '''
+        params = {}
+        params.update(self.req_data)
+
+        # step 1: we create a model that contains a current mover.
+        resp = self.testapp.post_json('/model', params=params)
+        model = resp.json_body
+
+        assert model['movers'][1]['filename'] == 'models/acnfs_example.nc'
+        assert model['movers'][1]['topology_file'] == 'models/acnfs_topo.dat'
+
+        # step 2: we perform some gets that have complete urls
+        print 'Our movers:'
+        pp.pprint(model['movers'])
+
+        mover_id = model['movers'][1]['id']
+        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
+        current_info = resp.json_body
+
+        print 'Our current info:'
+        pp.pprint(current_info)
+        assert 'type' in current_info
+        assert current_info['type'] == 'FeatureCollection'
+
+        assert 'features' in current_info
+        assert len(current_info['features']) > 0
+
+        for f in current_info['features']:
+            assert 'type' in f
+            assert f['type'] == 'Feature'
+
+            assert 'geometry' in f
+            geo = f['geometry']
+            assert 'coordinates' in geo
+            assert 'type' in geo
+            assert geo['type'] == 'MultiPolygon'
