@@ -4,6 +4,7 @@ Functional tests for the Mover Web API
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2, width=120)
 
+import time
 import pytest
 from base import FunctionalTestBase
 
@@ -512,12 +513,14 @@ class CurrentInfoTests(FunctionalTestBase):
         '''
             Test the successful retrieval of the current grid
         '''
+        begin = time.time()
         params = {}
         params.update(self.req_data)
 
         # step 1: we create a model that contains a current mover.
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
+        print '\n\ngot our model at: ', time.time() - begin
 
         assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
@@ -525,6 +528,7 @@ class CurrentInfoTests(FunctionalTestBase):
         mover_id = model['movers'][0]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
         current_info = resp.json_body
+        print '\n\ngot our grid at: ', time.time() - begin
 
         assert 'type' in current_info
         assert current_info['type'] == 'FeatureCollection'
@@ -542,6 +546,8 @@ class CurrentInfoTests(FunctionalTestBase):
 
         resp = self.testapp.get('/mover/{0}/{1}/'.format(mover_id, 'grid'))
         current_info = resp.json_body
+        print '\n\ngot our grid at: ', time.time() - begin
+
         assert 'type' in current_info
         assert current_info['type'] == 'FeatureCollection'
 
@@ -752,26 +758,23 @@ class IceInfoTests(FunctionalTestBase):
         '''
             Test the successful retrieval of the current grid
         '''
+        begin = time.time()
         params = {}
         params.update(self.req_data)
 
         # step 1: we create a model that contains a current mover.
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
+        print '\n\ngot our model at: ', time.time() - begin
 
         assert model['movers'][1]['filename'] == 'models/acnfs_example.nc'
         assert model['movers'][1]['topology_file'] == 'models/acnfs_topo.dat'
 
-        # step 2: we perform some gets that have complete urls
-        print 'Our movers:'
-        pp.pprint(model['movers'])
-
         mover_id = model['movers'][1]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
         current_info = resp.json_body
+        print '\n\ngot our grid at: ', time.time() - begin
 
-        print 'Our current info:'
-        pp.pprint(current_info)
         assert 'type' in current_info
         assert current_info['type'] == 'FeatureCollection'
 
