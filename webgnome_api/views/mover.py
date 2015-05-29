@@ -12,6 +12,8 @@ from geojson import Feature, FeatureCollection, MultiPolygon
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
+from gnome.movers.current_movers import CurrentMoversBase
+
 from webgnome_api.common.views import (get_object,
                                        create_object,
                                        update_object,
@@ -33,6 +35,7 @@ implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.current_movers.CatsMover',
                      'gnome.movers.current_movers.ComponentMover',
                      'gnome.movers.current_movers.GridCurrentMover',
+                     'gnome.movers.current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
                      )
 
@@ -78,7 +81,7 @@ def get_current_info(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover:
+        if mover is not None:
             # start = active_model.start_time
             # start_seconds = time_utils.date_to_sec(start)
             # num_hours = active_model.duration.total_seconds() / 60 / 60
@@ -87,7 +90,8 @@ def get_current_info(request):
             #          for dt in range(int(num_hours))]
 
             features = []
-            if hasattr(mover, 'tide') and mover.tide is not None:
+
+            if isinstance(mover, CurrentMoversBase):
                 signature = get_grid_signature(mover)
                 triangle_multipolygon = get_triangle_multipolygon(mover)
                 features.append(Feature(geometry=triangle_multipolygon,

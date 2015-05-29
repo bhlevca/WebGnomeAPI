@@ -51,25 +51,27 @@ def get_model(request):
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
 
-    if not obj_id:
-        my_model = get_active_model(request)
-        if my_model:
-            ret = my_model.serialize()
-        else:
-            ret = get_specifications(request, implemented_types)
-    else:
-        obj = get_session_object(obj_id, request)
-        if obj:
-            if ObjectImplementsOneOf(obj, implemented_types):
-                set_active_model(request, obj.id)
-                ret = obj.serialize()
+    try:
+        if not obj_id:
+            my_model = get_active_model(request)
+            if my_model:
+                ret = my_model.serialize()
             else:
-                # we refer to an object, but it is not a Model
-                raise cors_exception(request, HTTPBadRequest)
+                ret = get_specifications(request, implemented_types)
         else:
-            raise cors_exception(request, HTTPNotFound)
+            obj = get_session_object(obj_id, request)
+            if obj:
+                if ObjectImplementsOneOf(obj, implemented_types):
+                    set_active_model(request, obj.id)
+                    ret = obj.serialize()
+                else:
+                    # we refer to an object, but it is not a Model
+                    raise cors_exception(request, HTTPBadRequest)
+            else:
+                raise cors_exception(request, HTTPNotFound)
+    finally:
+        gnome_sema.release()
 
-    gnome_sema.release()
     return ret
 
 
