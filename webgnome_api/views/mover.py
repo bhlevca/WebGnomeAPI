@@ -118,8 +118,9 @@ def get_grid_signature(mover):
     '''
     points = get_points(mover)
 
-    rawpoints = np.array(zip(points['long'], points['lat']), dtype=np.double)
-    point_diffs = rawpoints[1:] - rawpoints[:-1]
+    dtype = points[0].dtype.descr
+    raw_points = points.view(dtype='<f8').reshape(-1, len(dtype))
+    point_diffs = raw_points[1:] - raw_points[:-1]
 
     return abs(point_diffs.view(dtype=np.complex)).sum()
 
@@ -134,13 +135,13 @@ def get_triangle_multipolygon(mover):
     triangle_data = get_triangle_data(mover)
     points = get_points(mover)
 
-    multi_poly = []
-    for ti in triangle_data:
-        coords = points[list(ti)[:3]].tolist()
-        multi_poly.append([coords])
+    dtype = triangle_data[0].dtype.descr
+    unstructured = (triangle_data.view(dtype='<i8')
+                    .reshape(-1, len(dtype))[:, :3])
 
-    print 'creating multipolygon'
-    return MultiPolygon(coordinates=multi_poly)
+    triangles = points[unstructured]
+
+    return MultiPolygon(coordinates=triangles.tolist())
 
 
 def get_triangle_data(mover):
