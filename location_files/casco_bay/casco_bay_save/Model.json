@@ -22,7 +22,6 @@
    "obj_type": "gnome.environment.tide.Tide"
   }
  ], 
- "cache_enabled": true, 
  "time_step": 900.0, 
  "json_": "save"
 }
