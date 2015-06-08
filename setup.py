@@ -20,6 +20,7 @@ requires = ['cornice',
             'webhelpers2>=2.0b5',
             'pyramid_redis_sessions>=1.0a1',
             'awesome-slugify',
+            'ujson',
             'GDAL']
 
 

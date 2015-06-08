@@ -43,6 +43,7 @@ simplejson==3.6.2
 six==1.7.3
 transaction==1.4.3
 translationstring==1.1
+ujson==1.33
 unit-conversion==2.2
 venusian==1.0
 waitress==0.8.9
