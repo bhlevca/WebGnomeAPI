@@ -141,7 +141,7 @@ def get_triangle_multipolygon(mover):
 
     triangles = points[unstructured]
 
-    return MultiPolygon(coordinates=triangles.tolist())
+    return MultiPolygon(coordinates=[[t] for t in triangles.tolist()])
 
 
 def get_triangle_data(mover):
