@@ -7,7 +7,9 @@ from threading import BoundedSemaphore
 import logging
 logging.basicConfig()
 
+import ujson
 from pyramid.config import Configurator
+from pyramid.renderers import JSON as JSONRenderer
 
 from webgnome_api.common.views import cors_policy
 
@@ -39,6 +41,10 @@ def load_cors_origins(settings, key):
         cors_policy['origins'] = origins
 
 
+def get_json(request):
+    return ujson.loads(request.text)
+
+
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['py_gnome_semaphore'] = BoundedSemaphore(value=1)
@@ -56,6 +62,10 @@ def main(global_config, **settings):
     load_cors_origins(settings, 'cors_policy.origins')
 
     config = Configurator(settings=settings)
+
+    config.add_request_method(get_json, 'json', reify=True)
+    renderer = JSONRenderer(serializer=lambda v, **kw: ujson.dumps(v))
+    config.add_renderer('json', renderer)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
     config.add_route("upload", "/upload")
     config.add_route("download", "/download")
