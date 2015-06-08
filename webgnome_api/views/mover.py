@@ -12,6 +12,7 @@ from geojson import Feature, FeatureCollection, MultiPolygon
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
+from gnome import basic_types
 from gnome.movers.current_movers import CurrentMoversBase
 
 from webgnome_api.common.views import (get_object,
@@ -136,7 +137,8 @@ def get_triangle_multipolygon(mover):
     points = get_points(mover)
 
     dtype = triangle_data[0].dtype.descr
-    unstructured = (triangle_data.view(dtype='<i8')
+    unstructured_type = dtype[0][1]
+    unstructured = (triangle_data.view(dtype=unstructured_type)
                     .reshape(-1, len(dtype))[:, :3])
 
     triangles = points[unstructured]
