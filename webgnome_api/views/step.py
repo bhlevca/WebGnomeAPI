@@ -90,8 +90,8 @@ def get_step(request):
                 full_output = {'nominal': nominal,
                                'step_num': nominal['step_num'],
                                'time_stamp': nominal['time_stamp'],
-                               'low': nominal,
-                               'high': nominal}
+                               'low': None,
+                               'high': None}
                 output['WeatheringOutput'] = full_output
                 output['uncertain_response_time'] = end - begin_uncertain
                 output['total_response_time'] = end - begin
