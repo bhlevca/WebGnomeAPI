@@ -97,5 +97,6 @@ def load_location_file(location_file, request):
             active_model.name = name
 
         init_session_objects(request, force=True)
+        log.debug("model loaded - begin registering objects")
         RegisterObject(active_model, request)
         set_active_model(request, active_model.id)

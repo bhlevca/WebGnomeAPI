@@ -5,7 +5,7 @@ from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
-from logging import Logger
+from logging import Logger, getLogger
 
 import numpy
 np = numpy
@@ -14,8 +14,11 @@ from .helpers import FQNamesToDict, PyClassFromName
 
 from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
+from gnome.utilities.geometry.BBox import BBox
 
 from webgnome_api.common.session_management import set_session_object
+
+log = getLogger(__name__)
 
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
@@ -171,7 +174,6 @@ def RegisterObject(obj, request):
                         SpillContainerPair)):
         for i in obj:
             RegisterObject(i, request)
-        pass
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
@@ -179,7 +181,7 @@ def RegisterObject(obj, request):
                     or isinstance(attr, (MethodType, FunctionType,
                                          BuiltinFunctionType,
                                          int, float, str, unicode, NoneType,
-                                         Logger)
+                                         Logger, BBox)
                                   )):
                 # print 'RegisterObject(): recursing attr:', (k, type(attr))
                 RegisterObject(attr, request)
