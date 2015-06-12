@@ -7,7 +7,7 @@
 import base64
 import hashlib
 
-import json
+import ujson
 
 from webgnome_api.common.common_object import ValueIsJsonObject
 
@@ -50,7 +50,7 @@ class PyGnomeSchemaTweenFactory(object):
         if ('CONTENT_TYPE' in request.environ and
                 request.environ['CONTENT_TYPE'][:16] == 'application/json' and
                 request.body):
-            json_request = json.loads(request.body)
+            json_request = ujson.loads(request.body)
 
             if self.add_json_key(json_request):
                 # TODO: The tween seems like a logical place to do
@@ -60,7 +60,7 @@ class PyGnomeSchemaTweenFactory(object):
                 #       and then turn it back into a string.
                 #       I tried just leaving it as a JSON object, but the
                 #       request body doesn't accept anything but a string.
-                request.body = json.dumps(json_request)
+                request.body = ujson.dumps(json_request)
 
         self.generate_short_session_id(request)
 

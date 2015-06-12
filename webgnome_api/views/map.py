@@ -2,7 +2,7 @@
 Views for the Map objects.
 """
 import os
-import json
+import ujson
 import logging
 
 from cornice import Service
@@ -47,8 +47,9 @@ log = logging.getLogger(__name__)
 def get_map(request):
     '''Returns a Gnome Map object in JSON.'''
     obj_ids = request.matchdict.get('obj_id')
+
     if (len(obj_ids) >= 2 and
-        obj_ids[1] == 'geojson'):
+            obj_ids[1] == 'geojson'):
         return get_geojson(request, implemented_types)
     else:
         return get_object(request, implemented_types)
@@ -57,19 +58,17 @@ def get_map(request):
 @map_api.post()
 def create_map(request):
     '''Creates a Gnome Map object.'''
-    log_prefix = 'req({0}): create_object():'.format(id(request))
-
+    log_prefix = 'req({0}): create_map():'.format(id(request))
     init_session_objects(request)
+
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
-    # TODO: should we tie our data directory to the installation path?
-    #       or should we be more flexible?
     if 'filename' in json_request:
         map_dir = get_map_dir_from_config(request)
         json_request['filename'] = os.path.join(map_dir,
@@ -96,7 +95,7 @@ def create_map(request):
 def update_map(request):
     '''Updates a Gnome Map object.'''
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         raise cors_exception(request, HTTPBadRequest)
 
@@ -127,9 +126,6 @@ def get_geojson(request, implemented_types):
         if ObjectImplementsOneOf(obj, implemented_types):
             # Here is where we extract the GeoJson from our map object.
             map_file = ogr_open_file(obj.filename)
-            bounds_features = []
-            shoreline_features = []
-            spillarea_features = []
             shoreline_geo = ''
 
             for layer in ogr_layers(map_file):
@@ -147,24 +143,28 @@ def get_geojson(request, implemented_types):
 
                     # only doing what we need at the moment
                     # in the future we might need the other layers
-                    if primary_id != 'SpillableArea' and primary_id != 'Map Bounds':
+                    if primary_id not in ('SpillableArea', 'Map Bounds'):
                         geom_json = f.GetGeometryRef().ExportToJson()
-                        geom_json = geom_json[42: -4];
-                        shoreline_geo += geom_json + ', ';
+                        geom_json = geom_json[42:-4]
+                        shoreline_geo += geom_json + ', '
 
             # remove last comma from geometry
             shoreline_geo = shoreline_geo[0:-2]
 
-            json_body = '{\
-                "properties": {\
-                    "name": "Shoreline"\
-                },\
-                "geometry": {\
-                    "type": "MultiPolygon",\
-                    "coordinates": [' + shoreline_geo + ']\
-                }\
-            }'
-            shoreline_feature = json.loads(json_body);
+            # TODO: why are we forming a string instead of a MultiPolygon obj?
+            json_body = ('{'
+                         '  "properties": {'
+                         '    "name": "Shoreline"'
+                         '  },'
+                         '  "geometry": {'
+                         '    "type": "MultiPolygon",'
+                         '    "coordinates": [ {0}'
+                         '    ]'
+                         '  }'
+                         '}'
+                         .format(shoreline_geo))
+            shoreline_feature = ujson.loads(json_body)
+
             return FeatureCollection([shoreline_feature]).serialize()
         else:
             raise cors_exception(request, HTTPNotImplemented)
@@ -174,9 +174,11 @@ def get_geojson(request, implemented_types):
 
 def get_map_dir_from_config(request):
     map_dir = request.registry.settings['model_data_dir']
+
     if map_dir[0] == os.path.sep:
         full_path = map_dir
     else:
         here = request.registry.settings['install_path']
         full_path = os.path.join(here, map_dir)
+
     return full_path
