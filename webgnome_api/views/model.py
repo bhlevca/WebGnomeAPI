@@ -1,7 +1,7 @@
 """
 Views for the Model object.
 """
-import json
+import ujson
 import logging
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -84,7 +84,7 @@ def create_model(request):
     log.info('>>' + log_prefix)
 
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         json_request = None
 
@@ -98,13 +98,16 @@ def create_model(request):
 
     try:
         init_session_objects(request, force=True)
+
         if json_request:
             new_model = CreateObject(json_request,
                                      get_session_objects(request))
         else:
             new_model = Model()
+
         set_session_object(new_model, request)
         set_session_object(new_model._map, request)
+
         set_active_model(request, new_model.id)
     except:
         raise cors_exception(request, HTTPUnsupportedMediaType,
@@ -131,7 +134,7 @@ def update_model(request):
 
     ret = None
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         raise cors_exception(request, HTTPBadRequest)
 
@@ -163,9 +166,11 @@ def update_model(request):
     else:
         gnome_sema.release()
         log.info('  ' + log_prefix + 'semaphore released...')
+
         msg = ("raising cors_exception() in update_model. "
                "Updating model before it exists.")
         log.warning('  ' + log_prefix + msg)
+
         raise cors_exception(request, HTTPNotFound)
 
     log.info('<<' + log_prefix)

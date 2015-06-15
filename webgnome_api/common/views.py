@@ -3,7 +3,7 @@ Common Gnome object request handlers.
 """
 import sys
 import traceback
-import json
+import ujson
 import logging
 
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -44,7 +44,7 @@ def cors_exception(request, exception_class, with_stacktrace=False):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-        http_exc.json_body = json.dumps([l.strip() for l in fmt][-depth:])
+        http_exc.json_body = ujson.dumps([l.strip() for l in fmt][-depth:])
 
     return http_exc
 
@@ -108,7 +108,7 @@ def create_object(request, implemented_types):
     log.info('>>' + log_prefix)
 
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         raise cors_exception(request, HTTPBadRequest)
 
@@ -139,7 +139,7 @@ def update_object(request, implemented_types):
     log.info('>>' + log_prefix)
 
     try:
-        json_request = json.loads(request.body)
+        json_request = ujson.loads(request.body)
     except:
         raise cors_exception(request, HTTPBadRequest)
 

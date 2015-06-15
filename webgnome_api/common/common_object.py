@@ -5,7 +5,7 @@ from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
-from logging import Logger, getLogger
+from logging import Logger
 
 import numpy
 np = numpy
@@ -17,8 +17,6 @@ from gnome.spill_container import SpillContainerPair
 from gnome.utilities.geometry.BBox import BBox
 
 from webgnome_api.common.session_management import set_session_object
-
-log = getLogger(__name__)
 
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):

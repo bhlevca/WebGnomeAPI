@@ -4,7 +4,7 @@ Geospatial Data Abstraction Libraries (GDAL/OGR).
 '''
 import slugify
 
-from osgeo import gdal, ogr
+from osgeo import ogr
 
 
 # We need to return a feature collection structure on a get with no
@@ -71,6 +71,10 @@ def ogr_drivers():
 
 def ogr_driver_names():
     return [d.GetName() for d in ogr_drivers()]
+
+
+def get_ogr_driver_by_name(name):
+    return ogr.GetDriverByName(name)
 
 
 def ogr_open_file(filename):

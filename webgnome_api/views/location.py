@@ -3,10 +3,9 @@ Views for the Location objects.
 """
 from os import walk
 from os.path import sep, join, isdir, split
-from collections import OrderedDict
 from logging import getLogger
 
-import json
+import ujson
 import slugify
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPInternalServerError
@@ -44,10 +43,10 @@ def get_location(request):
 
     for (path, dirnames, filenames) in walk(locations_dir):
         if len(path.split(sep)) == base_len + 1:
-            [location_content.append(json.load(open(join(path, f), 'r'),
-                                               object_pairs_hook=OrderedDict))
+            [location_content.append(ujson.load(open(join(path, f), 'r')))
              for f in filenames
              if f[-12:] == '_wizard.json']
+
             [location_file_dirs.append(join(path, f[:-12] + '_save'))
              for f in filenames
              if f[-12:] == '_wizard.json']
