@@ -6,6 +6,7 @@ pp = PrettyPrinter(indent=2)
 
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
 from logging import Logger
+from gnome.utilities.geometry.BBox import BBox
 
 import numpy
 np = numpy
@@ -179,7 +180,7 @@ def RegisterObject(obj, request):
                     or isinstance(attr, (MethodType, FunctionType,
                                          BuiltinFunctionType,
                                          int, float, str, unicode, NoneType,
-                                         Logger)
+                                         Logger, BBox)
                                   )):
                 # print 'RegisterObject(): recursing attr:', (k, type(attr))
                 RegisterObject(attr, request)

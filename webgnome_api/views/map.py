@@ -151,17 +151,19 @@ def get_geojson(request, implemented_types):
             # remove last comma from geometry
             shoreline_geo = shoreline_geo[0:-2]
 
-            # TODO: why are we forming a string instead of a MultiPolygon obj?
-            json_body = ('{'
-                         '  "properties": {'
+            # TODO: Why are we forming a string instead of a MultiPolygon obj?
+            #       Answer: because we are using a homebrew FeatureCollection
+            #               object.
+            json_body = ('{{'
+                         '  "properties": {{'
                          '    "name": "Shoreline"'
-                         '  },'
-                         '  "geometry": {'
+                         '  }},'
+                         '  "geometry": {{'
                          '    "type": "MultiPolygon",'
                          '    "coordinates": [ {0}'
                          '    ]'
-                         '  }'
-                         '}'
+                         '  }}'
+                         '}}'
                          .format(shoreline_geo))
             shoreline_feature = ujson.loads(json_body)
 
