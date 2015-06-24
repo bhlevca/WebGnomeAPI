@@ -15,7 +15,7 @@ class LoadModelTest(FunctionalTestBase):
         resp = self.testapp.get('/model')
         model = resp.json_body
 
-        for c in ('environment', 'map', 'water',
+        for c in ('environment', 'map',
                   'movers', 'outputters', 'spills', 'weatherers'):
             assert model['Model'][c] is None
 
@@ -29,7 +29,7 @@ class LoadModelTest(FunctionalTestBase):
         resp = self.testapp.get('/model')
         model = resp.json_body
 
-        for c in ('environment', 'map', 'water',
+        for c in ('environment', 'map',
                   'movers', 'outputters', 'spills', 'weatherers'):
             assert model[c] is not None
 
@@ -49,7 +49,7 @@ class LoadModelTest(FunctionalTestBase):
         resp = self.testapp.get('/model')
         model = resp.json_body
 
-        for c in ('environment', 'map', 'water',
+        for c in ('environment', 'map',
                   'movers', 'outputters', 'spills', 'weatherers'):
             assert model[c] is not None
 
