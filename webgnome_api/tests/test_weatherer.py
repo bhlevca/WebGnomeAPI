@@ -154,3 +154,16 @@ class BeachingTests(BaseWeathererTests):
                                ('2015-04-27T22:00:00', 19),
                                ('2015-04-28T04:00:00', 15)]
                 }
+
+    def test_put_empty_timeseries(self):
+        resp = self.testapp.post_json('/weatherer', params=self.req_data)
+        beaching = resp.json_body
+
+        assert isinstance(beaching['timeseries'], list)
+        assert len(beaching['timeseries']) > 0
+        beaching['timeseries'] = []
+
+        resp = self.testapp.put_json('/weatherer', params=beaching)
+        beaching = resp.json_body
+
+        assert beaching['timeseries'] == []
