@@ -122,8 +122,8 @@ def upload_model(request):
         new_model = load(file_path)
         new_model._cache.enabled = False
 
-        # Now we try to register our new model.
         init_session_objects(request, force=True)
+
         RegisterObject(new_model, request)
 
         log.info('setting active model...')

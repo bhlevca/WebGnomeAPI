@@ -27,12 +27,14 @@ from webgnome_api.common.session_management import (init_session_objects,
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
+from gnome.model import Model
+
+
 log = logging.getLogger(__name__)
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
 
-from gnome.model import Model
 implemented_types = ('gnome.model.Model',
                      )
 

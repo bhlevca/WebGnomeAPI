@@ -1,14 +1,8 @@
 """
 Common Gnome object request handlers.
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
 from logging import Logger
-
-import numpy
-np = numpy
 
 from .helpers import FQNamesToDict, PyClassFromName
 
@@ -119,8 +113,8 @@ def _UpdateObject(payload, parent, attr_name, all_objects):
 
 
 def ValueIsJsonObject(value):
-    return (isinstance(value, dict)
-            and 'obj_type' in value)
+    return (isinstance(value, dict) and
+            'obj_type' in value)
 
 
 def ObjectId(obj):
@@ -146,8 +140,6 @@ def ObjectImplementsOneOf(model_object, obj_types):
 
         :param model_obj: python object
         :param obj_types: list of fully qualified object names.
-
-        TODO: check the object scope as well as the name
     '''
     if model_object.__class__.__name__ in FQNamesToDict(obj_types):
         return True
@@ -163,8 +155,8 @@ def RegisterObject(obj, request):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
-    if (hasattr(obj, 'id')
-            and not obj.__class__.__name__ == 'type'):
+    if (hasattr(obj, 'id') and
+            not obj.__class__.__name__ == 'type'):
         # print 'RegisterObject(): registering:', (obj.__class__.__name__,
         #                                           obj.id)
         set_session_object(obj, request)
@@ -175,12 +167,12 @@ def RegisterObject(obj, request):
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if not (k.find('_') == 0
-                    or isinstance(attr, (MethodType, FunctionType,
-                                         BuiltinFunctionType,
-                                         int, float, str, unicode, NoneType,
-                                         Logger, BBox)
-                                  )):
+            if not (k.find('_') == 0 or
+                    isinstance(attr, (MethodType, FunctionType,
+                                      BuiltinFunctionType,
+                                      int, float, str, unicode, NoneType,
+                                      Logger, BBox)
+                               )):
                 # print 'RegisterObject(): recursing attr:', (k, type(attr))
                 RegisterObject(attr, request)
 
