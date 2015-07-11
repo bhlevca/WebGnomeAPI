@@ -90,7 +90,7 @@ class StepTest(FunctionalTestBase):
                            'name': 'GeoJson',
                            'output_last_step': True,
                            'output_zero_step': True,
-                           'output_dir': 'models/images'
+                           'output_dir': None
                            }
 
     current_output_data = {'obj_type': ('gnome.outputters'
