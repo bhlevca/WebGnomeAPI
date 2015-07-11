@@ -4,8 +4,7 @@ This currently includes ??? objects.
 """
 import logging
 
-import numpy
-np = numpy
+import numpy as np
 
 from geojson import Feature, FeatureCollection, MultiPolygon
 
@@ -94,8 +93,9 @@ def get_current_info(request):
 
             if isinstance(mover, CurrentMoversBase):
                 signature = get_grid_signature(mover)
-                triangle_multipolygon = get_triangle_multipolygon(mover)
-                features.append(Feature(geometry=triangle_multipolygon,
+                grid_multipolygon = get_grid_multipolygon(mover)
+
+                features.append(Feature(geometry=grid_multipolygon,
                                         id='1',
                                         properties={'signature': signature}))
 
@@ -117,7 +117,7 @@ def get_grid_signature(mover):
         There may be a better way to do this, but for now we will get the
         euclidian distances between all sequential points and sum them.
     '''
-    points = get_points(mover)
+    points = mover.get_points()
 
     dtype = points[0].dtype.descr
     raw_points = points.view(dtype='<f8').reshape(-1, len(dtype))
@@ -126,37 +126,10 @@ def get_grid_signature(mover):
     return abs(point_diffs.view(dtype=np.complex)).sum()
 
 
-def get_triangle_multipolygon(mover):
-    '''
-        The triangle data that we get from the mover is in the form of
-        indices into the points array.
-        So we get our triangle data and points array, and then build our
-        triangle coordinates by reference.
-    '''
-    triangle_data = get_triangle_data(mover)
-    points = get_points(mover)
+def get_grid_multipolygon(mover):
+    grid_data = mover.get_grid_data()
 
-    dtype = triangle_data[0].dtype.descr
-    unstructured_type = dtype[0][1]
-    unstructured = (triangle_data.view(dtype=unstructured_type)
-                    .reshape(-1, len(dtype))[:, :3])
-
-    triangles = points[unstructured]
-
-    return MultiPolygon(coordinates=[[t] for t in triangles.tolist()])
-
-
-def get_triangle_data(mover):
-    return mover.mover._get_triangle_data()
-
-
-def get_points(mover):
-    points = (mover.mover._get_points()
-              .astype([('long', '<f8'), ('lat', '<f8')]))
-    points['long'] /= 10 ** 6
-    points['lat'] /= 10 ** 6
-
-    return points
+    return MultiPolygon(coordinates=[[t] for t in grid_data.tolist()])
 
 
 def get_center_points(mover):
