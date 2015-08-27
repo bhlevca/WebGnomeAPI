@@ -2,6 +2,8 @@
 *.pyc
 *.swp
 *~
-
+*.log
+/models/Model
 /webgnome_api.egg-info
 /*.egg
+/save_files
