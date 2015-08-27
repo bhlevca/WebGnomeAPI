@@ -3,6 +3,9 @@
 *.swp
 *~
 *.log
+config.ini
+staging.ini
+webgnome_api.ini
 /models/Model
 /webgnome_api.egg-info
 /*.egg
