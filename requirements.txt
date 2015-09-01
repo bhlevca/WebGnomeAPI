@@ -1,5 +1,5 @@
 Cython==0.20.2
-GDAL==1.10.0
+GDAL>=1.10.0
 Jinja2==2.7.3
 MarkupSafe==0.23
 OilLibrary==0.1
