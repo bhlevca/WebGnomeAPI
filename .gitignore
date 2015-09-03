@@ -10,3 +10,4 @@ webgnome_api.ini
 /webgnome_api.egg-info
 /*.egg
 /save_files
+messages.*
