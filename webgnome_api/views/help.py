@@ -45,7 +45,6 @@ def get_help(request):
             html = ''
             for fname in filenames:
                 with open(join(path, fname), 'r') as f:
-                    text = f.read()
                     html += publish_parts(f.read(),
                                           writer_name='html')['html_body']
 
