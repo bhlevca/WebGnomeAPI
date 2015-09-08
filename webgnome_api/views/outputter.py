@@ -18,7 +18,8 @@ implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.geo_json.CurrentGeoJsonOutput',
                      'gnome.outputters.geo_json.IceGeoJsonOutput',
                      'gnome.outputters.weathering.WeatheringOutput',
-                     'gnome.outputters.image.IceImageOutput')
+                     # 'gnome.outputters.image.IceImageOutput',
+                     )
 
 
 @outputter.get()
