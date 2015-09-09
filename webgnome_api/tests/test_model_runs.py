@@ -26,7 +26,8 @@ class ModelRunTest(FunctionalTestBase):
                   'element_type': {'obj_type': ('gnome.spill.elements'
                                                 '.ElementType'),
                                    'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                     'windage_range': [0.01, 0.04],
+                                                     'windage_range': [0.01,
+                                                                       0.04],
                                                      'windage_persist': 900,
                                                      }
                                                     ],
@@ -149,7 +150,7 @@ class ModelRunTest(FunctionalTestBase):
             resp = self.testapp.get('/step')
             step = resp.json_body
 
-            assert step['TrajectoryGeoJsonOutput']['step_num'] == s
+            assert step['step_num'] == s
             assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
 
         # an additional call to /step should generate a 404

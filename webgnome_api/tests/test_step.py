@@ -1,12 +1,12 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2, width=120)
-
 import pytest
 
 from base import FunctionalTestBase
+
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2, width=120)
 
 
 class StepTest(FunctionalTestBase):
@@ -150,7 +150,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
+        assert first_step['step_num'] == 0
 
     def test_weathering_step(self):
         # We are testing our ability to generate the first step in a
@@ -215,11 +215,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert first_step['WeatheringOutput']['step_num'] == 0
-        for v in first_step['WeatheringOutput'].values():
-            if isinstance(v, dict):
-                assert v['step_num'] == 0
+        assert first_step['step_num'] == 0
 
     def test_weathering_step_with_rewind(self):
         # We are testing our ability to generate the first step in a
@@ -285,26 +281,20 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert first_step['WeatheringOutput']['step_num'] == 0
+        assert first_step['step_num'] == 0
 
         weathering_out = [v for v in first_step['WeatheringOutput'].values()
                           if isinstance(v, dict)]
         assert len(weathering_out) == 12
-        for v in weathering_out:
-            assert v['step_num'] == 0
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
 
-        assert second_step['TrajectoryGeoJsonOutput']['step_num'] == 1
-        assert second_step['WeatheringOutput']['step_num'] == 1
+        assert second_step['step_num'] == 1
 
         weathering_out = [v for v in second_step['WeatheringOutput'].values()
                           if isinstance(v, dict)]
         assert len(weathering_out) == 12
-        for v in weathering_out:
-            assert v['step_num'] == 1
 
         resp = self.testapp.get('/rewind')
         rewind_response = resp.json_body
@@ -313,14 +303,11 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         rewound_step = resp.json_body
 
-        assert rewound_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert rewound_step['WeatheringOutput']['step_num'] == 0
+        assert rewound_step['step_num'] == 0
 
         weathering_out = [v for v in rewound_step['WeatheringOutput'].values()
                           if isinstance(v, dict)]
         assert len(weathering_out) == 12
-        for v in weathering_out:
-            assert v['step_num'] == 0
 
     def test_current_output_step(self):
         # We are testing our ability to generate the first step in a
@@ -393,9 +380,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert first_step['CurrentGeoJsonOutput']['step_num'] == 0
-        assert first_step['WeatheringOutput']['step_num'] == 0
+        assert first_step['step_num'] == 0
 
         current_grid_out = first_step['CurrentGeoJsonOutput']
         fcs = current_grid_out['feature_collections']
@@ -436,9 +421,7 @@ class StepTest(FunctionalTestBase):
         print ('uncertain_response_time: ',
                second_step['uncertain_response_time'])
 
-        assert second_step['TrajectoryGeoJsonOutput']['step_num'] == 1
-        assert second_step['CurrentGeoJsonOutput']['step_num'] == 1
-        assert second_step['WeatheringOutput']['step_num'] == 1
+        assert second_step['step_num'] == 1
 
         current_grid_out = second_step['CurrentGeoJsonOutput']
         fcs = current_grid_out['feature_collections']
@@ -840,11 +823,7 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/step')
         first_step = resp.json_body
 
-        assert first_step['TrajectoryGeoJsonOutput']['step_num'] == 0
-        assert first_step['WeatheringOutput']['step_num'] == 0
-        for v in first_step['WeatheringOutput'].values():
-            if isinstance(v, dict):
-                assert v['step_num'] == 0
+        assert first_step['step_num'] == 0
 
     @pytest.mark.slow
     def test_all_steps(self):
@@ -900,8 +879,8 @@ class StepTest(FunctionalTestBase):
         for s in range(num_time_steps):
             resp = self.testapp.get('/step')
             step = resp.json_body
-            print '{0}, '.format(step['TrajectoryGeoJsonOutput']['step_num']),
-            assert step['TrajectoryGeoJsonOutput']['step_num'] == s
+            print '{0}, '.format(step['step_num']),
+            assert step['step_num'] == s
             assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
 
         # an additional call to /step should generate a 404
