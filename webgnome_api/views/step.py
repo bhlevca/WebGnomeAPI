@@ -74,8 +74,7 @@ def get_step(request):
                     low[k] = min(v)
                     high[k] = max(v)
 
-                full_output = {'step_num': output['step_num'],
-                               'time_stamp': nominal['time_stamp'],
+                full_output = {'time_stamp': nominal['time_stamp'],
                                'nominal': nominal,
                                'low': low,
                                'high': high}
@@ -87,8 +86,7 @@ def get_step(request):
                 output['total_response_time'] = end - begin
             elif 'WeatheringOutput' in output:
                 nominal = output['WeatheringOutput']
-                full_output = {'step_num': output['step_num'],
-                               'time_stamp': nominal['time_stamp'],
+                full_output = {'time_stamp': nominal['time_stamp'],
                                'nominal': nominal,
                                'low': None,
                                'high': None}
