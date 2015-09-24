@@ -1,0 +1,14 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -123.166667, 
+  48.3, 
+  0.0
+ ], 
+ "filename": "FGPWACwAmps.cur", 
+ "name": "FGPWACwAmps.cur", 
+ "tide": "Tide_2.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}

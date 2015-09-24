@@ -1,0 +1,13 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -123.183333, 
+  48.166667, 
+  0.0
+ ], 
+ "filename": "PtAngelesSAC.cur", 
+ "name": "PtAngelesSAC.cur", 
+ "json_": "save", 
+ "scale_value": 0.7
+}
