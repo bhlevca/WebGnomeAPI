@@ -1,6 +1,6 @@
 {
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
- "name": "ComponentMover", 
+ "name": "Wind Driven Offshore Currents", 
  "filename1": "Offshore.cur", 
  "scale_refpoint": [
   -83.0, 
