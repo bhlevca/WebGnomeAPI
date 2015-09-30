@@ -1,0 +1,21 @@
+{
+ "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "name": "Wind Driven Currents", 
+ "filename1": "WAC10msNW.cur", 
+ "filename2": "WAC10msSW.cur", 
+ "scale_refpoint": [
+  -70.855, 
+  42.275, 
+  0.0
+ ], 
+ "pat1_angle": 315.0, 
+ "pat1_speed": 19.44, 
+ "pat1_speed_units": 1.0, 
+ "pat1_scale_to_value": 0.138855, 
+ "pat2_angle": 225.0, 
+ "pat2_speed": 19.44, 
+ "pat2_speed_units": 1.0,
+ "pat2_scale_to_value": 0.05121, 
+ "scale_by": 2, 
+ "json_": "save" 
+}

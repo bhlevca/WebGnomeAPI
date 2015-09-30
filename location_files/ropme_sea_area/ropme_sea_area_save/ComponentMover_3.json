@@ -1,6 +1,6 @@
 {
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
- "name": "ComponentMover", 
+ "name": "Wind Driven Currents", 
  "filename1": "NNW10.cur", 
  "scale_refpoint": [
   49.744965, 

@@ -1,0 +1,16 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -70.65, 
+  42.58333, 
+  0.0
+ ], 
+ "name": "MerrimackMassCoast.cur", 
+ "filename": "MerrimackMassCoast.cur", 
+ "up_cur_uncertain": 0.5, 
+ "down_cur_uncertain": -0.5, 
+ "tide": "Tide_0.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}
