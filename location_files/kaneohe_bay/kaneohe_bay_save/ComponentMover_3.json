@@ -1,6 +1,6 @@
 {
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
- "name": "ComponentMover", 
+ "name": "Wind Driven Currents", 
  "filename1": "OutsideDAC.cur", 
  "scale_refpoint": [
   -157.737667, 

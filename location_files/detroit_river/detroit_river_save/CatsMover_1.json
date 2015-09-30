@@ -1,0 +1,15 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -83.04132, 
+  42.323132, 
+  0.0
+ ], 
+ "filename": "Erie.cur", 
+ "name": "Erie.cur", 
+ "right_cur_uncertain": 0.01, 
+ "left_cur_uncertain": -0.01, 
+ "json_": "save", 
+ "scale_value": 1.0
+}
