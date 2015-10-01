@@ -2,15 +2,14 @@
  "obj_type": "gnome.movers.current_movers.CatsMover", 
  "scale": true, 
  "scale_refpoint": [
-  -70.65, 
-  42.58333, 
+  -146.66861, 
+  61.066944, 
   0.0
  ], 
- "name": "MerrimackMassCoast.cur", 
- "filename": "MerrimackMassCoast.cur", 
- "up_cur_uncertain": 0.5, 
- "down_cur_uncertain": -0.5, 
+ "filename": "ValdezTide.cur", 
+ "name": "ValdezTide.cur", 
  "tide": "Tide_1.json", 
  "json_": "save", 
+ "uncertain_eddy_diffusion": 1000000.0, 
  "scale_value": 1.0
 }

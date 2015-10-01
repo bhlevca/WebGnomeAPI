@@ -2,14 +2,13 @@
  "obj_type": "gnome.movers.current_movers.CatsMover", 
  "scale": true, 
  "scale_refpoint": [
-  -72.705, 
-  41.2275, 
+  -147.5335, 
+  60.3505, 
   0.0
  ], 
- "filename": "LI_tidesWAC.cur", 
- "name": "LongIslandWAC.cur", 
- "tide": "Tide_0.json", 
+ "filename": "MeanFlow.cur", 
+ "name": "MeanFlow.cur", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000000.0, 
- "scale_value": 1.0
+ "scale_value": 0.25
 }

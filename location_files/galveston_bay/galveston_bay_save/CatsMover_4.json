@@ -2,12 +2,12 @@
  "obj_type": "gnome.movers.current_movers.CatsMover", 
  "scale": true, 
  "scale_refpoint": [
-  -81.3713921, 
-  30.337140, 
+  -94.958593, 
+  29.506538, 
   0.0
  ], 
- "name": "Offshore.cur", 
- "filename": "Offshore.cur", 
+ "name": "PHRobinson.cur", 
+ "filename": "PHRobinson.cur", 
  "json_": "save", 
- "scale_value": -0.15
+ "scale_value": 0.35
 }

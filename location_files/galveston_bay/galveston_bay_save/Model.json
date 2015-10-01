@@ -3,7 +3,7 @@
  "map": {
   "json_": "save", 
   "obj_type": "gnome.map.MapFromBNA", 
-  "filename": "MassBayMap.bna",
+  "filename": "GalvestonBayMap.bna",
   "refloat_halflife": 1.0
  }, 
 "movers": [
@@ -20,8 +20,8 @@
    "obj_type": "gnome.movers.current_movers.CatsMover"
   },
   {
-   "id": "ComponentMover_3.json", 
-   "obj_type": "gnome.movers.current_movers.ComponentMover"
+   "id": "CatsMover_3.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
   },
   {
    "id": "CatsMover_4.json", 
@@ -30,18 +30,18 @@
   {
    "id": "CatsMover_5.json", 
    "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "ComponentMover_6.json", 
+   "obj_type": "gnome.movers.current_movers.ComponentMover"
   }
  ], 
  "environment": [
   {
    "id": "Tide_0.json", 
    "obj_type": "gnome.environment.tide.Tide"
-  },
-  {
-   "id": "Tide_1.json", 
-   "obj_type": "gnome.environment.tide.Tide"
   }
  ], 
- "time_step": 900.0, 
+ "time_step": 360.0, 
  "json_": "save"
 }

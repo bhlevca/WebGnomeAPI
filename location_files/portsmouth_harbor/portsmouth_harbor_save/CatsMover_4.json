@@ -1,0 +1,14 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -70.705333, 
+  43.062333, 
+  0.0
+ ], 
+ "filename": "PortsmouthEntrance.cur", 
+ "name": "PortsmouthEntrance.cur", 
+ "tide": "Tide_3.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}
