@@ -1,0 +1,14 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -79.922668, 
+  33.06526, 
+  0.0
+ ], 
+ "name": "CooperRiver_Upper.cur", 
+ "filename": "CooperRiver_Upper.cur", 
+ "tide": "Tide_3.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}

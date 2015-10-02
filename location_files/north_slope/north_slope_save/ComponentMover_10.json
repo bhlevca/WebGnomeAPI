@@ -1,0 +1,16 @@
+{
+ "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "name": "Wind Driven Currents", 
+ "filename1": "AlaskaNorthSlope.cur", 
+ "scale_refpoint": [
+  -148.0, 
+  70.416666, 
+  0.0
+ ], 
+ "pat1_angle": 90.0, 
+ "pat1_speed": 10.0, 
+ "pat1_speed_units": 1.0, 
+ "pat1_scale_to_value": 0.1, 
+ "scale_by": 2, 
+ "json_": "save" 
+}

@@ -1,0 +1,57 @@
+{
+ "obj_type": "gnome.model.Model", 
+ "map": {
+  "json_": "save", 
+  "obj_type": "gnome.map.MapFromBNA", 
+  "filename": "NorthSlopeMap.bna",
+  "refloat_halflife": 1.0
+ }, 
+"movers": [
+  {
+   "id": "RandomMover_0.json", 
+   "obj_type": "gnome.movers.random_movers.RandomMover"
+  }, 
+  {
+   "id": "CatsMover_1.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_2.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_3.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_4.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_5.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_6.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_7.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_8.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "CatsMover_9.json", 
+   "obj_type": "gnome.movers.current_movers.CatsMover"
+  },
+  {
+   "id": "ComponentMover_10.json", 
+   "obj_type": "gnome.movers.current_movers.ComponentMover"
+  }
+ ], 
+ "time_step": 360.0, 
+ "json_": "save"
+}

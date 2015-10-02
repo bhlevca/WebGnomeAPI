@@ -1,0 +1,15 @@
+{
+ "obj_type": "gnome.movers.current_movers.CurrentCycleMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -66.995666, 
+  44.888, 
+  0.0
+ ], 
+ "filename": "PQBayCur.nc4", 
+ "name": "PQBayCur.nc4", 
+ "topology_file": "PassamaquoddyTOP.dat", 
+ "tide": "Tide_0.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}

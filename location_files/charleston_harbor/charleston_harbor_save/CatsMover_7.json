@@ -1,0 +1,14 @@
+{
+ "obj_type": "gnome.movers.current_movers.CatsMover", 
+ "scale": true, 
+ "scale_refpoint": [
+  -79.838333, 
+  32.918332, 
+  0.0
+ ], 
+ "name": "WandoRiver_Upper.cur", 
+ "filename": "WandoRiver_Upper.cur", 
+ "tide": "Tide_6.json", 
+ "json_": "save", 
+ "scale_value": 1.0
+}
