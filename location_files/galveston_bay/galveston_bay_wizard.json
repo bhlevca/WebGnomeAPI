@@ -8,12 +8,34 @@
                 "type": "welcome",
                 "name": "Welcome to Galveston Bay",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Galveston Bay :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Galveston Bay :</p><ol><li>Set the model run parameters.</li><li>Set flow rates for the three main tributaries of the bay.</li><li>Input information about the currents offshore.</li><li>Input the wind conditions.</li></ol> NOTE: Extreme atmospheric pressure fluctuations associated with strong weather events such as hurricanes can cause strong currents within Galveston Bay. These currents can alter the normal tidal cycle within the bay and are NOT modeled in this location file."
             },
             {
                 "type": "model",
                 "title": "Model Settings",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting River Flows",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>The flow rates of the three main tributaries of Galveston Bay can affect the circulation and residence time of spills within the Bay. Here you can choose an estimate of the river flow or input the stage height data.</p>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting Offshore Current",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>On this form you will set the speed and direction of the offshore flow.</p><p> You can use the real-time data from the TABS (Texas Automated Buoy System) Website or you can enter your own values. GNOME will calculate the component of your entry parallel to the shoreline (55 T)./p>"
             },
             {
                 "type": "text",
