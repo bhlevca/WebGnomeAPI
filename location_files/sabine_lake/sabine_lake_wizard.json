@@ -8,12 +8,23 @@
                 "type": "welcome",
                 "name": "Welcome to Port Arthur and Lake Sabine, Texas",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Port Arthur and Lake Sabine :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Port Arthur and Lake Sabine :</p><ol><li>Set the model run parameters.</li><li>Set the flow rates for the Neches and Sabine Rivers.</li><li>Input the wind conditions.</li></ol>"
             },
             {
                 "type": "model",
                 "title": "Model Settings",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting River Flow Rates",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>The Sabine and Neches Rivers flow into Lake Sabine. You can choose a climatological estimate for each river or input your own values for the river flows.</p><p>NOTE: This location file does not simulate large river flows that occur during heavy rains.</p>"
             },
             {
                 "type": "text",

@@ -8,12 +8,23 @@
                 "type": "welcome",
                 "name": "Welcome to the Strait of Juan de Fuca",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for the Strait of Juan de Fuca :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for the Strait of Juan de Fuca :</p><ol><li>Set the model run parameters.</li><li>Select the conditions at the entrance to the Strait.</li><li>Input the wind conditions.</li></ol>"
             },
             {
                 "type": "model",
                 "title": "Model Settings",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            {
+                "type": "custom",
+                "title": "Set Strait Entrance Conditions",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>On this form you can set the surface flow through the Strait.</p><p>Normally the surface flow is directed toward the Pacific Ocean. Under certain conditions this flow can reverse.</p><p> You can choose normal conditions at the entrance to the Strait of Juan de Fuca, or you can choose to simulate a mild, moderate, or strong current reversal.</p>"
             },
             {
                 "type": "text",
