@@ -22,6 +22,39 @@
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
             },
             {
+                "type": "custom",
+                "title": "Setting River Flow Speeds",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>The Sagavanirktok (Sag) River and numerous other rivers in this region flow into Stefansson Sound. In this location file, we simulate the Sag, Shaviovik, Canning, and Tamayariak Rivers explicitly. </p><p>Please set a surface current speed for each of the four rivers.</p>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting River Flow Rates",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>The Colville River flows into Harrison Bay and the Kuparuk River flows into Gwydyr . You can choose a climatological estimate for each river or enter your own value for the Kuparuk River.</p>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting River Flow Rate",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>The Mackenzie River flows into the Beaufort Sea. You can choose a climatological estimate for the Mackenzie River or enter your own value.</p>"
+            },
+            {
                 "type": "text",
                 "title": "Wind Type",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",

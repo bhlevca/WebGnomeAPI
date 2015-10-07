@@ -8,12 +8,23 @@
                 "type": "welcome",
                 "name": "Welcome to Mobile Bay",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Mobile Bay :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Mobile Bay :</p><ol><li>Set the model run parameters.</li><li>Set the Mobile River flow rate.</li><li>Input the wind conditions.</li></ol>"
             },
             {
                 "type": "model",
                 "title": "Model Settings",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            {
+                "type": "custom",
+                "title": "Setting River Flow",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p>You can choose an estimate of the Mobile river flow or input stage height at the Barry Steam Plant.</p><p>The total flow of the Mobile River is primarily controlled by the amount of water flowing over dams upriver from the Barry Steam Plant. Stage heights at the steam plant can be used to estimate Mobile River flow.</p>"
             },
             {
                 "type": "text",

@@ -35,7 +35,7 @@
                 	"setup": "function(modal){}",
                     "save":  "function(form){}"
             	},
-                "body": "<p>On this form you will set the speed and direction of the offshore flow.</p><p> You can use the real-time data from the TABS (Texas Automated Buoy System) Website or you can enter your own values. GNOME will calculate the component of your entry parallel to the shoreline (55 T)./p>"
+                "body": "<p>On this form you will set the speed and direction of the offshore flow.</p><p> You can use the real-time data from the TABS (Texas Automated Buoy System) Website or you can enter your own values. GNOME will calculate the component of your entry parallel to the shoreline (55 T).</p>"
             },
             {
                 "type": "text",
