@@ -408,10 +408,9 @@ class StepTest(FunctionalTestBase):
 
                 geometry = feature['geometry']
                 assert 'type' in geometry
-                assert geometry['type'] == 'Point'
+                assert geometry['type'] == 'MultiPoint'
 
                 assert 'coordinates' in geometry
-                assert len(geometry['coordinates']) == 2
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
@@ -444,10 +443,9 @@ class StepTest(FunctionalTestBase):
 
                 geometry = feature['geometry']
                 assert 'type' in geometry
-                assert geometry['type'] == 'Point'
+                assert geometry['type'] == 'MultiPoint'
 
                 assert 'coordinates' in geometry
-                assert len(geometry['coordinates']) == 2
 
     def test_current_output_performance(self):
         # We are testing our ability to generate the first step in a
