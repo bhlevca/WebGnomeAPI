@@ -70,11 +70,9 @@ def get_step(request):
                     for k, v in step_output['WeatheringOutput'].iteritems():
                         aggregate[k].append(v)
 
-                low_run_index = aggregate['floating'].index(min(aggregate['floating']))
-                high_run_index = aggregate['floating'].index(max(aggregate['floating']))
                 for k, v in aggregate.iteritems():
-                    low[k] = v[low_run_index]
-                    high[k] = v[high_run_index]
+                    low[k] = min(v)
+                    high[k] = max(v)
 
                 full_output = {'time_stamp': nominal['time_stamp'],
                                'nominal': nominal,
