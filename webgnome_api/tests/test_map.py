@@ -2,7 +2,7 @@
 Functional tests for the Gnome Map object Web API
 """
 from base import FunctionalTestBase
-
+import shutil
 
 class MapTestBase(FunctionalTestBase):
     '''
@@ -13,6 +13,18 @@ class MapTestBase(FunctionalTestBase):
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
+
+    def test_goods_map(self):
+        req = self.req_data.copy()
+        req['filename'] = 'goods:Test.bna'
+        resp = self.testapp.post_json('/map', params=req)
+
+
+    def test_remote_map(self):
+        req = self.req_data.copy()
+        req['filename'] = 'http://gnome.orr.noaa.gov/goods/bnas/galveston.bna'
+        resp = self.testapp.post_json('/map', params=req)
+
 
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
@@ -33,6 +45,7 @@ class MapTestBase(FunctionalTestBase):
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
+        self.setup_map_file()
         resp1 = self.testapp.post_json('/map', params=self.req_data)
 
         obj_id = resp1.json_body['id']
@@ -65,6 +78,7 @@ class MapTestBase(FunctionalTestBase):
         # 3. update the properties in the JSON response
         # 4. update the object by performing a put with a valid id
         # 5. check that our new properties are in the new JSON response
+        self.setup_map_file()
         resp = self.testapp.post_json('/map', params=self.req_data)
 
         req_data = resp.json_body
@@ -180,6 +194,7 @@ class MapGeoJsonTest(FunctionalTestBase):
                 }
 
     def test_put_valid_id(self):
+        self.setup_map_file()
         resp = self.testapp.post_json('/map', params=self.req_data)
         map1 = resp.json_body
 

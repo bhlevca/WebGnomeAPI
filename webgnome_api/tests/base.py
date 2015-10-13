@@ -58,6 +58,14 @@ class FunctionalTestBase(GnomeTestCase):
         if hasattr(app.registry, '_redis_sessions'):
             app.registry._redis_sessions.connection_pool.disconnect()
 
+    def setup_map_file(self):
+        # emulate that the user upload their map file
+        # this would put it in their model_data session folder
+        session_resp = self.testapp.post('/session')
+        os.makedirs('./models/session/' + session_resp.json_body['id'])
+        shutil.copyfile('./models/Test.bna', './models/session/' + session_resp.json_body['id'] + '/Test.bna')
+
+
 
 class UnitTestBase(GnomeTestCase):
     def setUp(self):

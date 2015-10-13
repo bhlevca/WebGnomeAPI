@@ -12,6 +12,7 @@ from gnome.utilities.geometry.BBox import BBox
 
 from webgnome_api.common.session_management import set_session_object
 
+import urllib2, os
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
@@ -188,3 +189,56 @@ def obj_id_from_url(request):
 
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
+
+
+def get_file_path(request, json_request=None):
+    '''
+        take a request/json object and transform it's filename
+        attribute into a full path.
+
+        providing the already parsed json will save the need to reprocess
+        the json into a dict. if this is already done before calling
+        get_file_path passing it along with the request is recommended
+
+        goods: prefix relates to a mounted share between gnome
+        and goods uses the goods_dir ini setting
+
+        http or https is a remote file that should be downloaded
+        to a temporary directory and the path updated.
+        currently should be limited to urls from the goods domain name
+        The file will be placed in a session specific directory inside
+        model_data_dir
+    '''
+
+    temp_dir = request.registry.settings['model_data_dir']
+    goods_dir = request.registry.settings['goods_dir']
+    goods_url = request.registry.settings['goods_url']
+    session_id = request.session.session_id
+    session_dir = os.path.join(temp_dir, 'session', session_id)
+
+    if json_request is None:
+        json_request = ujson.loads(request.body)
+
+    if json_request['filename'][:4] == 'http' and json_request['filename'].find(goods_url) != -1:
+        resp = urllib2.urlopen(json_request['filename'])
+
+        os.makedirs(session_dir)
+        (remote_dir, fname) = os.path.split(json_request['filename'])
+
+        with open(os.path.join(session_dir, fname), 'wb') as fh:
+            while True:
+                data = resp.read(1024 * 1024)
+
+                if len(data) == 0:
+                    break
+                else:
+                    fh.write(data)
+
+        json_request['filename'] = fname
+
+    if json_request['filename'][:6] == 'goods:' and goods_dir != '':
+        full_path = os.path.join(goods_dir, json_request['filename'][6:])
+    else:
+        full_path = os.path.join(session_dir, json_request['filename'])
+
+    return full_path

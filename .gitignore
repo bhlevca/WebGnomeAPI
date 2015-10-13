@@ -3,11 +3,14 @@
 *.swp
 *~
 *.log
+*.log.*
 config.ini
 staging.ini
 webgnome_api.ini
 /models/Model
+models/session
 /webgnome_api.egg-info
 /*.egg
 /save_files
 messages.*
+goods/*

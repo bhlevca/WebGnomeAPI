@@ -24,7 +24,8 @@ from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
                                                ObjectImplementsOneOf,
                                                obj_id_from_url,
-                                               obj_id_from_req_payload)
+                                               obj_id_from_req_payload,
+                                               get_file_path)
 
 from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
@@ -70,9 +71,7 @@ def create_map(request):
         raise cors_exception(request, HTTPNotImplemented)
 
     if 'filename' in json_request:
-        map_dir = get_map_dir_from_config(request)
-        json_request['filename'] = os.path.join(map_dir,
-                                                json_request['filename'])
+        json_request['filename'] = get_file_path(request, json_request=json_request)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
@@ -172,15 +171,3 @@ def get_geojson(request, implemented_types):
             raise cors_exception(request, HTTPNotImplemented)
     else:
         raise cors_exception(request, HTTPNotFound)
-
-
-def get_map_dir_from_config(request):
-    map_dir = request.registry.settings['model_data_dir']
-
-    if map_dir[0] == os.path.sep:
-        full_path = map_dir
-    else:
-        here = request.registry.settings['install_path']
-        full_path = os.path.join(here, map_dir)
-
-    return full_path
