@@ -1,0 +1,47 @@
+<p>
+    On this form you will set the speed and direction of the offshore flow.
+</p>
+<p> 
+    You can use the real-time data from the TABS (Texas Automated Buoy System) Website or you can enter your own values. GNOME will calculate the component of your entry parallel to the shoreline (55 T).
+</p>
+
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="speed">Speed:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="speed">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="speed-units">
+                <option value="cm/s">
+                    cm / s
+                </option>
+                <option value="m/s">
+                    m / s
+                </option>
+                <option value="knots">
+                    knots
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="direction">Direction:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="direction">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="direction-units">
+                <option value="degree">
+                    degrees
+                </option>
+                <option value="rad">
+                    radians
+                </option>
+            </select>
+        </div>
+    </div>
+</form>
+
+
