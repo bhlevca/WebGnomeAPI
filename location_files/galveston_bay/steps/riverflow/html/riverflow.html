@@ -1,0 +1,117 @@
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+<p>
+    The flow rates of the three main tributaries of Galveston Bay can affect the circulation and residence time of spills within the Bay. Here you can choose an estimate of the river flow or input the stage height data.
+</p>
+
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-5 control-label" for="trinity-flow">Trinity River:</label>
+		<div class="col-sm-5">
+			<select class="form-control" id="trinity-flow">
+				<option value="high">
+					High (80 kcfs)
+				</option>
+				<option value="medium">
+					Medium (40 kcfs)
+				</option>
+				<option value="low">
+					Low (20 kcfs)
+				</option>
+				<option value="other">
+					Set stage height
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group trinity">
+		<label class="col-sm-5 control-label" for="trinity-stageheight">Stage Height:</label>
+		<div class="col-sm-3">
+			<input type="number" class="form-control" id="trinity-stageheight">
+		</div>
+		<div class="col-sm-2">
+			<select class="form-control" id="trinity-stageheight-units">
+				<option value="ft">
+					ft
+				</option>
+				<option value="m">
+					m
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-5 control-label" for="sanjacinto-flow">San Jacinto River:</label>
+		<div class="col-sm-5">
+			<select class="form-control" id="sanjacinto-flow">
+				<option value="high">
+					High (250 kcfs)
+				</option>
+				<option value="medium">
+					Medium (130 kcfs)
+				</option>
+				<option value="low">
+					Low (40 kcfs)
+				</option>
+				<option value="other">
+					Set stage height
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group sanjacinto">
+		<label class="col-sm-5 control-label" for="sanjacinto-stageheight">Stage Height:</label>
+		<div class="col-sm-3">
+			<input type="number" class="form-control" id="sanjacinto-stageheight">
+		</div>
+		<div class="col-sm-2">
+			<select class="form-control" id="sanjacinto-stageheight-units">
+				<option value="ft">
+					ft
+				</option>
+				<option value="m">
+					m
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-5 control-label" for="buffalobayou-flow">Buffalo Bayou:</label>
+		<div class="col-sm-5">
+			<select class="form-control" id="buffalobayou-flow">
+				<option value="high">
+					High (9 kcfs)
+				</option>
+				<option value="medium">
+					Medium (5 kcfs)
+				</option>
+				<option value="low">
+					Low (2 kcfs)
+				</option>
+				<option value="other">
+					Set stage height
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group buffalobayou">
+		<label class="col-sm-5 control-label" for="buffalobayou-stageheight">Stage Height:</label>
+		<div class="col-sm-3">
+			<input type="number" class="form-control" id="buffalobayou-stageheight">
+		</div>
+		<div class="col-sm-2">
+			<select class="form-control" id="buffalobayou-stageheight-units">
+				<option value="ft">
+					ft
+				</option>
+				<option value="m">
+					m
+				</option>
+			</select>
+		</div>
+	</div>
+</form>

@@ -1,0 +1,84 @@
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+<p>
+    The Sabine and Neches Rivers flow into Lake Sabine. You can choose a climatological estimate for each river or input your own values for the river flows.
+</p>
+
+<form class="form-horizontal">
+    <div class="form-group sabine-flow">
+        <label class="col-sm-5 control-label" for="sabine-flowrate">Sabine River flow rate:</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="sabine-flowrate">
+                <option value="high">
+                    High - 20,000 cfs
+                </option>
+                <option value="medium">
+                    Medium - 10,000 cfs
+                </option>
+                <option value="low">
+                    Low - 1,000 cfs
+                </option>
+                <option value="other">
+                    Other value
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group sabine-flow-manual">
+        <label class="col-sm-5 control-label" for="sabine-flowrate-manual">Flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" id="sabine-flowrate-manual" class="form-control">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="sabine-flowrate-units">
+                <option value="cfs">
+                    cfs
+                </option>
+                <option value="kcfs">
+                    kcfs
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group neches-flow">
+        <label class="col-sm-5 control-label" for="neches-flowrate">Neches River flow rate:</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="neches-flowrate">
+                <option value="high">
+                    High - 3,800 cfs
+                </option>
+                <option value="medium">
+                    Mean - 2,250 cfs
+                </option>
+                <option value="low">
+                    Low - 700 cfs
+                </option>
+                <option value="other">
+                    Other value
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group neches-flow-manual">
+        <label class="col-sm-5 control-label" for="neches-flowrate-manual">Flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" id="neches-flowrate-manual" class="form-control">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="neches-flowrate-units">
+                <option value="cfs">
+                    cfs
+                </option>
+                <option value="kcfs">
+                    kcfs
+                </option>
+            </select>
+        </div>
+    </div>
+</form>
+
+<p>
+    NOTE: This location file does not simulate large river flows that occur during heavy rains.
+</p>
