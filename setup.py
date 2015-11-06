@@ -7,7 +7,6 @@ import fnmatch
 import htmlmin
 import ujson
 import json
-import re
 
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
@@ -92,7 +91,8 @@ class buildlocations(base_build):
                             self.fill_js_functions(data_obj, dirpath)
 
     def findHTML(self, obj, path):
-        return [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
+        html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
+        return sorted(set(html_files))
 
     def fill_js_functions(self, obj, path):
         pass
@@ -116,7 +116,6 @@ class buildlocations(base_build):
             return htmlmin.minify(data)
 
     def write_compiled_json(self, obj, path):
-        print path
         with open(path + "/compiled.json", 'w+') as f:
             json.dump(obj, f, indent=4)
 
