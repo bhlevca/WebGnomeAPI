@@ -17,6 +17,7 @@
             },
             {
                 "type": "custom",
+                "name": "custom",
                 "title": "Set Strait Entrance Conditions",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
                 "module": "define([], function(){ return stepMod})",

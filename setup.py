@@ -6,6 +6,7 @@ import shutil
 import fnmatch
 import htmlmin
 import ujson
+import json
 import re
 
 from setuptools import setup, find_packages
@@ -79,7 +80,6 @@ class buildlocations(base_build):
                         print ("Failed to find {0}. Error {1}".format(f, err))
 
     def parse(self, obj, path):
-        exttype = os.path.splitext(path)[1]
         with open(path, "r") as wizard_json:
             data = unicode(wizard_json.read(), "utf-8")
             data_obj = ujson.loads(data)
@@ -87,25 +87,38 @@ class buildlocations(base_build):
                 if key == "steps":
                     for step in data_obj[key]:
                         if step["type"] == "custom":
-                            self.fill_html_body(self, data_obj, path)
-        # if exttype == ".html":
-        #     min_html = self.htmlMinify(path)
-        #     #print f
-        # elif exttype == ".js":
-        #     print "javascript file found"
-        # elif exttype == ".json":
-        #     print path
+                            dirpath = os.path.dirname(path)
+                            self.fill_html_body(data_obj, dirpath)
+                            self.fill_js_functions(data_obj, dirpath)
 
+    def findHTML(self, obj, path):
+        return [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
+
+    def fill_js_functions(self, obj, path):
+        pass
 
     def fill_html_body(self, obj, path):
-        pass
+        steps = obj["steps"]
+        html_file_list = self.findHTML(obj, path)
+        for file_path in html_file_list:
+            filename = self.grab_html_filename(file_path)
+            for step in steps:
+                if step["type"] == "custom" and step["name"] == filename:
+                    step["body"] = self.htmlMinify(file_path)
+        self.write_compiled_json(obj, path)
+
+    def grab_html_filename(self, path):
+        return os.path.basename(path).split(".")[0]
 
     def htmlMinify(self, path):
         with open(path, "r") as myfile:
             data = unicode(myfile.read(), "utf-8")
             return htmlmin.minify(data)
 
-    #def compile_to_JSON(self, content, ext)
+    def write_compiled_json(self, obj, path):
+        print path
+        with open(path + "/compiled.json", 'w+') as f:
+            json.dump(obj, f, indent=4)
 
 setup(name='webgnome_api',
       version=0.1,

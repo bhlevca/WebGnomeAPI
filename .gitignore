@@ -14,3 +14,4 @@ models/session
 /save_files
 messages.*
 goods/*
+compiled.json
