@@ -45,11 +45,11 @@ def get_location(request):
         if len(path.split(sep)) == base_len + 1:
             [location_content.append(ujson.load(open(join(path, f), 'r')))
              for f in filenames
-             if f[-12:] == '_wizard.json']
+             if f == 'compiled.json']
 
             [location_file_dirs.append(join(path, f[:-12] + '_save'))
              for f in filenames
-             if f[-12:] == '_wizard.json']
+             if f == 'compiled.json']
 
     slug = obj_id_from_url(request)
     if slug:

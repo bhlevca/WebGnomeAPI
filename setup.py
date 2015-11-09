@@ -10,7 +10,7 @@ import json
 
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
-from distutils.command.build import build as base_build
+from setuptools.command.develop import develop as base_develop
 
 # could run setup from anywhere
 here = os.path.abspath(os.path.dirname(__file__))
@@ -57,11 +57,11 @@ class cleandev(clean):
                            .format(dir_, err))
 
 
-class buildlocations(base_build):
+class developall(base_develop):
     description = ''
 
     def run(self):
-        base_build.run(self)
+        base_develop.run(self)
 
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
@@ -85,10 +85,12 @@ class buildlocations(base_build):
             for key in data_obj:
                 if key == "steps":
                     for step in data_obj[key]:
+                        dirpath = os.path.dirname(path)
                         if step["type"] == "custom":
-                            dirpath = os.path.dirname(path)
                             self.fill_html_body(data_obj, dirpath)
                             self.fill_js_functions(data_obj, dirpath)
+                        else:
+                            self.write_compiled_json(data_obj, dirpath)
 
     def findHTML(self, obj, path):
         html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
@@ -133,7 +135,7 @@ setup(name='webgnome_api',
       author_email='orr.gnome@noaa.gov',
       url='',
       cmdclass={'cleandev': cleandev,
-                'buildlocations': buildlocations
+                'developall': developall
                 },
       packages=find_packages(),
       include_package_data=True,
