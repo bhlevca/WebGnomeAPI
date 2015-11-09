@@ -105,10 +105,11 @@ class developall(base_develop):
         steps = obj["steps"]
         js_file_list = self.findJS(obj, path)
         for file_path in js_file_list:
-            filename = self.grab_filename(file_path)
+            filename = os.path.basename(os.path.dirname(file_path).split("/js")[0])
+            js_file_name = self.grab_filename(file_path)
             for step in steps:
-                if step["type"] == "custom":
-                    step["functions"][filename] = self.jsMinify(file_path)
+                if step["type"] == "custom" and step["name"] == filename:
+                    step["functions"][js_file_name] = self.jsMinify(file_path)
         self.write_compiled_json(obj, path)
 
     def fill_html_body(self, obj, path):
