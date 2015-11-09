@@ -5,6 +5,7 @@ import os
 import shutil
 import fnmatch
 import htmlmin
+from jsmin import jsmin
 import ujson
 import json
 
@@ -96,26 +97,42 @@ class developall(base_develop):
         html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
         return sorted(set(html_files))
 
+    def findJS(self, obj, path):
+        js_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.js")]
+        return js_files
+
     def fill_js_functions(self, obj, path):
-        pass
+        steps = obj["steps"]
+        js_file_list = self.findJS(obj, path)
+        for file_path in js_file_list:
+            filename = self.grab_filename(file_path)
+            for step in steps:
+                if step["type"] == "custom":
+                    step["functions"][filename] = self.jsMinify(file_path)
+        self.write_compiled_json(obj, path)
 
     def fill_html_body(self, obj, path):
         steps = obj["steps"]
         html_file_list = self.findHTML(obj, path)
         for file_path in html_file_list:
-            filename = self.grab_html_filename(file_path)
+            filename = self.grab_filename(file_path)
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
                     step["body"] = self.htmlMinify(file_path)
         self.write_compiled_json(obj, path)
 
-    def grab_html_filename(self, path):
+    def grab_filename(self, path):
         return os.path.basename(path).split(".")[0]
 
     def htmlMinify(self, path):
         with open(path, "r") as myfile:
             data = unicode(myfile.read(), "utf-8")
             return htmlmin.minify(data)
+
+    def jsMinify(self, path):
+        with open(path, "r") as myfile:
+            data = unicode(myfile.read(), "utf-8")
+            return jsmin(data)
 
     def write_compiled_json(self, obj, path):
         with open(path + "/compiled.json", 'w+') as f:
