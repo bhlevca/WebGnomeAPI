@@ -60,6 +60,7 @@ def get_location(request):
             gnome_sema.acquire()
             try:
                 location_file = location_file_dirs[matching[0][0]]
+                log.info('load location: {0}'.format(location_file))
                 load_location_file(location_file, request)
             except:
                 raise cors_exception(request, HTTPInternalServerError,
