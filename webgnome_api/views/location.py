@@ -2,7 +2,7 @@
 Views for the Location objects.
 """
 from os import walk
-from os.path import sep, join, isdir, split
+from os.path import sep, join, isdir, split, basename
 from logging import getLogger
 
 import ujson
@@ -47,7 +47,7 @@ def get_location(request):
              for f in filenames
              if f == 'compiled.json']
 
-            [location_file_dirs.append(join(path, f[:-12] + '_save'))
+            [location_file_dirs.append(path + "/" + basename(path) + '_save')
              for f in filenames
              if f == 'compiled.json']
 
