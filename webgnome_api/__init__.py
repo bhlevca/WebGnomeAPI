@@ -5,13 +5,14 @@ import os
 from threading import BoundedSemaphore
 
 import logging
-logging.basicConfig()
 
 import ujson
 from pyramid.config import Configurator
 from pyramid.renderers import JSON as JSONRenderer
 
 from webgnome_api.common.views import cors_policy
+
+logging.basicConfig()
 
 
 def reconcile_directory_settings(settings):

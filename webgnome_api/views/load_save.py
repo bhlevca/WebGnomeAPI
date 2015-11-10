@@ -12,6 +12,8 @@ from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPInsufficientStorage,
                                     HTTPNotFound)
+from pyramid.interfaces import ISessionFactory
+
 from pyramid_redis_sessions.session import RedisSession
 
 from gnome.persist import load, is_savezip_valid
@@ -63,14 +65,18 @@ def upload_model(request):
     # a session cookie, and Nathan so far has not been able to explicitly
     # set it.  So a workaround is to put the session ID in the form as
     # hidden POST content.
-    # Note: This could break in the future if the RedisSession API changes.
+    # Then we can re-establish our session with the request after
+    # checking that our session id is valid.
     redis_session_id = request.POST['session']
     if redis_session_id in request.session.redis.keys():
-        redis_session = RedisSession(request.session.redis,
-                                     redis_session_id,
-                                     request.session.timeout,
-                                     request.session.delete_cookie)
-        request.session = redis_session
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
 
     # select a unique filename and a folder to put it in
     # folder name will be the same unique name as the file
@@ -109,9 +115,8 @@ def upload_model(request):
 
     # Now that we have our file, is it a zipfile?
     if not is_savezip_valid(file_path):
-        raise cors_response(request,
-                            HTTPBadRequest('Incoming file is not a '
-                                           'valid zipfile!'))
+        raise cors_response(request, HTTPBadRequest('Incoming file is not a '
+                                                    'valid zipfile!'))
 
     # now we try to load our model from the zipfile.
     gnome_sema = request.registry.settings['py_gnome_semaphore']
@@ -129,7 +134,7 @@ def upload_model(request):
         log.info('setting active model...')
         set_active_model(request, new_model.id)
     except:
-        raise cors_exception(request, HTTPBadRequest)
+        raise cors_exception(request, HTTPBadRequest, with_stacktrace=True)
     finally:
         gnome_sema.release()
         log.info('semaphore released.')
