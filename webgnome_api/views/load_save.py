@@ -14,8 +14,6 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound)
 from pyramid.interfaces import ISessionFactory
 
-from pyramid_redis_sessions.session import RedisSession
-
 from gnome.persist import load, is_savezip_valid
 from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
@@ -69,8 +67,13 @@ def upload_model(request):
     # checking that our session id is valid.
     redis_session_id = request.POST['session']
     if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
         factory = request.registry.queryUtility(ISessionFactory)
-        request.session = factory(request)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
 
         if request.session.session_id != redis_session_id:
             raise cors_response(request,
