@@ -1,10 +1,10 @@
 """
 Functional tests for the Gnome Outputter object Web API
 """
+from base import FunctionalTestBase
+
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
-
-from base import FunctionalTestBase
 
 
 class OutputterTests(FunctionalTestBase):
@@ -110,8 +110,8 @@ class RendererTests(OutputterTests):
                 'output_last_step': True,
                 'output_zero_step': True,
                 'draw_ontop': 'forecast',
-                'filename': 'models/Test.bna',
-                'images_dir': 'models/images',
+                'map_filename': 'models/Test.bna',
+                'output_dir': 'models/images',
                 'image_size': [800, 600],
                 'viewport': [[-71.2242987892, 42.1846263908],
                              [-70.4146871963, 42.6329573908]]
@@ -124,7 +124,7 @@ class RendererTests(OutputterTests):
         '''
         for k in ('name',
                   'output_last_step', 'output_zero_step',
-                  'draw_ontop', 'filename', 'images_dir',
+                  'draw_ontop', 'map_filename', 'output_dir',
                   'image_size', 'viewport'):
             assert json_obj1[k] == json_obj2[k]
 
@@ -132,7 +132,6 @@ class RendererTests(OutputterTests):
         json_obj['output_last_step'] = False
         json_obj['output_zero_step'] = False
         json_obj['draw_ontop'] = 'uncertain'
-        json_obj['image_size'] = [1000, 1000]
         json_obj['viewport'] = [[-100.0, 100.0],
                                 [-100.0, 100.0]]
 
@@ -140,7 +139,6 @@ class RendererTests(OutputterTests):
         assert json_obj['output_last_step'] is False
         assert json_obj['output_zero_step'] is False
         assert json_obj['draw_ontop'] == 'uncertain'
-        assert json_obj['image_size'] == [1000, 1000]
 
         assert json_obj['viewport'] == [[-100.0, 100.0],
                                         [-100.0, 100.0]]

@@ -1,11 +1,11 @@
 """
 Functional tests for the Model Web API
 """
-from pprint import PrettyPrinter
 from gnome.multi_model_broadcast import ModelBroadcaster
-pp = PrettyPrinter(indent=2)
-
 from base import FunctionalTestBase
+
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2)
 
 
 class ModelTests(FunctionalTestBase):
@@ -685,8 +685,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'filename': ('models/Test.bna'),
-                                   'images_dir': ('models/images'),
+                                   'map_filename': ('models/Test.bna'),
+                                   'output_dir': ('models/images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
@@ -702,8 +702,8 @@ class NestedModelTests(FunctionalTestBase):
         assert 'output_last_step' in model1['outputters'][0]
         assert 'output_zero_step' in model1['outputters'][0]
         assert 'draw_ontop' in model1['outputters'][0]
-        assert 'filename' in model1['outputters'][0]
-        assert 'images_dir' in model1['outputters'][0]
+        assert 'map_filename' in model1['outputters'][0]
+        assert 'output_dir' in model1['outputters'][0]
         assert 'image_size' in model1['outputters'][0]
         assert 'viewport' in model1['outputters'][0]
 
@@ -715,8 +715,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'filename': ('models/Test.bna'),
-                                   'images_dir': ('models/images'),
+                                   'map_filename': ('models/Test.bna'),
+                                   'output_dir': ('models/images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
