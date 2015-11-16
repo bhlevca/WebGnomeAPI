@@ -1,31 +1,31 @@
 (function(modal){
 	var triChange = function() {
-		if ($('#trinity-flow').val() === 'other') {
-			$('.trinity').removeClass('hide');
+		if ($('#trinity-flow', modal).val() === 'other') {
+			$('.trinity', modal).removeClass('hide');
 		} else {
-			$('.trinity').addClass('hide');
+			$('.trinity', modal).addClass('hide');
 		}
 	};
 
 	var sanChange = function() {
-		if ($('#sanjacinto-flow').val() === 'other') {
-			$('.sanjacinto').removeClass('hide');
+		if ($('#sanjacinto-flow', modal).val() === 'other') {
+			$('.sanjacinto', modal).removeClass('hide');
 		} else {
-			$('.sanjacinto').addClass('hide');
+			$('.sanjacinto', modal).addClass('hide');
 		}
 	};
 
 	var buffaloChange = function() {
-		if ($('#buffalobayou-flow').val() === 'other') {
-			$('.buffalobayou').removeClass('hide');
+		if ($('#buffalobayou-flow', modal).val() === 'other') {
+			$('.buffalobayou', modal).removeClass('hide');
 		} else {
-			$('.buffalobayou').addClass('hide');
+			$('.buffalobayou', modal).addClass('hide');
 		}
 	};
 
-	$('#trinity-flow').on('change', triChange);
-	$('#sanjacinto-flow').on('change', sanChange);
-	$('#buffalobayou-flow').on('change', buffaloChange);
+	$('#trinity-flow', modal).on('change', triChange);
+	$('#sanjacinto-flow', modal).on('change', sanChange);
+	$('#buffalobayou-flow', modal).on('change', buffaloChange);
 
 	triChange();
 	sanChange();

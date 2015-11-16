@@ -1,13 +1,13 @@
 (function(modal){
    var macListener = function() {
-      if ($('#flow-rate').val() === 'other') {
-        $('.mackenzie').removeClass('hide');
+      if ($('#flow-rate', modal).val() === 'other') {
+        $('.mackenzie', modal).removeClass('hide');
       } else {
-        $('.mackenzie').addClass('hide');
+        $('.mackenzie', modal).addClass('hide');
       }
    };
 
-   $('#flow-rate').on('change', macListener);
+   $('#flow-rate', modal).on('change', macListener);
 
    macListener();
 }(modal));

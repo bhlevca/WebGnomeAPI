@@ -1,12 +1,12 @@
 (function(modal){
    var heightListener = function() {
-      if ($('#riverflow').val() === 'height') {
-         $('.height').removeClass('hide');
+      if ($('#riverflow', modal).val() === 'height') {
+         $('.height', modal).removeClass('hide');
       } else {
-         $('.height').addClass('hide');
+         $('.height', modal).addClass('hide');
       }
    };
 
-   $('#riverflow').on('change', heightListener);
+   $('#riverflow', modal).on('change', heightListener);
    heightListener();
 }(modal));
