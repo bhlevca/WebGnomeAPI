@@ -1,22 +1,22 @@
 (function(modal){
   var sabineListener = function() {
-     if ($('#sabine-flowrate').val() === 'other') {
-        $('.sabine-flow-manual').removeClass('hide');
+     if ($('#sabine-flowrate', modal).val() === 'other') {
+        $('.sabine-flow-manual', modal).removeClass('hide');
      } else {
-        $('.sabine-flow-manual').addClass('hide');
+        $('.sabine-flow-manual', modal).addClass('hide');
      }
   };
 
   var nechesListener = function() {
-     if ($('#neches-flowrate').val() === 'other') {
-        $('.neches-flow-manual').removeClass('hide');
+     if ($('#neches-flowrate', modal).val() === 'other') {
+        $('.neches-flow-manual', modal).removeClass('hide');
      } else {
-        $('.neches-flow-manual').addClass('hide');
+        $('.neches-flow-manual', modal).addClass('hide');
      }
   };
 
-  $('#sabine-flowrate').on('change', sabineListener);
-  $('#neches-flowrate').on('change', nechesListener);
+  $('#sabine-flowrate', modal).on('change', sabineListener);
+  $('#neches-flowrate', modal).on('change', nechesListener);
 
   sabineListener();
   nechesListener();

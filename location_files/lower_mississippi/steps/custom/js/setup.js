@@ -1,13 +1,13 @@
 (function(modal){
 	var inputListener = function() {
-		if ($('#datatype').val() === 'height'){
-			$('.height').removeClass('hide');
-			$('.speed').addClass('hide');
+		if ($('#datatype', modal).val() === 'height'){
+			$('.height', modal).removeClass('hide');
+			$('.speed', modal).addClass('hide');
 		} else {
-			$('.height').addClass('hide');
-			$('.speed').removeClass('hide');
+			$('.height', modal).addClass('hide');
+			$('.speed', modal).removeClass('hide');
 		}
 	};
-	$('#datatype').on('change', inputListener);
+	$('#datatype', modal).on('change', inputListener);
 	inputListener();
 }(modal));

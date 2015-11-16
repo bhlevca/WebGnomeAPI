@@ -1,13 +1,13 @@
 (function(modal){
    var kuparukListener = function() {
-      if ($('#kuparuk-flow').val() === 'other') {
-        $('.kuparuk').removeClass('hide');
+      if ($('#kuparuk-flow', modal).val() === 'other') {
+        $('.kuparuk', modal).removeClass('hide');
       } else {
-        $('.kuparuk').addClass('hide');
+        $('.kuparuk', modal).addClass('hide');
       }
    };
 
-   $('#kuparuk-flow').on('change', kuparukListener);
+   $('#kuparuk-flow', modal).on('change', kuparukListener);
 
    kuparukListener();
 }(modal));
