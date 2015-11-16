@@ -1,8 +1,8 @@
-(function(modal){
+(function(modal, modaljq){
 	var thumbnailHighlight = function(e) {
-       $('.thumbnail', modal).removeClass('selected');
-       $($(e.target).parent('.thumbnail'), modal).addClass('selected');
+       $(e.target, modal).closest('.option').addClass('selected');
+       $(modal).trigger('save');
 	};
 
-	$('.thumbnail', modal).on('click', thumbnailHighlight);
-}(modal));
+	$('.option', modal).on('click', thumbnailHighlight);
+}(modal, modaljq));
