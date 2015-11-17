@@ -9,8 +9,10 @@ from jsmin import jsmin
 import ujson
 import json
 
+from premailer import transform
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
+from distutils.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop as base_develop
 
 # could run setup from anywhere
@@ -58,12 +60,9 @@ class cleandev(clean):
                            .format(dir_, err))
 
 
-class developall(base_develop):
-    description = ''
+class compileJSON(_build_py):
 
     def run(self):
-        base_develop.run(self)
-
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
 
@@ -128,7 +127,7 @@ class developall(base_develop):
     def htmlMinify(self, path):
         with open(path, "r") as myfile:
             data = unicode(myfile.read(), "utf-8")
-            return htmlmin.minify(data)
+            return transform(htmlmin.minify(data))
 
     def jsMinify(self, path):
         with open(path, "r") as myfile:
@@ -138,6 +137,15 @@ class developall(base_develop):
     def write_compiled_json(self, obj, path):
         with open(path + "/compiled.json", 'w+') as f:
             json.dump(obj, f, indent=4)
+
+
+class developall(base_develop, compileJSON):
+    description = ''
+
+    def run(self):
+        base_develop.run(self)
+        compileJSON.run(self)
+
 
 setup(name='webgnome_api',
       version=0.1,
@@ -153,7 +161,8 @@ setup(name='webgnome_api',
       author_email='orr.gnome@noaa.gov',
       url='',
       cmdclass={'cleandev': cleandev,
-                'developall': developall
+                'developall': developall,
+                'build_py': compileJSON
                 },
       packages=find_packages(),
       include_package_data=True,
