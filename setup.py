@@ -162,7 +162,7 @@ setup(name='webgnome_api',
       url='',
       cmdclass={'cleandev': cleandev,
                 'developall': developall,
-                'build_py': compileJSON
+                'compilejson': compileJSON
                 },
       packages=find_packages(),
       include_package_data=True,
