@@ -19,7 +19,7 @@
                 "type": "custom",
                 "name": "custom",
                 "title": "Selecting a Circulation Pattern",
-                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button>",
                 "module": "define([], function(){ return stepMod})",
                 "functions": {
                 	"setup": "function(modal){}",
