@@ -8,6 +8,7 @@ import htmlmin
 from jsmin import jsmin
 import ujson
 import json
+import re
 
 from premailer import transform
 from setuptools import setup, find_packages
@@ -66,19 +67,20 @@ class compileJSON(_build_py):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
 
-        for path in paths:
-            for pattern in file_patterns:
-                file_list = [os.path.join(dirpath, f)
-                             for dirpath, dirnames, files in os.walk(path)
-                             for f in fnmatch.filter(files, pattern)]
+        with open(os.path.join(here, 'css/less/style.css'), "r") as css_file:
+            for path in paths:
+                for pattern in file_patterns:
+                    file_list = [os.path.join(dirpath, f)
+                                 for dirpath, dirnames, files in os.walk(path)
+                                 for f in fnmatch.filter(files, pattern)]
 
-                for f in file_list:
-                    try:
-                        self.parse(self, f)
-                    except OSError as err:
-                        print ("Failed to find {0}. Error {1}".format(f, err))
+                    for f in file_list:
+                        try:
+                            self.parse(self, f, css_file)
+                        except OSError as err:
+                            print ("Failed to find {0}. Error {1}".format(f, err))
 
-    def parse(self, obj, path):
+    def parse(self, obj, path, css):
         with open(path, "r") as wizard_json:
             data = unicode(wizard_json.read(), "utf-8")
             data_obj = ujson.loads(data)
@@ -87,7 +89,7 @@ class compileJSON(_build_py):
                     for step in data_obj[key]:
                         dirpath = os.path.dirname(path)
                         if step["type"] == "custom":
-                            self.fill_html_body(data_obj, dirpath)
+                            self.fill_html_body(data_obj, dirpath, css)
                             self.fill_js_functions(data_obj, dirpath)
                         else:
                             self.write_compiled_json(data_obj, dirpath)
@@ -111,23 +113,30 @@ class compileJSON(_build_py):
                     step["functions"][js_file_name] = self.jsMinify(file_path)
         self.write_compiled_json(obj, path)
 
-    def fill_html_body(self, obj, path):
+    def fill_html_body(self, obj, path, css):
         steps = obj["steps"]
         html_file_list = self.findHTML(obj, path)
         for file_path in html_file_list:
             filename = self.grab_filename(file_path)
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    step["body"] = self.htmlMinify(file_path)
+                    step["body"] = self.htmlMinify(file_path, css)
         self.write_compiled_json(obj, path)
 
     def grab_filename(self, path):
         return os.path.basename(path).split(".")[0]
 
-    def htmlMinify(self, path):
+    def htmlMinify(self, path, css):
         with open(path, "r") as myfile:
-            data = unicode(myfile.read(), "utf-8")
-            return transform(htmlmin.minify(data))
+            css.seek(0)
+            css_read = unicode(css.read(), "utf-8")
+            data = u"<style>" + css_read + u"</style>" + unicode(myfile.read(), "utf-8")
+            return self.remove_head_tags(transform(htmlmin.minify(data)))
+
+    def remove_head_tags(self, string):
+        html_re = re.compile(r'<body[^>]*\>(.*)\<\/body', re.S)
+        parsed_str = html_re.search(string).group(1)
+        return parsed_str
 
     def jsMinify(self, path):
         with open(path, "r") as myfile:
