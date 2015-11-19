@@ -5,6 +5,8 @@ from os import walk
 from os.path import sep, join, isdir, split, basename
 from logging import getLogger
 
+from geojson import FeatureCollection, Feature, Point
+
 import ujson
 import slugify
 
@@ -13,7 +15,6 @@ from cornice import Service
 
 from gnome.persist import load
 
-from webgnome_api.common.osgeo_helpers import FeatureCollection
 from webgnome_api.common.common_object import obj_id_from_url, RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
@@ -72,7 +73,14 @@ def get_location(request):
         else:
             raise cors_exception(request, HTTPNotFound)
     else:
-        return FeatureCollection(location_content).serialize()
+        features = [Feature(geometry=Point(c['geometry']['coordinates']),
+                            properties={'title': c['name'],
+                                        'slug': slugify.slugify_url(c['name']),
+                                        'content': c['steps']
+                                        }
+                            )
+                    for c in location_content]
+        return FeatureCollection(features)
 
 
 def load_location_file(location_file, request):

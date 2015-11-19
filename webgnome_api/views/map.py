@@ -11,10 +11,11 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
+from geojson import FeatureCollection, Feature, MultiPolygon
+
 from webgnome_api.common.osgeo_helpers import (ogr_open_file,
                                                ogr_layers,
-                                               ogr_features,
-                                               FeatureCollection)
+                                               ogr_features)
 
 from webgnome_api.common.views import (cors_exception,
                                        get_object,
@@ -37,8 +38,9 @@ from webgnome_api.common.helpers import JSONImplementsOneOf
 map_api = Service(name='map', path='/map*obj_id',
                   description="Map API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.map.MapFromBNA',
-                     'gnome.map.GnomeMap'
+implemented_types = ('gnome.map.GnomeMap',
+                     'gnome.map.MapFromBNA',
+                     'gnome.map.ParamMap',
                      )
 
 log = logging.getLogger(__name__)
@@ -71,7 +73,8 @@ def create_map(request):
         raise cors_exception(request, HTTPNotImplemented)
 
     if 'filename' in json_request:
-        json_request['filename'] = get_file_path(request, json_request=json_request)
+        json_request['filename'] = get_file_path(request,
+                                                 json_request=json_request)
 
     gnome_sema = request.registry.settings['py_gnome_semaphore']
     gnome_sema.acquire()
@@ -118,14 +121,13 @@ def update_map(request):
 
 def get_geojson(request, implemented_types):
     '''Returns the GeoJson for a Gnome Map object.'''
-    obj_id = obj_id_from_url(request)
+    obj = get_session_object(obj_id_from_url(request), request)
 
-    obj = get_session_object(obj_id, request)
     if obj:
         if ObjectImplementsOneOf(obj, implemented_types):
             # Here is where we extract the GeoJson from our map object.
             map_file = ogr_open_file(obj.filename)
-            shoreline_geo = ''
+            shoreline_geo = []
 
             for layer in ogr_layers(map_file):
                 for f in ogr_features(layer):
@@ -143,30 +145,23 @@ def get_geojson(request, implemented_types):
                     # only doing what we need at the moment
                     # in the future we might need the other layers
                     if primary_id not in ('SpillableArea', 'Map Bounds'):
-                        geom_json = f.GetGeometryRef().ExportToJson()
-                        geom_json = geom_json[42:-4]
-                        shoreline_geo += geom_json + ', '
+                        # apparently this is how you get to the actual
+                        # map coordinates using OGR.  It seems a bit brittle.
+                        # But this is much more efficient than exporting
+                        # to json.
+                        geom = f.GetGeometryRef()
+                        poly = geom.GetGeometryRef(0)
+                        ring = poly.GetGeometryRef(0)
 
-            # remove last comma from geometry
-            shoreline_geo = shoreline_geo[0:-2]
+                        shoreline_geo.append([ring.GetPoints()])
 
-            # TODO: Why are we forming a string instead of a MultiPolygon obj?
-            #       Answer: because we are using a homebrew FeatureCollection
-            #               object.
-            json_body = ('{{'
-                         '  "properties": {{'
-                         '    "name": "Shoreline"'
-                         '  }},'
-                         '  "geometry": {{'
-                         '    "type": "MultiPolygon",'
-                         '    "coordinates": [ {0}'
-                         '    ]'
-                         '  }}'
-                         '}}'
-                         .format(shoreline_geo))
-            shoreline_feature = ujson.loads(json_body)
+            shoreline = Feature(id="1",
+                                properties={'name': 'Shoreline'},
+                                geometry=MultiPolygon(coordinates=shoreline_geo
+                                                      )
+                                )
 
-            return FeatureCollection([shoreline_feature]).serialize()
+            return FeatureCollection([shoreline])
         else:
             raise cors_exception(request, HTTPNotImplemented)
     else:
