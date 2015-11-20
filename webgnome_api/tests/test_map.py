@@ -1,8 +1,11 @@
 """
 Functional tests for the Gnome Map object Web API
 """
+from os.path import basename
+import pytest
+
 from base import FunctionalTestBase
-import shutil
+
 
 class MapTestBase(FunctionalTestBase):
     '''
@@ -18,13 +21,21 @@ class MapTestBase(FunctionalTestBase):
         req = self.req_data.copy()
         req['filename'] = 'goods:Test.bna'
         resp = self.testapp.post_json('/map', params=req)
+        map1 = resp.json_body
 
+        # just some checks to see that we got our map
+        assert len(map1['map_bounds']) == 4
+        assert basename(map1['filename']) == 'Test.bna'
 
     def test_remote_map(self):
         req = self.req_data.copy()
         req['filename'] = 'http://gnome.orr.noaa.gov/goods/bnas/galveston.bna'
         resp = self.testapp.post_json('/map', params=req)
+        map1 = resp.json_body
 
+        # just some checks to see that we got our map
+        assert len(map1['map_bounds']) == 4
+        assert basename(map1['filename']) == 'galveston.bna'
 
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
@@ -197,6 +208,39 @@ class MapGeoJsonTest(FunctionalTestBase):
         self.setup_map_file()
         resp = self.testapp.post_json('/map', params=self.req_data)
         map1 = resp.json_body
+
+        resp = self.testapp.get('/map/{0}/geojson'.format(map1['id']))
+        geo_json = resp.json_body
+
+        assert geo_json['type'] == 'FeatureCollection'
+        assert 'features' in geo_json
+
+        for f in geo_json['features']:
+            assert 'type' in f
+            assert 'geometry' in f
+            assert 'coordinates' in f['geometry']
+            for coord_coll in f['geometry']['coordinates']:
+                assert len(coord_coll) == 1
+
+                # This is the level where the individual coordinates are
+                assert len(coord_coll[0]) > 1
+                for c in coord_coll[0]:
+                    assert len(c) == 2
+
+
+class ParamMapTest(FunctionalTestBase):
+    '''
+        Tests out the Gnome Map object API
+    '''
+    req_data = {'obj_type': 'gnome.map.ParamMap',
+                }
+
+    @pytest.mark.xfail
+    def test_put_valid_id(self):
+        self.setup_map_file()
+        resp = self.testapp.post_json('/map', params=self.req_data)
+        map1 = resp.json_body
+        print map1
 
         resp = self.testapp.get('/map/{0}/geojson'.format(map1['id']))
         geo_json = resp.json_body

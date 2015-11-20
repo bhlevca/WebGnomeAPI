@@ -1,9 +1,6 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
-
 from base import FunctionalTestBase
 
 
@@ -21,12 +18,12 @@ class LocationTest(FunctionalTestBase):
             assert 'properties' in f
             assert 'geometry' in f
 
+            assert 'type' in f['geometry']
+            assert 'coordinates' in f['geometry']
+
             assert 'title' in f['properties']
             assert 'slug' in f['properties']
             assert 'content' in f['properties']
-
-            assert 'type' in f['geometry']
-            assert 'coordinates' in f['geometry']
 
     def test_get_invalid_id(self):
         self.testapp.get('/location/bogus', status=404)
