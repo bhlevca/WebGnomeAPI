@@ -1,7 +1,6 @@
 """
 Views for the Map objects.
 """
-import os
 import ujson
 import logging
 
@@ -10,12 +9,6 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
-
-from geojson import FeatureCollection, Feature, MultiPolygon
-
-from webgnome_api.common.osgeo_helpers import (ogr_open_file,
-                                               ogr_layers,
-                                               ogr_features)
 
 from webgnome_api.common.views import (cors_exception,
                                        get_object,
@@ -126,42 +119,7 @@ def get_geojson(request, implemented_types):
     if obj:
         if ObjectImplementsOneOf(obj, implemented_types):
             # Here is where we extract the GeoJson from our map object.
-            map_file = ogr_open_file(obj.filename)
-            shoreline_geo = []
-
-            for layer in ogr_layers(map_file):
-                for f in ogr_features(layer):
-                    primary_id = f.GetFieldAsString('Primary ID')
-
-                    # robust but slow solution ~ 1 second processing time
-                    # if primary_id == 'SpillableArea':
-                    #     spillarea_features.append(json.loads(f.ExportToJson()))
-                    # elif primary_id == 'Map Bounds':
-                    #     bounds_features.append(json.loads(f.ExportToJson()))
-                    # else:
-                    #     shoreline_features.append(json.loads(f.ExportToJson()))
-                    #     shoreline_geo.append(json.loads(f.GetGeometryRef().ExportToJson())['coordinates'][0])
-
-                    # only doing what we need at the moment
-                    # in the future we might need the other layers
-                    if primary_id not in ('SpillableArea', 'Map Bounds'):
-                        # apparently this is how you get to the actual
-                        # map coordinates using OGR.  It seems a bit brittle.
-                        # But this is much more efficient than exporting
-                        # to json.
-                        geom = f.GetGeometryRef()
-                        poly = geom.GetGeometryRef(0)
-                        ring = poly.GetGeometryRef(0)
-
-                        shoreline_geo.append([ring.GetPoints()])
-
-            shoreline = Feature(id="1",
-                                properties={'name': 'Shoreline'},
-                                geometry=MultiPolygon(coordinates=shoreline_geo
-                                                      )
-                                )
-
-            return FeatureCollection([shoreline])
+            return obj.to_geojson()
         else:
             raise cors_exception(request, HTTPNotImplemented)
     else:

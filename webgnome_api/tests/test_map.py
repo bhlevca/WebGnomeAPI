@@ -235,7 +235,6 @@ class ParamMapTest(FunctionalTestBase):
     req_data = {'obj_type': 'gnome.map.ParamMap',
                 }
 
-    @pytest.mark.xfail
     def test_put_valid_id(self):
         self.setup_map_file()
         resp = self.testapp.post_json('/map', params=self.req_data)
@@ -252,3 +251,10 @@ class ParamMapTest(FunctionalTestBase):
             assert 'type' in f
             assert 'geometry' in f
             assert 'coordinates' in f['geometry']
+            for coord_coll in f['geometry']['coordinates']:
+                assert len(coord_coll) == 1
+
+                # This is the level where the individual coordinates are
+                assert len(coord_coll[0]) > 1
+                for c in coord_coll[0]:
+                    assert len(c) == 2
