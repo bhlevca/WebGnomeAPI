@@ -26,16 +26,7 @@ log = logging.getLogger(__name__)
 
 @view_config(route_name='upload', request_method='OPTIONS')
 def upload_model_options(request):
-    req_origin = request.headers.get('Origin')
-    if req_origin is not None:
-        request.response.headers.add('Access-Control-Allow-Origin', req_origin)
-        request.response.headers.add('Access-Control-Allow-Credentials',
-                                     'true')
-        req_headers = request.headers.get('Access-Control-Request-Headers')
-        request.response.headers.add('Access-Control-Allow-Headers',
-                                     req_headers)
-
-    return request.response
+    return cors_response(request, request.response)
 
 
 @view_config(route_name='upload', request_method='POST')

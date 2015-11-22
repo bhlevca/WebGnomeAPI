@@ -55,8 +55,11 @@ def cors_response(request, response):
         response.headers.add('Access-Control-Allow-Origin', hdr_val)
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    return response
+    req_headers = request.headers.get('Access-Control-Request-Headers')
+    if req_headers is not None:
+        response.headers.add('Access-Control-Allow-Headers', req_headers)
 
+    return response
 
 def cors_file_response(request, path):
     file_response = FileResponse(path)
