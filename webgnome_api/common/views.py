@@ -213,7 +213,7 @@ def process_upload(request, field_name):
     extension = '.' + file_name.split('.')[-1]
     # add uuid to the file name incase the user accidentaly uploads
     # multiple files with the same name for different objects.
-    file_name = file_name.replace(extension, str(uuid.uuid4()) + extension)
+    file_name = file_name.replace(extension, '-' + str(uuid.uuid4()) + extension)
     file_path = os.path.join(session_dir, file_name)
 
     # check the size of our incoming file
