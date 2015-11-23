@@ -194,7 +194,8 @@ def get_session_dir(request):
     temp_dir = request.registry.settings['model_data_dir']
     session_id = request.session.session_id
     session_dir = os.path.join(temp_dir, 'session', session_id)
-    os.makedirs(session_dir)
+    if os.path.isdir(session_dir) is False:
+        os.makedirs(session_dir)
 
     return session_dir
 
