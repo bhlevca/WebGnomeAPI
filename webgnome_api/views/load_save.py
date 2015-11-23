@@ -2,8 +2,6 @@
 Views for the model load/save operations.
 """
 import os
-import uuid
-import shutil
 import logging
 import tempfile
 
@@ -12,14 +10,15 @@ from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPInsufficientStorage,
                                     HTTPNotFound)
-from pyramid.interfaces import ISessionFactory
 
 from gnome.persist import load, is_savezip_valid
 from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
-from webgnome_api.common.views import cors_response, cors_exception
+from webgnome_api.common.views import (cors_response, 
+                                       cors_exception,
+                                       process_upload)
 
 log = logging.getLogger(__name__)
 
@@ -42,71 +41,9 @@ def upload_model(request):
         and if you write to an untrusted location you will need to do
         some extra work to prevent symlink attacks.
     '''
-    base_dir = request.registry.settings['save_file_dir']
-    max_upload_size = eval(request.registry.settings['max_upload_size'])
-
-    log.info('save_file_dir: {0}'.format(base_dir))
-    log.info('max_upload_size: {0}'.format(max_upload_size))
-
-    input_file = request.POST['new_model'].file
-
-    # For some reason, the multipart form does not contain
-    # a session cookie, and Nathan so far has not been able to explicitly
-    # set it.  So a workaround is to put the session ID in the form as
-    # hidden POST content.
-    # Then we can re-establish our session with the request after
-    # checking that our session id is valid.
-    redis_session_id = request.POST['session']
-    if redis_session_id in request.session.redis.keys():
-        def get_specific_session_id(redis, timeout, serialize, generator,
-                                    session_id=redis_session_id):
-            return session_id
-
-        factory = request.registry.queryUtility(ISessionFactory)
-        request.session = factory(request,
-                                  new_session_id=get_specific_session_id)
-
-        if request.session.session_id != redis_session_id:
-            raise cors_response(request,
-                                HTTPBadRequest('multipart form request '
-                                               'could not re-establish session'
-                                               ))
-
-    # select a unique filename and a folder to put it in
-    # folder name will be the same unique name as the file
-    folder_name = '{0}'.format(uuid.uuid4())
-    file_name = '{0}.zip'.format(folder_name)
-    folder_path = os.path.join(base_dir, folder_name)
-    file_path = os.path.join(folder_path, file_name)
-
-    # check the size of our incoming file
-    input_file.seek(0, 2)
-    size = input_file.tell()
-    log.info('Incoming file size: {0}'.format(size))
-
-    if size > max_upload_size:
-        raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {0}'
-                                           .format(max_upload_size)))
-
-    # now we check if we have enough space to save the file.
-    stat_vfs = os.statvfs(base_dir)
-    free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
-    if size >= free_bytes:
-        raise cors_response(request,
-                            HTTPInsufficientStorage('Not enough space '
-                                                    'to save the file'))
-
-    # Finally write the data to a temporary file
-    os.mkdir(folder_path)
-    input_file.seek(0)
-    with open(file_path, 'wb') as output_file:
-        shutil.copyfileobj(input_file, output_file)
-
+    file_path = process_upload(request, 'new_model')
     # Now that we have our file, we will now try to load the model into
     # memory.
-    log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
-
     # Now that we have our file, is it a zipfile?
     if not is_savezip_valid(file_path):
         raise cors_response(request, HTTPBadRequest('Incoming file is not a '
