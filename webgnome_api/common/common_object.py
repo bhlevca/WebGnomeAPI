@@ -190,6 +190,14 @@ def obj_id_from_url(request):
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
+def get_session_dir(request):
+    temp_dir = request.registry.settings['model_data_dir']
+    session_id = request.session.session_id
+    session_dir = os.path.join(temp_dir, 'session', session_id)
+    os.makedirs(session_dir)
+
+    return session_dir
+
 
 def get_file_path(request, json_request=None):
     '''
@@ -210,11 +218,9 @@ def get_file_path(request, json_request=None):
         model_data_dir
     '''
 
-    temp_dir = request.registry.settings['model_data_dir']
     goods_dir = request.registry.settings['goods_dir']
     goods_url = request.registry.settings['goods_url']
-    session_id = request.session.session_id
-    session_dir = os.path.join(temp_dir, 'session', session_id)
+    session_dir = get_session_dir(request)
 
     if json_request is None:
         json_request = ujson.loads(request.body)
@@ -222,7 +228,6 @@ def get_file_path(request, json_request=None):
     if json_request['filename'][:4] == 'http' and json_request['filename'].find(goods_url) != -1:
         resp = urllib2.urlopen(json_request['filename'])
 
-        os.makedirs(session_dir)
         (remote_dir, fname) = os.path.split(json_request['filename'])
 
         with open(os.path.join(session_dir, fname), 'wb') as fh:
