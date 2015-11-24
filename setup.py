@@ -130,12 +130,12 @@ class compileJSON(_build_py):
             css.seek(0)
             css_read = unicode(css.read(), "utf-8")
             data = u"<style>" + css_read + u"</style>" + unicode(myfile.read(), "utf-8")
-            return self.remove_head_tags(htmlmin.minify(data))
+            return htmlmin.minify(data)
 
-    def remove_head_tags(self, string):
-        html_re = re.compile(r'<body[^>]*\>(.*)\<\/body', re.S)
-        parsed_str = html_re.search(string).group(1)
-        return parsed_str
+    # def remove_head_tags(self, string):
+    #     html_re = re.compile(r'<body[^>]*\>(.*)\<\/body', re.S)
+    #     parsed_str = html_re.search(string).group()
+    #     return parsed_str
 
     def jsMinify(self, path):
         with open(path, "r") as myfile:
