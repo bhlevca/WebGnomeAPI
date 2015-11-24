@@ -130,7 +130,7 @@ def upload_map(request):
     file_path = process_upload(request, 'new_map').split(os.path.sep)[-1]
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
-                                'refloat_halflife': 1.0,
+                                'refloat_halflife': 6.0,
                                 'json_': 'webapi'
                                 })
     map_obj = create_map(request)
