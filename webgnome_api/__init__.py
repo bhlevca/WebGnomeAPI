@@ -70,6 +70,7 @@ def main(global_config, **settings):
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
     config.add_route("upload", "/upload")
     config.add_route("download", "/download")
+    config.add_route("map_upload", "/map/upload")
     config.add_route("socket.io", "/socket.io/*remaining")
 
     config.scan('webgnome_api.views')

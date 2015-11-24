@@ -4,12 +4,18 @@ Common Gnome object request handlers.
 import sys
 import traceback
 import ujson
+import shutil
+import uuid
 import logging
+import os
 
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
+                                    HTTPInsufficientStorage,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
+
+from pyramid.interfaces import ISessionFactory
 
 from pyramid.response import FileResponse
 
@@ -21,7 +27,8 @@ from .common_object import (CreateObject,
                             UpdateObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
-                            obj_id_from_req_payload)
+                            obj_id_from_req_payload,
+                            get_session_dir)
 
 from .session_management import get_session_objects, get_session_object
 
@@ -55,8 +62,11 @@ def cors_response(request, response):
         response.headers.add('Access-Control-Allow-Origin', hdr_val)
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    return response
+    req_headers = request.headers.get('Access-Control-Request-Headers')
+    if req_headers is not None:
+        response.headers.add('Access-Control-Allow-Headers', req_headers)
 
+    return response
 
 def cors_file_response(request, path):
     file_response = FileResponse(path)
@@ -166,3 +176,69 @@ def update_object(request, implemented_types):
 
     log.info('<<' + log_prefix)
     return obj.serialize()
+
+def process_upload(request, field_name):
+    # For some reason, the multipart form does not contain
+    # a session cookie, and Nathan so far has not been able to explicitly
+    # set it.  So a workaround is to put the session ID in the form as
+    # hidden POST content.
+    # Then we can re-establish our session with the request after
+    # checking that our session id is valid.
+    redis_session_id = request.POST['session']
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
+
+    session_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    log.info('save_file_dir: {0}'.format(session_dir))
+    log.info('max_upload_size: {0}'.format(max_upload_size))
+
+    input_file = request.POST[field_name].file
+
+    # split and select last in array incase a path was pathed as the name
+    file_name = request.POST[field_name].filename.split(os.path.sep)[-1]
+    extension = '.' + file_name.split('.')[-1]
+    # add uuid to the file name incase the user accidentaly uploads
+    # multiple files with the same name for different objects.
+    file_name = file_name.replace(extension, '-' + str(uuid.uuid4()) + extension)
+    file_path = os.path.join(session_dir, file_name)
+
+    # check the size of our incoming file
+    input_file.seek(0, 2)
+    size = input_file.tell()
+    log.info('Incoming file size: {0}'.format(size))
+
+    if size > max_upload_size:
+        raise cors_response(request,
+                            HTTPBadRequest('file is too big!  Max size = {0}'
+                                           .format(max_upload_size)))
+
+    # now we check if we have enough space to save the file.
+    stat_vfs = os.statvfs(session_dir)
+    free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
+    if size >= free_bytes:
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to save the file'))
+
+    # Finally write the data to the session temporary dir
+    input_file.seek(0)
+    with open(file_path, 'wb') as output_file:
+        shutil.copyfileobj(input_file, output_file)
+
+    log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
+
+    return file_path
