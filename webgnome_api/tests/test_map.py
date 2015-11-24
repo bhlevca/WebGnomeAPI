@@ -98,6 +98,17 @@ class MapTestBase(FunctionalTestBase):
         resp = self.testapp.put_json('/map', params=req_data)
         self.check_updates(resp.json_body)
 
+    def test_file_upload(self):
+        field_name = 'new_map'
+        file_name = 'models/test.bna'
+        resp = self.testapp.post('/map/upload', {'session': '1234'},
+                                 upload_files=[(field_name, file_name,)]
+                                 )
+        map_obj = resp.json_body
+
+        assert len(map_obj['map_bounds']) == 4
+        assert map_obj['filename'].find('test') != -1
+
     def perform_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests

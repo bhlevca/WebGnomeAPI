@@ -3,16 +3,21 @@ Views for the Map objects.
 """
 import ujson
 import logging
+import os
 
 from cornice import Service
+from pyramid.view import view_config
+from pyramid.response import Response
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
 from webgnome_api.common.views import (cors_exception,
+                                       cors_response,
                                        get_object,
-                                       cors_policy)
+                                       cors_policy,
+                                       process_upload)
 
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
@@ -52,6 +57,9 @@ def get_map(request):
 
 
 @map_api.post()
+def create_map_view(request):
+    return create_map(request)
+
 def create_map(request):
     '''Creates a Gnome Map object.'''
     log_prefix = 'req({0}): create_map():'.format(id(request))
@@ -110,6 +118,25 @@ def update_map(request):
 
     set_session_object(obj, request)
     return obj.serialize()
+
+
+@view_config(route_name='map_upload', request_method='OPTIONS')
+def upload_map_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='map_upload', request_method='POST')
+def upload_map(request):
+    file_path = process_upload(request, 'new_map').split(os.path.sep)[-1]
+    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+                                'filename': file_path,
+                                'refloat_halflife': 1.0,
+                                'json_': 'webapi'
+                                })
+    map_obj = create_map(request)
+    resp = Response(ujson.dumps(map_obj))
+    
+    return cors_response(request, resp)
 
 
 def get_geojson(request, implemented_types):
