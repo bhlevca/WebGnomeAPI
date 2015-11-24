@@ -178,14 +178,6 @@ def update_object(request, implemented_types):
     return obj.serialize()
 
 def process_upload(request, field_name):
-    session_dir = get_session_dir(request)
-    max_upload_size = eval(request.registry.settings['max_upload_size'])
-
-    log.info('save_file_dir: {0}'.format(session_dir))
-    log.info('max_upload_size: {0}'.format(max_upload_size))
-
-    input_file = request.POST[field_name].file
-
     # For some reason, the multipart form does not contain
     # a session cookie, and Nathan so far has not been able to explicitly
     # set it.  So a workaround is to put the session ID in the form as
@@ -207,6 +199,14 @@ def process_upload(request, field_name):
                                 HTTPBadRequest('multipart form request '
                                                'could not re-establish session'
                                                ))
+
+    session_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    log.info('save_file_dir: {0}'.format(session_dir))
+    log.info('max_upload_size: {0}'.format(max_upload_size))
+
+    input_file = request.POST[field_name].file
 
     # split and select last in array incase a path was pathed as the name
     file_name = request.POST[field_name].filename.split(os.path.sep)[-1]
