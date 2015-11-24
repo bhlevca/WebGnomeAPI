@@ -10,6 +10,8 @@ awesome-slugify
 pygtail
 PyGnome
 webtest
+htmlmin
+jsmin
 
 # Binary Related Packages
 gdal            # requires system binaries verison may vary based on what's available for system

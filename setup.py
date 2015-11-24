@@ -10,7 +10,6 @@ import ujson
 import json
 import re
 
-from premailer import transform
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
 from distutils.command.build_py import build_py as _build_py
@@ -131,7 +130,7 @@ class compileJSON(_build_py):
             css.seek(0)
             css_read = unicode(css.read(), "utf-8")
             data = u"<style>" + css_read + u"</style>" + unicode(myfile.read(), "utf-8")
-            return self.remove_head_tags(transform(htmlmin.minify(data)))
+            return self.remove_head_tags(htmlmin.minify(data))
 
     def remove_head_tags(self, string):
         html_re = re.compile(r'<body[^>]*\>(.*)\<\/body', re.S)
