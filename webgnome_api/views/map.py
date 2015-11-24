@@ -145,7 +145,6 @@ def get_geojson(request, implemented_types):
 
     if obj:
         if ObjectImplementsOneOf(obj, implemented_types):
-            # Here is where we extract the GeoJson from our map object.
             return obj.to_geojson()
         else:
             raise cors_exception(request, HTTPNotImplemented)
