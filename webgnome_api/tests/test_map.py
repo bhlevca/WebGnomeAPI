@@ -100,14 +100,15 @@ class MapTestBase(FunctionalTestBase):
 
     def test_file_upload(self):
         field_name = 'new_map'
-        file_name = 'models/test.bna'
+        file_name = 'models/Test.bna'
         resp = self.testapp.post('/map/upload', {'session': '1234'},
                                  upload_files=[(field_name, file_name,)]
                                  )
         map_obj = resp.json_body
 
         assert len(map_obj['map_bounds']) == 4
-        assert map_obj['filename'].find('test') != -1
+        assert basename(map_obj['filename'])[:4] == 'Test'
+        assert basename(map_obj['filename'])[-4:] == '.bna'
 
     def perform_updates(self, json_obj):
         '''
@@ -237,6 +238,49 @@ class MapGeoJsonTest(FunctionalTestBase):
                 assert len(coord_coll[0]) > 1
                 for c in coord_coll[0]:
                     assert len(c) == 2
+
+    def test_all_goods_maps(self):
+        req = self.req_data.copy()
+        goods_url = 'http://gnome.orr.noaa.gov/goods/bnas'
+
+        for map_file in ('galveston.bna',
+                         'newyork.bna',
+                         'lakesuperior.bna',
+                         'lakeontario.bna',
+                         'lakehuron.bna',
+                         'lakeerie.bna',
+                         'lakemichigan.bna',
+                         ):
+            req['filename'] = '/'.join([goods_url, map_file])
+            print 'checking ', req['filename']
+
+            resp = self.testapp.post_json('/map', params=req)
+            map1 = resp.json_body
+
+            # just some checks to see that we got our map
+            assert len(map1['map_bounds']) == 4
+            assert basename(map1['filename']) == map_file
+
+            resp = self.testapp.get('/map/{0}/geojson'.format(map1['id']))
+            geo_json = resp.json_body
+
+            assert geo_json['type'] == 'FeatureCollection'
+            assert 'features' in geo_json
+
+            for f in geo_json['features']:
+                assert 'type' in f
+                assert 'geometry' in f
+                assert 'properties' in f
+
+                assert 'coordinates' in f['geometry']
+                for coord_coll in f['geometry']['coordinates']:
+                    assert len(coord_coll) == 1
+
+                    # This is the level where the individual
+                    # coordinates are
+                    assert len(coord_coll[0]) > 1
+                    for c in coord_coll[0]:
+                        assert len(c) == 2
 
 
 class ParamMapTest(FunctionalTestBase):
