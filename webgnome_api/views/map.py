@@ -60,6 +60,7 @@ def get_map(request):
 def create_map_view(request):
     return create_map(request)
 
+
 def create_map(request):
     '''Creates a Gnome Map object.'''
     log_prefix = 'req({0}): create_map():'.format(id(request))
@@ -135,7 +136,7 @@ def upload_map(request):
                                 })
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))
-    
+
     return cors_response(request, resp)
 
 
