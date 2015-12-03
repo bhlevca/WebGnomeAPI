@@ -22,6 +22,13 @@
 
     var sagSpeed = convertToM_S(parseFloat($(selector + ' #sag-speed').val()), $(selector + ' #sag-speed-units'));
     var shaSpeed = convertToM_S(parseFloat($(selector + ' #sha-speed').val()), $(selector + ' #sha-speed-units'));
-    var canSpeed = convertToM_S(parseFloat($(selector + ' #can-west-speed').val()), $(selector + ' #can-west-speed-units'));
+    var canWestSpeed = convertToM_S(parseFloat($(selector + ' #can-west-speed').val()), $(selector + ' #can-west-speed-units'));
+    var canEastSpeed = convertToM_S(parseFloat($(selector + ' #can-tam-speed').val()), $(selector + ' #can-tam-speed-units'));
 
+    sagMover.set('scale_value', sagSpeed);
+    shaMover.set('scale_value', shaSpeed);
+    canWestMover.set('scale_value', canWestSpeed);
+    canEastMover.set('scale_value', canEastSpeed);
+
+    webgnome.model.save();
 }(form));
