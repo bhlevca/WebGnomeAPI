@@ -2,7 +2,6 @@
 Functional tests for the Gnome Map object Web API
 """
 from os.path import basename
-import pytest
 
 from base import FunctionalTestBase
 
@@ -249,8 +248,7 @@ class MapGeoJsonTest(FunctionalTestBase):
                          'lakeontario.bna',
                          'lakehuron.bna',
                          'lakeerie.bna',
-                         'lakemichigan.bna',
-                         ):
+                         'lakemichigan.bna'):
             req['filename'] = '/'.join([goods_url, map_file])
             print 'checking ', req['filename']
 
@@ -272,15 +270,28 @@ class MapGeoJsonTest(FunctionalTestBase):
                 assert 'geometry' in f
                 assert 'properties' in f
 
-                assert 'coordinates' in f['geometry']
-                for coord_coll in f['geometry']['coordinates']:
-                    assert len(coord_coll) == 1
+                f_geo = f['geometry']
+                assert 'coordinates' in f_geo
 
-                    # This is the level where the individual
-                    # coordinates are
-                    assert len(coord_coll[0]) > 1
-                    for c in coord_coll[0]:
-                        assert len(c) == 2
+                if f_geo['type'] == 'MultiPolygon':
+                    for coord_coll in f_geo['coordinates']:
+                        assert len(coord_coll) == 1
+
+                        # This is the level where the individual
+                        # coordinates are
+                        assert len(coord_coll[0]) > 1
+                        for c in coord_coll[0]:
+                            assert len(c) == 2
+                elif f_geo['type'] == 'MultiLineString':
+                    for coords in f_geo['coordinates']:
+                        assert len(coords) > 1
+
+                        # This is the level where the individual
+                        # coordinates are
+                        for c in coords:
+                            assert len(c) == 2
+                else:
+                    assert False
 
 
 class ParamMapTest(FunctionalTestBase):
