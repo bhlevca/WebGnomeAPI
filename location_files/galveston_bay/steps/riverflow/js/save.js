@@ -12,8 +12,17 @@
         if (trinFlow === "other") {
             var trinStageHeight = $(selector + " #trinity-stageheight").val();
             var trinStageHeightUnits = $(selector + " #trinity-stageheight-units").val();
+
+            if (!trinStageHeight || isNaN(parseFloat(trinStageHeight))) {
+                return "Please enter a number for Trinity stage height!";
+            }
+
             if (trinStageHeightUnits === 'm') {
                 trinStageHeight = trinStageHeight * 3.28084;
+            }
+
+            if (trinStageHeight < 0 || trinStageHeight > 31) {
+                return "Trinity stage height is outside the acceptable range!";
             }
 
             if (trinStageHeight > 15) {
@@ -58,8 +67,17 @@
         if (sanJacFlow === 'other') {
             var sanJacStageHeight = $(selector + ' #sanjacinto-stageheight').val();
             var sanJacStageHeightUnits = $(selector + ' #sanjacinto-stageheight-units').val();
+
+            if (!sanJacStageHeight || isNaN(parseFloat(sanJacStageHeight))) {
+                return "Please enter a number for San Jacinto stage height!";
+            }
+
             if (sanJacStageHeightUnits === 'm') {
                 sanJacStageHeight = sanJacStageHeight * 3.28084;
+            }
+
+            if (sanJacStageHeight < 0 || sanJacStageHeight > 28) {
+                return "San Jacinto stage height is outside the acceptable range!";
             }
 
             a7 = -0.0008962534216177780 * Math.pow(sanJacStageHeight, 7);
@@ -85,8 +103,17 @@
         if (buffFlow === 'other') {
             var buffStageHeight = $(selector + ' #buffalobayou-stageheight').val();
             var buffStageHeightUnits = $(selector + ' #buffalobayou-stageheight-units').val();
+
+            if (!buffStageHeight || isNaN(parseFloat(buffStageHeight))) {
+                return "Please enter a number for Buffalo stage height!";
+            }
+
             if (buffStageHeightUnits === 'm') {
                 buffStageHeight = buffStageHeight * 3.28084;
+            }
+
+            if (buffStageHeight < 3 || buffStageHeight > 38) {
+                return "Buffalo stage height is outside the acceptable range!";
             }
 
             a7 = -0.0008962534216177780 * Math.pow(buffStageHeight, 7);

@@ -10,8 +10,16 @@
     } else {
         var stage_height = parseFloat($(selector + ' #stageheight').val());
 
+        if (!stage_height || isNaN(stage_height)) {
+            return "Please enter a number for stage height!";
+        }
+
         if ($(selector + ' #stageheight-units').val() === 'm') {
             stage_height *= 3.28084;
+        }
+
+        if (stage_height < 3 || stage_height > 20) {
+            return "Stage height is not within the acceptable range!";
         }
 
         var a7 = (1.30783535/10) * Math.pow(stage_height, 7);

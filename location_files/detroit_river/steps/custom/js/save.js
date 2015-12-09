@@ -17,8 +17,24 @@
         var gibraltarHeight = $(selector + ' #gibraltar').val();
         var gibraltarHeightUnits = $(selector + ' #gibraltar-units').val();
 
+        if (!windmillHeight) {
+            return "Please enter a value for Windmill stage height!";
+        }
+
+        if (!gibraltarHeight) {
+            return "Please enter a value for Gibralter stage height!";
+        }
+
         windmillHeight = convertHeight(windmillHeight, windmillHeightUnits);
         gibraltarHeight = convertHeight(gibraltarHeight, gibraltarHeightUnits);
+
+        if (windmillHeight < 170 || windmillHeight > 180) {
+            return "Windmill stage height is outside an acceptable range!";
+        }
+
+        if (gibraltarHeight < 170 || gibraltarHeight > 180) {
+            return "Gibralter stage height is outside an acceptable range!";
+        }
 
         scale_value = windmillHeight - gibraltarHeight;
     } else {

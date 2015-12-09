@@ -9,8 +9,16 @@
     } else {
         sab_flow = parseFloat($(selector + ' #sabine-flowrate-manual').val());
 
+        if (isNaN(sab_flow)) {
+            return "Please enter a number for Sabine flow rate!";
+        }
+
         if ($(selector + ' #sabine-flowrate-units').val() !== 'cfs') {
             sab_flow *= 1000;
+        }
+
+        if (sab_flow > 20000 || sab_flow < 10) {
+            return "The entered Sabine flow rate is outside the acceptable range!";
         }
     }
 
@@ -19,8 +27,16 @@
     } else {
         nec_flow = parseFloat($(selector + ' #neches-flowrate-manual').val());
 
+        if (isNaN(nec_flow)) {
+            return "Please enter a number for Neches flow rate!";
+        }
+
         if ($(selector + ' #neches-flowrate-units').val() !== 'cfs') {
             nec_flow *= 1000;
+        }
+
+        if (nec_flow > 3800 || nec_flow < 1) {
+            return "The entered Neches flow rate is outside the acceptable range!";
         }
     }
 

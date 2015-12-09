@@ -8,12 +8,20 @@
     var cat_v_at_ref = 0.247137;
     var cat_v_at_B = 0.015001;
 
+    if (!speed || isNaN(parseFloat(speed))) {
+        return "Please enter a numerical value for speed!";
+    }
+
     if (speed_units !== 'm/s') {
         if (speed_units === 'cm/s') {
             speed /= 100;
         } else if (speed_units === 'knots') {
             speed *= 0.514444;
         }
+    }
+
+    if (speed > 1 || speed < 0) {
+        return "Speed is outside the acceptable range!";
     }
 
     if (direction_units === 'rad') {
