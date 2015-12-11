@@ -9,7 +9,6 @@ from pyramid import testing
 from paste.deploy.loadwsgi import appconfig
 from webtest import TestApp
 
-from gnome.multi_model_broadcast import ModelBroadcaster
 from webgnome_api import main
 
 
@@ -18,7 +17,8 @@ class GnomeTestCase(TestCase):
         here = os.path.dirname(__file__)
         self.project_root = os.path.abspath(os.path.dirname(here))
 
-    def get_settings(self, config_file='../../config-example.ini#webgnome_api'):
+    def get_settings(self,
+                     config_file='../../config-example.ini#webgnome_api'):
         here = os.path.dirname(__file__)
         return appconfig('config:%s' % config_file, relative_to=here)
 
@@ -48,23 +48,25 @@ class FunctionalTestBase(GnomeTestCase):
             It would be nice if pyramid would provide a cleanup method
             upon shutdown.
         '''
-        app = self.testapp.app
+        registry = self.testapp.app.registry
+        settings = registry.settings
 
-        for session_umodels in app.registry.settings['uncertain_models'].values():
+        for session_umodels in settings['uncertain_models'].values():
             print 'our session umodels object:', session_umodels
             if session_umodels is not None:
                 session_umodels.stop()
 
-        if hasattr(app.registry, '_redis_sessions'):
-            app.registry._redis_sessions.connection_pool.disconnect()
+        if hasattr(registry, '_redis_sessions'):
+            registry._redis_sessions.connection_pool.disconnect()
 
     def setup_map_file(self):
         # emulate that the user upload their map file
         # this would put it in their model_data session folder
         session_resp = self.testapp.post('/session')
         os.makedirs('./models/session/' + session_resp.json_body['id'])
-        shutil.copyfile('./models/Test.bna', './models/session/' + session_resp.json_body['id'] + '/Test.bna')
-
+        shutil.copyfile('./models/Test.bna',
+                        ('./models/session/{0}/Test.bna'
+                         .format(session_resp.json_body['id'])))
 
 
 class UnitTestBase(GnomeTestCase):

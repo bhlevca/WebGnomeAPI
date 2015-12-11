@@ -1,6 +1,6 @@
 (function(modal){
   var sabineListener = function() {
-     if ($('.sabine-flowrate', modal).val() === 'other') {
+     if ($('#sabine-flowrate', modal).val() === 'other') {
         $('.sabine-flow-manual', modal).removeClass('hide');
      } else {
         $('.sabine-flow-manual', modal).addClass('hide');

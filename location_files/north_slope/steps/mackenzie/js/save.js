@@ -7,6 +7,14 @@
 
 	if (macFlow === 'other') {
 		macFlow = parseFloat($(selector + ' #flow-rate-manual').val());
+
+		if (!macFlow || isNaN(macFlow)) {
+			return "Please enter a number for Mackenzie flow!";
+		}
+
+		if (macFlow < 2500 || macFlow > 35000) {
+			return "Mackenzie flow rate is not within the acceptable range!";
+		}
 	} else {
 		macFlow = parseFloat(macFlow);
 	}
