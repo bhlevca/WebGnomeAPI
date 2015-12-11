@@ -66,7 +66,7 @@ class compileJSON(_build_py):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
 
-        with open(os.path.join(here, 'css/less/style.css'), "r") as css_file:
+        with open(os.path.join(here, 'location_files/style.css'), "r") as css_file:
             for path in paths:
                 for pattern in file_patterns:
                     file_list = [os.path.join(dirpath, f)
