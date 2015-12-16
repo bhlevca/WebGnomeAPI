@@ -10,10 +10,10 @@
         var trinFlow = $(selector + ' #trinity-flow').val();
 
         if (trinFlow === "other") {
-            var trinStageHeight = $(selector + " #trinity-stageheight").val();
+            var trinStageHeight = parseFloat($(selector + " #trinity-stageheight").val());
             var trinStageHeightUnits = $(selector + " #trinity-stageheight-units").val();
 
-            if (!trinStageHeight || isNaN(parseFloat(trinStageHeight))) {
+            if (isNaN(trinStageHeight)) {
                 return "Please enter a number for Trinity stage height!";
             }
 
@@ -142,7 +142,16 @@
         San_Buff_River_Mover.set('scale_value', b_sj_transport_scaled);
     }
 
-    trinityRiver();
-    sanJacBuffRiver();
+    var triMessage = trinityRiver();
+
+    if (triMessage) {
+        return triMessage;
+    }
+
+    var sanJacMessage = sanJacBuffRiver();
+
+    if (sanJacMessage) {
+        return sanJacMessage;
+    }
     webgnome.model.save();
 }(form));
