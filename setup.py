@@ -8,7 +8,6 @@ import htmlmin
 from jsmin import jsmin
 import ujson
 import json
-import re
 
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
@@ -62,6 +61,10 @@ class cleandev(clean):
 
 class compileJSON(_build_py):
 
+    def __init__(self, dist):
+        _build_py.__init__(self, dist)
+        self.paths = set()
+
     def run(self):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
@@ -87,15 +90,16 @@ class compileJSON(_build_py):
                 if key == "steps":
                     for step in data_obj[key]:
                         dirpath = os.path.dirname(path)
-                        if step["type"] == "custom":
+                        if step["type"] == "custom" and dirpath not in self.paths:
                             self.fill_html_body(data_obj, dirpath, css)
                             self.fill_js_functions(data_obj, dirpath)
+                            self.paths.add(dirpath)
                         else:
                             self.write_compiled_json(data_obj, dirpath)
 
     def findHTML(self, obj, path):
         html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
-        return sorted(set(html_files))
+        return html_files
 
     def findJS(self, obj, path):
         js_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.js")]
