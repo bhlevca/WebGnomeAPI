@@ -41,7 +41,11 @@
     }
 
     colvilleRiver();
-    kuparukRiver();
+    var kuparukMessage = kuparukRiver();
+
+    if (kuparukMessage) {
+      return kuparukMessage;
+    }
 
     webgnome.model.save();
 }(form));
