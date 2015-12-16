@@ -69,7 +69,7 @@ class compileJSON(_build_py):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
 
-        with open(os.path.join(here, 'css/less/style.css'), "r") as css_file:
+        with open(os.path.join(here, 'location_files/style.css'), "r") as css_file:
             for path in paths:
                 for pattern in file_patterns:
                     file_list = [os.path.join(dirpath, f)
@@ -82,20 +82,22 @@ class compileJSON(_build_py):
                         except OSError as err:
                             print ("Failed to find {0}. Error {1}".format(f, err))
 
+            print ("Compiled {0} location(s)".format(len(file_list)))
+
     def parse(self, obj, path, css):
         with open(path, "r") as wizard_json:
             data = unicode(wizard_json.read(), "utf-8")
             data_obj = ujson.loads(data)
             for key in data_obj:
-                if key == "steps":
-                    for step in data_obj[key]:
-                        dirpath = os.path.dirname(path)
-                        if step["type"] == "custom" and dirpath not in self.paths:
-                            self.fill_html_body(data_obj, dirpath, css)
-                            self.fill_js_functions(data_obj, dirpath)
-                            self.paths.add(dirpath)
-                        else:
-                            self.write_compiled_json(data_obj, dirpath)
+                print ("Compiling {0} location wizard".format(data_obj["name"]))
+                for step in data_obj["steps"]:
+                    dirpath = os.path.dirname(path)
+                    if step["type"] == "custom" and dirpath not in self.paths:
+                        self.fill_html_body(data_obj, dirpath, css)
+                        self.fill_js_functions(data_obj, dirpath)
+                        self.paths.add(dirpath)
+                    else:
+                        self.write_compiled_json(data_obj, dirpath)
 
     def findHTML(self, obj, path):
         html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
@@ -111,9 +113,12 @@ class compileJSON(_build_py):
         for file_path in js_file_list:
             filename = os.path.basename(os.path.dirname(file_path).split("/js")[0])
             js_file_name = self.grab_filename(file_path)
+
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
+                    print("    Processing {0}".format(os.path.sep.join(file_path.split(os.path.sep)[-5:-1]) + os.path.sep + js_file_name + '.js'))
                     step["functions"][js_file_name] = self.jsMinify(file_path)
+
         self.write_compiled_json(obj, path)
 
     def fill_html_body(self, obj, path, css):
@@ -121,8 +126,10 @@ class compileJSON(_build_py):
         html_file_list = self.findHTML(obj, path)
         for file_path in html_file_list:
             filename = self.grab_filename(file_path)
+
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
+                    print("    Processing {0}".format(os.path.sep.join(file_path.split(os.path.sep)[-5:-1]) + os.path.sep + filename + '.html'))
                     step["body"] = self.htmlMinify(file_path, css)
         self.write_compiled_json(obj, path)
 
