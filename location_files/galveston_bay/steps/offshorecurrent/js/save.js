@@ -24,8 +24,16 @@
         return "Speed is outside the acceptable range!";
     }
 
+    if (!direction || isNaN(parseFloat(direction))) {
+        return "Please enter a numerical value for direction!";
+    }
+
     if (direction_units === 'rad') {
         direction *= (180 / Math.PI);
+    }
+
+    if (direction < 0 || direction > 360) {
+        return "Direction is outside the acceptable range!";
     }
 
     direction -= 55;
