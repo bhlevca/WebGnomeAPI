@@ -23,7 +23,7 @@
     var sagVal = parseFloat($(selector + ' #sag-speed').val());
     var shaVal = parseFloat($(selector + ' #sha-speed').val());
     var canWestVal = parseFloat($(selector + ' #can-west-speed').val());
-    var canEastVal = parseFloat($(selector + ' #can-east-speed').val());
+    var canEastVal = parseFloat($(selector + ' #can-tam-speed').val());
 
     if (!sagVal || isNaN(sagVal)) {
         return "Please enter a number for Sag flow rate!";
@@ -38,13 +38,13 @@
     }
 
     if (!canEastVal || isNaN(canEastVal)) {
-        return "Please enter a number for Canning East flow rate!";
+        return "Please enter a number for Canning and Tamayariak flow rate!";
     }
 
-    var sagSpeed = convertToM_S(sagVal, $(selector + ' #sag-speed-units'));
-    var shaSpeed = convertToM_S(shaVal, $(selector + ' #sha-speed-units'));
-    var canWestSpeed = convertToM_S(canWestVal, $(selector + ' #can-west-speed-units'));
-    var canEastSpeed = convertToM_S(canEastVal, $(selector + ' #can-tam-speed-units'));
+    var sagSpeed = convertToM_S(sagVal, $(selector + ' #sag-speed-units').val());
+    var shaSpeed = convertToM_S(shaVal, $(selector + ' #sha-speed-units').val());
+    var canWestSpeed = convertToM_S(canWestVal, $(selector + ' #can-west-speed-units').val());
+    var canEastSpeed = convertToM_S(canEastVal, $(selector + ' #can-tam-speed-units').val());
 
     if (sagSpeed < 0.05 || sagSpeed > 2.5) {
         return "Sag flow rate is not within the acceptable range!";
@@ -59,7 +59,7 @@
     }
 
     if (canEastSpeed < 0.05 || canEastSpeed > 2.5) {
-        return "Canning East flow rate is not within the acceptable range!";
+        return "Canning and Tamayariak flow rate is not within the acceptable range!";
     }
 
     sagMover.set('scale_value', sagSpeed);
