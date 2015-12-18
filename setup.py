@@ -61,10 +61,6 @@ class cleandev(clean):
 
 class compileJSON(_build_py):
 
-    def __init__(self, dist):
-        _build_py.__init__(self, dist)
-        self.paths = set()
-
     def run(self):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
@@ -85,6 +81,8 @@ class compileJSON(_build_py):
             print ("Compiled {0} location(s)".format(len(file_list)))
 
     def parse(self, obj, path, css):
+        if not hasattr(self, 'paths'):
+            self.paths = set()
         with open(path, "r") as wizard_json:
             data = unicode(wizard_json.read(), "utf-8")
             data_obj = ujson.loads(data)
