@@ -90,12 +90,13 @@ class compileJSON(_build_py):
                 print ("Compiling {0} location wizard".format(data_obj["name"]))
                 for step in data_obj["steps"]:
                     dirpath = os.path.dirname(path)
-                    if step["type"] == "custom" and dirpath not in self.paths:
-                        self.fill_html_body(data_obj, dirpath, css)
-                        self.fill_js_functions(data_obj, dirpath)
-                        self.paths.add(dirpath)
-                    else:
-                        self.write_compiled_json(data_obj, dirpath)
+                    if dirpath not in self.paths:
+                        if step["type"] == "custom":
+                            self.fill_html_body(data_obj, dirpath, css)
+                            self.fill_js_functions(data_obj, dirpath)
+                            self.paths.add(dirpath)
+                        else:
+                            self.write_compiled_json(data_obj, dirpath)
 
     def findHTML(self, obj, path):
         html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
