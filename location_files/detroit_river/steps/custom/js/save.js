@@ -28,12 +28,25 @@
         windmillHeight = convertHeight(windmillHeight, windmillHeightUnits);
         gibraltarHeight = convertHeight(gibraltarHeight, gibraltarHeightUnits);
 
+        var str;
         if (windmillHeight < 170 || windmillHeight > 180) {
-            return "Windmill stage height is outside an acceptable range!";
+            str = "Windmill stage height needs to be within ";
+            if (windmillHeightUnits === 'm') {
+                str += "170 and 180 meters!";
+            } else {
+                str += "558 and 591 feet!";
+            }
+            return str;
         }
 
         if (gibraltarHeight < 170 || gibraltarHeight > 180) {
-            return "Gibralter stage height is outside an acceptable range!";
+            str = "Gibraltar stage height needs to be within ";
+            if (gibraltarHeightUnits === 'm') {
+                str += "170 and 180 meters!";
+            } else {
+                str += "558 and 591 feet!";
+            }
+            return str;
         }
 
         scale_value = windmillHeight - gibraltarHeight;
