@@ -97,6 +97,7 @@ def load_location_file(location_file, request):
         if active_model is not None:
             active_model._map = new_model._map
             active_model._time_step  = new_model._time_step
+            active_model._num_time_steps = new_model._num_time_steps
             active_model.merge(new_model)
         else:
             active_model = new_model

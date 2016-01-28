@@ -9,5 +9,6 @@
  "filename": "GulfMaineDAC.cur", 
  "name": "GulfMaineDAC.cur", 
  "json_": "save", 
- "scale_value": 1.0
+ "uncertain_duration": 6.0,
+ "scale_value": 0.2
 }
