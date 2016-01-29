@@ -6,8 +6,8 @@
   41.5835, 
   0.0
  ], 
- "name": "WACtidesamps0319.cur", 
- "filename": "WACtidesamps0319.cur", 
+ "name": "Tides.cur", 
+ "filename": "Tides.cur", 
  "tide": "Tide_0.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 100000.0, 
