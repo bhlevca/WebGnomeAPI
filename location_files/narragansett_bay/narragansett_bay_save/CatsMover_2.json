@@ -2,12 +2,12 @@
  "obj_type": "gnome.movers.current_movers.CatsMover", 
  "scale": true, 
  "scale_refpoint": [
-  -71.38333, 
-  41.76667, 
+  -71.3485, 
+  41.7212, 
   0.0
  ], 
- "name": "WACProvRiverOutflow.cur", 
- "filename": "WACProvRiverOutflow.cur", 
+ "name": "ProvidenceRiver.cur", 
+ "filename": "ProvidenceRiver.cur", 
  "json_": "save", 
  "scale_value": 0.11
 }

@@ -1,8 +1,8 @@
 {
  "obj_type": "gnome.movers.current_movers.ComponentMover", 
  "name": "Wind Driven Currents", 
- "filename1": "WACLinWind20ktN2e-3.cur", 
- "filename2": "WACLinWind20ktE2e-3.cur", 
+ "filename1": "LinWind20ktN.cur", 
+ "filename2": "LinWind20ktE.cur", 
  "scale_refpoint": [
   -71.4, 
   41.55, 
