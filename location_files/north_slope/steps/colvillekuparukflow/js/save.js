@@ -17,17 +17,24 @@
 
         if (kuparukFlow === 'other') {
            var kuparukVal = parseFloat($(selector + ' #kuparuk-flow-manual').val());
+           var kuparukUnits = $(selector + ' #kuparuk-flow-manual-units').val();
 
            if (!kuparukVal || isNaN(kuparukVal)) {
               return "Please enter a number for Kuparuk flow rate!";
            }
 
-           if ($(selector + ' #kuparuk-flow-manual-units').val() === 'kcfs') {
+           if (kuparukUnits === 'kcfs') {
                 kuparukVal *= 1000;
            }
 
            if (kuparukVal < 10 || kuparukVal > 10000) {
-              return "Kuparuk flow rate is outside the acceptable range!";
+              var str = 'Kuparuk flow rate is outside the acceptable range of ';
+              if (kuparukUnits === 'kcfs') {
+                str += '0.01 and 10 kcfs!';
+              } else {
+                str += '10 and 10000!';
+              }
+              return str;
            }
 
            kuparukFlow = kuparukVal;

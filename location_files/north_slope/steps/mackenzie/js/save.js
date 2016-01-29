@@ -13,7 +13,7 @@
 		}
 
 		if (macFlow < 2500 || macFlow > 35000) {
-			return "Mackenzie flow rate is not within the acceptable range!";
+			return "Mackenzie flow rate is not within the acceptable range of 2500 and 35000 m^3/s!";
 		}
 	} else {
 		macFlow = parseFloat(macFlow);
