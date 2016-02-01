@@ -5,7 +5,7 @@
     function trinityRiver() {
         var TRIN_U_TO_Q_RATIO = 0.6698 / 15373;
         var Trin_River_Mover = webgnome.model.get('movers').findWhere({'name': 'TrinityRiver.cur'});
-        var t_transport, t_transport_scaled;
+        var t_transport, t_transport_scaled, errMsg;
 
         var trinFlow = $(selector + ' #trinity-flow').val();
 
@@ -22,7 +22,15 @@
             }
 
             if (trinStageHeight < 0 || trinStageHeight > 31) {
-                return "Trinity stage height is outside the acceptable range!";
+                errMsg = "Trinity stage height is outside the acceptable range of ";
+
+                if (trinStageHeightUnits === 'm') {
+                    errMsg += "0 and 9.45 meters!";
+                } else if (trinStageHeightUnits === 'ft') {
+                    errMsg += "0 and 31 feet!";
+                }
+
+                return errMsg;
             }
 
             if (trinStageHeight > 15) {
@@ -63,6 +71,7 @@
         var sj_transport, b_transport;
         var a7, a6, a5, a4, a3, a2, a1, a0;
         var terms;
+        var errMsg;
 
         if (sanJacFlow === 'other') {
             var sanJacStageHeight = $(selector + ' #sanjacinto-stageheight').val();
@@ -77,7 +86,15 @@
             }
 
             if (sanJacStageHeight < 0 || sanJacStageHeight > 28) {
-                return "San Jacinto stage height is outside the acceptable range!";
+                errMsg = "San Jacinto stage height is outside the acceptable range of ";
+
+                if (sanJacStageHeightUnits === 'm') {
+                    errMsg += "0 and 8.5 meters!";
+                } else if (sanJacStageHeightUnits === 'ft') {
+                    errMsg += "0 and 28 feet!";
+                }
+
+                return errMsg;
             }
 
             a7 = -0.0008962534216177780 * Math.pow(sanJacStageHeight, 7);
@@ -113,7 +130,15 @@
             }
 
             if (buffStageHeight < 3 || buffStageHeight > 38) {
-                return "Buffalo stage height is outside the acceptable range!";
+                errMsg = "Buffalo stage height is outside the acceptable range of ";
+
+                if (buffStageHeightUnits === 'm') {
+                    errMsg += "0.9 and 11.5 meters!";
+                } else if (buffStageHeightUnits === 'ft') {
+                    errMsg += "3 and 38 feet!";
+                }
+
+                return errMsg;
             }
 
             a7 = -0.0008962534216177780 * Math.pow(buffStageHeight, 7);

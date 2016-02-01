@@ -7,6 +7,7 @@
     var Offshore_Mover = webgnome.model.get('movers').findWhere({'name': 'Offshore.cur'});
     var cat_v_at_ref = 0.247137;
     var cat_v_at_B = 0.015001;
+    var errMsg;
 
     if (!speed || isNaN(parseFloat(speed))) {
         return "Please enter a numerical value for speed!";
@@ -21,7 +22,17 @@
     }
 
     if (speed > 1 || speed < 0) {
-        return "Speed is outside the acceptable range!";
+        errMsg = "Speed is outside the acceptable range of ";
+
+        if (speed_units === 'm/s') {
+            errMsg += "0 and 1 m/s!";
+        } else if (speed_units === 'cm/s') {
+            errMsg += "0 and 100 cm/s!";
+        } else if (speed_units === 'knots') {
+            errMsg += "0 and 1.94 knots!";
+        }
+
+        return errMsg;
     }
 
     if (!direction || isNaN(parseFloat(direction))) {
@@ -33,7 +44,15 @@
     }
 
     if (direction < 0 || direction > 360) {
-        return "Direction is outside the acceptable range!";
+        errMsg = "Direction is outside the acceptable range of ";
+        
+        if (direction_units === 'rad') {
+            errMsg += "0 and 2 pi radians!";
+        } else if (direction_units === 'deg') {
+            errMsg += "0 and 360 degrees!";
+        }
+
+        return errMsg;
     }
 
     direction -= 55;
