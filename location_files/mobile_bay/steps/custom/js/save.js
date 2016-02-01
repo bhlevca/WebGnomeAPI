@@ -9,17 +9,27 @@
         scale_value = scale * flow;
     } else {
         var stage_height = parseFloat($(selector + ' #stageheight').val());
+        var stage_height_units = $(selector + ' #stageheight-units').val();
+        var errMsg;
 
         if (!stage_height || isNaN(stage_height)) {
             return "Please enter a number for stage height!";
         }
 
-        if ($(selector + ' #stageheight-units').val() === 'm') {
+        if (stage_height_units === 'm') {
             stage_height *= 3.28084;
         }
 
         if (stage_height < 3 || stage_height > 20) {
-            return "Stage height is not within the acceptable range!";
+            errMsg = "Stage height is not within the acceptable range of ";
+
+            if (stage_height_units === 'm') {
+                errMsg += "0.92 and 6 meters!";
+            } else if (stage_height_units === 'ft') {
+                errMsg += "3 and 20 feet!";
+            }
+
+            return errMsg;
         }
 
         var a7 = (1.30783535/10) * Math.pow(stage_height, 7);
