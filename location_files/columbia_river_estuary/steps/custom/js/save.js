@@ -30,17 +30,35 @@
 		var units = {};
 		units['bonne'] = $(selector + ' #bonne-flow-units').val();
 		units['will'] = $(selector + ' #william-flow-units').val();
-		var transport;
+		var transport, errMsg;
 
 		bonneFlow = convertToKCFS(bonneFlow, units.bonne);
 		willFlow = convertToKCFS(willFlow, units.will);
 
 		if (bonneFlow < 0 || bonneFlow > 450) {
-			return "Bonneville flow rate is outside the acceptable range!";
+			errMsg = "Bonneville flow rate is outside the acceptable range of ";
+			if (units.bonne === 'cfs') {
+				errMsg += "0 and 450,000 cfs!";
+			} else if (units.bonne === 'kcfs') {
+				errMsg += "0 and 450 kcfs!";
+			} else if (units.bonne === 'm3/s') {
+				errMsg += "0 and 12,742 m^3/s!";
+			}
+
+			return errMsg;
 		}
 
 		if (willFlow < 0 || willFlow > 300) {
-			return "Williamette flow rate is outside the acceptable range!";
+			errMsg = "Williamette flow rate is outside the acceptable range of ";
+			if (units.will === 'cfs') {
+				errMsg += "0 and 300,000 cfs!";
+			} else if (units.will === 'kcfs') {
+				errMsg += "0 and 300 kcfs!";
+			} else if (units.will === 'm3/s') {
+				errMsg += "0 and 8,495 m^3/s!";
+			}
+
+			return errMsg;
 		}
 
 		if ((bonneFlow <= 200) && (willFlow <= 90)) {
