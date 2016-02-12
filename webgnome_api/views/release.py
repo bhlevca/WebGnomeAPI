@@ -14,6 +14,7 @@ release = Service(name='release', path='/release*obj_id',
 implemented_types = ('gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
+                     'gnome.spill.release.ContinuousRelease'
                      )
 
 
