@@ -21,6 +21,9 @@ step_api = Service(name='step', path='/step',
                    description="Model Step API", cors_policy=cors_policy)
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
+full_run_api = Service(name='full_run', path='/full_run',
+                       description="Model Full Run API",
+                       cors_policy=cors_policy)
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +126,77 @@ def get_rewind(request):
 
         try:
             active_model.rewind()
+        except:
+            raise cors_exception(request, HTTPUnprocessableEntity,
+                                 with_stacktrace=True)
+        finally:
+            gnome_sema.release()
+    else:
+        raise cors_exception(request, HTTPPreconditionFailed)
+
+
+@full_run_api.get()
+def get_full_run(request):
+    '''
+        Performs a full run of the current active Model and
+        returns the final step results.
+    '''
+    active_model = get_active_model(request)
+    if active_model:
+        gnome_sema = request.registry.settings['py_gnome_semaphore']
+        gnome_sema.acquire()
+
+        try:
+            active_model.rewind()
+
+            drop_uncertain_models(request)
+
+            if active_model.has_weathering_uncertainty:
+                log.info('Model has weathering uncertainty')
+                set_uncertain_models(request)
+            else:
+                log.info('Model does not have weathering uncertainty')
+
+            begin = time.time()
+
+            for step in active_model:
+                output = step
+                steps = get_uncertain_steps(request)
+
+            end = time.time()
+
+            if steps and 'WeatheringOutput' in output:
+                nominal = output['WeatheringOutput']
+                aggregate = defaultdict(list)
+                low = {}
+                high = {}
+                full_output = {}
+
+                for idx, step_output in enumerate(steps):
+                    for k, v in step_output['WeatheringOutput'].iteritems():
+                        aggregate[k].append(v)
+
+                for k, v in aggregate.iteritems():
+                    low[k] = min(v)
+                    high[k] = max(v)
+
+                full_output = {'time_stamp': nominal['time_stamp'],
+                               'nominal': nominal,
+                               'low': low,
+                               'high': high}
+                for idx, step_output in enumerate(steps):
+                    full_output[idx] = step_output['WeatheringOutput']
+
+                output['WeatheringOutput'] = full_output
+                output['total_response_time'] = end - begin
+            elif 'WeatheringOutput' in output:
+                nominal = output['WeatheringOutput']
+                full_output = {'time_stamp': nominal['time_stamp'],
+                               'nominal': nominal,
+                               'low': None,
+                               'high': None}
+                output['WeatheringOutput'] = full_output
+                output['total_response_time'] = end - begin
         except:
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)

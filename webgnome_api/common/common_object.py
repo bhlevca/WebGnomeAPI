@@ -1,6 +1,10 @@
 """
 Common Gnome object request handlers.
 """
+import os
+import urllib2
+import ujson
+
 from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
 from logging import Logger
 
@@ -12,7 +16,6 @@ from gnome.utilities.geometry.BBox import BBox
 
 from webgnome_api.common.session_management import set_session_object
 
-import urllib2, os
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
@@ -190,6 +193,7 @@ def obj_id_from_url(request):
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
+
 def get_session_dir(request):
     temp_dir = request.registry.settings['model_data_dir']
     session_id = request.session.session_id
@@ -226,7 +230,8 @@ def get_file_path(request, json_request=None):
     if json_request is None:
         json_request = ujson.loads(request.body)
 
-    if json_request['filename'][:4] == 'http' and json_request['filename'].find(goods_url) != -1:
+    if (json_request['filename'][:4] == 'http' and
+            json_request['filename'].find(goods_url) != -1):
         resp = urllib2.urlopen(json_request['filename'])
 
         (remote_dir, fname) = os.path.split(json_request['filename'])
