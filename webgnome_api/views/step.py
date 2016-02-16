@@ -202,6 +202,8 @@ def get_full_run(request):
                                  with_stacktrace=True)
         finally:
             gnome_sema.release()
+
+        return output
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
 
