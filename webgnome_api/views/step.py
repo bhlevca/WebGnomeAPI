@@ -10,6 +10,8 @@ from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPUnprocessableEntity)
 from cornice import Service
 
+from gnome.weatherers import Skimmer, Burn, ChemicalDispersion
+
 from webgnome_api.common.session_management import (get_active_model,
                                                     get_uncertain_models,
                                                     drop_uncertain_models,
@@ -17,11 +19,12 @@ from webgnome_api.common.session_management import (get_active_model,
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
+
 step_api = Service(name='step', path='/step',
                    description="Model Step API", cors_policy=cors_policy)
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
-full_run_api = Service(name='full_run', path='/full_run',
+full_run_api = Service(name='full_run', path='/full_run_without_response',
                        description="Model Full Run API",
                        cors_policy=cors_policy)
 
@@ -138,8 +141,9 @@ def get_rewind(request):
 @full_run_api.get()
 def get_full_run(request):
     '''
-        Performs a full run of the current active Model and
-        returns the final step results.
+        Performs a full run of the current active Model, turning off any
+        response options.
+        Returns the final step results.
     '''
     active_model = get_active_model(request)
     if active_model:
@@ -147,6 +151,12 @@ def get_full_run(request):
         gnome_sema.acquire()
 
         try:
+            weatherer_active_flags = [w.active
+                                      for w in active_model.weatherers]
+            for w in active_model.weatherers:
+                if isinstance(w, (Skimmer, Burn, ChemicalDispersion)):
+                    w._active = False
+
             active_model.rewind()
 
             drop_uncertain_models(request)
@@ -201,6 +211,8 @@ def get_full_run(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
+            for a, w in zip(weatherer_active_flags, active_model.weatherers):
+                w._active = a
             gnome_sema.release()
 
         return output

@@ -985,7 +985,7 @@ class StepTest(FunctionalTestBase):
 
         expected_final_step = model1['num_time_steps'] - 1
 
-        resp = self.testapp.get('/full_run')
+        resp = self.testapp.get('/full_run_without_response')
         final_step = resp.json_body
 
         print 'our final step:'
