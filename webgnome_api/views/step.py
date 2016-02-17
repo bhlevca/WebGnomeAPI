@@ -151,11 +151,11 @@ def get_full_run(request):
         gnome_sema.acquire()
 
         try:
-            weatherer_active_flags = [w.active
-                                      for w in active_model.weatherers]
+            weatherer_enabled_flags = [w.on for w in active_model.weatherers]
+
             for w in active_model.weatherers:
                 if isinstance(w, (Skimmer, Burn, ChemicalDispersion)):
-                    w._active = False
+                    w.on = False
 
             active_model.rewind()
 
@@ -211,8 +211,8 @@ def get_full_run(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
-            for a, w in zip(weatherer_active_flags, active_model.weatherers):
-                w._active = a
+            for a, w in zip(weatherer_enabled_flags, active_model.weatherers):
+                w.on = a
             gnome_sema.release()
 
         return output

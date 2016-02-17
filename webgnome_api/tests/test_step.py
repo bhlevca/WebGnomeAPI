@@ -1,6 +1,9 @@
 """
 Functional tests for the Gnome Location object Web API
 """
+import datetime
+import dateutil.parser
+
 import pytest
 
 from base import FunctionalTestBase
@@ -359,6 +362,15 @@ class StepTest(FunctionalTestBase):
                        'active_stop': '2013-02-13T21:00:00',
                        'on': True,
                        }
+
+    skimmer_data = {"obj_type": "gnome.weatherers.cleanup.Skimmer",
+                    "name": "Skimmer #1",
+                    "active_start": "2013-02-13T15:00:00",
+                    "active_stop": "2013-02-15T15:00:00",
+                    "efficiency": 0.2,
+                    "amount": "2160",
+                    "units": "bbl",
+                    }
 
     geojson_output_data = {'obj_type': ('gnome.outputters'
                                         '.TrajectoryGeoJsonOutput'),
@@ -900,6 +912,13 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.get('/model')
         model1 = resp.json_body
 
+        print 'model start time:', model1['start_time']
+        start_time = dateutil.parser.parse(model1['start_time'])
+
+        model1['duration'] = '{}'.format(float(5 * 24 * 60 * 60))
+        print ('model duration: {} hours'
+               .format(float(model1['duration']) / 60 / 60))
+
         # The location file we selected should have:
         # - a registered map
         # - a registered Tide
@@ -921,16 +940,16 @@ class StepTest(FunctionalTestBase):
         spill_data = {"release": {"json_": "webapi",
                                   "obj_type": ("gnome.spill.release"
                                                ".PointLineRelease"),
-                                  "end_position": [-73.83952178907545,
-                                                   40.4626050585251, 0],
-                                  "start_position": [-73.83952178907545,
-                                                     40.4626050585251, 0],
+                                  "end_position": [-74.0280406367412,
+                                                   40.5376381774569, 0],
+                                  "start_position": [-74.0280406367412,
+                                                     40.5376381774569, 0],
                                   "num_elements": 1000,
                                   "num_released": 0,
                                   "start_time_invalid": True,
-                                  "release_time": "2015-05-15T16:00:00",
+                                  "release_time": start_time.isoformat(),
                                   "num_per_timestep": None,
-                                  "end_release_time": "2015-05-15T16:00:00"},
+                                  "end_release_time": start_time.isoformat()},
                       "on": True,
                       "obj_type": "gnome.spill.spill.Spill",
                       "element_type": element_type,
@@ -963,11 +982,18 @@ class StepTest(FunctionalTestBase):
 
         self.evaporation_data['wind'] = wind_data
         self.evaporation_data['water'] = water_data
+
         self.dispersion_data['water'] = water_data
         self.dispersion_data['waves'] = self.waves_data
 
+        self.skimmer_data['active_start'] = start_time.isoformat()
+        self.skimmer_data['active_stop'] = ((start_time +
+                                             datetime.timedelta(days=1))
+                                            .isoformat())
+
         model1['weatherers'] = [self.evaporation_data,
-                                self.dispersion_data]
+                                self.dispersion_data,
+                                self.skimmer_data]
 
         # - we need outputters
         print 'test_weathering_step(): creating outputters...'
@@ -983,12 +1009,52 @@ class StepTest(FunctionalTestBase):
         assert 'id' in model1['outputters'][0]
         assert 'id' in model1['outputters'][1]
 
-        expected_final_step = model1['num_time_steps'] - 1
+        num_time_steps = model1['num_time_steps']
+        expected_final_step = num_time_steps - 1
 
+        # First we check the normal skimmed amount when we run the model
+        # as normal
+        for s in range(num_time_steps):
+            resp = self.testapp.get('/step')
+            step = resp.json_body
+            assert step['step_num'] == s
+
+        print 'final step with response options active:'
+        print '{0}, '.format(step['step_num']),
+        pp.pprint(step['WeatheringOutput'])
+
+        assert 'nominal' in step['WeatheringOutput']
+        assert 'skimmed' in step['WeatheringOutput']['nominal']
+        assert step['WeatheringOutput']['nominal']['skimmed'] > 0.0
+        skimmed_amt = step['WeatheringOutput']['nominal']['skimmed']
+
+        # next we perform the full run without response options and then
+        # check that nothing was skimmed.
         resp = self.testapp.get('/full_run_without_response')
         final_step = resp.json_body
 
-        print 'our final step:'
-        pp.pprint(final_step)
+        print '\n\nour final step with response options inactive:'
+        pp.pprint(final_step['WeatheringOutput'])
 
         assert final_step['step_num'] == expected_final_step
+        assert 'nominal' in final_step['WeatheringOutput']
+        assert 'skimmed' not in final_step['WeatheringOutput']['nominal']
+
+        # Next we rewind the model and then re-run it as normal to
+        # make sure that the skimmer was re-enabled after the full run.
+        resp = self.testapp.get('/rewind')
+        rewind_response = resp.json_body
+        assert rewind_response is None
+
+        for s in range(num_time_steps):
+            resp = self.testapp.get('/step')
+            step = resp.json_body
+            assert step['step_num'] == s
+
+        print '\n\nfinal step with response options active:'
+        print '{0}, '.format(step['step_num']),
+        pp.pprint(step['WeatheringOutput'])
+
+        assert 'nominal' in step['WeatheringOutput']
+        assert 'skimmed' in step['WeatheringOutput']['nominal']
+        assert step['WeatheringOutput']['nominal']['skimmed'] == skimmed_amt
