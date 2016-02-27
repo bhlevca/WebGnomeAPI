@@ -28,7 +28,8 @@ from .common_object import (CreateObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
                             obj_id_from_req_payload,
-                            get_session_dir)
+                            get_session_dir,
+                            clean_session_dir)
 
 from .session_management import get_session_objects, get_session_object
 
@@ -67,6 +68,7 @@ def cors_response(request, response):
         response.headers.add('Access-Control-Allow-Headers', req_headers)
 
     return response
+
 
 def cors_file_response(request, path):
     file_response = FileResponse(path)
@@ -177,6 +179,7 @@ def update_object(request, implemented_types):
     log.info('<<' + log_prefix)
     return obj.serialize()
 
+
 def process_upload(request, field_name):
     # For some reason, the multipart form does not contain
     # a session cookie, and Nathan so far has not been able to explicitly
@@ -200,6 +203,7 @@ def process_upload(request, field_name):
                                                'could not re-establish session'
                                                ))
 
+    clean_session_dir(request)
     session_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
 
@@ -213,7 +217,8 @@ def process_upload(request, field_name):
     extension = '.' + file_name.split('.')[-1]
     # add uuid to the file name incase the user accidentaly uploads
     # multiple files with the same name for different objects.
-    file_name = file_name.replace(extension, '-' + str(uuid.uuid4()) + extension)
+    file_name = file_name.replace(extension,
+                                  '-' + str(uuid.uuid4()) + extension)
     file_path = os.path.join(session_dir, file_name)
 
     # check the size of our incoming file
