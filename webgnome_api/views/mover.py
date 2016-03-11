@@ -3,11 +3,14 @@ Views for the Mover objects.
 This currently includes ??? objects.
 """
 import logging
-
+import ujson
+import os
 import numpy as np
 
 from geojson import Feature, FeatureCollection, MultiPolygon
 
+from pyramid.response import Response
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
@@ -18,7 +21,9 @@ from webgnome_api.common.views import (get_object,
                                        create_object,
                                        update_object,
                                        cors_policy,
-                                       cors_exception)
+                                       cors_response,
+                                       cors_exception,
+                                       process_upload)
 
 from webgnome_api.common.session_management import get_session_object
 
@@ -62,6 +67,16 @@ def update_mover(request):
     '''Updates a Mover object.'''
     return update_object(request, implemented_types)
 
+@view_config(route_name='mover_upload', request_method='OPTIONS')
+def mover_upload_options(request):
+    return cors_response(request, request.response)
+
+@view_config(route_name='mover_upload', request_method='POST')
+def upload_mover(request):
+    file_path = process_upload(request, 'new_mover')
+    resp = Response(ujson.dumps({'filename': file_path}))
+
+    return cors_response(request, resp)
 
 def get_current_info(request):
     '''
