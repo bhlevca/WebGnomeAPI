@@ -2,10 +2,19 @@
 Views for the Environment objects.
 This currently includes Wind and Tide objects.
 """
+import ujson
+import os
+
+from pyramid.response import Response
+from pyramid.view import view_config
+
 from webgnome_api.common.views import (get_object,
                                        create_object,
                                        update_object,
-                                       cors_policy)
+                                       cors_policy,
+                                       cors_response,
+                                       cors_exception,
+                                       process_upload)
 
 from cornice import Service
 
@@ -36,3 +45,15 @@ def create_environment(request):
 def update_environment(request):
     '''Updates an Environment object.'''
     return update_object(request, implemented_types)
+
+
+@view_config(route_name='environment_upload', request_method='OPTIONS')
+def environment_upload_options(request):
+    return cors_response(request, request.response)
+
+@view_config(route_name='environment_upload', request_method='POST')
+def environment_upload(request):
+    filename = process_upload(request, 'new_environment')
+    resp = Response(ujson.dumps({'filename': filename}))
+    
+    return cors_response(request, resp)
