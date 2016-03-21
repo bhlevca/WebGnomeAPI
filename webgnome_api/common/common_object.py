@@ -2,6 +2,7 @@
 Common Gnome object request handlers.
 """
 import os
+import shutil
 import urllib2
 import ujson
 
@@ -202,6 +203,40 @@ def get_session_dir(request):
         os.makedirs(session_dir)
 
     return session_dir
+
+
+def list_session_dir(request):
+    '''
+        Purely diagnostic in intent, we simply list the files in our
+        session directory.
+    '''
+    temp_dir = request.registry.settings['model_data_dir']
+    session_id = request.session.session_id
+    session_dir = os.path.join(temp_dir, 'session', session_id)
+    if os.path.isdir(session_dir) is False:
+        os.makedirs(session_dir)
+
+    if os.path.isdir(session_dir) is True:
+        # our session folder exists, clean out any files
+        for f in os.listdir(session_dir):
+            print '\t{}'.format(f)
+
+
+def clean_session_dir(request):
+    temp_dir = request.registry.settings['model_data_dir']
+    session_id = request.session.session_id
+    session_dir = os.path.join(temp_dir, 'session', session_id)
+    if os.path.isdir(session_dir) is True:
+        # our session folder exists, clean out any files
+        for f in os.listdir(session_dir):
+            try:
+                f = os.path.join(session_dir, f)
+                if os.path.isdir(f):
+                    shutil.rmtree(f)
+                else:
+                    os.remove(f)
+            except:
+                pass
 
 
 def get_file_path(request, json_request=None):

@@ -16,3 +16,4 @@ messages.*
 goods/*
 compiled.json
 node_modules/
+.cache

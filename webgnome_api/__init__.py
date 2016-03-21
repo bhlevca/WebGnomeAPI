@@ -71,6 +71,8 @@ def main(global_config, **settings):
     config.add_route("upload", "/upload")
     config.add_route("download", "/download")
     config.add_route("map_upload", "/map/upload")
+    config.add_route("mover_upload", "/mover/upload")
+    config.add_route("environment_upload", "/environment/upload")
     config.add_route("socket.io", "/socket.io/*remaining")
 
     config.scan('webgnome_api.views')

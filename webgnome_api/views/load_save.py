@@ -16,7 +16,7 @@ from webgnome_api.common.common_object import RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
-from webgnome_api.common.views import (cors_response, 
+from webgnome_api.common.views import (cors_response,
                                        cors_exception,
                                        process_upload)
 
@@ -86,8 +86,7 @@ def download_model(request):
 
     if my_model:
         tf = tempfile.NamedTemporaryFile()
-        base_name = os.path.basename(tf.name)
-        dir_name = os.path.dirname(tf.name)
+        dir_name, base_name = os.path.split(tf.name)
 
         my_model.save(saveloc=dir_name, name=base_name)
         response_filename = ('{0}.zip'.format(my_model.name))
