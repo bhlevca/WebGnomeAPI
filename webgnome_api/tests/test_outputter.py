@@ -224,7 +224,7 @@ class CurrentOutputterTests(OutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceOutputterTests(OutputterTests):
+class IceGeoJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
@@ -261,29 +261,34 @@ class IceOutputterTests(OutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceImageOutputterTests(OutputterTests):
+class IceImageOutputterTests(IceGeoJsonOutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.IceImageOutput',
-                'name': u'IceImageOutput',
-                'on': True,
-                'output_last_step': True,
-                'output_zero_step': True,
-                'ice_movers': [{'obj_type': u'gnome.movers.IceMover',
-                                'name': u'IceMover',
-                                'active_start': '-inf',
-                                'active_stop': 'inf',
-                                'on': True,
-                                'current_scale': 1.0,
-                                'filename': u'models/acnfs_example.nc',
-                                'topology_file': u'models/acnfs_topo.dat',
-                                'uncertain_along': 0.5,
-                                'uncertain_cross': 0.25,
-                                'uncertain_duration': 24.0,
-                                'uncertain_time_delay': 0.0
-                                }]
-                }
+    def setUp(self):
+        super(IceImageOutputterTests, self).setUp()
+        self.req_data['obj_type'] = u'gnome.outputters.IceImageOutput'
+
+    def check_created_values(self, json_obj1, json_obj2):
+        for k in ('name', 'output_last_step', 'output_zero_step'):
+            assert json_obj1[k] == json_obj2[k]
+
+    def perform_updates(self, json_obj):
+        json_obj['output_last_step'] = False
+        json_obj['output_zero_step'] = False
+
+    def check_updates(self, json_obj):
+        assert json_obj['output_last_step'] is False
+        assert json_obj['output_zero_step'] is False
+
+
+class IceRawJsonOutputterTests(IceGeoJsonOutputterTests):
+    '''
+        Tests out the Gnome Raw Json Ice Outputter object API
+    '''
+    def setUp(self):
+        super(IceRawJsonOutputterTests, self).setUp()
+        self.req_data['obj_type'] = u'gnome.outputters.IceRawJsonOutput'
 
     def check_created_values(self, json_obj1, json_obj2):
         for k in ('name', 'output_last_step', 'output_zero_step'):
