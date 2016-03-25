@@ -42,7 +42,7 @@ def get_location(request):
     location_content = []
     location_file_dirs = []
 
-    for (path, dirnames, filenames) in walk(locations_dir):
+    for (path, _dirnames, filenames) in walk(locations_dir):
         if len(path.split(sep)) == base_len + 1:
             [location_content.append(ujson.load(open(join(path, f), 'r')))
              for f in filenames
@@ -96,7 +96,7 @@ def load_location_file(location_file, request):
 
         if active_model is not None:
             active_model._map = new_model._map
-            active_model._time_step  = new_model._time_step
+            active_model._time_step = new_model._time_step
             active_model._num_time_steps = new_model._num_time_steps
             active_model.merge(new_model)
         else:
@@ -107,6 +107,8 @@ def load_location_file(location_file, request):
             active_model.name = name
 
         init_session_objects(request, force=True)
+
         log.debug("model loaded - begin registering objects")
         RegisterObject(active_model, request)
+
         set_active_model(request, active_model.id)
