@@ -64,10 +64,14 @@ class LoadModelTest(FunctionalTestBase):
         z_in = zipfile.ZipFile(test_file)
         z_out = zipfile.ZipFile(save_file)
 
-        for info_in, info_out in zip(z_in.infolist(), z_out.infolist()):
+        for info_in, info_out in zip(sorted(z_in.infolist(),
+                                            key=lambda x: x.filename),
+                                     sorted(z_out.infolist(),
+                                            key=lambda x: x.filename)):
             print ((info_in.filename, info_out.filename),
                    (info_in.file_size, info_out.file_size)
                    )
+
             assert info_in.filename == info_out.filename
             assert info_in.file_size == info_out.file_size
             assert info_in.CRC == info_out.CRC
