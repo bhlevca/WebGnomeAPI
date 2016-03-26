@@ -2,7 +2,7 @@
 Functional tests for the Gnome Environment object Web API
 These include (Wind, Tide, etc.)
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from base import FunctionalTestBase
 
@@ -124,6 +124,49 @@ class SkimmerTests(BaseWeathererTests):
                 'efficiency': .3
                 }
 
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        self.now = datetime.now()
+        json_obj['active_start'] = self.now.isoformat()
+        json_obj['active_stop'] = (self.now + timedelta(days=1)).isoformat()
+        json_obj['on'] = False
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        assert json_obj['active_start'] == self.now.isoformat()
+        assert json_obj['active_stop'] == ((self.now + timedelta(days=1))
+                                           .isoformat())
+        assert json_obj['on'] is False
+
+    def test_put_with_low_active_stop(self):
+        '''
+            Similar to test_put_valid_id, but we want to test updating
+            active_start and active_stop with a range that is outside and
+            below the current active range.
+        '''
+        self.now = datetime.now()
+        req_data = self.req_data
+
+        req_data['active_start'] = ((self.now + timedelta(days=3))
+                                    .isoformat())
+
+        req_data['active_stop'] = ((self.now + timedelta(days=4))
+                                   .isoformat())
+
+        resp = self.testapp.post_json('/weatherer', params=req_data)
+
+        req_data = resp.json_body
+        self.perform_updates(req_data)
+
+        resp = self.testapp.put_json('/weatherer', params=req_data)
+        self.check_updates(resp.json_body)
+
 
 class ChemicalDispersionTests(BaseWeathererTests):
     '''
@@ -154,6 +197,26 @@ class BeachingTests(BaseWeathererTests):
                                ('2015-04-27T22:00:00', 19),
                                ('2015-04-28T04:00:00', 15)]
                 }
+
+    def perform_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        self.now = datetime.now()
+        json_obj['active_start'] = self.now.isoformat()
+        json_obj['active_stop'] = (self.now + timedelta(days=1)).isoformat()
+        json_obj['on'] = False
+
+    def check_updates(self, json_obj):
+        '''
+            We can overload this function when subclassing our tests
+            for new object types.
+        '''
+        assert json_obj['active_start'] == self.now.isoformat()
+        assert json_obj['active_stop'] == ((self.now + timedelta(days=1))
+                                           .isoformat())
+        assert json_obj['on'] is False
 
     def test_put_empty_timeseries(self):
         resp = self.testapp.post_json('/weatherer', params=self.req_data)
