@@ -9,7 +9,7 @@
     <div class="form-group">
         <label class="col-sm-4 control-label" for="speed">Speed:</label>
         <div class="col-sm-4">
-            <input type="number" class="form-control" id="speed">
+            <input type="number" min="0" class="form-control" id="speed">
         </div>
         <div class="col-sm-3">
             <select class="form-control" id="speed-units">
@@ -29,11 +29,11 @@
     <div class="form-group">
         <label class="col-sm-4 control-label" for="direction">Direction:</label>
         <div class="col-sm-4">
-            <input type="number" class="form-control" id="direction">
+            <input type="number" min="0" class="form-control" id="direction">
         </div>
         <div class="col-sm-3">
             <select class="form-control" id="direction-units">
-                <option value="degree">
+                <option value="deg">
                     degrees
                 </option>
                 <option value="rad">
