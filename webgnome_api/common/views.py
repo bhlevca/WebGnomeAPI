@@ -203,7 +203,6 @@ def process_upload(request, field_name):
                                                'could not re-establish session'
                                                ))
 
-    clean_session_dir(request)
     session_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
 

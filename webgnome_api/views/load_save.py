@@ -12,7 +12,7 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound)
 
 from gnome.persist import load, is_savezip_valid
-from webgnome_api.common.common_object import RegisterObject
+from webgnome_api.common.common_object import RegisterObject, clean_session_dir
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
                                                     get_active_model)
@@ -41,6 +41,7 @@ def upload_model(request):
         and if you write to an untrusted location you will need to do
         some extra work to prevent symlink attacks.
     '''
+    clean_session_dir(request)
     file_path = process_upload(request, 'new_model')
     # Now that we have our file, we will now try to load the model into
     # memory.
