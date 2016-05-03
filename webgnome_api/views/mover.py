@@ -7,7 +7,7 @@ import ujson
 import os
 import numpy as np
 
-from geojson import Feature, FeatureCollection, MultiPolygon
+from geojson import Feature, FeatureCollection, MultiPolygon, Polygon
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -52,6 +52,9 @@ def get_mover(request):
     if (len(content_requested) > 1 and
             content_requested[1] == 'grid'):
         return get_current_info(request)
+    elif (len(content_requested) > 1 and 
+            content_requested[1] == 'centers'):
+        return get_grid_centers(request)
     else:
         return get_object(request, implemented_types)
 
@@ -104,17 +107,42 @@ def get_current_info(request):
             # times = [start_seconds + 3600. * dt
             #          for dt in range(int(num_hours))]
 
-            features = []
-
             if isinstance(mover, CurrentMoversBase):
-                signature = get_grid_signature(mover)
-                grid_multipolygon = get_grid_multipolygon(mover)
+                # signature = get_grid_signature(mover)
+                cells = get_cells(mover)
 
-                features.append(Feature(geometry=grid_multipolygon,
-                                        id='1',
-                                        properties={'signature': signature}))
+            return cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).tolist()
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        gnome_sema.release()
+        log.info('  ' + log_prefix + 'semaphore released...')
 
-            return FeatureCollection(features)
+    log.info('<<' + log_prefix)
+
+def get_grid_centers(request):
+    '''
+        Outputs GNOME grid centers for a particular mover
+    '''
+    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    gnome_sema = request.registry.settings['py_gnome_semaphore']
+    gnome_sema.acquire()
+    log.info('  {0} {1}'.format(log_prefix, 'semaphore acquired...'))
+
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        mover = get_session_object(obj_id, request)
+
+        if mover is not None:
+            
+            if isinstance(mover, CurrentMoversBase):
+                # signature = get_grid_signature(mover)
+                centers = get_center_points(mover)
+
+            return centers.tolist()
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
@@ -141,10 +169,14 @@ def get_grid_signature(mover):
     return abs(point_diffs.view(dtype=np.complex)).sum()
 
 
-def get_grid_multipolygon(mover):
+def get_cells(mover):
     grid_data = mover.get_grid_data()
-
-    return MultiPolygon(coordinates=[[t] for t in grid_data.tolist()])
+    d_t = grid_data.dtype.descr
+    u_t = d_t[0][1]
+    n_s = grid_data.shape + (len(d_t),)
+    grid_data = grid_data.view(dtype = u_t).reshape(*n_s)
+    return grid_data
+    # return [t for t in grid_data.tolist()]
 
 
 def get_center_points(mover):
