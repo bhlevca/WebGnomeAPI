@@ -20,7 +20,8 @@ implemented_types = ('gnome.weatherers.core.Weatherer',
                      'gnome.weatherers.Beaching',
                      'gnome.weatherers.ChemicalDispersion',
                      'gnome.weatherers.WeatheringData',
-                     'gnome.weatherers.FayGravityViscous'
+                     'gnome.weatherers.FayGravityViscous',
+		     'gnome.weatherers.Dissolution'
                      )
 
 
