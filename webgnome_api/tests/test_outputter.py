@@ -197,7 +197,7 @@ class CurrentOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.CurrentGeoJsonOutput',
+    req_data = {'obj_type': u'gnome.outputters.CurrentJsonOutput',
                 'name': u'CurrentGrid',
                 'output_last_step': True,
                 'output_zero_step': True,
@@ -224,11 +224,11 @@ class CurrentOutputterTests(OutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceGeoJsonOutputterTests(OutputterTests):
+class IceJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.IceGeoJsonOutput',
+    req_data = {'obj_type': u'gnome.outputters.IceJsonOutput',
                 'name': u'IceGeoJsonOutput',
                 'on': True,
                 'output_last_step': True,
@@ -261,7 +261,7 @@ class IceGeoJsonOutputterTests(OutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceImageOutputterTests(IceGeoJsonOutputterTests):
+class IceImageOutputterTests(IceJsonOutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
@@ -282,13 +282,13 @@ class IceImageOutputterTests(IceGeoJsonOutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceRawJsonOutputterTests(IceGeoJsonOutputterTests):
+class IceJsonOutputterTests(IceJsonOutputterTests):
     '''
         Tests out the Gnome Raw Json Ice Outputter object API
     '''
     def setUp(self):
-        super(IceRawJsonOutputterTests, self).setUp()
-        self.req_data['obj_type'] = u'gnome.outputters.IceRawJsonOutput'
+        super(IceJsonOutputterTests, self).setUp()
+        self.req_data['obj_type'] = u'gnome.outputters.IceJsonOutput'
 
     def check_created_values(self, json_obj1, json_obj2):
         for k in ('name', 'output_last_step', 'output_zero_step'):
