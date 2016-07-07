@@ -15,7 +15,8 @@ from gnome.persist import load, is_savezip_valid
 from webgnome_api.common.common_object import RegisterObject, clean_session_dir
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
-                                                    get_active_model)
+                                                    get_active_model,
+                                                    acquire_session_lock)
 from webgnome_api.common.views import (cors_response,
                                        cors_exception,
                                        process_upload)
@@ -51,9 +52,8 @@ def upload_model(request):
                                                     'valid zipfile!'))
 
     # now we try to load our model from the zipfile.
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('semaphore acquired.')
+    session_lock = acquire_session_lock(request)
+    log.info('session lock acquired.')
     try:
         log.info('loading our model from zip...')
         new_model = load(file_path)
@@ -68,8 +68,8 @@ def upload_model(request):
     except:
         raise cors_exception(request, HTTPBadRequest, with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('semaphore released.')
+        session_lock.release()
+        log.info('session lock released.')
 
     # We will want to clean up our tempfile when we are done.
     os.remove(file_path)

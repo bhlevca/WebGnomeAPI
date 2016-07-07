@@ -29,7 +29,8 @@ from webgnome_api.common.common_object import (CreateObject,
 from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
                                                     get_session_object,
-                                                    set_session_object)
+                                                    set_session_object,
+                                                    acquire_session_lock)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
@@ -78,9 +79,8 @@ def create_map(request):
         json_request['filename'] = get_file_path(request,
                                                  json_request=json_request)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  ' + log_prefix + 'session lock acquired...')
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
@@ -88,8 +88,8 @@ def create_map(request):
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  ' + log_prefix + 'session lock released...')
 
     set_session_object(obj, request)
     return obj.serialize()
