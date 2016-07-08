@@ -28,13 +28,13 @@ class MapTestBase(FunctionalTestBase):
 
     def test_remote_map(self):
         req = self.req_data.copy()
-        req['filename'] = 'http://gnome.orr.noaa.gov/goods/bnas/galveston.bna'
+        req['filename'] = 'http://gnome.orr.noaa.gov/goods/bnas/newyork.bna'
         resp = self.testapp.post_json('/map', params=req)
         map1 = resp.json_body
 
         # just some checks to see that we got our map
         assert len(map1['map_bounds']) == 4
-        assert basename(map1['filename']) == 'galveston.bna'
+        assert basename(map1['filename']) == 'newyork.bna'
 
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
@@ -242,12 +242,10 @@ class MapGeoJsonTest(FunctionalTestBase):
         req = self.req_data.copy()
         goods_url = 'http://gnome.orr.noaa.gov/goods/bnas'
 
-        for map_file in ('galveston.bna',
-                         'newyork.bna',
+        for map_file in ('newyork.bna',
                          'lakesuperior.bna',
                          'lakeontario.bna',
                          'lakehuron.bna',
-                         'lakeerie.bna',
                          'lakemichigan.bna'):
             req['filename'] = '/'.join([goods_url, map_file])
             print 'checking ', req['filename']

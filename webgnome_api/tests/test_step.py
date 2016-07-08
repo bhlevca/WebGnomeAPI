@@ -381,7 +381,7 @@ class StepTest(FunctionalTestBase):
                            }
 
     current_output_data = {'obj_type': ('gnome.outputters'
-                                        '.CurrentGeoJsonOutput'),
+                                        '.CurrentJsonOutput'),
                            'name': 'CurrentGrid',
                            'output_last_step': True,
                            'output_zero_step': True,
@@ -406,6 +406,7 @@ class StepTest(FunctionalTestBase):
         print 'test_first_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         # The location file we selected should have:
         # - a registered map
@@ -421,6 +422,8 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
         model1['spills'] = [spill]
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         # - we need outputters
         print 'test_first_step(): creating outputters...'
@@ -448,6 +451,7 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         # The location file we selected should have:
         # - a registered map
@@ -459,6 +463,8 @@ class StepTest(FunctionalTestBase):
         # - we need a spill
         print 'test_weathering_step(): creating spill...'
         model1['spills'] = [self.spill_data]
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         model1['environment'].append(self.wind_data)
         model1['environment'].append(self.water_data)
@@ -513,6 +519,7 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         # The location file we selected should have:
         # - a registered map
@@ -525,6 +532,8 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): creating spill...'
         model1['spills'] = [self.spill_data]
         model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         model1['environment'].append(self.wind_data)
         model1['environment'].append(self.water_data)
@@ -605,6 +614,7 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         # The location file we selected should have:
         # - a registered map
@@ -617,6 +627,8 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): creating spill...'
         model1['spills'] = [self.spill_data]
         model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         model1['environment'].append(self.wind_data)
         model1['environment'].append(self.water_data)
@@ -669,7 +681,7 @@ class StepTest(FunctionalTestBase):
 
         assert first_step['step_num'] == 0
 
-        current_grid_out = first_step['CurrentGeoJsonOutput']
+        current_grid_out = first_step['CurrentJsonOutput']
         fcs = current_grid_out['feature_collections']
 
         # Verify that our output keys reference real movers
@@ -743,6 +755,7 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         # The location file we selected should have:
         # - a registered map
@@ -786,6 +799,8 @@ class StepTest(FunctionalTestBase):
 
         print 'test_weathering_step(): creating spill...'
         model1['spills'] = [spill_data]
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         model1['environment'].append(self.wind_data)
         model1['environment'].append(self.water_data)
@@ -849,6 +864,7 @@ class StepTest(FunctionalTestBase):
         print 'test_all_steps(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
+        model_start_time = model1['start_time']
 
         model1['time_step'] = 900
         resp = self.testapp.put_json('/model', params=model1)
@@ -870,6 +886,8 @@ class StepTest(FunctionalTestBase):
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
         model1['spills'] = [spill]
+        model1['spills'][0]['release']['release_time'] = model_start_time
+        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         # - we need an outputter
         print 'test_all_steps(): creating outputter...'
