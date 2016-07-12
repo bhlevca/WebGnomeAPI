@@ -57,19 +57,24 @@ Winant, C. D. (1983). Longshore Coherence of Currents on the Southern California
 
 
 .. _National Data Buoy Center: http://www.ndbc.noaa.gov/
+
 `National Data Buoy Center`_
 
 (1) Real-time weather and wave information: Click the link, "Real-Time Data," then the link, "NDBC Station locator map," to access a clickable map of buoy locations. Click the station ID number to obtain real-time data.
 (2) Historical information: Click the link, "NDBC Data Index," to get historical data.
 
 
-.. _National Weather Service (NWS), San Diego, Coastal Marine Forecast: http://graphical.weather.gov/sectors/sgx.phpCurrent conditions and weather forecast.
+.. _National Weather Service (NWS), San Diego, Coastal Marine Forecast: http://graphical.weather.gov/sectors/sgx.php 
+
+Current conditions and weather forecast.
+
 `National Weather Service (NWS), San Diego, Coastal Marine Forecast`_
 
 
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division: http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

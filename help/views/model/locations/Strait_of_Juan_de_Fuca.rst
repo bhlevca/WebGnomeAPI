@@ -178,25 +178,29 @@ U. S. Coast Guard Marine Safety Office Puget Sound On-Scene Coordinator's Report
 
 
 .. _Western Washington: http://www.ndbc.noaa.gov/data/Forecasts/FZUS56.KSEW.html
-National Data Buoy Center Station Information: `Western Washington `_
+
+National Data Buoy Center Station Information: `Western Washington`_
 
 The latest National Weather Service marine forecast for coastal and inland waters of western Washington.
 
 
 .. _National Data Buoy Center U. S. Northwest Regional Map: http://www.ndbc.noaa.gov/maps/Northwest.shtml
-`National Data Buoy Center U. S. Northwest Regional Map `_
+
+`National Data Buoy Center U. S. Northwest Regional Map`_
 
 Map of moored buoy and C-MAN stations in the U.S. Northwest. Click a station on the map (TTIW1, for example, at Tatoosh Island, WA) to view current conditions at that station.
 
 
 .. _The Weather Underground, Inc. weather page: http://www.wunderground.com/US/WA/
-`The Weather Underground, Inc. weather page `_
+
+`The Weather Underground, Inc. weather page`_
 
 Weather conditions for cities in Washington State
 
 
 .. _University of Washington Land-Margin Ecosystem Research Project (LMER): http://depts.washington.edu/cretmweb/frasflow.html
-`University of Washington Land-Margin Ecosystem Research Project (LMER) `_
+
+`University of Washington Land-Margin Ecosystem Research Project (LMER)`_
 
 Ten-year flow rates for the Fraser River at Hope, B.C.
 
@@ -204,6 +208,7 @@ Ten-year flow rates for the Fraser River at Hope, B.C.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

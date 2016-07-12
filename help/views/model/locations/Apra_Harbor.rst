@@ -43,30 +43,34 @@ Eldredge, L.G. 1983. Summary of Environmental and Fishing Information on Guam an
 **Wind and Weather**
 
 .. _National Weather Service (NWS) Telecommunications Center: http://w1.weather.gov/obhistory/PGUM.html
+
 `National Weather Service (NWS) Telecommunications Center`_
 
 Current weather conditions at Guam International Airport.
 
+.. _National Weather Service (NWS) Forecast Office - Tiyan, Guam: http://www.prh.noaa.gov/guam/
 
-.. _National Weather Service (NWS) Forecast Office: Tiyan, Guam: http://www.prh.noaa.gov/guam/
-`National Weather Service (NWS) Forecast Office: Tiyan, Guam`_
+`National Weather Service (NWS) Forecast Office - Tiyan, Guam`_
 
 Forecasts and current conditions for Guam and the Northern Marianas Islands.
 
 
-.. _National Data Buoy Center: Station 52009: http://www.ndbc.noaa.gov/station_page.php?station=52009
-`National Data Buoy Center: Station 52009`_
+.. _National Data Buoy Center - Station 52009: http://www.ndbc.noaa.gov/station_page.php?station=52009
+
+`National Data Buoy Center - Station 52009`_
 
 Historical data for a disestablished buoy near Guam can be viewed by year, searched by threshold conditions, or viewed as a climatic summary table (e.g., wind speed, wind gust, etc.)
 
 
 .. _The Weather Underground, Inc.: http://www.wunderground.com/MAR/PM/151.html
+
 `The Weather Underground, Inc.`_
 
 Marine Weather for PM 151
 
 
 .. _University of Guam Marine Laboratory: http://guammarinelab.org/
+
 `University of Guam Marine Laboratory`_
 
 Offers monthly tide predictions and lunar data for Guam.
@@ -74,6 +78,7 @@ Offers monthly tide predictions and lunar data for Guam.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

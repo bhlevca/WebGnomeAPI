@@ -48,7 +48,7 @@ The user can either select a flow rate (high, medium or low), or enter a stage h
 
 
 
-**Scaling Wind-Driven Currents **
+**Scaling Wind-Driven Currents**
 
 During periods of high river runoff into Mobile Bay, there are few to no correlations between surface currents and wind stress (Noble et al. 1997). Wind-driven surface currents are thus scaled to river flow such that they are larger at low river flow and decrease to zero at high river flow. The scaling factor is modeled after results presented in Noble et al. (1997), fading out wind-driven currents as river flow approaches 4000 m3/s (141 cfs):
 
@@ -80,19 +80,22 @@ Wiseman, W. J. Jr., W. W. Schroeder, and S. P. Dinnel (1988). Shelf-Estuarine Wa
 **Weather and On-Line Information**
 
 .. _U.S. Geological Survey (USGS) Alabama Current Streamflow Conditions: http://waterdata.usgs.gov/al/nwis/rt
+
 `U.S. Geological Survey (USGS) Alabama Current Streamflow Conditions`_
 
 Streamflow conditions for the major river systems in Alabama, including the Lower Alabama, Mobile, and Tombigbee Rivers.
 
 
 .. _National Data Buoy Center Station Information, NWS Forecast: http://www.ndbc.noaa.gov/data/Forecasts/FZUS54.KLIX.html
+
 `National Data Buoy Center Station Information, NWS Forecast`_
 
 Marine weather forecast for the Pascagoula to Atchafalaya River region (out 60 nm).
 
 
 .. _Mobile, Alabama: http://www.wunderground.com/US/AL/Mobile.html
-`The Weather Underground, Inc.: Mobile, Alabama`_
+
+The Weather Underground, Inc.: `Mobile, Alabama`_
 
 Weather forecast for Mobile, AL.
 
@@ -100,6 +103,7 @@ Weather forecast for Mobile, AL.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

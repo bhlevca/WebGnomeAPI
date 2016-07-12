@@ -92,7 +92,7 @@ Real-time water level and meteorological conditions at the Lower Columbia River 
 Current conditions for Portland and Astoria, Oregon.
 
 
-.. _NOAA NWS: h http://www.weather.gov/
+.. _NOAA NWS: http://www.weather.gov/
 
 `NOAA NWS`_
 

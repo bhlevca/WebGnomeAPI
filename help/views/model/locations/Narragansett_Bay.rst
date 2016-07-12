@@ -40,7 +40,8 @@ Gordon, R. B., and M. L. Spaulding, 1987: Numerical simulations of the tidal- an
 Hicks, S.D., 1959: The physical oceanography of Narragansett Bay. Limnol. Oceanogr., **11**, 316-327.
 
 
-.._NOAA National Weather Service (NWS) Rhode Island tides: http://www.tidesandcurrents.noaa.gov/tide_predictions.html?gid=1411#listing
+.. _NOAA National Weather Service (NWS) Rhode Island tides: http://www.tidesandcurrents.noaa.gov/tide_predictions.html?gid=1411#listing
+
 `NOAA National Weather Service (NWS) Rhode Island tides`_
 
 Tide data for Rhode Island.
@@ -55,12 +56,14 @@ Weisberg, R. H., and W. Sturges, 1976: Velocity observations in the West Passage
 
 
 .. _NOAA National Weather Service (NWS): http://www.weather.gov
+
 `NOAA National Weather Service (NWS)`_
 
 Current weather observations, forecasts, and warnings for the entire U.S.
 
 
 .. _Interactive Weather Information Network--National Weather Service (NWS): http://iwin.nws.noaa.gov/iwin/iwdspg1.html
+
 `Interactive Weather Information Network--National Weather Service (NWS)`_
 
 Click RI on the map for Rhode Island weather reports and forecasts.
@@ -69,8 +72,9 @@ Click RI on the map for Rhode Island weather reports and forecasts.
 **General Information**
 
 
-.. _U.S. Environmental Protection Agency (EPA) Watershed Profile: Narragansett Bay: http://www.epa.gov/surf3/hucs/01090004/
-`U.S. Environmental Protection Agency (EPA) Watershed Profile: Narragansett Bay`_
+.. _U.S. Environmental Protection Agency (EPA) Watershed Profile - Narragansett Bay: http://www.epa.gov/surf3/hucs/01090004/
+
+`U.S. Environmental Protection Agency (EPA) Watershed Profile - Narragansett Bay`_
 
 Environmental profile and watershed information focused on rivers, streams, lakes, and land characteristics.
 
@@ -78,6 +82,7 @@ Environmental profile and watershed information focused on rivers, streams, lake
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

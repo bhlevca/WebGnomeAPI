@@ -56,19 +56,22 @@ Lynn, R. J. and J. J. Simpson (1987). The California Current System: The seasona
 
 
 .. _Scripps Institution of Oceanography (SIO): http://meteora.ucsd.edu/weather.html
+
 `Scripps Institution of Oceanography (SIO)`_
 
 An informative weather-related web site. Offers local and regional weather reports, forecasts, and related links.
 
 
 .. _Center for Coastal Studies: http://coastalstudies.org/
+
 `Center for Coastal Studies`_
 
 Provides recent and archived wind and current data for the California Bight, including Santa Barbara Channel.
 
 
 .. _NOAA National Weather Service (NWS): http://www.weather.gov/
-`NOAA National Weather Service (NWS) `_
+
+`NOAA National Weather Service (NWS)`_
 
 Current weather observations, forecasts, and warnings for the entire U.S.
 
@@ -76,6 +79,7 @@ Current weather observations, forecasts, and warnings for the entire U.S.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division: http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

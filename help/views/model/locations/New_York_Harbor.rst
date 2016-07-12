@@ -4,9 +4,10 @@
 About New York
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This location file simulates the transport of spilled oil in the waters surrounding the five boroughs of New York City, NY. 
+This location file simulates the transport of spilled oil in the waters surrounding the five boroughs of New York City, NY.
+
 Current Patterns
-=======================================
+==================
 
 The New York Harbor Location File extends from the Lower Hudson River and Upper Bay to the Lower Bay. It also includes the East River, Newark Bay, Kill van Kull and Arthur Kill. This area consists of multiple freshwater sources from several major and minor river systems that mix with the tidal current. This circulation is simulated with 8 tidal current patterns. All current patterns were created with the NOAA Current Analysis for Trajectory Simulation (CATS) hydrodynamic application. Each pattern is scaled to tidal prediction station. The predicted tides are asymmetrical, but are simulated as symmetrical in the Location File because GNOME does not support separate tidal current patterns for flood and ebb. 
 
@@ -20,7 +21,8 @@ Information and References
 NOS. 1979. New York Harbor Tidal Current Charts, Eighth Edition. U.S. Department of Commerce, National Oceanic and Atmospheric Administration, National Ocean Service, Rockville, MD 20852.
 
 .. _New York/New Jersey Harbor PORTS: http://tidesandcurrents.noaa.gov/ports/index.shtml?port=ny
-NOAA Tides and Currents: New York/New Jersey Harbor PORTS
+
+NOAA Tides and Currents: `New York/New Jersey Harbor PORTS`_
 
 Physical Oceanographic Real Time System (PORTS) measures and publishes observations and predictions of water levels, currents, salinity, and meteorological parameters (e.g., winds, atmospheric pressure, air and water temperatures).
 
@@ -34,6 +36,7 @@ International Marine. 2008. Tidal Current Tables 2008, International Marine, Cus
 **Wind and Weather**
 
 .. _National Data Buoy Center: http://www.ndbc.noaa.gov/
+
 `National Data Buoy Center`_
 
 * **Real-time weather and wave information**: The NDBC site opens at the Recent Data tab. On the clickable map, select the New York area. To view real-time weather data, click a station ID number on the map.
@@ -41,8 +44,9 @@ International Marine. 2008. Tidal Current Tables 2008, International Marine, Cus
 * **Historical information**: On the Home page, click the Historical Data tab. On the clickable map, select the New York area. To view historical marine data, click a station on the map.
 
 
-.._New York Harbor: http://forecast.weather.gov/shmrn.php?mz=anz338
-`National Weather Service Marine Forecast: New York Harbor`_
+.. _New York Harbor: http://forecast.weather.gov/shmrn.php?mz=anz338
+
+National Weather Service Marine Forecast: `New York Harbor`_
 
 Current weather observations and forecasts for New York Harbor.
 
@@ -50,6 +54,7 @@ Current weather observations and forecasts for New York Harbor.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

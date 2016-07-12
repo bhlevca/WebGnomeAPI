@@ -79,25 +79,29 @@ U.S. National Park Service. Undated. Glacier Bay National Park stream catalog. U
 
 **Wind and Weather**
 
-.. _NOAA National Weather Service, Alaska Regional Headquarters: http://www.arh.noaa.gov/zonefcst.php?zone=020 
+.. _NOAA National Weather Service, Alaska Regional Headquarters: http://www.arh.noaa.gov/zonefcst.php?zone=020
+
 `NOAA National Weather Service, Alaska Regional Headquarters`_
 
 Current weather conditions and forecast for Glacier Bay.
 
 
-.. _Alaska Region Marine Zones: http://pafc.arh.noaa.gov/marfcst.php 
+.. _Alaska Region Marine Zones: http://pafc.arh.noaa.gov/marfcst.php
+
 `Alaska Region Marine Zones`_
 
 Marine zone forecasts provided by the National Weather Service Forecast Office (NWSFO), Anchorage, AK. On the clickable imagemap, click "11" to obtain the marine forecast for Glacier Bay.
 
 
-.. _Juneau, Alaska: http://pajk.arh.noaa.gov 
+.. _Juneau, Alaska: http://pajk.arh.noaa.gov
+
 National Weather Service: `Juneau, Alaska`_
 
 To view the short-term weather forecast for Glacier Bay, click zone 20 on the clickable imagemap.
 
 
-.. _National Weather Service Telecommunication Operations Center: http://weather.noaa.gov/weather/current/PAGS.html 
+.. _National Weather Service Telecommunication Operations Center: http://weather.noaa.gov/weather/current/PAGS.html
+
 `National Weather Service Telecommunication Operations Center`_
 
 Current weather conditions for Gustavus, AK.
@@ -118,24 +122,28 @@ Text version forecasts for Alaska:
 
 
 .. _Glacier Bay, Alaska, from the Ground, Air and Space: http://svs.gsfc.nasa.gov/cgi-bin/details.cgi?aid=98
+
 `Glacier Bay, Alaska, from the Ground, Air and Space`_
 
 A website based on the NASA/Goddard Space Flight Center (GSFC) video, "Glacier Bay, Alaska, from the Ground, Air and Space." Provides a lively, historical perspective of glacier changes at Glacier Bay by bringing glaciers to life with spectacular "fly-bys" of scenic rides over 3-dimensional glaciers, live video footage of ice fronts calving into the sea, and dramatic picture sequences of historic and satellite data. The video was produced by GSFC's Earth and Space Data Computing Division.
 
 
-.. _Alaska Cooperative Fish & Wildlife Research Unit: http://www.akcfwru.uaf.edu/about.php 
+.. _Alaska Cooperative Fish & Wildlife Research Unit: http://www.akcfwru.uaf.edu/about.php
+
 `Alaska Cooperative Fish & Wildlife Research Unit`_
 
 Part of a nation-wide cooperative program, the Alaska Cooperative Fish and Wildlife Research Unit promotes research and graduate student training in the ecology and management of fish, wildlife and their habitats.
 
 
-.. _Alaska State Geo-Spatial Data Clearinghouse: http://www.asgdc.state.ak.us/ 
+.. _Alaska State Geo-Spatial Data Clearinghouse: http://www.asgdc.state.ak.us/
+
 `Alaska State Geo-Spatial Data Clearinghouse`_
 
 Provides electronic access to a wide variety of information in the form of maps, images, and descriptions about Alaska geo-spatial data.
 
 
 .. _USGS Alaska Water Resources Publications: http://alaska.usgs.gov/science/water/index.php
+
 `USGS Alaska Water Resources Publications`_
 
 USGS reports on water resources in Alaska.
@@ -144,6 +152,7 @@ USGS reports on water resources in Alaska.
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

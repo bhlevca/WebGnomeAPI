@@ -55,18 +55,21 @@ Wyman, B.C. 1989. A Risk Model For Hazardous Material Transportation Spills in C
 
 
 .. _Texas State Information: http://www.nws.noaa.gov/view/states.php?state=tx&map=on
+
 Interactive Weather Information Network (IWIN): `Texas State Information`_
 
 Click "KBPT" in the southeast section of the map to view current weather conditions at Beaumont/Port Arthur, Southeast Texas Regional Airport. Click "KRPE" to view current conditions at Sabine Pass, Texas.
 
 
-.. _Louisiana Weather: http://weather.noaa.gov/weather/LA_cc_us.html 
+.. _Louisiana Weather: http://weather.noaa.gov/weather/LA_cc_us.html
+
 National Weather Service, Internet Weather Source (IWS): `Louisiana Weather`_
 
 Select a location from the appropriate menu for current weather conditions or forecasts for locations throughout Louisiana.
 
 
-.. _ National Weather Service Forecast Office, Lake Charles, LA: http://www.srh.noaa.gov/lch/
+.. _National Weather Service Forecast Office, Lake Charles, LA: http://www.srh.noaa.gov/lch/
+
 `National Weather Service Forecast Office, Lake Charles, LA`_
 
 Forecasts, warnings, and observations for Lake Charles area locations. Click a location on the interactive map to obtain a forecast.
@@ -75,6 +78,7 @@ Forecasts, warnings, and observations for Lake Charles area locations. Click a l
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division: http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

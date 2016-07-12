@@ -46,23 +46,27 @@ Xue, H., F. Chai, and N. R. Pettigrew, 2000. A Model Study of the Seasonal Circu
 
 
 .. _National Data Buoy Center, Portland Buoy: http://www.ndbc.noaa.gov/station_page.php?station=44007
+
 `National Data Buoy Center, Portland Buoy`_
 
 Current offshore meteorological conditions at a buoy 12 nautical miles southeast of Portland, ME.
 
 
 .. _Current and forecast weather for Portland, Maine: http://www.wunderground.com/US/ME/Portland.html
+
 The Weather Underground, Inc. - `Current and forecast weather for Portland, Maine`_
 
 Current and forecast weather for Portland, Maine
 
 .. _Marine forecast for Eastport, ME to Stonington, ME: http://www.wunderground.com/MAR/AN/150.html
+
 The Weather Underground, Inc. - `Marine forecast for Eastport, ME to Stonington, ME`_
 
 
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.

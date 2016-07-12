@@ -60,6 +60,7 @@ Signell, R. P., H. L. Jenter, and A. F. Blumberg, 1996. Circulation and Effluent
 Signell, R. P., H. L. Jenter and A. F. Blumberg, 2000. Predicting the Physical Effects of Relocating Boston's Sewage Outfall. Estuarine, Coastal and Shelf Science, 50, pp. 59-72.
 
 .. _USGS Woods Hole Field Center: http://woodshole.er.usgs.gov/
+
 `USGS Woods Hole Field Center`_
 
 Links to oceanographic information about the region.
@@ -68,12 +69,14 @@ Links to oceanographic information about the region.
 **Wind and Weather**
 
 .. _National Data Buoy Center - Station Information for Station 44013: http://seaboard.ndbc.noaa.gov/station_page.php?station=44013
+
 `National Data Buoy Center - Station Information for Station 44013`_
 
 Weather conditions for Massachusetts Bay east of Boston Harbor
 
 
 .. _National Weather Service (NWS) - Boston, MA: http://www.nws.noaa.gov/er/box
+
 `National Weather Service (NWS) - Boston, MA`_
 
 Marine forecasts, current conditions, and other weather products for the Boston area.
@@ -82,6 +85,7 @@ Marine forecasts, current conditions, and other weather products for the Boston 
 **Sewer System and Circulation**
 
 .. _Coastal Ocean Modeling at the U.S. Geological Survey (USGS) Woods Hole Field Center: http://woodshole.er.usgs.gov/operations/modeling/
+
 `Coastal Ocean Modeling at the U.S. Geological Survey (USGS) Woods Hole Field Center`_
 
 Links to models and animations of USGS modeling of the Boston Harbor/Massachusetts Bay region. Includes R. P. Signell's model simulations of sewage effluent concentrations in Boston Harbor and Massachusetts Bay.
@@ -89,17 +93,19 @@ Links to models and animations of USGS modeling of the Boston Harbor/Massachuset
 
 .. _Massachusetts Water Resources Authority (MWRA) Sewer System: http://www.mwra.state.ma.us/03sewer/html/sew.htm
 
-Massachusetts Water Resources Authority (MWRA) Sewer System
+`Massachusetts Water Resources Authority (MWRA) Sewer System`_
 
 Provides an overview of how the MWRA's sewer system works and describes its major projects.
 
 .. _Circulation and Effluent Dilution Modeling in Massachusetts Bay: http://woodshole.er.usgs.gov/operations/modeling/mbayopen/mbayopen.html
-'Circulation and Effluent Dilution Modeling in Massachusetts Bay`_: Model Implementation, Verification and Results
+
+`Circulation and Effluent Dilution Modeling in Massachusetts Bay`_
 
 Online version of U.S. Geological Survey Open File Report 96-015.
 
 
 .. _USGS Real-Time Water Data for Massachusetts: http://waterdata.usgs.gov/ma/nwis/uv?site_no=01104500
+
 `USGS Real-Time Water Data for Massachusetts`_
 
 Obtain real-time water data for the Charles River at Waltham, Ma (Site no. 01104500).
@@ -108,6 +114,7 @@ Obtain real-time water data for the Charles River at Waltham, Ma (Site no. 01104
 **Oil Spill Response**
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
+
 `NOAA's Emergency Response Division (ERD)`_
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.
