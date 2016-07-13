@@ -1,0 +1,6 @@
+Freshwater sources and estuarine circulation
+=====================================================
+
+The waters of the Strait of Juan de Fuca are partially mixed and weakly stratified. The primary freshwater source (approximately 75%) is the Fraser River in British Columbia (Herlinveaux and Tullly, 1961). The Fraser river flow has a strong seasonal cycle, with a maximum flow rate in early June at the peak of the high altitude snowmelt. The remaining fresh water enters the Strait through Puget Sound (Washington rivers), along the Olympic Peninsula, and along Vancouver Island. Rivers on Vancouver Island are a freshwater source an order of magnitude smaller than the Fraser River, with a peak in the winter during heavy rains (Masson and Cummins, 1999).
+
+Vigorous mixing occurs at entrances/exits to the Strait--in Rosario Strait, Boundary Pass (linking the Straits of Georgia and Juan de Fuca) and Admiralty Inlet (connecting the Strait of Juan de Fuca with Puget Sound). This vigorous mixing, caused primarily by high currents flowing over sills, serves to mix salty and fresh water, decreasing overall salinity gradients of the Strait of Juan de Fuca waters.
