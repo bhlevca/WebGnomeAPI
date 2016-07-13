@@ -3,7 +3,7 @@ References
 
 
 General Information
-=================================================
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. _Close Encounters with the Old Sow: http://www.smithsonianmag.com/travel/close-encounters-with-the-old-sow-48091759/
@@ -42,7 +42,7 @@ An encyclopedia entry that provides an overview of Passamaquoddy Bay.
 
 
 Oceanography
-===========================================
+^^^^^^^^^^^^^^^^^
 
 Greenberg, D.A., J.A. Shore, F.H. Page, and M. Dowd. 2005. A finite element circulation model for embayments with drying intertidal areas and its application to the Quoddy region of the Bay of Fundy. Ocean Modeling 10: 211-231.
 
@@ -76,7 +76,7 @@ Tide data for station 8410140 at Eastport, Maine.
 
 
 Wind and Weather
-==========================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. _St. Andrews: http://text.weatheroffice.ec.gc.ca/forecast/city_e.html?nb-18
@@ -101,7 +101,7 @@ Current conditions and forecasts for Eastport, Maine.
 
 
 Oil Spill Response
-==================================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
 
