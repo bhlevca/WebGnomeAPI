@@ -3,6 +3,8 @@ Views for the Mover objects.
 This currently includes ??? objects.
 """
 import logging
+from threading import current_thread
+
 import ujson
 import numpy as np
 
@@ -92,7 +94,8 @@ def get_current_info(request):
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
-    log.info('  {0} {1}'.format(log_prefix, 'session lock acquired...'))
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj_id = request.matchdict.get('obj_id')[0]
@@ -116,7 +119,8 @@ def get_current_info(request):
             raise exc
     finally:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
 
@@ -129,7 +133,8 @@ def get_grid_centers(request):
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
-    log.info('  {0} {1}'.format(log_prefix, 'session lock acquired...'))
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj_id = request.matchdict.get('obj_id')[0]
@@ -146,7 +151,8 @@ def get_grid_centers(request):
             raise exc
     finally:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
 

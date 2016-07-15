@@ -8,6 +8,7 @@ import shutil
 import uuid
 import logging
 import os
+from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -130,7 +131,8 @@ def create_object(request, implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
     session_lock = acquire_session_lock(request)
-    log.info('  ' + log_prefix + 'session lock acquired...')
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
@@ -140,7 +142,8 @@ def create_object(request, implemented_types):
                              with_stacktrace=True)
     finally:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
     return obj.serialize()
@@ -163,7 +166,8 @@ def update_object(request, implemented_types):
                              request)
     if obj:
         session_lock = acquire_session_lock(request)
-        log.info('  ' + log_prefix + 'session lock acquired...')
+        log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
@@ -172,7 +176,9 @@ def update_object(request, implemented_types):
                                  with_stacktrace=True)
         finally:
             session_lock.release()
-            log.info('  ' + log_prefix + 'session lock released...')
+            log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                     .format(log_prefix, id(session_lock),
+                             current_thread().ident))
     else:
         raise cors_exception(request, HTTPNotFound)
 

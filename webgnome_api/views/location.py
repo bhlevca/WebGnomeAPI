@@ -4,6 +4,7 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir, split, basename
 from logging import getLogger
+from threading import current_thread
 
 from geojson import FeatureCollection, Feature, Point
 
@@ -59,6 +60,9 @@ def get_location(request):
                     if slugify.slugify_url(c['name']) == slug]
         if matching:
             session_lock = acquire_session_lock(request)
+            log.info('  session lock acquired (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
+
             try:
                 location_file = location_file_dirs[matching[0][0]]
                 log.info('load location: {0}'.format(location_file))
@@ -68,6 +72,8 @@ def get_location(request):
                                      with_stacktrace=True)
             finally:
                 session_lock.release()
+                log.info('  session lock released (sess:{}, thr_id: {})'
+                         .format(id(session_lock), current_thread().ident))
 
             return matching[0][1]
         else:

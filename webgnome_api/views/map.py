@@ -4,6 +4,7 @@ Views for the Map objects.
 import ujson
 import logging
 import os
+from threading import current_thread
 
 from cornice import Service
 from pyramid.view import view_config
@@ -80,7 +81,8 @@ def create_map(request):
                                                  json_request=json_request)
 
     session_lock = acquire_session_lock(request)
-    log.info('  ' + log_prefix + 'session lock acquired...')
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
@@ -89,7 +91,8 @@ def create_map(request):
                              with_stacktrace=True)
     finally:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     set_session_object(obj, request)
     return obj.serialize()

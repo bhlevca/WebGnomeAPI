@@ -4,6 +4,7 @@ Views for the Location objects.
 import time
 from collections import defaultdict
 import logging
+from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPPreconditionFailed,
@@ -44,7 +45,8 @@ def get_step(request):
     if active_model:
         # generate the next step in the sequence.
         session_lock = acquire_session_lock(request)
-        log.info('  ' + log_prefix + 'session lock acquired...')
+        log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         try:
             if active_model.current_time_step == -1:
@@ -109,8 +111,11 @@ def get_step(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
+            time.sleep(10)
             session_lock.release()
-            log.info('  ' + log_prefix + 'session lock released...')
+            log.info('  {} session lock released (sess:{}, thr_id: {})'
+                     .format(log_prefix, id(session_lock),
+                             current_thread().ident))
 
         return output
     else:
@@ -125,6 +130,8 @@ def get_rewind(request):
     active_model = get_active_model(request)
     if active_model:
         session_lock = acquire_session_lock(request)
+        log.info('  session lock acquired (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
         try:
             active_model.rewind()
@@ -133,6 +140,8 @@ def get_rewind(request):
                                  with_stacktrace=True)
         finally:
             session_lock.release()
+            log.info('  session lock released (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
 
@@ -147,6 +156,8 @@ def get_full_run(request):
     active_model = get_active_model(request)
     if active_model:
         session_lock = acquire_session_lock(request)
+        log.info('  session lock acquired (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
         try:
             weatherer_enabled_flags = [w.on for w in active_model.weatherers]
@@ -212,6 +223,8 @@ def get_full_run(request):
             for a, w in zip(weatherer_enabled_flags, active_model.weatherers):
                 w.on = a
             session_lock.release()
+            log.info('  session lock released (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
 
         return output
     else:

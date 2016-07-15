@@ -1,8 +1,11 @@
 """
 Views for the Model object.
 """
-import ujson
 import logging
+from threading import current_thread
+
+import ujson
+
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPUnsupportedMediaType,
@@ -52,6 +55,8 @@ def get_model(request):
     ret = None
     obj_id = obj_id_from_url(request)
     session_lock = acquire_session_lock(request)
+    log.info('  session lock acquired (sess:{}, thr_id: {})'
+             .format(id(session_lock), current_thread().ident))
 
     try:
         if not obj_id:
@@ -73,6 +78,8 @@ def get_model(request):
                 raise cors_exception(request, HTTPNotFound)
     finally:
         session_lock.release()
+        log.info('  session lock released (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
     return ret
 
@@ -95,7 +102,8 @@ def create_model(request):
         raise cors_exception(request, HTTPNotImplemented)
 
     session_lock = acquire_session_lock(request)
-    log.info('  ' + log_prefix + 'session lock acquired...')
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         init_session_objects(request, force=True)
@@ -115,7 +123,8 @@ def create_model(request):
                              with_stacktrace=True)
     finally:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
     return new_model.serialize()
@@ -143,7 +152,8 @@ def update_model(request):
         raise cors_exception(request, HTTPNotImplemented)
 
     session_lock = acquire_session_lock(request)
-    log.info('  ' + log_prefix + 'session lock acquired...')
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
@@ -165,7 +175,8 @@ def update_model(request):
             log.info('  ' + log_prefix + 'session lock released...')
     else:
         session_lock.release()
-        log.info('  ' + log_prefix + 'session lock released...')
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         msg = ("raising cors_exception() in update_model. "
                "Updating model before it exists.")

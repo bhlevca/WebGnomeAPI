@@ -4,6 +4,7 @@ Views for the model load/save operations.
 import os
 import logging
 import tempfile
+from threading import current_thread
 
 from pyramid.view import view_config
 from pyramid.response import Response, FileIter
@@ -53,7 +54,8 @@ def upload_model(request):
 
     # now we try to load our model from the zipfile.
     session_lock = acquire_session_lock(request)
-    log.info('session lock acquired.')
+    log.info('  session lock acquired (sess:{}, thr_id: {})'
+             .format(id(session_lock), current_thread().ident))
     try:
         log.info('loading our model from zip...')
         new_model = load(file_path)
@@ -69,7 +71,8 @@ def upload_model(request):
         raise cors_exception(request, HTTPBadRequest, with_stacktrace=True)
     finally:
         session_lock.release()
-        log.info('session lock released.')
+        log.info('  session lock released (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
     # We will want to clean up our tempfile when we are done.
     os.remove(file_path)
