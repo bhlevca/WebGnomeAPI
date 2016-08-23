@@ -24,7 +24,7 @@ step_api = Service(name='step', path='/step',
                    description="Model Step API", cors_policy=cors_policy)
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
-full_run_api = Service(name='full_run', path='/full_run_without_response',
+full_run_api = Service(name='full_run', path='/full_run',
                        description="Model Full Run API",
                        cors_policy=cors_policy)
 
@@ -138,13 +138,16 @@ def get_rewind(request):
         raise cors_exception(request, HTTPPreconditionFailed)
 
 
-@full_run_api.get()
+@full_run_api.post()
 def get_full_run(request):
     '''
         Performs a full run of the current active Model, turning off any
         response options.
         Returns the final step results.
     '''
+
+    response_on = request.json_body['response_on']
+
     active_model = get_active_model(request)
     if active_model:
         gnome_sema = request.registry.settings['py_gnome_semaphore']
@@ -153,9 +156,10 @@ def get_full_run(request):
         try:
             weatherer_enabled_flags = [w.on for w in active_model.weatherers]
 
-            for w in active_model.weatherers:
-                if isinstance(w, (Skimmer, Burn, ChemicalDispersion)):
-                    w.on = False
+            if response_on is False:
+                for w in active_model.weatherers:
+                    if isinstance(w, (Skimmer, Burn, ChemicalDispersion)):
+                        w.on = False
 
             active_model.rewind()
 
