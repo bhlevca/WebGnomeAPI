@@ -211,6 +211,8 @@ def get_full_run(request):
                                'high': None}
                 output['WeatheringOutput'] = full_output
                 output['total_response_time'] = end - begin
+
+            active_model.rewind()
         except:
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
