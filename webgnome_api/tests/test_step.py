@@ -682,34 +682,16 @@ class StepTest(FunctionalTestBase):
         assert first_step['step_num'] == 0
 
         current_grid_out = first_step['CurrentJsonOutput']
-        fcs = current_grid_out['feature_collections']
 
-        # Verify that our output keys reference real movers
-        for fc_id in fcs.keys():
-            assert fc_id in [m['id'] for m in model1['movers']]
+        for _k, v in current_grid_out.iteritems():
 
-        # Verify the data structure
-        for fc in fcs.values():
-            assert 'type' in fc
-            assert fc['type'] == 'FeatureCollection'
-            assert 'features' in fc
-            assert len(fc['features']) > 0
+            assert set(v.keys()).issuperset(('direction', 'magnitude'))
+            direction, magnitude = [v[sub_key]
+                                    for sub_key in ('direction', 'magnitude')]
 
-            for feature in fc['features']:
-                assert 'type' in feature
-                assert feature['type'] == 'Feature'
-
-                assert 'properties' in feature
-                assert 'velocity' in feature['properties']
-
-                assert 'geometry' in feature
-                assert len(feature['geometry']) > 0
-
-                geometry = feature['geometry']
-                assert 'type' in geometry
-                assert geometry['type'] == 'MultiPoint'
-
-                assert 'coordinates' in geometry
+            assert all([isinstance(d, float) for d in direction])
+            assert all([isinstance(m, float) for m in magnitude])
+            assert len(direction) == len(magnitude)
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
@@ -721,30 +703,17 @@ class StepTest(FunctionalTestBase):
 
         assert second_step['step_num'] == 1
 
-        current_grid_out = second_step['CurrentGeoJsonOutput']
-        fcs = current_grid_out['feature_collections']
+        current_grid_out = second_step['CurrentJsonOutput']
 
-        for fc in fcs.values():
-            assert 'type' in fc
-            assert fc['type'] == 'FeatureCollection'
-            assert 'features' in fc
-            assert len(fc['features']) > 0
+        for _k, v in current_grid_out.iteritems():
 
-            for feature in fc['features']:
-                assert 'type' in feature
-                assert feature['type'] == 'Feature'
+            assert set(v.keys()).issuperset(('direction', 'magnitude'))
+            direction, magnitude = [v[sub_key]
+                                    for sub_key in ('direction', 'magnitude')]
 
-                assert 'properties' in feature
-                assert 'velocity' in feature['properties']
-
-                assert 'geometry' in feature
-                assert len(feature['geometry']) > 0
-
-                geometry = feature['geometry']
-                assert 'type' in geometry
-                assert geometry['type'] == 'MultiPoint'
-
-                assert 'coordinates' in geometry
+            assert all([isinstance(d, float) for d in direction])
+            assert all([isinstance(m, float) for m in magnitude])
+            assert len(direction) == len(magnitude)
 
     def test_current_output_performance(self):
         # We are testing our ability to generate the first step in a
