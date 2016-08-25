@@ -111,7 +111,6 @@ def get_step(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
-            time.sleep(10)
             session_lock.release()
             log.info('  {} session lock released (sess:{}, thr_id: {})'
                      .format(log_prefix, id(session_lock),
