@@ -3,6 +3,8 @@ Views for the Mover objects.
 This currently includes ??? objects.
 """
 import logging
+from threading import current_thread
+
 import ujson
 import numpy as np
 
@@ -13,15 +15,16 @@ from cornice import Service
 
 from gnome.movers.current_movers import CurrentMoversBase
 
-from webgnome_api.common.views import (get_object,
-                                       create_object,
-                                       update_object,
-                                       cors_policy,
-                                       cors_response,
-                                       cors_exception,
-                                       process_upload)
+from ..common.views import (get_object,
+                            create_object,
+                            update_object,
+                            cors_policy,
+                            cors_response,
+                            cors_exception,
+                            process_upload)
 
-from webgnome_api.common.session_management import get_session_object
+from ..common.session_management import (get_session_object,
+                                         acquire_session_lock)
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ def get_mover(request):
             content_requested[1] == 'grid'):
         return get_current_info(request)
     elif (len(content_requested) > 1 and
-            content_requested[1] == 'centers'):
+          content_requested[1] == 'centers'):
         return get_grid_centers(request)
     else:
         return get_object(request, implemented_types)
@@ -90,9 +93,9 @@ def get_current_info(request):
     log_prefix = 'req({0}): get_current_info():'.format(id(request))
     log.info('>>' + log_prefix)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  {0} {1}'.format(log_prefix, 'semaphore acquired...'))
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj_id = request.matchdict.get('obj_id')[0]
@@ -106,8 +109,9 @@ def get_current_info(request):
             exc = cors_exception(request, HTTPNotFound)
             raise exc
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
 
@@ -119,9 +123,9 @@ def get_grid_centers(request):
     log_prefix = 'req({0}): get_current_info():'.format(id(request))
     log.info('>>' + log_prefix)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  {0} {1}'.format(log_prefix, 'semaphore acquired...'))
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj_id = request.matchdict.get('obj_id')[0]
@@ -135,8 +139,9 @@ def get_grid_centers(request):
             exc = cors_exception(request, HTTPNotFound)
             raise exc
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
 
@@ -162,7 +167,8 @@ def get_cells(mover):
     d_t = grid_data.dtype.descr
     u_t = d_t[0][1]
     n_s = grid_data.shape + (len(d_t),)
-    grid_data = grid_data.view(dtype = u_t).reshape(*n_s)
+    grid_data = grid_data.view(dtype=u_t).reshape(*n_s)
+
     return grid_data
     # return [t for t in grid_data.tolist()]
 

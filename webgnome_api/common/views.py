@@ -8,6 +8,7 @@ import shutil
 import uuid
 import logging
 import os
+from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -31,7 +32,9 @@ from .common_object import (CreateObject,
                             get_session_dir,
                             clean_session_dir)
 
-from .session_management import get_session_objects, get_session_object
+from .session_management import (get_session_objects,
+                                 get_session_object,
+                                 acquire_session_lock)
 
 cors_policy = {'credentials': True
                }
@@ -127,9 +130,9 @@ def create_object(request, implemented_types):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
@@ -138,8 +141,9 @@ def create_object(request, implemented_types):
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
     return obj.serialize()
@@ -161,9 +165,9 @@ def update_object(request, implemented_types):
     obj = get_session_object(obj_id_from_req_payload(json_request),
                              request)
     if obj:
-        gnome_sema = request.registry.settings['py_gnome_semaphore']
-        gnome_sema.acquire()
-        log.info('  ' + log_prefix + 'semaphore acquired...')
+        session_lock = acquire_session_lock(request)
+        log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
@@ -171,8 +175,10 @@ def update_object(request, implemented_types):
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
-            gnome_sema.release()
-            log.info('  ' + log_prefix + 'semaphore released...')
+            session_lock.release()
+            log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                     .format(log_prefix, id(session_lock),
+                             current_thread().ident))
     else:
         raise cors_exception(request, HTTPNotFound)
 
