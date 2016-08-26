@@ -878,7 +878,27 @@ class StepTest(FunctionalTestBase):
             step = resp.json_body
             print '{0}, '.format(step['step_num']),
             assert step['step_num'] == s
-            assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
+
+            assert 'TrajectoryGeoJsonOutput' in step
+            traj_out = step['TrajectoryGeoJsonOutput']
+            for output_key in ('certain', 'uncertain'):
+                print traj_out[output_key].keys()
+
+                assert 'features' in traj_out[output_key]
+                for f in traj_out[output_key]['features']:
+                    print f.keys()
+
+                    assert 'geometry' in f
+                    print f['geometry'].keys()
+
+                    assert 'coordinates' in f['geometry']
+                    print f['geometry']['coordinates']
+
+                    assert 'properties' in f
+                    print f['properties']
+                    assert f['properties']['status_code'] == 2
+                    assert f['properties']['spill_num'] == 0
+                    assert f['properties']['sc_type'] == 'forecast'
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
@@ -898,13 +918,16 @@ class StepTest(FunctionalTestBase):
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
-
         print 'model start time:', model1['start_time']
         start_time = dateutil.parser.parse(model1['start_time'])
 
-        model1['duration'] = '{}'.format(float(5 * 24 * 60 * 60))
+        duration = 5 * 24 * 60 * 60
+        model1['duration'] = '{}'.format(float(duration))
         print ('model duration: {} hours'
                .format(float(model1['duration']) / 60 / 60))
+
+        model1['time_step'] = 900.0
+        print ('model timestep: {} seconds'.format(model1['time_step']))
 
         # The location file we selected should have:
         # - a registered map
@@ -950,6 +973,21 @@ class StepTest(FunctionalTestBase):
         model1['spills'] = [spill_data]
 
         model1['environment'].append(self.wind_data)
+
+        # so the timeseries for our wind needs to encompass
+        # the entire model duration now.
+        corrected_ts = []
+        for h in range((duration / 60 / 60) + 1):
+            ts_len = len(self.wind_data['timeseries'])
+
+            corrected_time = (start_time +
+                              datetime.timedelta(hours=h)
+                              ).isoformat()
+            corrected_ts.append((corrected_time,
+                                 self.wind_data['timeseries'][h % ts_len][1]))
+
+        self.wind_data['timeseries'] = corrected_ts
+
         model1['environment'].append(self.water_data)
 
         resp = self.testapp.put_json('/model', params=model1)
@@ -1017,7 +1055,8 @@ class StepTest(FunctionalTestBase):
 
         # next we perform the full run without response options and then
         # check that nothing was skimmed.
-        resp = self.testapp.get('/full_run_without_response')
+        resp = self.testapp.post_json('/full_run',
+                                     params={'response_on': False})
         final_step = resp.json_body
 
         print '\n\nour final step with response options inactive:'
