@@ -150,8 +150,33 @@ class ModelRunTest(FunctionalTestBase):
             resp = self.testapp.get('/step')
             step = resp.json_body
 
+            print step.keys()
             assert step['step_num'] == s
-            assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
+
+            assert 'TrajectoryGeoJsonOutput' in step
+            print step['TrajectoryGeoJsonOutput'].keys()
+
+            for output_key in ('certain', 'uncertain', 'time_stamp'):
+                assert output_key in step['TrajectoryGeoJsonOutput']
+
+            for output_key in ('certain', 'uncertain'):
+                print step['TrajectoryGeoJsonOutput'][output_key].keys()
+
+                assert 'features' in step['TrajectoryGeoJsonOutput'][output_key]
+                for f in step['TrajectoryGeoJsonOutput'][output_key]['features']:
+                    print f.keys()
+
+                    assert 'geometry' in f
+                    print f['geometry'].keys()
+
+                    assert 'coordinates' in f['geometry']
+                    print f['geometry']['coordinates']
+
+                    assert 'properties' in f
+                    print f['properties']
+                    assert f['properties']['status_code'] == 2
+                    assert f['properties']['spill_num'] == 0
+                    assert f['properties']['sc_type'] == 'forecast'
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)

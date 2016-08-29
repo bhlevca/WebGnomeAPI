@@ -1,8 +1,11 @@
 """
 Views for the Model object.
 """
-import ujson
 import logging
+from threading import current_thread
+
+import ujson
+
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPUnsupportedMediaType,
@@ -22,6 +25,7 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
                                                     get_session_object,
                                                     set_session_object,
+                                                    acquire_session_lock,
                                                     get_active_model,
                                                     set_active_model)
 
@@ -50,8 +54,9 @@ def get_model(request):
     '''
     ret = None
     obj_id = obj_id_from_url(request)
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
+    session_lock = acquire_session_lock(request)
+    log.info('  session lock acquired (sess:{}, thr_id: {})'
+             .format(id(session_lock), current_thread().ident))
 
     try:
         if not obj_id:
@@ -72,7 +77,9 @@ def get_model(request):
             else:
                 raise cors_exception(request, HTTPNotFound)
     finally:
-        gnome_sema.release()
+        session_lock.release()
+        log.info('  session lock released (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
     return ret
 
@@ -94,9 +101,9 @@ def create_model(request):
                                                 implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         init_session_objects(request, force=True)
@@ -115,8 +122,9 @@ def create_model(request):
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
     return new_model.serialize()
@@ -143,9 +151,9 @@ def update_model(request):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     obj_id = obj_id_from_req_payload(json_request)
     if obj_id:
@@ -163,11 +171,12 @@ def update_model(request):
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
-            gnome_sema.release()
-            log.info('  ' + log_prefix + 'semaphore released...')
+            session_lock.release()
+            log.info('  ' + log_prefix + 'session lock released...')
     else:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         msg = ("raising cors_exception() in update_model. "
                "Updating model before it exists.")
