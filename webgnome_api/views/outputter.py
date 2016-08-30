@@ -2,7 +2,6 @@
 Views for the Outputter objects.
 """
 import os
-import glob
 import ujson
 from webgnome_api.common.common_object import get_session_dir
 from webgnome_api.common.views import (get_object,
@@ -37,6 +36,7 @@ def get_outputter(request):
 def create_outputter(request):
     '''Creates a Gnome Outputter object.'''
     request = process_outputter(request)
+    print(request)
     return create_object(request, implemented_types)
 
 
@@ -50,17 +50,22 @@ def update_outputter(request):
 def setup_output(request, obj_type):
     session_dir = get_session_dir(request)
     outputter_path = session_dir + os.path.sep + 'output' + os.path.sep + obj_type + os.path.sep
-    try:
-        os.makedirs(outputter_path)
-    except OSError:
-        if not os.path.isdir(outputter_path):
-            raise
+    print(outputter_path)
 
-    files = glob.glob(outputter_path + '*')
-    for f in files:
-        os.remove(f)
+    if not os.path.isdir(outputter_path):
+        os.makedirs(outputter_path)
 
     return outputter_path
+
+
+def check_path_equality(path1, path2):
+    head1, tail1 = os.path.split(path1)
+    head2, tail2 = os.path.split(path2)
+
+    if head1 == head2:
+        return True
+    else:
+        return False
 
 
 def process_outputter(request):
@@ -69,9 +74,11 @@ def process_outputter(request):
     output_dir = setup_output(request, obj_type)
 
     if obj_type == 'gnome.outputters.netcdf.NetCDFOutput':
-        json_request['netcdf_filename'] = output_dir + json_request['netcdf_filename']
+        if not check_path_equality(output_dir, json_request['netcdf_filename']):
+            json_request['netcdf_filename'] = output_dir + json_request['netcdf_filename']
     else:
-        json_request['filename'] = output_dir + json_request['filename']
+        if not check_path_equality(output_dir, json_request['filename']):
+            json_request['filename'] = output_dir + json_request['filename']
 
     request.body = ujson.dumps(json_request)
 
