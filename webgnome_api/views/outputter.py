@@ -22,7 +22,8 @@ implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.weathering.WeatheringOutput',
                      'gnome.outputters.json.IceJsonOutput',
                      'gnome.outputters.image.IceImageOutput',
-                     'gnome.outputters.kmz.KMZOutput'
+                     'gnome.outputters.kmz.KMZOutput',
+                     'gnome.outputters.shape.ShapeOutput'
                      )
 
 
