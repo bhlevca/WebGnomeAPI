@@ -36,7 +36,7 @@ def get_outputter(request):
 @outputter.post()
 def create_outputter(request):
     '''Creates a Gnome Outputter object.'''
-    request = process_outputter(request)
+    request = process_outputter(request, True)
     return create_object(request, implemented_types)
 
 
@@ -47,20 +47,28 @@ def update_outputter(request):
     return update_object(request, implemented_types)
 
 
-def setup_output(request, obj_type):
+def setup_output(request, obj_type, clean_dir):
     session_dir = get_session_dir(request)
     outputter_path = os.path.join(session_dir, 'output', obj_type, '')
 
     if not os.path.isdir(outputter_path):
         os.makedirs(outputter_path)
 
+    if clean_dir:
+        for f in os.listdir(outputter_path):
+            file_path = os.path.join(outputter_path, f)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
     return outputter_path
 
 
-def process_outputter(request):
+def process_outputter(request, clean_dir=False):
     json_request = ujson.loads(request.body)
     obj_type = json_request['obj_type']
-    output_dir = setup_output(request, obj_type)
+    output_dir = setup_output(request, obj_type, clean_dir)
 
     if obj_type == 'gnome.outputters.netcdf.NetCDFOutput':
         json_request['netcdf_filename'] = os.path.join(output_dir, json_request['name'])
