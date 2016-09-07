@@ -72,6 +72,7 @@ def main(global_config, **settings):
     config.add_route("mover_upload", "/mover/upload")
     config.add_route("environment_upload", "/environment/upload")
     config.add_route("socket.io", "/socket.io/*remaining")
+    config.add_route("export", "/export/*file_path")
 
     config.scan('webgnome_api.views')
 
