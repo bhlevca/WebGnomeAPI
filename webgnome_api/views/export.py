@@ -2,24 +2,15 @@
 Views for file download operations.
 """
 import os
-import logging
 import zipfile
 
 from pyramid.view import view_config
-from pyramid.response import Response, FileResponse
-from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPInsufficientStorage,
-                                    HTTPNotFound)
+from pyramid.response import FileResponse
+from pyramid.httpexceptions import HTTPNotFound
 
-from gnome.persist import load, is_savezip_valid
 from webgnome_api.common.common_object import get_session_dir
-from webgnome_api.common.session_management import (init_session_objects,
-                                                    set_active_model,
-                                                    get_active_model,
-                                                    acquire_session_lock)
-from webgnome_api.common.views import (cors_response,
-                                       cors_exception,
-                                       process_upload)
+from webgnome_api.common.session_management import get_active_model
+from webgnome_api.common.views import cors_response
 
 
 @view_config(route_name='export', request_method='GET')
