@@ -222,6 +222,7 @@ def process_upload(request, field_name):
     extension = '.' + file_name.split('.')[-1]
     # add uuid to the file name incase the user accidentaly uploads
     # multiple files with the same name for different objects.
+    orig_file_name = file_name
     file_name = file_name.replace(extension,
                                   '-' + str(uuid.uuid4()) + extension)
     file_path = os.path.join(session_dir, file_name)
@@ -251,4 +252,4 @@ def process_upload(request, field_name):
 
     log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
 
-    return file_path
+    return file_path, orig_file_name

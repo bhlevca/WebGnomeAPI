@@ -77,8 +77,8 @@ def mover_upload_options(request):
 
 @view_config(route_name='mover_upload', request_method='POST')
 def upload_mover(request):
-    file_path = process_upload(request, 'new_mover')
-    resp = Response(ujson.dumps({'filename': file_path}))
+    file_path, name = process_upload(request, 'new_mover')
+    resp = Response(ujson.dumps({'filename': file_path, 'name': name}))
 
     return cors_response(request, resp)
 
