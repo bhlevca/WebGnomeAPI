@@ -44,7 +44,7 @@ def upload_model(request):
         some extra work to prevent symlink attacks.
     '''
     clean_session_dir(request)
-    file_path = process_upload(request, 'new_model')
+    file_path, name = process_upload(request, 'new_model')
     # Now that we have our file, we will now try to load the model into
     # memory.
     # Now that we have our file, is it a zipfile?

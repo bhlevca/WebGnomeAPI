@@ -131,11 +131,13 @@ def upload_map_options(request):
 
 @view_config(route_name='map_upload', request_method='POST')
 def upload_map(request):
-    file_path = process_upload(request, 'new_map').split(os.path.sep)[-1]
+    file_name, name = process_upload(request, 'new_map')
+    file_path = file_name.split(os.path.sep)[-1]
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
-                                'json_': 'webapi'
+                                'json_': 'webapi',
+                                'name': name
                                 })
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))
