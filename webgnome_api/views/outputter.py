@@ -3,13 +3,16 @@ Views for the Outputter objects.
 """
 import os
 import ujson
-from webgnome_api.common.common_object import get_session_dir
-from webgnome_api.common.views import (get_object,
-                                       create_object,
-                                       update_object,
-                                       cors_policy)
 
+from pyramid.httpexceptions import HTTPBadRequest
 from cornice import Service
+
+from ..common.common_object import get_session_dir
+from ..common.views import (get_object,
+                            create_object,
+                            update_object,
+                            cors_policy,
+                            cors_exception)
 
 outputter = Service(name='outputter', path='/outputter*obj_id',
                     description="Outputter API", cors_policy=cors_policy)
@@ -66,14 +69,20 @@ def setup_output(request, obj_type, clean_dir):
 
 
 def process_outputter(request, clean_dir=False):
-    json_request = ujson.loads(request.body)
+    try:
+        json_request = ujson.loads(request.body)
+    except:
+        raise cors_exception(request, HTTPBadRequest)
+
     obj_type = json_request['obj_type']
     output_dir = setup_output(request, obj_type, clean_dir)
 
     if obj_type == 'gnome.outputters.netcdf.NetCDFOutput':
-        json_request['netcdf_filename'] = os.path.join(output_dir, json_request['name'])
+        json_request['netcdf_filename'] = os.path.join(output_dir,
+                                                       json_request['name'])
     else:
-        json_request['filename'] = os.path.join(output_dir, json_request['name'])
+        json_request['filename'] = os.path.join(output_dir,
+                                                json_request['name'])
 
     request.body = ujson.dumps(json_request)
 
