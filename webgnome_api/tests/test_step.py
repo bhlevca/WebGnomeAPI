@@ -368,7 +368,7 @@ class StepTest(FunctionalTestBase):
                     "active_start": "2013-02-13T15:00:00",
                     "active_stop": "2013-02-15T15:00:00",
                     "efficiency": 0.2,
-                    "amount": "2160",
+                    "amount": "200",
                     "units": "bbl",
                     }
 
@@ -395,7 +395,7 @@ class StepTest(FunctionalTestBase):
 
     def test_first_step(self):
         # We are testing our ability to generate the first step in a model run
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
@@ -421,9 +421,10 @@ class StepTest(FunctionalTestBase):
         print 'test_first_step(): creating spill...'
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
+        spill['release']['release_time'] = model_start_time
+        spill['release']['end_release_time'] = model_start_time
+        spill['water'] = self.water_data
         model1['spills'] = [spill]
-        model1['spills'][0]['release']['release_time'] = model_start_time
-        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         # - we need outputters
         print 'test_first_step(): creating outputters...'
@@ -445,7 +446,7 @@ class StepTest(FunctionalTestBase):
     def test_weathering_step(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -513,7 +514,7 @@ class StepTest(FunctionalTestBase):
     def test_weathering_step_with_rewind(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -608,7 +609,7 @@ class StepTest(FunctionalTestBase):
     def test_current_output_step(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -718,7 +719,7 @@ class StepTest(FunctionalTestBase):
     def test_current_output_performance(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/new-york-harbor')
+        self.testapp.get('/location/new-york-harbor-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -788,9 +789,11 @@ class StepTest(FunctionalTestBase):
         self.waves_data['wind'] = wind_data
         self.waves_data['water'] = water_data
         model1['environment'].append(self.waves_data)
+        model1['spills'][0]['water'] = water_data
 
         self.evaporation_data['wind'] = wind_data
         self.evaporation_data['water'] = water_data
+
         self.dispersion_data['water'] = water_data
         self.dispersion_data['waves'] = self.waves_data
 
@@ -822,7 +825,7 @@ class StepTest(FunctionalTestBase):
     @pytest.mark.slow
     def test_all_steps(self):
         # We are testing our ability to generate the first step in a model run
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
@@ -912,7 +915,7 @@ class StepTest(FunctionalTestBase):
         '''
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/new-york-harbor')
+        self.testapp.get('/location/new-york-harbor-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -1004,6 +1007,7 @@ class StepTest(FunctionalTestBase):
         self.waves_data['wind'] = wind_data
         self.waves_data['water'] = water_data
         model1['environment'].append(self.waves_data)
+        model1['spills'][0]['water'] = water_data
 
         self.evaporation_data['wind'] = wind_data
         self.evaporation_data['water'] = water_data
@@ -1011,6 +1015,7 @@ class StepTest(FunctionalTestBase):
         self.dispersion_data['water'] = water_data
         self.dispersion_data['waves'] = self.waves_data
 
+        self.skimmer_data['water'] = water_data
         self.skimmer_data['active_start'] = start_time.isoformat()
         self.skimmer_data['active_stop'] = ((start_time +
                                              datetime.timedelta(days=1))

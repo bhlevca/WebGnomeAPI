@@ -88,7 +88,7 @@ class ModelRunTest(FunctionalTestBase):
     @pytest.mark.parametrize()
     def test_full_run(self):
         # We are testing our ability to generate the first step in a model run
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
