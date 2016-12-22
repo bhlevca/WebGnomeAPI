@@ -14,6 +14,7 @@ from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 
 from gnome.movers.current_movers import CurrentMoversBase
+from gnome.movers.wind_movers import GridWindMover
 
 from ..common.views import (get_object,
                             create_object,
@@ -101,7 +102,7 @@ def get_current_info(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, CurrentMoversBase):
+        if mover is not None and (isinstance(mover, CurrentMoversBase) or isinstance(mover, GridWindMover)):
             cells = get_cells(mover)
 
             return cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).tolist()
@@ -131,7 +132,7 @@ def get_grid_centers(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, CurrentMoversBase):
+        if mover is not None and (isinstance(mover, CurrentMoversBase) or isinstance(mover, GridWindMover)):
             centers = get_center_points(mover)
 
             return centers.tolist()
