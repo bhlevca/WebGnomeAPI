@@ -7,7 +7,7 @@ import ujson
 import shutil
 import uuid
 import logging
-import os
+import os, platform, ctypes
 from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -236,12 +236,12 @@ def process_upload(request, field_name):
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {0}'
                                            .format(max_upload_size)))
-
+                                       
     # now we check if we have enough space to save the file.
     if platform.system() == 'Windows':
         fb = ctypes.c_ulonglong(0)
-        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(dirname), None, None, ctypes.pointer(free_bytes))
-        free_bytes = fb.value / 1024 / 1024
+        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(session_dir), None, None, ctypes.pointer(fb))
+        free_bytes = fb.value
     else:
         stat_vfs = os.statvfs(session_dir)
         free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
