@@ -1,6 +1,7 @@
 """
 Common Gnome object request handlers.
 """
+from threading import Lock
 from gnome.multi_model_broadcast import ModelBroadcaster
 
 
@@ -10,6 +11,10 @@ def init_session_objects(request, force=False):
 
     if (session.session_id not in obj_pool) or force:
         obj_pool[session.session_id] = {}
+
+    objects = obj_pool[session.session_id]
+    if 'gnome_session_lock' not in objects:
+        objects['gnome_session_lock'] = Lock()
 
 
 def get_session_objects(request):
@@ -31,6 +36,13 @@ def set_session_object(obj, request):
         objects[obj.id] = obj
     except AttributeError:
         objects[id(obj)] = obj
+
+
+def acquire_session_lock(request):
+    session_lock = get_session_object('gnome_session_lock', request)
+    session_lock.acquire()
+
+    return session_lock
 
 
 def set_active_model(request, obj_id):

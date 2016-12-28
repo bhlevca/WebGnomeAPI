@@ -2,7 +2,6 @@
     Main entry point
 """
 import os
-from threading import BoundedSemaphore
 
 import logging
 
@@ -48,7 +47,6 @@ def get_json(request):
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
-    settings['py_gnome_semaphore'] = BoundedSemaphore(value=1)
     settings['objects'] = {}
 
     settings['uncertain_models'] = {}
@@ -74,6 +72,7 @@ def main(global_config, **settings):
     config.add_route("mover_upload", "/mover/upload")
     config.add_route("environment_upload", "/environment/upload")
     config.add_route("socket.io", "/socket.io/*remaining")
+    config.add_route("export", "/export/*file_path")
 
     config.scan('webgnome_api.views')
 

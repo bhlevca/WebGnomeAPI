@@ -4,6 +4,7 @@ Views for the Location objects.
 import time
 from collections import defaultdict
 import logging
+from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPPreconditionFailed,
@@ -15,7 +16,8 @@ from gnome.weatherers import Skimmer, Burn, ChemicalDispersion
 from webgnome_api.common.session_management import (get_active_model,
                                                     get_uncertain_models,
                                                     drop_uncertain_models,
-                                                    set_uncertain_models)
+                                                    set_uncertain_models,
+                                                    acquire_session_lock)
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
@@ -42,9 +44,9 @@ def get_step(request):
     active_model = get_active_model(request)
     if active_model:
         # generate the next step in the sequence.
-        gnome_sema = request.registry.settings['py_gnome_semaphore']
-        gnome_sema.acquire()
-        log.info('  ' + log_prefix + 'semaphore acquired...')
+        session_lock = acquire_session_lock(request)
+        log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         try:
             if active_model.current_time_step == -1:
@@ -109,8 +111,10 @@ def get_step(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
-            gnome_sema.release()
-            log.info('  ' + log_prefix + 'semaphore released...')
+            session_lock.release()
+            log.info('  {} session lock released (sess:{}, thr_id: {})'
+                     .format(log_prefix, id(session_lock),
+                             current_thread().ident))
 
         return output
     else:
@@ -124,8 +128,9 @@ def get_rewind(request):
     '''
     active_model = get_active_model(request)
     if active_model:
-        gnome_sema = request.registry.settings['py_gnome_semaphore']
-        gnome_sema.acquire()
+        session_lock = acquire_session_lock(request)
+        log.info('  session lock acquired (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
         try:
             active_model.rewind()
@@ -133,7 +138,9 @@ def get_rewind(request):
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:
-            gnome_sema.release()
+            session_lock.release()
+            log.info('  session lock released (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
 
@@ -150,8 +157,9 @@ def get_full_run(request):
 
     active_model = get_active_model(request)
     if active_model:
-        gnome_sema = request.registry.settings['py_gnome_semaphore']
-        gnome_sema.acquire()
+        session_lock = acquire_session_lock(request)
+        log.info('  session lock acquired (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
 
         try:
             weatherer_enabled_flags = [w.on for w in active_model.weatherers]
@@ -219,7 +227,9 @@ def get_full_run(request):
         finally:
             for a, w in zip(weatherer_enabled_flags, active_model.weatherers):
                 w.on = a
-            gnome_sema.release()
+            session_lock.release()
+            log.info('  session lock released (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
 
         return output
     else:

@@ -368,7 +368,7 @@ class StepTest(FunctionalTestBase):
                     "active_start": "2013-02-13T15:00:00",
                     "active_stop": "2013-02-15T15:00:00",
                     "efficiency": 0.2,
-                    "amount": "2160",
+                    "amount": "200",
                     "units": "bbl",
                     }
 
@@ -395,7 +395,7 @@ class StepTest(FunctionalTestBase):
 
     def test_first_step(self):
         # We are testing our ability to generate the first step in a model run
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
@@ -421,9 +421,10 @@ class StepTest(FunctionalTestBase):
         print 'test_first_step(): creating spill...'
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
+        spill['release']['release_time'] = model_start_time
+        spill['release']['end_release_time'] = model_start_time
+        spill['water'] = self.water_data
         model1['spills'] = [spill]
-        model1['spills'][0]['release']['release_time'] = model_start_time
-        model1['spills'][0]['release']['end_release_time'] = model_start_time
 
         # - we need outputters
         print 'test_first_step(): creating outputters...'
@@ -445,7 +446,7 @@ class StepTest(FunctionalTestBase):
     def test_weathering_step(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -513,7 +514,7 @@ class StepTest(FunctionalTestBase):
     def test_weathering_step_with_rewind(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -608,7 +609,7 @@ class StepTest(FunctionalTestBase):
     def test_current_output_step(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/central-long-island-sound')
+        self.testapp.get('/location/central-long-island-sound-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -682,34 +683,16 @@ class StepTest(FunctionalTestBase):
         assert first_step['step_num'] == 0
 
         current_grid_out = first_step['CurrentJsonOutput']
-        fcs = current_grid_out['feature_collections']
 
-        # Verify that our output keys reference real movers
-        for fc_id in fcs.keys():
-            assert fc_id in [m['id'] for m in model1['movers']]
+        for _k, v in current_grid_out.iteritems():
 
-        # Verify the data structure
-        for fc in fcs.values():
-            assert 'type' in fc
-            assert fc['type'] == 'FeatureCollection'
-            assert 'features' in fc
-            assert len(fc['features']) > 0
+            assert set(v.keys()).issuperset(('direction', 'magnitude'))
+            direction, magnitude = [v[sub_key]
+                                    for sub_key in ('direction', 'magnitude')]
 
-            for feature in fc['features']:
-                assert 'type' in feature
-                assert feature['type'] == 'Feature'
-
-                assert 'properties' in feature
-                assert 'velocity' in feature['properties']
-
-                assert 'geometry' in feature
-                assert len(feature['geometry']) > 0
-
-                geometry = feature['geometry']
-                assert 'type' in geometry
-                assert geometry['type'] == 'MultiPoint'
-
-                assert 'coordinates' in geometry
+            assert all([isinstance(d, float) for d in direction])
+            assert all([isinstance(m, float) for m in magnitude])
+            assert len(direction) == len(magnitude)
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
@@ -721,35 +704,22 @@ class StepTest(FunctionalTestBase):
 
         assert second_step['step_num'] == 1
 
-        current_grid_out = second_step['CurrentGeoJsonOutput']
-        fcs = current_grid_out['feature_collections']
+        current_grid_out = second_step['CurrentJsonOutput']
 
-        for fc in fcs.values():
-            assert 'type' in fc
-            assert fc['type'] == 'FeatureCollection'
-            assert 'features' in fc
-            assert len(fc['features']) > 0
+        for _k, v in current_grid_out.iteritems():
 
-            for feature in fc['features']:
-                assert 'type' in feature
-                assert feature['type'] == 'Feature'
+            assert set(v.keys()).issuperset(('direction', 'magnitude'))
+            direction, magnitude = [v[sub_key]
+                                    for sub_key in ('direction', 'magnitude')]
 
-                assert 'properties' in feature
-                assert 'velocity' in feature['properties']
-
-                assert 'geometry' in feature
-                assert len(feature['geometry']) > 0
-
-                geometry = feature['geometry']
-                assert 'type' in geometry
-                assert geometry['type'] == 'MultiPoint'
-
-                assert 'coordinates' in geometry
+            assert all([isinstance(d, float) for d in direction])
+            assert all([isinstance(m, float) for m in magnitude])
+            assert len(direction) == len(magnitude)
 
     def test_current_output_performance(self):
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/new-york-harbor')
+        self.testapp.get('/location/new-york-harbor-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
@@ -819,9 +789,11 @@ class StepTest(FunctionalTestBase):
         self.waves_data['wind'] = wind_data
         self.waves_data['water'] = water_data
         model1['environment'].append(self.waves_data)
+        model1['spills'][0]['water'] = water_data
 
         self.evaporation_data['wind'] = wind_data
         self.evaporation_data['water'] = water_data
+
         self.dispersion_data['water'] = water_data
         self.dispersion_data['waves'] = self.waves_data
 
@@ -853,7 +825,7 @@ class StepTest(FunctionalTestBase):
     @pytest.mark.slow
     def test_all_steps(self):
         # We are testing our ability to generate the first step in a model run
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
@@ -909,7 +881,27 @@ class StepTest(FunctionalTestBase):
             step = resp.json_body
             print '{0}, '.format(step['step_num']),
             assert step['step_num'] == s
-            assert 'feature_collection' in step['TrajectoryGeoJsonOutput']
+
+            assert 'TrajectoryGeoJsonOutput' in step
+            traj_out = step['TrajectoryGeoJsonOutput']
+            for output_key in ('certain', 'uncertain'):
+                print traj_out[output_key].keys()
+
+                assert 'features' in traj_out[output_key]
+                for f in traj_out[output_key]['features']:
+                    print f.keys()
+
+                    assert 'geometry' in f
+                    print f['geometry'].keys()
+
+                    assert 'coordinates' in f['geometry']
+                    print f['geometry']['coordinates']
+
+                    assert 'properties' in f
+                    print f['properties']
+                    assert f['properties']['status_code'] == 2
+                    assert f['properties']['spill_num'] == 0
+                    assert f['properties']['sc_type'] == 'forecast'
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
@@ -923,19 +915,22 @@ class StepTest(FunctionalTestBase):
         '''
         # We are testing our ability to generate the first step in a
         # weathering model run
-        self.testapp.get('/location/new-york-harbor')
+        self.testapp.get('/location/new-york-harbor-ny')
 
         # OK, if we get this far, we should have an active model
         print 'test_weathering_step(): getting model...'
         resp = self.testapp.get('/model')
         model1 = resp.json_body
-
         print 'model start time:', model1['start_time']
         start_time = dateutil.parser.parse(model1['start_time'])
 
-        model1['duration'] = '{}'.format(float(5 * 24 * 60 * 60))
+        duration = 5 * 24 * 60 * 60
+        model1['duration'] = '{}'.format(float(duration))
         print ('model duration: {} hours'
                .format(float(model1['duration']) / 60 / 60))
+
+        model1['time_step'] = 900.0
+        print ('model timestep: {} seconds'.format(model1['time_step']))
 
         # The location file we selected should have:
         # - a registered map
@@ -981,6 +976,21 @@ class StepTest(FunctionalTestBase):
         model1['spills'] = [spill_data]
 
         model1['environment'].append(self.wind_data)
+
+        # so the timeseries for our wind needs to encompass
+        # the entire model duration now.
+        corrected_ts = []
+        for h in range((duration / 60 / 60) + 1):
+            ts_len = len(self.wind_data['timeseries'])
+
+            corrected_time = (start_time +
+                              datetime.timedelta(hours=h)
+                              ).isoformat()
+            corrected_ts.append((corrected_time,
+                                 self.wind_data['timeseries'][h % ts_len][1]))
+
+        self.wind_data['timeseries'] = corrected_ts
+
         model1['environment'].append(self.water_data)
 
         resp = self.testapp.put_json('/model', params=model1)
@@ -997,6 +1007,7 @@ class StepTest(FunctionalTestBase):
         self.waves_data['wind'] = wind_data
         self.waves_data['water'] = water_data
         model1['environment'].append(self.waves_data)
+        model1['spills'][0]['water'] = water_data
 
         self.evaporation_data['wind'] = wind_data
         self.evaporation_data['water'] = water_data
@@ -1004,6 +1015,7 @@ class StepTest(FunctionalTestBase):
         self.dispersion_data['water'] = water_data
         self.dispersion_data['waves'] = self.waves_data
 
+        self.skimmer_data['water'] = water_data
         self.skimmer_data['active_start'] = start_time.isoformat()
         self.skimmer_data['active_stop'] = ((start_time +
                                              datetime.timedelta(days=1))
@@ -1048,7 +1060,8 @@ class StepTest(FunctionalTestBase):
 
         # next we perform the full run without response options and then
         # check that nothing was skimmed.
-        resp = self.testapp.get('/full_run_without_response')
+        resp = self.testapp.post_json('/full_run',
+                                     params={'response_on': False})
         final_step = resp.json_body
 
         print '\n\nour final step with response options inactive:'

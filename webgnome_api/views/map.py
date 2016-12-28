@@ -4,6 +4,7 @@ Views for the Map objects.
 import ujson
 import logging
 import os
+from threading import current_thread
 
 from cornice import Service
 from pyramid.view import view_config
@@ -29,7 +30,8 @@ from webgnome_api.common.common_object import (CreateObject,
 from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
                                                     get_session_object,
-                                                    set_session_object)
+                                                    set_session_object,
+                                                    acquire_session_lock)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
@@ -78,9 +80,9 @@ def create_map(request):
         json_request['filename'] = get_file_path(request,
                                                  json_request=json_request)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
@@ -88,8 +90,9 @@ def create_map(request):
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     set_session_object(obj, request)
     return obj.serialize()
@@ -128,11 +131,13 @@ def upload_map_options(request):
 
 @view_config(route_name='map_upload', request_method='POST')
 def upload_map(request):
-    file_path = process_upload(request, 'new_map').split(os.path.sep)[-1]
+    file_name, name = process_upload(request, 'new_map')
+    file_path = file_name.split(os.path.sep)[-1]
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
-                                'json_': 'webapi'
+                                'json_': 'webapi',
+                                'name': name
                                 })
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))
