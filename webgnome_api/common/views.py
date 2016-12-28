@@ -7,7 +7,7 @@ import ujson
 import shutil
 import uuid
 import logging
-import os
+import os, platform, ctypes
 from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
