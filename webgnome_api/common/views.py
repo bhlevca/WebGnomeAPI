@@ -231,8 +231,14 @@ def process_upload(request, field_name):
                                            .format(max_upload_size)))
 
     # now we check if we have enough space to save the file.
-    stat_vfs = os.statvfs(session_dir)
-    free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
+    if platform.system() == 'Windows':
+        fb = ctypes.c_ulonglong(0)
+        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(dirname), None, None, ctypes.pointer(free_bytes))
+        free_bytes = fb.value / 1024 / 1024
+    else:
+        stat_vfs = os.statvfs(session_dir)
+        free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
+
     if size >= free_bytes:
         raise cors_response(request,
                             HTTPInsufficientStorage('Not enough space '
