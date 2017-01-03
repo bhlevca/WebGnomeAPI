@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
     Setup file.
 """
@@ -110,7 +112,7 @@ class compileJSON(_build_py):
         steps = obj["steps"]
         js_file_list = self.findJS(obj, path)
         for file_path in js_file_list:
-            filename = os.path.basename(os.path.dirname(file_path).split("/js")[0])
+            filename = os.path.split(os.path.split(os.path.dirname(file_path))[0])[-1]
             js_file_name = self.grab_filename(file_path)
 
             for step in steps:
