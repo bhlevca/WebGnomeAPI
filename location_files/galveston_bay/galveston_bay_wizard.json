@@ -8,7 +8,7 @@
                 "type": "welcome",
                 "name": "Welcome to Galveston Bay",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Galveston Bay :</p><ol><li>Set the model run parameters.</li><li>Set flow rates for the three main tributaries of the bay.</li><li>Input information about the currents offshore.</li><li>Input the wind conditions.</li></ol> NOTE: Extreme atmospheric pressure fluctuations associated with strong weather events such as hurricanes can cause strong currents within Galveston Bay. These currents can alter the normal tidal cycle within the bay and are NOT modeled in this location file."
+                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Galveston Bay :</p><ol><li>Set the model run parameters.</li><li>Set flow rates for the three main tributaries of the bay.</li><li>Input information about the currents offshore.</li><li>Input the wind conditions.</li></ol> <p>NOTE: Extreme atmospheric pressure fluctuations associated with strong weather events such as hurricanes can cause strong currents within Galveston Bay. These currents can alter the normal tidal cycle within the bay and are NOT modeled in this location file.</p>"
             },
             {
                 "type": "model",

@@ -12,8 +12,8 @@
             },
             {
                 "type": "text",
-                "title": "Caveat and Explanation",
-                "body": "<p>At the present time, this location file does not simulate break-up, freeze-up, or periods with significant rain or ice.</p><p>We suggest that you use this location file only during ice-free conditions, which generally occur during July and August.</li></ol>",
+                "title": "Note on Applicability",
+                "body": "<p>At the present time, this location file does not simulate break-up, freeze-up, or periods with significant rain or ice.</p><p>We suggest that you use this Location File only during ice-free conditions, which generally occur during July and August.</li></ol>",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
             },
             {
