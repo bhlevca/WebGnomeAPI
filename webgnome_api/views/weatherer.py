@@ -22,7 +22,8 @@ implemented_types = ('gnome.weatherers.core.Weatherer',
                      'gnome.weatherers.WeatheringData',
                      'gnome.weatherers.FayGravityViscous',
                      'gnome.weatherers.Dissolution',
-                     'gnome.weatherers.roc.Burn'
+                     'gnome.weatherers.roc.Burn',
+                     'gnome.weatherers.roc.Skim'
                      )
 
 
