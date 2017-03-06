@@ -9,7 +9,6 @@ from threading import current_thread
 from pyramid.view import view_config
 from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPInsufficientStorage,
                                     HTTPNotFound)
 
 from gnome.persist import load, is_savezip_valid
@@ -44,7 +43,7 @@ def upload_model(request):
         some extra work to prevent symlink attacks.
     '''
     clean_session_dir(request)
-    file_path, name = process_upload(request, 'new_model')
+    file_path, _name = process_upload(request, 'new_model')
     # Now that we have our file, we will now try to load the model into
     # memory.
     # Now that we have our file, is it a zipfile?
@@ -63,7 +62,9 @@ def upload_model(request):
 
         init_session_objects(request, force=True)
 
-        RegisterObject(new_model, request)
+        from ..views import implemented_types
+
+        RegisterObject(new_model, request, implemented_types)
 
         log.info('setting active model...')
         set_active_model(request, new_model.id)

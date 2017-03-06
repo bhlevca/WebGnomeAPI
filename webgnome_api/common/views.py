@@ -1,13 +1,16 @@
 """
 Common Gnome object request handlers.
 """
+import os
 import sys
+import platform
 import traceback
 import ujson
 import shutil
 import uuid
 import logging
-import os, platform, ctypes
+import ctypes
+
 from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -236,11 +239,13 @@ def process_upload(request, field_name):
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {0}'
                                            .format(max_upload_size)))
-                                       
+
     # now we check if we have enough space to save the file.
     if platform.system() == 'Windows':
         fb = ctypes.c_ulonglong(0)
-        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(session_dir), None, None, ctypes.pointer(fb))
+        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(session_dir),
+                                                   None, None,
+                                                   ctypes.pointer(fb))
         free_bytes = fb.value
     else:
         stat_vfs = os.statvfs(session_dir)
