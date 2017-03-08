@@ -25,3 +25,5 @@ for m_name in __all__:
             except ImportError:
                 print ('Warning: could not import implemented_type: {}'
                        .format(t))
+
+implemented_types = tuple(implemented_types)

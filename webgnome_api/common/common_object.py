@@ -160,19 +160,19 @@ def RegisterObject(obj, request, implemented_types):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
+    sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
 
-    if (isinstance(obj, tuple(implemented_types))):
+    if (isinstance(obj, implemented_types)):
         set_session_object(obj, request)
 
-    if isinstance(obj, (list, tuple, OrderedCollection,
-                        SpillContainerPair)):
+    if isinstance(obj, sequence_types):
         for i in obj:
-            if (isinstance(i, tuple(implemented_types))):
+            if (isinstance(i, implemented_types)):
                 RegisterObject(i, request, implemented_types)
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if (isinstance(attr, tuple(implemented_types))):
+            if (isinstance(attr, implemented_types + sequence_types)):
                 RegisterObject(attr, request, implemented_types)
 
 

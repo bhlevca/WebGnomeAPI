@@ -115,6 +115,8 @@ def load_location_file(location_file, request):
         init_session_objects(request, force=True)
 
         log.debug("model loaded - begin registering objects")
-        RegisterObject(active_model, request)
+
+        from ..views import implemented_types
+        RegisterObject(active_model, request, implemented_types)
 
         set_active_model(request, active_model.id)
