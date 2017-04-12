@@ -1,13 +1,17 @@
 """
 Common Gnome object request handlers.
 """
+import os
 import sys
+import platform
 import traceback
 import ujson
 import shutil
 import uuid
 import logging
-import os
+import ctypes
+
+from threading import current_thread
 
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
@@ -31,7 +35,9 @@ from .common_object import (CreateObject,
                             get_session_dir,
                             clean_session_dir)
 
-from .session_management import get_session_objects, get_session_object
+from .session_management import (get_session_objects,
+                                 get_session_object,
+                                 acquire_session_lock)
 
 cors_policy = {'credentials': True
                }
@@ -127,9 +133,9 @@ def create_object(request, implemented_types):
     if not JSONImplementsOneOf(json_request, implemented_types):
         raise cors_exception(request, HTTPNotImplemented)
 
-    gnome_sema = request.registry.settings['py_gnome_semaphore']
-    gnome_sema.acquire()
-    log.info('  ' + log_prefix + 'semaphore acquired...')
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
@@ -138,8 +144,9 @@ def create_object(request, implemented_types):
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
-        gnome_sema.release()
-        log.info('  ' + log_prefix + 'semaphore released...')
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
     return obj.serialize()
@@ -161,9 +168,9 @@ def update_object(request, implemented_types):
     obj = get_session_object(obj_id_from_req_payload(json_request),
                              request)
     if obj:
-        gnome_sema = request.registry.settings['py_gnome_semaphore']
-        gnome_sema.acquire()
-        log.info('  ' + log_prefix + 'semaphore acquired...')
+        session_lock = acquire_session_lock(request)
+        log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
@@ -171,8 +178,10 @@ def update_object(request, implemented_types):
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
-            gnome_sema.release()
-            log.info('  ' + log_prefix + 'semaphore released...')
+            session_lock.release()
+            log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+                     .format(log_prefix, id(session_lock),
+                             current_thread().ident))
     else:
         raise cors_exception(request, HTTPNotFound)
 
@@ -216,6 +225,7 @@ def process_upload(request, field_name):
     extension = '.' + file_name.split('.')[-1]
     # add uuid to the file name incase the user accidentaly uploads
     # multiple files with the same name for different objects.
+    orig_file_name = file_name
     file_name = file_name.replace(extension,
                                   '-' + str(uuid.uuid4()) + extension)
     file_path = os.path.join(session_dir, file_name)
@@ -231,8 +241,16 @@ def process_upload(request, field_name):
                                            .format(max_upload_size)))
 
     # now we check if we have enough space to save the file.
-    stat_vfs = os.statvfs(session_dir)
-    free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
+    if platform.system() == 'Windows':
+        fb = ctypes.c_ulonglong(0)
+        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(session_dir),
+                                                   None, None,
+                                                   ctypes.pointer(fb))
+        free_bytes = fb.value
+    else:
+        stat_vfs = os.statvfs(session_dir)
+        free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
+
     if size >= free_bytes:
         raise cors_response(request,
                             HTTPInsufficientStorage('Not enough space '
@@ -245,4 +263,4 @@ def process_upload(request, field_name):
 
     log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
 
-    return file_path
+    return file_path, orig_file_name

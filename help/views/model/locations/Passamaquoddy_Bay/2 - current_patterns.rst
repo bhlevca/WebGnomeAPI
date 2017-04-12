@@ -1,0 +1,4 @@
+Current Patterns
+====================================
+
+The Passamaquoddy Location File contains tidal circulation patterns developed at the Bedford Institute of Oceanography in Dartmouth, Nova Scotia, Canada. The model is an implementation of the QUODDY 3-dimensional finite element circulation model. The model was expanded to allow for the flooding and drying of intertidal areas (Greenberg et al 2005). This bay has an extensive network of intertidal flats, tidal pools and channels that become blocked at low tide, and simulating dry areas improves the circulation throughout the domain. The region supports many aquaculture sites which require accurate knowledge of the local circulation and water properties.

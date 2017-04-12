@@ -25,5 +25,5 @@ def pytest_runtest_setup(item):
     So the code in here is executed before each test.
     '''
     if ('slow' in item.keywords and
-        item.config.getoption('--skipslow')):
+            item.config.getoption('--skipslow')):
         pytest.skip('--skipslow option skipped this test')

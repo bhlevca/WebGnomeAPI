@@ -4,6 +4,7 @@ Views for the Location objects.
 from os import walk
 from os.path import sep, join, isdir, split, basename
 from logging import getLogger
+from threading import current_thread
 
 from geojson import FeatureCollection, Feature, Point
 
@@ -18,7 +19,8 @@ from gnome.persist import load
 from webgnome_api.common.common_object import obj_id_from_url, RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
                                                     set_active_model,
-                                                    get_active_model)
+                                                    get_active_model,
+                                                    acquire_session_lock)
 
 from webgnome_api.common.views import cors_exception, cors_policy
 
@@ -57,8 +59,10 @@ def get_location(request):
         matching = [(i, c) for i, c in enumerate(location_content)
                     if slugify.slugify_url(c['name']) == slug]
         if matching:
-            gnome_sema = request.registry.settings['py_gnome_semaphore']
-            gnome_sema.acquire()
+            session_lock = acquire_session_lock(request)
+            log.info('  session lock acquired (sess:{}, thr_id: {})'
+                     .format(id(session_lock), current_thread().ident))
+
             try:
                 location_file = location_file_dirs[matching[0][0]]
                 log.info('load location: {0}'.format(location_file))
@@ -67,7 +71,9 @@ def get_location(request):
                 raise cors_exception(request, HTTPInternalServerError,
                                      with_stacktrace=True)
             finally:
-                gnome_sema.release()
+                session_lock.release()
+                log.info('  session lock released (sess:{}, thr_id: {})'
+                         .format(id(session_lock), current_thread().ident))
 
             return matching[0][1]
         else:
@@ -109,6 +115,8 @@ def load_location_file(location_file, request):
         init_session_objects(request, force=True)
 
         log.debug("model loaded - begin registering objects")
-        RegisterObject(active_model, request)
+
+        from ..views import implemented_types
+        RegisterObject(active_model, request, implemented_types)
 
         set_active_model(request, active_model.id)

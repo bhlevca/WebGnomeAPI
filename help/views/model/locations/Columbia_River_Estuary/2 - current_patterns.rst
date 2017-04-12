@@ -1,0 +1,4 @@
+Current Patterns
+=====================================
+
+The Columbia River Estuary Location File contains two current patterns. One is scaled to the tidal predictions at Tongue Point, Oregon (46° 13.15'N, 123° 46.00'W). The other represents the river flow minus the mean river flow in the tidal predictions and is scaled according to the river flow rate(s) entered by the user. Since the tidal record contains a mean current of 0.2 m/s, the scaleable river flow represents the difference between the user transport and the transport in the tidal predictions. Both current patterns were created with the NOAA Current Analysis for Trajectory Simulation (CATS) hydrodynamic application.

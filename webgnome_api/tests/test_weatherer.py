@@ -109,6 +109,28 @@ class BurnTests(BaseWeathererTests):
                 }
 
 
+class ROCBurnTests(BaseWeathererTests):
+    
+    req_data = {'obj_type': u'gnome.weatherers.roc.Burn',
+                'json_':'webapi',
+                'on': True,
+                'offset': '50',
+                'boom_length': '250',
+                'boom_draft': '10',
+                'speed': '2',
+                'throughput': '0.75',
+                'burn_efficiency_type': '1',
+                'timeseries': [["2016-12-29T07:00:00", "2016-12-29T19:00:00"],
+                               ["2016-12-30T07:00:00", "2016-12-30T19:00:00"]
+                               ],
+                'units': {'offset':'ft',
+                          'boom_length': 'ft',
+                          'boom_draft': 'in',
+                          'speed': 'knots'
+                          }
+               }
+
+
 class SkimmerTests(BaseWeathererTests):
     '''
     cleanup operations must have a valid datetime - cannot use -inf and inf

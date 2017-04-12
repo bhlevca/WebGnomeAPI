@@ -1,0 +1,14 @@
+Current Patterns
+=======================================
+
+The Boston and Vicinity Location File contains six current patterns: tides, wind-driven currents (2 components), Gulf of Maine, Massachusetts coastal current, and sewage outfall. All current patterns were created with the NOAA Current Analysis for Trajectory Simulation (CATS) hydrodynamic application.
+
+The tidal current pattern is scaled to the tidal predictions near Point Allerton, near the mouth of Nantasket Roads (42° 19.28' N, 70° 53.25' W). There are strong asymmetries between ebb and flood tides near many outcrops and islands in Boston Harbor. The residual tidal currents that result from these asymmetries are not modeled in this Location File.
+
+Two wind-driven circulation patterns are used to simulate wind-driven flow: one pattern from NW winds and another from SW winds. These two patterns are combined linearly to produce a current pattern appropriate for the user-defined wind field. 
+
+Another current pattern represents the arm of the Gulf of Maine circulation that enters Massachusetts Bay and flows in a counterclockwise direction, then back out near Race Point. The current pattern is referenced to a deep point near Cape Ann (42° 33' N, 70° 40'W) and scaled to a mean flow rate of 4 cm/s. The observed variability in this current is of the same order of magnitude as the mean flow (Geyer et al. 1992). This Location File uses an along-current uncertainty of 80% and a cross-current uncertainty of 20% for the Gulf of Maine circulation to account for the high variability.
+
+Spring runoff in rivers that enter the Gulf of Maine, particularly the Merrimack River to the north, results in an increase in the counterclockwise circulation in Massachusetts Bay (Geyer et al. 1992). This circulation, sometimes referred to as the Massachusetts Coastal Current (MCC), is represented in the Location File by a current pattern that is scaled to a maximum flow of 15 cm/s in May and slower velocities of 12 cm/s and 4 cm/s in April and June, respectively. Although there is frequently another high pulse of freshwater input from the Merrimack River in the fall, this pulse does not lead to a corresponding increase in the MCC due to low stratification during fall. The reference point for this current pattern lies just east of Gloucester (42° 35' N, 70° 39' W). Year-to-year variability in this current is represented by a 50% along-current and 20% cross-current uncertainty in the Location File.
+
+Sewage outfall is predicted to have little, if any, effect on the surface transportation of oil in the region, with the possible exception of a wintertime scenario within 5 km of the outflow location with little or no winds. If the user chooses to simulate these effects in GNOME, the currents are scaled to 4 cm/s at the outfall exit.

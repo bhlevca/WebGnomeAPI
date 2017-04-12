@@ -1,0 +1,6 @@
+Current Patterns
+=====================================
+
+The Sabine Lake and Port Arthur Location File contains five circulation patterns created in the NOAA CATS (Current Analysis for Trajectory Simulation) hydrodynamic model. In this Location File, the tides, the Sabine River, the Neches River, and the northward and eastward wind-driven circulations are each simulated with separate current patterns. The NOAA Tide Station for "Texas Point, 1.7 SSE of," was used to calibrate the tidal currents. The wind-driven currents were calculated using CATS and agree well with wind-driven circulation calculated with the Calcasieu-Sabine model from the University of Louisiana, Baton Rouge (Meselhe and Noshi 2001, and Meselhe 2001 and 2002).
+
+River flows were scaled by flow volume using the USGS stations 08030500 and 08041000 for the Sabine and Neches Rivers, respectively. More historical data was available for the Neches River, so a mean river flow could be calculated, while a medium flow was estimated for the Sabine River, based on the maximum and minimum flow values found.

@@ -29,7 +29,7 @@ class LocationTest(FunctionalTestBase):
         self.testapp.get('/location/bogus', status=404)
 
     def test_get_valid_id(self):
-        resp = self.testapp.get('/location/central-long-island-sound')
+        resp = self.testapp.get('/location/central-long-island-sound-ny')
 
         assert 'name' in resp.json_body
         assert 'steps' in resp.json_body
