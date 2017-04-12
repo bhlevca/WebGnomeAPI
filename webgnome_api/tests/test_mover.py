@@ -1,9 +1,6 @@
 """
 Functional tests for the Mover Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2, width=120)
-
 import time
 import pytest
 from base import FunctionalTestBase
@@ -530,43 +527,8 @@ class CurrentInfoTests(FunctionalTestBase):
         current_info = resp.json_body
         print '\n\ngot our grid at: ', time.time() - begin
 
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert 'features' in current_info
-        for f in current_info['features']:
-            assert 'type' in f
-            assert f['type'] == 'Feature'
-
-            assert 'geometry' in f
-            geo = f['geometry']
-            assert 'coordinates' in geo
-            assert 'type' in geo
-            assert geo['type'] == 'MultiPolygon'
-
-        resp = self.testapp.get('/mover/{0}/{1}/'.format(mover_id, 'grid'))
-        current_info = resp.json_body
-        print '\n\ngot our grid at: ', time.time() - begin
-
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert 'features' in current_info
-        for f in current_info['features']:
-            assert 'type' in f
-            assert f['type'] == 'Feature'
-
-            assert 'geometry' in f
-            geo = f['geometry']
-            assert 'coordinates' in geo
-            assert 'type' in geo
-            assert geo['type'] == 'MultiPolygon'
-
-            coords = geo['coordinates']
-            for c in coords:
-                # should be triangular
-                assert len(c) == 1
-                assert len(c[0]) == 3
+        for r in current_info:
+            assert len(r) == 6  # each row contains 3 flattened coordinates
 
     def test_get_wrong_mover(self):
         '''
@@ -584,15 +546,8 @@ class CurrentInfoTests(FunctionalTestBase):
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][1]['id']
-        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
-        current_info = resp.json_body
-
-        assert 'features' in current_info
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        features = current_info['features']
-        assert features == []
+        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'),
+                                status=404)
 
 
 class IceInfoTests(FunctionalTestBase):
@@ -750,14 +705,8 @@ class IceInfoTests(FunctionalTestBase):
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][0]['id']
-        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
-        current_info = resp.json_body
-
-        assert 'features' in current_info
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert len(current_info['features']) == 0
+        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'),
+                                status=404)
 
     @pytest.mark.slow
     def test_get_complete_path(self):
@@ -781,21 +730,8 @@ class IceInfoTests(FunctionalTestBase):
         current_info = resp.json_body
         print '\n\ngot our grid at: ', time.time() - begin
 
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert 'features' in current_info
-        assert len(current_info['features']) > 0
-
-        for f in current_info['features']:
-            assert 'type' in f
-            assert f['type'] == 'Feature'
-
-            assert 'geometry' in f
-            geo = f['geometry']
-            assert 'coordinates' in geo
-            assert 'type' in geo
-            assert geo['type'] == 'MultiPolygon'
+        for r in current_info:
+            assert len(r) == 8  # each row contains 4 flattened coordinates
 
 
 class CellInfoTests(FunctionalTestBase):
@@ -901,43 +837,8 @@ class CellInfoTests(FunctionalTestBase):
         current_info = resp.json_body
         print '\n\ngot our grid at: ', time.time() - begin
 
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert 'features' in current_info
-        for f in current_info['features']:
-            assert 'type' in f
-            assert f['type'] == 'Feature'
-
-            assert 'geometry' in f
-            geo = f['geometry']
-            assert 'coordinates' in geo
-            assert 'type' in geo
-            assert geo['type'] == 'MultiPolygon'
-
-        resp = self.testapp.get('/mover/{0}/{1}/'.format(mover_id, 'grid'))
-        current_info = resp.json_body
-        print '\n\ngot our grid at: ', time.time() - begin
-
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        assert 'features' in current_info
-        for f in current_info['features']:
-            assert 'type' in f
-            assert f['type'] == 'Feature'
-
-            assert 'geometry' in f
-            geo = f['geometry']
-            assert 'coordinates' in geo
-            assert 'type' in geo
-            assert geo['type'] == 'MultiPolygon'
-
-            coords = geo['coordinates']
-            for c in coords:
-                # should be cell
-                assert len(c) == 1
-                assert len(c[0]) == 4
+        for r in current_info:
+            assert len(r) == 8  # each row contains 4 flattened coordinates
 
     def test_get_wrong_mover(self):
         '''
@@ -956,12 +857,5 @@ class CellInfoTests(FunctionalTestBase):
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][1]['id']
-        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
-        current_info = resp.json_body
-
-        assert 'features' in current_info
-        assert 'type' in current_info
-        assert current_info['type'] == 'FeatureCollection'
-
-        features = current_info['features']
-        assert features == []
+        resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'),
+                                status=404)

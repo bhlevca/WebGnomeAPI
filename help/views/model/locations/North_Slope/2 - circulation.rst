@@ -1,0 +1,10 @@
+Circulation
+====================================
+
+The coastal circulation in the Beaufort Sea is driven by the wind and is constrained along the shoreline in either direction. Summer winds are primarily from the east to northeast, and secondarily from the west to northwest. Winds with an easterly component drive coastal circulation toward the west and offshore, while winds with a westerly component drive the coastal currents toward the east and onshore (Aagaard 1979, Barnes and Reimnitz 1974, Cannon and Hachmeister 1987, Hachmeister et al. 1987, Hale et al. 1989, Savoie and Wilson 1986). Changes in wind direction are generally reflected in the coastal circulation within a few hours (Savoie and Wilson 1986).
+
+Wind-driven Ekman transport can alter the across-shelf surface pressure gradient. Upwelling situations tend to increase the water column stratification, while downwelling situations tend to make the water column more homogeneous (Hale et al. 1989). When the wind relaxes or reverses, the forcing sustaining this pressure gradient is released and water tends to move on- or off-shore (Savoie and Wilson 1986). Large river discharges, such as from the Mackenzie River in Canada, also create a surface plume with significant offshore velocities that move the fresher surface water offshore, creating an estuary-like circulation with colder, more saline water moving to the surface in response (Hale et al. 1989). These effects are not simulated in this Location File.
+
+West Dock Break
+
+We have been careful to simulate the cut through West Dock causeway to allow the coastal circulation to pass through. The surface circulation in this Location File flows both through the West Dock and as a jet around the margin of the causeway, returning shoreward on the other side, as seen in the field (Hachmeister et al. 1987, Savoie and Wilson 1986, Short et al. 1988a).

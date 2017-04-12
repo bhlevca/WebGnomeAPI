@@ -1,0 +1,4 @@
+Wind-Driven Currents
+==============================================
+
+Wind-driven currents were simulated in the NOAA Current Analysis for Trajectory Simulation (CATS) hydrodynamic model, using the Wind-Driven Analysis Currents model. This model was used with linear physics so that the wind-driven currents could be related to a time-average of the wind data entered by the user. Both easterly winds and resultant baroclinic flow were simulated in the CATS model, so the wind velocity that the user enters is decomposed into those two components. The total current velocity is then related to the wind stress calculated from the winds input by the user. The wind-driven circulation patterns in this Location File were scaled with respect to the western boundary circulation in the Harrison and Gwydyr Bay Location File. The scaling in the Harrison and Gwydyr Bays Location File was created from fieldwork conducted during August 2001.

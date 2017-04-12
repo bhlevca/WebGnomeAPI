@@ -51,9 +51,10 @@ def update_environment(request):
 def environment_upload_options(request):
     return cors_response(request, request.response)
 
+
 @view_config(route_name='environment_upload', request_method='POST')
 def environment_upload(request):
-    filename = process_upload(request, 'new_environment')
-    resp = Response(ujson.dumps({'filename': filename}))
-    
+    filename, name = process_upload(request, 'new_environment')
+    resp = Response(ujson.dumps({'filename': filename, 'name': name}))
+
     return cors_response(request, resp)

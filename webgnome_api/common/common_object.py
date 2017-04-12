@@ -6,16 +6,16 @@ import shutil
 import urllib2
 import ujson
 
-from types import MethodType, FunctionType, BuiltinFunctionType, NoneType
-from logging import Logger
+import logging
 
 from .helpers import FQNamesToDict, PyClassFromName
 
 from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
-from gnome.utilities.geometry.BBox import BBox
 
 from webgnome_api.common.session_management import set_session_object
+
+log = logging.getLogger(__name__)
 
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
@@ -152,7 +152,7 @@ def ObjectImplementsOneOf(model_object, obj_types):
     return False
 
 
-def RegisterObject(obj, request):
+def RegisterObject(obj, request, implemented_types):
     '''
         Recursively register an object plus all contained child objects.
         Registering means we put the object somewhere it can be looked up
@@ -160,26 +160,20 @@ def RegisterObject(obj, request):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
-    if (hasattr(obj, 'id') and
-            not obj.__class__.__name__ == 'type'):
-        # print 'RegisterObject(): registering:', (obj.__class__.__name__,
-        #                                           obj.id)
+    sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
+
+    if (isinstance(obj, implemented_types)):
         set_session_object(obj, request)
-    if isinstance(obj, (list, tuple, OrderedCollection,
-                        SpillContainerPair)):
+
+    if isinstance(obj, sequence_types):
         for i in obj:
-            RegisterObject(i, request)
+            if (isinstance(i, implemented_types)):
+                RegisterObject(i, request, implemented_types)
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if not (k.find('_') == 0 or
-                    isinstance(attr, (MethodType, FunctionType,
-                                      BuiltinFunctionType,
-                                      int, float, str, unicode, NoneType,
-                                      Logger, BBox)
-                               )):
-                # print 'RegisterObject(): recursing attr:', (k, type(attr))
-                RegisterObject(attr, request)
+            if (isinstance(attr, implemented_types + sequence_types)):
+                RegisterObject(attr, request, implemented_types)
 
 
 def obj_id_from_url(request):
@@ -269,7 +263,7 @@ def get_file_path(request, json_request=None):
             json_request['filename'].find(goods_url) != -1):
         resp = urllib2.urlopen(json_request['filename'])
 
-        (remote_dir, fname) = os.path.split(json_request['filename'])
+        (_remote_dir, fname) = os.path.split(json_request['filename'])
 
         with open(os.path.join(session_dir, fname), 'wb') as fh:
             while True:

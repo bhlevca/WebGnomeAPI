@@ -1,0 +1,4 @@
+Stefansson Sound River Flows
+==================================================
+
+The Stefansson Sound river flows are simulated with user interaction in this Location File. Unfortunately, very little information is available on riverbed bathymetry and flow rates in this region of the Arctic. The Sag River does have a river gauge, with forecasts made at the river's mouth in the Beaufort Sea; however, these forecasts are not available online. In order to create a useful planning tool in this Location File, we have estimated river circulation patterns and likely river flow rates, based on other rivers in the U.S. We have included simple methods for measuring river currents in the *River Flows* Help Topic. If measurements of surface currents are unavailable, we recommend that the user choose high and low values for the river flow, and run the model with these values to evaluate the difference.
