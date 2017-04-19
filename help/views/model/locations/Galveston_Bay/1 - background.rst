@@ -10,4 +10,5 @@ Galveston Bay is an inlet of the Gulf of Mexico, on the southeastern shore of Te
 Background
 ==================================
 
-Galveston Bay is broad and very shallow (typically only 6 -12 feet deep), except for dredged channels. Winds and tides dominate the circulation in the bay; however, extremes in atmospheric low pressure (such as those associated with a hurricane) can significantly raise sea level, causing extensive flooding and currents that can overcome the tides.
+Galveston Bay is broad and very shallow (typically only 6-12 feet deep), except for dredged channels. Winds and tides dominate the circulation in the bay. However, meteorological tides (storm surge) can significantly raise or lower sea level, causing extensive flooding and currents that can overcome the tides. Even modest storms can affect sea level more than the astronomical tides when there is a persistent onshore or offshore wind.
+
