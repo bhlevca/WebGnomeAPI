@@ -3,34 +3,45 @@
 
 Variable Wind
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A **Variable Wind** allows you to enter a series of wind information.
 
-Variable Winds allows you to enter a series of wind information.
+The **Inc. (hrs)** option specifies how often you'd like to enter the wind time-series data. Six-hour increments are set by default.
+Note that the **Date and Time** will automatically increment for the next entry based on the specified value, 
+allowing you to ignore Date and Time once the initial values are set.  Date & Time can also be 
+changed manually for each entry.
 
-First, choose the Wind Speed units from the drop-down menu at the top of the table. The same units will be used for all wind speed entries.
+Choose the **Units** from the drop-down menu at the top of the table. The same units will be used for all wind speed entries.
 
-Use the Wind Speed Uncertainty slider by dragging the bar to the left or right to change the percent uncertainty. When using uncertainty, the speed will be displayed in the table as a range. Uncertainty can be adjusted for each entry as needed.
+To begin entering values, move your mouse over the top row which has been created with the current model start time and zero values for speed 
+and direction. 
 
-Note that the Date and Time will automatically increment for the next entry based on the value in the Inc.(hrs) entry box, allowing you to ignore Date and Time once the initial values are set. 6 hour increments are set by default. Date & Time can also be changed manually for each entry.
+You wil see options to add a row using the specified hourly increment (+ icon), edit this row (pencil icon) or to 
+delete a row (trashcan icon). Continue to add and edit rows until your time series is complete.
 
-Wind Direction and Speed can be entered either by typing a value in the Speed entry box and Wind direction box, or by clicking in the wind bull’s-eye. 
+Editing values in a row
+-----------------------
+Enter values for **Speed** and **Direction** or use the wind bull’s-eye.
 
-Type in wind speed and direction
-========================================
+**Direction** can be entered as degrees (between 0 and 360 degrees) or by the cardinal directions 
+N, NE, NNE, NW, NNW, E, S, SE, SSE, SW, SSW, W. Cardinal directions will automatically be translated 
+into degrees.
 
-* Enter the start date and time or select the date and time using the calendar icon next to the entry box. To enter a date and time manually, use date format yyyy/mm/dd and time format 00:00 (24-hour clock). To select a date using the calendar, click on the calendar icon next to the start time entry. Click on the left or right arrows to change the month, and click on a date square to select it. Select a time from the list to the right of the calendar, scrolling up or down as necessary.
-* Enter a value for speed. 
-* Wind direction can be entered as degrees (between 0 and 360 degrees) or by the cardinal directions N, NE, NNE, NW, NNW, E, S, SE, SSE, SW, SSW, W. Cardinal directions will be automatically be translated into degrees.
-* Click add entry. 
+To select **Speed and Direction using the bull’s-eye**, click and drag inside the bull’s-eye to change 
+the length of the arrow to represent speed and the direction of the arrow to indicate the direction of 
+the wind.
 
-Select wind speed and direction using the bull’s-eye
-==============================================================
+Once Date & Time, Speed, and Wind Direction are entered, click the green checkmark to save the entry. 
 
-* Enter the start date and time or select the date and time using the calendar icon next to the entry box. To enter a date and time manually, use date format yyyy/mm/dd and time format 00:00 (24-hour clock). To select a date using the calendar, click on the calendar icon next to the start time entry. Click on the left or right arrows to change the month, and click on a date square to select it. Select a time from the list to the right of the calendar, scrolling up or down as necessary.
-* Click and drag inside the bull’s-eye to change the length of the arrow to indicate speed and the direction of the arrow to indicate the direction of the wind.
-* Click add entry. 
+Speed Uncertainty
+-----------------
+The **Speed Uncertainty (Oil Weathering)** option adds some variability to the magnitude of the winds that
+affects oil weathering ONLY (uncertainty is handled differently in the oil transport and is activated 
+from the Model Settings panel). |location_link|
 
-Once Wind Speed uncertainty, Date & Time, Speed, and Wind Direction are entered, click Add Entry. Repeat until your wind series is complete.
+Change the **Speed Uncertainty** slider by dragging the bar to the left for certain and to the right for 
+uncertain to change the range of wind speed that will be used. Range is calculated using a Rayleigh 
+distribution.
 
-To edit an entry, click on the entry in the table, click on the pencil icon to the right of the entry, adjust speed or direction, and click on either the green check mark to confirm the changes or the red X to cancel the changes.
+.. |location_link| raw:: html
 
-To delete an entry, click on the entry in the table and then click on the trash can icon to the right of the entry.
+   <a href="/doc/uncertainty.html" target="_blank">Learn more about uncertainty in the WebGNOME Users manual.</a>
