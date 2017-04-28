@@ -11,8 +11,7 @@ Panels may contain multiple objects that can be edited individually. For example
 model and turned on/off as needed.
 
 
-Advanced Settings
------------------
+**Advanced Settings**
 
 Within each panel, Advanced settings for additional control over model parameters can be accessed via the pull down menu at the bottom.
 
