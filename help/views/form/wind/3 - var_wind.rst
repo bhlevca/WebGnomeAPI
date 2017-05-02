@@ -5,7 +5,7 @@ Variable Wind
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 A **Variable Wind** allows you to enter a series of wind information.
 
-The **Inc. (hrs)** option specifies how often you'd like to enter the wind time-series data. Six-hour increments are set by default.
+The **Inc. (hrs)** option specifies how often you\'d like to enter the wind time-series data. Six-hour increments are set by default.
 Note that the **Date and Time** will automatically increment for the next entry based on the specified value, 
 allowing you to ignore Date and Time once the initial values are set.  Date & Time can also be 
 changed manually for each entry.
@@ -20,13 +20,13 @@ delete a row (trashcan icon). Continue to add and edit rows until your time seri
 
 Editing values in a row
 -----------------------
-Enter values for **Speed** and **Direction** or use the wind bull’s-eye.
+Enter values for **Speed** and **Direction** or use the wind bull\'s-eye.
 
 **Direction** can be entered as degrees (between 0 and 360 degrees) or by the cardinal directions 
 N, NE, NNE, NW, NNW, E, S, SE, SSE, SW, SSW, W. Cardinal directions will automatically be translated 
 into degrees.
 
-To select **Speed and Direction using the bull’s-eye**, click and drag inside the bull’s-eye to change 
+To select **Speed and Direction using the bull\'s-eye**, click and drag inside the bull\'s-eye to change 
 the length of the arrow to represent speed and the direction of the arrow to indicate the direction of 
 the wind.
 
