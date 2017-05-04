@@ -1,14 +1,14 @@
     {
-        "name": "Boston and vicinity, MA",
+        "name": "Boston and Vicinity, MA",
         "geometry": {
             "coordinates": [-71.0603, 42.3583]
         },
         "steps": [
             {
                 "type": "welcome",
-                "name": "Welcome to Boston and vicinity",
+                "name": "Welcome to Boston and Vicinity",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
-                "body": "<p>You will need to do the following in order to set up the General NOAA Operational Modeling Environment for Boston and vicinity :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li><li>Choose whether or not to add effects from sewage outfall.</li></ol>"
+                "body": "<p>You will need to do the following in order to set up WebGNOME for Boston and vicinity :</p><ol><li>Set the model run parameters.</li><li>Input the wind conditions.</li><li>Choose whether or not to add effects from sewage outfall.</li></ol>"
             },
             {
                 "type": "model",

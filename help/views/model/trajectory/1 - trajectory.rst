@@ -9,12 +9,18 @@ This screen shows the trajectory of the oil.
 Running the trajectory
 ========================================
 
-The spill duration indicator along the top includes a rewind, play/pause and fast forward button. You may also go to any spot in the model run by dragging the bar, by clicking at any spot in the spill duration bar, or by hovering the mouse over the spill duration indicator and using the arrow keys to advance the run one timestep at a time. The date and time of the spill changes as the trajectory model runs.
+The spill duration indicator along the top includes a rewind, play/pause and fast forward button.
+You may also go to any spot in the model run by dragging the bar, by clicking at any spot in 
+the spill duration bar, or by hovering the mouse over the spill duration indicator and using the 
+arrow keys to advance the run one timestep at a time. The date and time of the spill changes 
+as the trajectory model runs.
 
-Begin by pressing the triangular play button at the top of the screen. Look at the map and find the black dots that represent the moving oil. You can move the map by clicking and dragging. 
+Begin by pressing the triangular play button at the top of the screen. Look at the map and find 
+the black dots that represent the moving oil. You can move the map by clicking and dragging and 
+zoom in and out using your mouse scroll wheel.
 
-Tools
-=============
+Tools (Coming Soon)
+===================
 
 **Zoom** - You can zoom in and out by clicking on the plus and minus icons on the left side of the screen, or by using the scroll wheel on the mouse.
 
@@ -22,6 +28,3 @@ Tools
 
 **Area Tool** - Use the area tool to measure the area of a polygon.  Click on the area icon on the left side of the screen. Click once where you wish to begin measuring and at each point of the polygon. If you double-click on any point on the map before you close the polygon, the program will automatically close the polygon for you. Distances are displayed in nautical miles squared, square miles, and square kilometers. Clicking on a polygon will delete it.
 
-**Fixed Spill Tool** - Use this tool to add a new fixed spill. Click on the Fixed Spill icon on the left side of the screen and then click on the point on the map where you want your spill. Fill out the form with information about the new spill. To finish adding this spill to the model, click on Edit Model and then on Evaluate Model. This will re-run the model with the new spill.
-
-**Moving Spill Tool** - Use this tool to add a new fixed spill. Click on the Fixed Spill icon on the left side of the screen and then click on the point on the map where you want your spill to begin, and then click on the point where you want your spill to end. Fill out the form with information about the new spill. To finish adding this spill to the model, click on Edit Model and then on Evaluate Model. This will re-run the model with the new spill.
