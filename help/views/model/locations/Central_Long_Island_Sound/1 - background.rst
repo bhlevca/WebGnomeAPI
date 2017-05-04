@@ -3,7 +3,8 @@
 
 About Central Long Island Sound
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Long Island Sound is located in the northeastern U.S., is bounded by Connecticut to the north and by Long Island, New York to the south. 
+
+Long Island Sound is located in the northeastern U.S., is bounded by Connecticut to the north and by Long Island, New York to the south.
 
 
 Background
