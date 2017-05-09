@@ -53,7 +53,7 @@ def get_help(request):
         aggregate = []
         for path, dirnames, filenames in walk(requested_file):
             #exclude location file user guides
-            if path.count('model\locations') == 0:
+            if path.count(join('model','locations')) == 0:
                 for fname in filenames:
                     text = ''
                     with open(join(path
