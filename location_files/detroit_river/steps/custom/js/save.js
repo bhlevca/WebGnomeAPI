@@ -8,7 +8,7 @@
 
     var selector = form.selector;
     var datatype = $(selector + ' #data-type').val();
-    var erieMover = webgnome.model.get('movers').findWhere({'name': 'Erie.cur'});
+    var erieMover = webgnome.model.get('movers').findWhere({'filename': 'Erie.cur'});
     var scale_value;
 
     if (datatype === 'height') {

@@ -1,7 +1,7 @@
 (function(form){
     var selector = form.selector;
     var datatype = $(selector + ' #datatype').val();
-    var missRiverMover = webgnome.model.get('movers').findWhere({'name': 'MissRiver.cur'});
+    var missRiverMover = webgnome.model.get('movers').findWhere({'filename': 'MissRiver.cur'});
     var stageHeight = $(selector + ' #stageheight').val();
     var speed = parseFloat($(selector + ' #currentspeed').val());
     var speedms, errMsg;
