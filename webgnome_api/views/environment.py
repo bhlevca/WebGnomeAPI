@@ -25,7 +25,11 @@ env = Service(name='environment', path='/environment*obj_id',
 implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Wind',
                      'gnome.environment.Water',
-                     'gnome.environment.Waves'
+                     'gnome.environment.Waves',
+                     'gnome.environment.environment_objects.GridCurrent',
+                     'gnome.environment.grid_property.GriddedProp',
+                     'gnome.environment.grid_property.GridVectorProp',
+                     'gnome.environment.ts_property.TimeSeriesProp',
                      )
 
 

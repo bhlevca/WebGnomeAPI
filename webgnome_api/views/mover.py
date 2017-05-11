@@ -15,6 +15,7 @@ from cornice import Service
 
 from gnome.movers.current_movers import CurrentMoversBase
 from gnome.movers.wind_movers import GridWindMover
+from gnome.movers import PyMover
 
 from ..common.views import (get_object,
                             create_object,
@@ -39,6 +40,7 @@ implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.random_movers.RandomVerticalMover',
                      'gnome.movers.current_movers.CatsMover',
                      'gnome.movers.current_movers.ComponentMover',
+                     'gnome.movers.py_current_movers.PyCurrentMover',
                      'gnome.movers.current_movers.GridCurrentMover',
                      'gnome.movers.current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
@@ -97,12 +99,11 @@ def get_current_info(request):
     session_lock = acquire_session_lock(request)
     log.info('  {} session lock acquired (sess:{}, thr_id: {})'
              .format(log_prefix, id(session_lock), current_thread().ident))
-
     try:
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and (isinstance(mover, CurrentMoversBase) or isinstance(mover, GridWindMover)):
+        if mover is not None and isinstance(mover, (CurrentMoversBase, GridWindMover, PyMover)):
             cells = get_cells(mover)
 
             return cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).tolist()
@@ -121,18 +122,18 @@ def get_grid_centers(request):
     '''
         Outputs GNOME grid centers for a particular mover
     '''
+
     log_prefix = 'req({0}): get_current_info():'.format(id(request))
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
     log.info('  {} session lock acquired (sess:{}, thr_id: {})'
              .format(log_prefix, id(session_lock), current_thread().ident))
-
     try:
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and (isinstance(mover, CurrentMoversBase) or isinstance(mover, GridWindMover)):
+        if mover is not None and isinstance(mover, (CurrentMoversBase, GridWindMover, PyMover)):
             centers = get_center_points(mover)
 
             return centers.tolist()
@@ -165,17 +166,21 @@ def get_grid_signature(mover):
 
 def get_cells(mover):
     grid_data = mover.get_grid_data()
-    d_t = grid_data.dtype.descr
-    u_t = d_t[0][1]
-    n_s = grid_data.shape + (len(d_t),)
-    grid_data = grid_data.view(dtype=u_t).reshape(*n_s)
+    if not isinstance(mover, PyMover):
+        d_t = grid_data.dtype.descr
+        u_t = d_t[0][1]
+        n_s = grid_data.shape + (len(d_t),)
+        grid_data = grid_data.view(dtype=u_t).reshape(*n_s)
 
     return grid_data
     # return [t for t in grid_data.tolist()]
 
 
 def get_center_points(mover):
-    return mover.mover._get_center_points()
+    if hasattr(mover, 'mover'):
+        return mover.mover._get_center_points()
+    else:
+        return mover.get_center_points()
 
 
 def get_velocities(mover):
