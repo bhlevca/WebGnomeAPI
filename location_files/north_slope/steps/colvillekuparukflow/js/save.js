@@ -3,7 +3,7 @@
     
     function colvilleRiver() {
         var colvilleFlow = $(selector + ' #colville-flow').val();
-        var colvilleMover = webgnome.model.get('movers').findWhere({'name': 'ColvilleRiver.cur'});
+        var colvilleMover = webgnome.model.get('movers').findWhere({'filename': 'ColvilleRiver.cur'});
         var COLLVILLE_SCALE = 0.183 / 1500;
         var colvilleScaled = colvilleFlow * COLLVILLE_SCALE;
 
@@ -12,7 +12,7 @@
 
     function kuparukRiver() {
         var kuparukFlow = $(selector + ' #kuparuk-flow').val();
-        var kuparukMover = webgnome.model.get('movers').findWhere({'name': 'KuparukRiver.cur'});
+        var kuparukMover = webgnome.model.get('movers').findWhere({'filename': 'KuparukRiver.cur'});
         var KUPARUK_SCALE = 0.1814 / 957;
 
         if (kuparukFlow === 'other') {

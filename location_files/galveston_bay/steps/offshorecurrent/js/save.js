@@ -4,7 +4,7 @@
     var speed_units = $(selector + ' #speed-units').val();
     var direction = $(selector + ' #direction').val();
     var direction_units = $(selector + ' #direction-units').val();
-    var Offshore_Mover = webgnome.model.get('movers').findWhere({'name': 'Offshore.cur'});
+    var Offshore_Mover = webgnome.model.get('movers').findWhere({'filename': 'Offshore.cur'});
     var cat_v_at_ref = 0.247137;
     var cat_v_at_B = 0.015001;
     var errMsg;

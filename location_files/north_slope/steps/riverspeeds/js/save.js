@@ -34,10 +34,10 @@
     };
 
     var selector = form.selector;
-    var sagMover = webgnome.model.get('movers').findWhere({'name': 'SagRiver.cur'});
-    var shaMover = webgnome.model.get('movers').findWhere({'name': 'ShaviovikRiver.cur'});
-    var canWestMover = webgnome.model.get('movers').findWhere({'name': 'CanningWestRiver.cur'});
-    var canEastMover = webgnome.model.get('movers').findWhere({'name': 'CanningEastTamaRiver.cur'});
+    var sagMover = webgnome.model.get('movers').findWhere({'filename': 'SagRiver.cur'});
+    var shaMover = webgnome.model.get('movers').findWhere({'filename': 'ShaviovikRiver.cur'});
+    var canWestMover = webgnome.model.get('movers').findWhere({'filename': 'CanningWestRiver.cur'});
+    var canEastMover = webgnome.model.get('movers').findWhere({'filename': 'CanningEastTamaRiver.cur'});
 
     var sagVal = parseFloat($(selector + ' #sag-speed').val());
     var shaVal = parseFloat($(selector + ' #sha-speed').val());

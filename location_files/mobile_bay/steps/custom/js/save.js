@@ -1,6 +1,6 @@
 (function(form){
     var selector = form.selector;
-    var mobileRiver = webgnome.model.get('movers').findWhere({'name': 'MobileRiver.cur'});
+    var mobileRiver = webgnome.model.get('movers').findWhere({'filename': 'MobileRiver.cur'});
     var scale = 7.6 / 1157;
     var scale_value, transport;
 

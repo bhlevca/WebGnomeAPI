@@ -1,7 +1,7 @@
 (function(form){
     var selector = form.selector;
-    var sabineRiver = webgnome.model.get('movers').findWhere({'name': 'SabineRiver.cur'});
-    var nechesRiver = webgnome.model.get('movers').findWhere({'name': 'NechesRiver.cur'});
+    var sabineRiver = webgnome.model.get('movers').findWhere({'filename': 'SabineRiver.cur'});
+    var nechesRiver = webgnome.model.get('movers').findWhere({'filename': 'NechesRiver.cur'});
     var sab_flow, nec_flow, sab_scale, nec_scale, sab_units, nec_units, errMsg;
 
     if ($(selector + ' #sabine-flowrate').val() !== 'other') {

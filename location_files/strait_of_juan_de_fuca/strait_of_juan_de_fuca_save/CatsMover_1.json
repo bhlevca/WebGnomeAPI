@@ -6,8 +6,8 @@
   48.3, 
   0.0
  ], 
+ "name": "Tidal Currents", 
  "filename": "FGPWACwAmps.cur", 
- "name": "FGPWACwAmps.cur", 
  "tide": "Tide_2.json", 
  "json_": "save", 
  "scale_value": 1.0

@@ -51,23 +51,25 @@ def get_help(request):
             return {'path': requested_file, 'html': html}
     elif isdir(requested_file) and requested_dir is '':
         aggregate = []
-
         for path, dirnames, filenames in walk(requested_file):
-            for fname in filenames:
-                text = ''
-                with open(join(path, fname), 'r') as f:
-                    text = f.read()
+            #exclude location file user guides
+            if path.count(join('model','locations')) == 0:
+                for fname in filenames:
+                    text = ''
+                    with open(join(path
+                    , fname), 'r') as f:
+                        text = f.read()
 
-                parts_whole = publish_parts(text)
-                parts = publish_parts(text, writer_name='html')
+                    parts_whole = publish_parts(text)
+                    parts = publish_parts(text, writer_name='html')
 
-                html = parts['html_body']
-                keywords = iter_keywords(parts_whole['whole'])
+                    html = parts['html_body']
+                    keywords = iter_keywords(parts_whole['whole'])
 
-                aggregate.append({'path': join(path,
-                                               fname.replace('.rst', '')),
-                                  'html': html,
-                                  'keywords': keywords})
+                    aggregate.append({'path': join(path,
+                                                   fname.replace('.rst', '')),
+                                      'html': html,
+                                      'keywords': keywords})
 
         return aggregate
     else:

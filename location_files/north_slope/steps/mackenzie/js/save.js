@@ -19,9 +19,9 @@
 		macFlow = parseFloat(macFlow);
 	}
 
-	var macEastMover = webgnome.model.get('movers').findWhere({'name': 'MackenzieRiver_EastChannel.cur'});
-	var macMidMover = webgnome.model.get('movers').findWhere({'name': 'MackenzieRiver_MiddleChannel.cur'});
-	var napMover = webgnome.model.get('movers').findWhere({'name': 'MackenzieRiver_NapoiakChannel.cur'});
+	var macEastMover = webgnome.model.get('movers').findWhere({'filename': 'MackenzieRiver_EastChannel.cur'});
+	var macMidMover = webgnome.model.get('movers').findWhere({'filename': 'MackenzieRiver_MiddleChannel.cur'});
+	var napMover = webgnome.model.get('movers').findWhere({'filename': 'MackenzieRiver_NapoiakChannel.cur'});
 
 	var eastScaled = EAST_SCALE * macFlow;
 	var midScaled = MIDDLE_SCALE * macFlow;

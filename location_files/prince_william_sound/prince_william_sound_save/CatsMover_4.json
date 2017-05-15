@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "PortWells.cur", 
- "name": "PortWells.cur", 
+ "name": "Port Wells Tidal Current", 
  "tide": "Tide_3.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000000.0, 

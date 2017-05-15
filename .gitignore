@@ -17,3 +17,4 @@ goods/*
 compiled.json
 node_modules/
 .cache
+/help/views/form/map.rst

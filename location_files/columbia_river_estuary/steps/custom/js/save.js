@@ -1,7 +1,7 @@
 (function (form){
 	var selector = form.selector;
 	var flow = $(selector + ' #flow-rate').val();
-	var riverMover = webgnome.model.get('movers').findWhere({'name': 'RiverFlow.cur'});
+	var riverMover = webgnome.model.get('movers').findWhere({'filename': 'RiverFlow.cur'});
 	var scale = 0.2725 / 223.027;
 	var v_scale, tongue_point;
 

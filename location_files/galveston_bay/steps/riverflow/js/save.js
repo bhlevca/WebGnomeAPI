@@ -4,7 +4,7 @@
 
     function trinityRiver() {
         var TRIN_U_TO_Q_RATIO = 0.6698 / 15373;
-        var Trin_River_Mover = webgnome.model.get('movers').findWhere({'name': 'TrinityRiver.cur'});
+        var Trin_River_Mover = webgnome.model.get('movers').findWhere({'filename': 'TrinityRiver.cur'});
         var t_transport, t_transport_scaled, errMsg;
 
         var trinFlow = $(selector + ' #trinity-flow').val();
@@ -64,7 +64,7 @@
 
     function sanJacBuffRiver() {
         var SAN_BUFF_TO_Q_RATIO = 0.7048 / (5.12238 * 1000);
-        var San_Buff_River_Mover = webgnome.model.get('movers').findWhere({'name': 'BuffBayouSanJacinto.cur'});
+        var San_Buff_River_Mover = webgnome.model.get('movers').findWhere({'filename': 'BuffBayouSanJacinto.cur'});
 
         var sanJacFlow = $(selector + ' #sanjacinto-flow').val();
         var buffFlow = $(selector + ' #buffalobayou-flow').val();

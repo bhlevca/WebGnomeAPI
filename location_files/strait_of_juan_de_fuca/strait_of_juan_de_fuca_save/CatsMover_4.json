@@ -6,8 +6,8 @@
   48.362246, 
   0.0
  ], 
+ "name": "Flood Tide Eddies", 
  "filename": "Eddy_FTS.cur", 
- "name": "Eddy_FTS.cur", 
  "tide": "Tide_0.json", 
  "json_": "save", 
  "scale_value": 1.0
