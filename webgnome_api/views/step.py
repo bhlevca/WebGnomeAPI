@@ -75,6 +75,15 @@ def get_step(request):
                 full_output = {}
 
                 for idx, step_output in enumerate(steps):
+                    # step_output could contain an exception from one
+                    # of our uncertainty worker processes.  If so, then
+                    # we should propagate the exception with its original
+                    # context.
+                    if (isinstance(step_output, tuple) and
+                            len(step_output) >= 3 and
+                            isinstance(step_output[1], Exception)):
+                        raise step_output[1], None, step_output[2]
+
                     for k, v in step_output['WeatheringOutput'].iteritems():
                         aggregate[k].append(v)
 
