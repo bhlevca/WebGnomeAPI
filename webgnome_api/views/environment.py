@@ -7,6 +7,7 @@ import os
 import logging
 import zlib
 import numpy as np
+import pdb
 from threading import current_thread
 
 from pyramid.response import Response
@@ -49,13 +50,24 @@ def get_environment(request):
 #     import pytest
 #     pytest.set_trace()
     resp = Response(content_type='arraybuffer')
+    route = content_requested[1]
     if (len(content_requested) > 1):
-        if content_requested[1] == 'grid':
+        if route == 'grid':
             resp.body = get_grid(request)
             resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
-        if content_requested[1] == 'data':
+        if route == 'data':
             return get_grid_centers(request)
+        if route == 'vectors':
+            resp.body, dshape =  get_vector_data(request)
+            resp.headers.add('content-encoding', 'deflate')
+            resp.headers.add('Access-Control-Expose-Headers','shape');
+            resp.headers.add('shape', str(dshape))
+            return cors_response(request, resp)
+        if route == 'nodes':
+            resp.body = get_nodes(request)
+            resp.headers.add('content-encoding', 'deflate')
+            return cors_response(request, resp)
         return get_object(request, implemented_types)
 
 
@@ -83,9 +95,9 @@ def environment_upload(request):
 
     return cors_response(request, resp)
 
-def get_grid(request):
+def get_nodes(request):
     '''
-        Outputs a subset of the object's dataset in binary format
+        Outputs the object's grid nodes in binary format
     '''
     log_prefix = 'req({0}): get_grid():'.format(id(request))
     log.info('>>' + log_prefix)
@@ -98,9 +110,38 @@ def get_grid(request):
         obj = get_session_object(obj_id, request)
 
         if obj is not None and isinstance(obj, (GridCurrent,)):
-            cells = get_cells(obj)
+            nodes = obj.grid.get_nodes()
 
-            return zlib.compress(cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).astype(np.float64).tobytes())
+            return zlib.compress(nodes.astype(np.float32).tobytes())
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
+def get_grid(request):
+    '''
+        Outputs the object's grid cells in binary format
+    '''
+    log_prefix = 'req({0}): get_grid():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None and isinstance(obj, (GridCurrent,)):
+            cells = obj.grid.get_cells()
+
+#             return zlib.compress(cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).astype(np.float64).tobytes())
+            return zlib.compress(cells.astype(np.float32).tobytes())
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
@@ -112,6 +153,30 @@ def get_grid(request):
     log.info('<<' + log_prefix)
 
 
+def get_vector_data(request):
+    log_prefix = 'req({0}): get_grid():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None and isinstance(obj, (GridCurrent,)):
+            vec_data = obj.get_data_vectors()
+
+            return zlib.compress(vec_data.tobytes()), vec_data.shape
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
 def get_grid_centers(request):
     '''
         Outputs GNOME grid centers for a particular obj
@@ -158,16 +223,3 @@ def get_grid_signature(obj):
     return abs(point_diffs.view(dtype=np.complex)).sum()
 
 
-def get_cells(obj):
-    grid_data = None
-    grid_data = obj.grid.get_cells()
-#     if isinstance(obj.grid, Grid_U):
-#         grid_data = obj.grid.nodes[obj.grid.faces[:]]
-#     else:
-#         grid_data = obj.grid.get_cells()
-# #         import pdb
-# #         pdb.set_trace()
-# #         lons = obj.grid.node_lon[:]
-# #         lats = obj.grid.node_lat[:]
-# #         grid_data = np.column_stack((lons.reshape(-1), lats.reshape(-1)))
-    return grid_data
