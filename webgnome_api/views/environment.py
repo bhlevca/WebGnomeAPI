@@ -15,7 +15,6 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 
 from gnome.environment.environment_objects import GridCurrent
-from gnome.environment.gridded_objects_base import Grid_U
 
 from webgnome_api.common.views import (get_object,
                                        create_object,
