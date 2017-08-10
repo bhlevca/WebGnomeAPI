@@ -32,7 +32,9 @@ log = logging.getLogger(__name__)
 
 env = Service(name='environment', path='/environment*obj_id',
               description="Environment API",
-              cors_policy=cors_policy, accept=['application/json', 'application/octet-stream'], content_type=['application/json', 'binary'])
+              cors_policy=cors_policy,
+              accept='application/json+octet-stream',
+              content_type=['application/json', 'binary'])
 
 implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Wind',
@@ -48,16 +50,16 @@ def get_environment(request):
     '''Returns an Gnome Environment object in JSON.'''
     content_requested = request.matchdict.get('obj_id')
     resp = Response(content_type='arraybuffer')
-    route = content_requested[1]
+    route = content_requested[1] if len(content_requested) > 1 else None
     if (len(content_requested) > 1):
         if route == 'grid':
             resp.body = get_grid(request)
             resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'vectors':
-            resp.body, dshape =  get_vector_data(request)
+            resp.body, dshape = get_vector_data(request)
             resp.headers.add('content-encoding', 'deflate')
-            resp.headers.add('Access-Control-Expose-Headers','shape');
+            resp.headers.add('Access-Control-Expose-Headers', 'shape')
             resp.headers.add('shape', str(dshape))
             return cors_response(request, resp)
         if route == 'nodes':
@@ -70,6 +72,7 @@ def get_environment(request):
             return cors_response(request, resp)
         if route == 'metadata':
             return get_metadata(request)
+    else:
         return get_object(request, implemented_types)
 
 
@@ -96,6 +99,7 @@ def environment_upload(request):
     resp = Response(ujson.dumps({'filename': filename, 'name': name}))
 
     return cors_response(request, resp)
+
 
 def get_nodes(request):
     '''
@@ -125,6 +129,7 @@ def get_nodes(request):
 
     log.info('<<' + log_prefix)
 
+
 def get_grid(request):
     '''
         Outputs the object's grid cells in binary format
@@ -142,7 +147,6 @@ def get_grid(request):
         if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
             cells = obj.grid.get_cells()
 
-#             return zlib.compress(cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).astype(np.float64).tobytes())
             return zlib.compress(cells.astype(np.float32).tobytes())
         else:
             exc = cors_exception(request, HTTPNotFound)
@@ -247,5 +251,3 @@ def get_grid_signature(obj):
     point_diffs = raw_points[1:] - raw_points[:-1]
 
     return abs(point_diffs.view(dtype=np.complex)).sum()
-
-
