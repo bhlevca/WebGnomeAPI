@@ -3,19 +3,18 @@ Views for the Environment objects.
 This currently includes Wind and Tide objects.
 """
 import ujson
+import os
 import logging
 import zlib
 import numpy as np
+import pdb
 from threading import current_thread
 
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 
-from gnome.environment.environment_objects import GridCurrent
-
-from gnome.movers import GridWindMover, PyMover
-from gnome.movers.current_movers import CurrentMoversBase
+from gnome.environment.environment_objects import GridCurrent, GridWind
 
 from webgnome_api.common.views import (get_object,
                                        create_object,
@@ -42,6 +41,7 @@ implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Water',
                      'gnome.environment.Waves',
                      'gnome.environment.environment_objects.GridCurrent',
+                     'gnome.environment.environment_objects.GridWind',
                      )
 
 
@@ -49,17 +49,13 @@ implemented_types = ('gnome.environment.Tide',
 def get_environment(request):
     '''Returns an Gnome Environment object in JSON.'''
     content_requested = request.matchdict.get('obj_id')
-#     import pytest
-#     pytest.set_trace()
     resp = Response(content_type='arraybuffer')
-    route = content_requested[1]
+    route = content_requested[1] if len(content_requested) > 1 else None
     if (len(content_requested) > 1):
         if route == 'grid':
             resp.body = get_grid(request)
             resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
-        if route == 'data':
-            return get_grid_centers(request)
         if route == 'vectors':
             resp.body, dshape = get_vector_data(request)
             resp.headers.add('content-encoding', 'deflate')
@@ -70,6 +66,13 @@ def get_environment(request):
             resp.body = get_nodes(request)
             resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
+        if route == 'centers':
+            resp.body = get_centers(request)
+            resp.headers.add('content-encoding', 'deflate')
+            return cors_response(request, resp)
+        if route == 'metadata':
+            return get_metadata(request)
+    else:
         return get_object(request, implemented_types)
 
 
@@ -112,7 +115,7 @@ def get_nodes(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and isinstance(obj, (GridCurrent,)):
+        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
             nodes = obj.grid.get_nodes()
 
             return zlib.compress(nodes.astype(np.float32).tobytes())
@@ -141,13 +144,8 @@ def get_grid(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and isinstance(obj, (GridCurrent,)):
+        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
             cells = obj.grid.get_cells()
-
-            # return zlib.compress(cells
-            #                      .reshape(-1,
-            #                               cells.shape[-1] * cells.shape[-2])
-            #                      .astype(np.float64).tobytes())
 
             return zlib.compress(cells.astype(np.float32).tobytes())
         else:
@@ -172,7 +170,7 @@ def get_vector_data(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and isinstance(obj, (GridCurrent,)):
+        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
             vec_data = obj.get_data_vectors()
 
             return zlib.compress(vec_data.tobytes()), vec_data.shape
@@ -185,9 +183,7 @@ def get_vector_data(request):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
-
-
-def get_grid_centers(request):
+def get_centers(request):
     '''
         Outputs GNOME grid centers for a particular obj
     '''
@@ -202,12 +198,10 @@ def get_grid_centers(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and isinstance(obj, (CurrentMoversBase,
-                                                GridWindMover,
-                                                PyMover)):
-            centers = obj.get_center_points()
+        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
 
-            return centers.tolist()
+            centers = obj.grid.get_centers()
+            return zlib.compress(centers.astype(np.float32).tobytes())
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
@@ -218,6 +212,30 @@ def get_grid_centers(request):
 
     log.info('<<' + log_prefix)
 
+
+def get_metadata(request):
+    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
+
+            return obj.get_metadata()
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
 
 def get_grid_signature(obj):
     '''
