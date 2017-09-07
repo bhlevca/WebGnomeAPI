@@ -92,12 +92,11 @@ def download_model(request):
     if my_model:
         tf = tempfile.NamedTemporaryFile()
         dir_name, base_name = os.path.split(tf.name)
+        tf.close()
 
         my_model.save(saveloc=dir_name, name=base_name)
         response_filename = ('{0}.zip'.format(my_model.name))
-
-        tf.seek(0)
-
+        tf = open(tf.name,'r+b')
         response = request.response
         response.content_type = 'application/zip'
         response.content_disposition = ('attachment; filename={0}'
