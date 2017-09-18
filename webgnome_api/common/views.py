@@ -10,15 +10,14 @@ import logging
 
 from threading import current_thread
 
+from pyramid.settings import asbool
+from pyramid.interfaces import ISessionFactory
+from pyramid.response import FileResponse
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPInsufficientStorage,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
-
-from pyramid.interfaces import ISessionFactory
-
-from pyramid.response import FileResponse
 
 from .system_resources import (get_free_space,
                                get_size_of_open_file,
@@ -213,9 +212,11 @@ def process_upload(request, field_name):
 
     upload_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+    can_persist = asbool(request.registry.settings['can_persist_uploads'])
 
-    log.info('save_file_dir: {0}'.format(upload_dir))
-    log.info('max_upload_size: {0}'.format(max_upload_size))
+    log.info('save_file_dir: {}'.format(upload_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+    log.info('can_persist: {}'.format(can_persist))
 
     input_file = request.POST[field_name].file
     file_name, unique_name = gen_unique_filename(request.POST[field_name]
@@ -223,11 +224,11 @@ def process_upload(request, field_name):
     file_path = os.path.join(upload_dir, unique_name)
 
     size = get_size_of_open_file(input_file)
-    log.info('Incoming file size: {0}'.format(size))
+    log.info('Incoming file size: {}'.format(size))
 
     if size > max_upload_size:
         raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {0}'
+                            HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
 
     if size >= get_free_space(upload_dir):

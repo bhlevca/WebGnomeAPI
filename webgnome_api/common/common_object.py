@@ -1,5 +1,5 @@
 """
-Common Gnome object request handlers.
+    Common Gnome object request handlers.
 """
 import os
 import shutil
@@ -89,7 +89,7 @@ def _CreateObject(payload, parent, attr_name, all_objects):
     # link the object to its associated parent attribute
     try:
         parent[attr_name] = obj
-    except:
+    except Exception:
         if parent is not None:
             raise
 
@@ -109,7 +109,7 @@ def _UpdateObject(payload, parent, attr_name, all_objects):
         # link the object to its associated parent attribute
         try:
             parent[attr_name] = obj
-        except:
+        except Exception:
             if parent is not None:
                 raise
         return obj
@@ -125,10 +125,10 @@ def ValueIsJsonObject(value):
 def ObjectId(obj):
     try:
         ident = obj['id']  # JSON Object
-    except:
+    except Exception:
         try:
             ident = obj.id  # Gnome Object
-        except:
+        except Exception:
             ident = id(obj)  # any other object
 
     return ident
@@ -235,7 +235,7 @@ def clean_session_dir(request):
                     shutil.rmtree(f)
                 else:
                     os.remove(f)
-            except:
+            except Exception:
                 pass
 
 
