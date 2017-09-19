@@ -16,6 +16,7 @@ goods/*
 /models/Model
 /models/images
 /models/session
+/models/persistent
 node_modules/
 /webgnome_api.egg-info
 /webgnome_api/tests/models/session

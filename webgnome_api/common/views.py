@@ -31,7 +31,8 @@ from .common_object import (CreateObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
                             obj_id_from_req_payload,
-                            get_session_dir)
+                            get_session_dir,
+                            get_persistent_dir)
 
 from .session_management import (get_session_objects,
                                  get_session_object,
@@ -212,11 +213,15 @@ def process_upload(request, field_name):
 
     upload_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    persist_upload = asbool(request.POST.get('persist_upload', False))
     can_persist = asbool(request.registry.settings['can_persist_uploads'])
 
     log.info('save_file_dir: {}'.format(upload_dir))
     log.info('max_upload_size: {}'.format(max_upload_size))
-    log.info('can_persist: {}'.format(can_persist))
+
+    log.info('persist_upload?: {}'.format(persist_upload))
+    log.info('can_persist?: {}'.format(can_persist))
 
     input_file = request.POST[field_name].file
     file_name, unique_name = gen_unique_filename(request.POST[field_name]
@@ -238,7 +243,20 @@ def process_upload(request, field_name):
 
     write_to_file(input_file, file_path)
 
-    log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
+    log.info('Successfully uploaded file "{0}"'.format(file_path))
+
+    if persist_upload and can_persist:
+        log.info('Persisting file "{0}"'.format(file_path))
+
+        upload_dir = get_persistent_dir(request)
+        if size >= get_free_space(upload_dir):
+            raise cors_response(request,
+                                HTTPInsufficientStorage('Not enough space '
+                                                        'to persist the file'))
+
+        persistent_path = os.path.join(upload_dir, file_name)
+
+        write_to_file(input_file, persistent_path)
 
     return file_path, file_name
 
