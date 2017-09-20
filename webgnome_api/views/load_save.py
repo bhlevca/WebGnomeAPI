@@ -68,7 +68,7 @@ def upload_model(request):
 
         log.info('setting active model...')
         set_active_model(request, new_model.id)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest, with_stacktrace=True)
     finally:
         session_lock.release()
@@ -96,7 +96,7 @@ def download_model(request):
 
         my_model.save(saveloc=dir_name, name=base_name)
         response_filename = ('{0}.zip'.format(my_model.name))
-        tf = open(tf.name,'r+b')
+        tf = open(tf.name, 'r+b')
         response = request.response
         response.content_type = 'application/zip'
         response.content_disposition = ('attachment; filename={0}'
