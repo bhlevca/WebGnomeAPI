@@ -45,3 +45,19 @@ def write_to_file(fd, out_path):
 
     # Set file to original position so we don't produce any side effects.
     fd.seek(curr_position)
+
+
+def list_files(folder, show_hidden=False):
+    '''
+        List the files of a directory.
+        - Non-files are filtered out
+        - Hidden files are filtered out by default, but can be optionally
+          shown.
+    '''
+    onlyfiles = [f for f in os.listdir(folder)
+                 if os.path.isfile(os.path.join(folder, f))]
+
+    if not show_hidden:
+        onlyfiles = [f for f in onlyfiles if not f.startswith('.')]
+
+    return onlyfiles

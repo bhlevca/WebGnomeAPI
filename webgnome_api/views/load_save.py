@@ -6,20 +6,26 @@ import logging
 import tempfile
 from threading import current_thread
 
+from pyramid.settings import asbool
 from pyramid.view import view_config
 from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPNotFound)
+                                    HTTPNotFound,
+                                    HTTPNotImplemented)
 
 from gnome.persist import load, is_savezip_valid
-from webgnome_api.common.common_object import RegisterObject, clean_session_dir
-from webgnome_api.common.session_management import (init_session_objects,
-                                                    set_active_model,
-                                                    get_active_model,
-                                                    acquire_session_lock)
-from webgnome_api.common.views import (cors_response,
-                                       cors_exception,
-                                       process_upload)
+
+from ..common.system_resources import list_files
+from ..common.common_object import (RegisterObject,
+                                    clean_session_dir,
+                                    get_persistent_dir)
+from ..common.session_management import (init_session_objects,
+                                         set_active_model,
+                                         get_active_model,
+                                         acquire_session_lock)
+from ..common.views import (cors_response,
+                            cors_exception,
+                            process_upload)
 
 log = logging.getLogger(__name__)
 
@@ -105,3 +111,22 @@ def download_model(request):
         return response
     else:
         raise cors_response(request, HTTPNotFound('No Active Model!'))
+
+
+@view_config(route_name='uploaded', request_method='OPTIONS')
+def uploaded_file_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='uploaded', request_method='GET', renderer='json')
+def get_uploaded_files(request):
+    '''
+        Returns a listing of the persistently uploaded files.
+
+        If the web server is not configured to persist uploaded files,
+        then we raise a HTTPNotImplemented exception
+    '''
+    if asbool(request.registry.settings['can_persist_uploads']):
+        return list_files(get_persistent_dir(request))
+    else:
+        raise cors_exception(request, HTTPNotImplemented)

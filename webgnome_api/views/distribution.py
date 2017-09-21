@@ -9,7 +9,7 @@ from webgnome_api.common.views import (get_object,
 from cornice import Service
 
 distribution = Service(name='distribution', path='/distribution*obj_id',
-                      description="Distribution API", cors_policy=cors_policy)
+                       description="Distribution API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.utilities.distributions.UniformDistribution',
                      'gnome.utilities.distributions.NormalDistribution',
