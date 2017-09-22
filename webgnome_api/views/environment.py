@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 env = Service(name='environment', path='/environment*obj_id',
               description="Environment API",
               cors_policy=cors_policy,
-              accept='application/json+octet-stream',
+              #accept='application/json+octet-stream',
               content_type=['application/json', 'binary'])
 
 implemented_types = ('gnome.environment.Tide',
