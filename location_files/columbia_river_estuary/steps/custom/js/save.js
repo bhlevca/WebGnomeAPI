@@ -17,19 +17,19 @@
 
 	if (flow === 'input') {
 		var bonneFlow = parseFloat($(selector + ' #bonne-flow').val());
-		var willFlow = parseFloat($(selector + ' #william-flow').val());
+		var willFlow = parseFloat($(selector + ' #willam-flow').val());
 
 		if (!bonneFlow || isNaN(bonneFlow)) {
 			return "Please enter a number for Bonneville flow rate!";
 		}
 
 		if (!willFlow || isNaN(willFlow)) {
-			return "Please enter a number for Williamette flow rate!";
+			return "Please enter a number for Willamette flow rate!";
 		}
 
 		var units = {};
 		units['bonne'] = $(selector + ' #bonne-flow-units').val();
-		units['will'] = $(selector + ' #william-flow-units').val();
+		units['will'] = $(selector + ' #willam-flow-units').val();
 		var transport, errMsg;
 
 		bonneFlow = convertToKCFS(bonneFlow, units.bonne);
@@ -49,7 +49,7 @@
 		}
 
 		if (willFlow < 0 || willFlow > 300) {
-			errMsg = "Williamette flow rate is outside the acceptable range of ";
+			errMsg = "Willamette flow rate is outside the acceptable range of ";
 			if (units.will === 'cfs') {
 				errMsg += "0 and 300,000 cfs!";
 			} else if (units.will === 'kcfs') {

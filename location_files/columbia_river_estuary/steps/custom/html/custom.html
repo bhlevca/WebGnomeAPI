@@ -2,7 +2,7 @@
     The total flow of the Columbia River is primarily controlled by the amount of water flowing over the Bonneville Dam, and down the Willamette River. The transport effects generally take 5-6 hours to make the transit from Portland to Astoria.
 </p>
 <p>
-    You can choose an estimate of the total river flow or input flow values for the Bonneville Dam and the Willamette River at Portland.
+    You can choose an estimate of the total river flow or input flow values for the Bonneville Dam and the Willamette River at Portland. The flow over the Bonneville Dam must be less than or equal to 450 kcfs. The flow of the Willamette River at Portland must be less than or equal to 300 kcfs.
 </p>
 <form class="form-horizontal" role="form">
     <div class="form-group">
@@ -45,13 +45,13 @@
         </div>
     </div>
 
-    <div class="form-group hide flow" id="williamFlow">
-        <label class="col-sm-5 control-label" for="william-flow">Williamette River at Portland:</label>
+    <div class="form-group hide flow" id="willamFlow">
+        <label class="col-sm-5 control-label" for="willam-flow">Willamette River at Portland:</label>
         <div class="col-sm-3">
-            <input type="number" id="william-flow" class="form-control">
+            <input type="number" id="willam-flow" class="form-control">
         </div>
         <div class="col-sm-3">
-            <select class="form-control" id="william-flow-units">
+            <select class="form-control" id="willam-flow-units">
                 <option value="kcfs">
                     kcfs
                 </option>
@@ -76,7 +76,7 @@
     <div class="form-group flow hide">
         <div class="col-sm-7 col-sm-offset-5">
             <a href="http://waterdata.usgs.gov/nwis/inventory/?site_no=14211720&%20agency_cd=USGS" target="_blank"> 
-                Williamette Flow Data (in kcfs)
+                Willamette Flow Data (in kcfs)
             </a>
         </div>
     </div>
