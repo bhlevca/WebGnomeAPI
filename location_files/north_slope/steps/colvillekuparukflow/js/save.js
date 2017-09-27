@@ -32,7 +32,7 @@
               if (kuparukUnits === 'kcfs') {
                 str += '0.01 and 10 kcfs!';
               } else {
-                str += '10 and 10000!';
+                str += '10 and 10000 cfs!';
               }
               return str;
            }
