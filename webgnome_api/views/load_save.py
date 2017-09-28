@@ -13,6 +13,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPNotImplemented)
 
+from cornice import Service
+
 from gnome.persist import load, is_savezip_valid
 
 from ..common.system_resources import list_files
@@ -25,9 +27,15 @@ from ..common.session_management import (init_session_objects,
                                          acquire_session_lock)
 from ..common.views import (cors_response,
                             cors_exception,
+                            cors_policy,
                             process_upload)
 
 log = logging.getLogger(__name__)
+
+
+persisted_files_api = Service(name='uploaded', path='/uploaded',
+                              description="Persistent Uploaded Files API",
+                              cors_policy=cors_policy)
 
 
 @view_config(route_name='upload', request_method='OPTIONS')
@@ -113,12 +121,7 @@ def download_model(request):
         raise cors_response(request, HTTPNotFound('No Active Model!'))
 
 
-@view_config(route_name='uploaded', request_method='OPTIONS')
-def uploaded_file_options(request):
-    return cors_response(request, request.response)
-
-
-@view_config(route_name='uploaded', request_method='GET', renderer='json')
+@persisted_files_api.get()
 def get_uploaded_files(request):
     '''
         Returns a listing of the persistently uploaded files.
