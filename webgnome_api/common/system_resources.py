@@ -60,4 +60,6 @@ def list_files(folder, show_hidden=False):
     if not show_hidden:
         onlyfiles = [f for f in onlyfiles if not f.startswith('.')]
 
-    return onlyfiles
+    return [{'name': f,
+             'size': os.stat(os.path.join(folder, f)).st_size}
+            for f in onlyfiles]

@@ -215,8 +215,11 @@ def process_upload(request, field_name):
     max_upload_size = eval(request.registry.settings['max_upload_size'])
 
     persist_upload = asbool(request.POST.get('persist_upload', False))
-    can_persist = asbool(request.registry.settings['can_persist_uploads'])\
-        if 'can_persist_uploads' in request.registry.settings.keys() else False
+
+    if 'can_persist_uploads' in request.registry.settings.keys():
+        can_persist = asbool(request.registry.settings['can_persist_uploads'])
+    else:
+        can_persist = False
 
     log.info('save_file_dir: {}'.format(upload_dir))
     log.info('max_upload_size: {}'.format(max_upload_size))

@@ -66,7 +66,6 @@ def main(global_config, **settings):
     renderer = JSONRenderer(serializer=lambda v, **kw: ujson.dumps(v))
     config.add_renderer('json', renderer)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
-    config.add_route('uploaded', '/uploaded')
     config.add_route('upload', '/upload')
     config.add_route('download', '/download')
     config.add_route('map_upload', '/map/upload')
