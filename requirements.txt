@@ -1,6 +1,6 @@
 pyramid
 pyramid_log
-gevent-socketio
+-e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
 ujson
 Paste
 cornice==1.2.1

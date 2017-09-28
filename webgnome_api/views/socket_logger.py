@@ -15,7 +15,7 @@ from socketio.namespace import BaseNamespace
 
 class LoggerNamespace(BaseNamespace):
     def recv_connect(self):
-        print "CONNNNNNNN"
+        print "CONN LOGGER"
         self.emit("connected")
 
         def send_logs():
@@ -38,15 +38,6 @@ class LoggerNamespace(BaseNamespace):
 
                 gevent.sleep(0.1)
         self.spawn(send_logs)
-
-
-@view_config(route_name='socket.io')
-def socketio_service(request):
-    """ The view that will launch the socketio listener """
-
-    resp = socketio_manage(request.environ,
-                           namespaces={'/logger': LoggerNamespace,
-                                       },
-                           request=request)
-    print 'socketio_manage() returned:', resp
-    return resp
+    def on_start_logger(self):
+        print "Starting logger greenlet"
+        self.emit("logger_started")
