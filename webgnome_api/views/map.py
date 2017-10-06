@@ -7,6 +7,8 @@ import os
 from threading import current_thread
 
 from cornice import Service
+
+from pyramid.settings import asbool
 from pyramid.view import view_config
 from pyramid.response import Response
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -167,23 +169,25 @@ def activate_map(request):
     log_prefix = 'req({0}): activate_map():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-    file_name, name = activate_uploaded(request)
-    file_path = file_name.split(os.path.sep)[-1]
-    log.info('  {} file_name: {}, name: {}, file_path: {}'
-             .format(log_prefix, file_name, name, file_path))
+    if asbool(request.registry.settings['can_persist_uploads']):
+        file_name, name = activate_uploaded(request)
+        file_path = file_name.split(os.path.sep)[-1]
 
-    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
-                                'filename': file_path,
-                                'refloat_halflife': 6.0,
-                                'json_': 'webapi',
-                                'name': name
-                                })
+        request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+                                    'filename': file_path,
+                                    'refloat_halflife': 6.0,
+                                    'json_': 'webapi',
+                                    'name': name
+                                    })
 
-    map_obj = create_map(request)
-    resp = Response(ujson.dumps(map_obj))
+        map_obj = create_map(request)
+        resp = Response(ujson.dumps(map_obj))
 
-    log.info('<<{}'.format(log_prefix))
-    return cors_response(request, resp)
+        log.info('<<{}'.format(log_prefix))
+        return cors_response(request, resp)
+    else:
+        log.info('<<{}'.format(log_prefix))
+        raise cors_exception(request, HTTPNotImplemented)
 
 
 def get_geojson(request, implemented_types):
