@@ -72,6 +72,11 @@ def cors_response(request, response):
     if req_headers is not None:
         response.headers.add('Access-Control-Allow-Headers', req_headers)
 
+    req_method = request.headers.get('Access-Control-Request-Method')
+    if req_method is not None:
+        response.headers.add('Access-Control-Allow-Methods',
+                             ','.join((req_method, 'OPTIONS')))
+
     return response
 
 
@@ -263,6 +268,44 @@ def process_upload(request, field_name):
         write_to_file(input_file, persistent_path)
 
     return file_path, file_name
+
+
+def activate_uploaded(request):
+    '''
+        This view is intended to activate a file that has already been
+        persistently uploaded.
+
+        We activate it by making a unique copy of it in the session folder.
+    '''
+    upload_dir = get_persistent_dir(request)
+    session_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    log.info('upload_dir: {}'.format(upload_dir))
+    log.info('session_dir: {}'.format(session_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    file_name, unique_name = gen_unique_filename(request.POST['file-name'])
+    src_path = os.path.join(upload_dir, file_name)
+    dest_path = os.path.join(session_dir, unique_name)
+
+    if file_name not in os.listdir(upload_dir):
+        raise cors_response(request, HTTPBadRequest('File does not exist!'))
+
+    size = os.path.getsize(src_path)
+    log.info('File size: {}'.format(size))
+
+    if size >= get_free_space(session_dir):
+        # basically we need to make a copy of the file to activate it.
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to activate the file'))
+
+    write_to_file(src_path, dest_path)
+
+    log.info('Successfully activated file "{0}"'.format(dest_path))
+
+    return dest_path, file_name
 
 
 def gen_unique_filename(filename_in):

@@ -94,7 +94,7 @@ def create_model(request):
 
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         json_request = None
 
     if json_request and not JSONImplementsOneOf(json_request,
@@ -118,7 +118,7 @@ def create_model(request):
         set_session_object(new_model._map, request)
 
         set_active_model(request, new_model.id)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
@@ -145,7 +145,7 @@ def update_model(request):
     ret = None
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -167,7 +167,7 @@ def update_model(request):
                             get_session_objects(request)):
                 set_session_object(active_model, request)
             ret = active_model.serialize()
-        except:
+        except Exception:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
