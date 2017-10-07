@@ -2,17 +2,17 @@
 Views for the Environment objects.
 This currently includes Wind and Tide objects.
 """
-import ujson
 import os
+import ujson
 import logging
 import zlib
 import numpy as np
-import pdb
 from threading import current_thread
 
+from pyramid.settings import asbool
 from pyramid.response import Response
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPNotImplemented
 
 from gnome.environment.environment_objects import GridCurrent, GridWind
 
@@ -22,7 +22,8 @@ from webgnome_api.common.views import (get_object,
                                        cors_policy,
                                        cors_response,
                                        cors_exception,
-                                       process_upload)
+                                       process_upload,
+                                       activate_uploaded)
 
 from cornice import Service
 
@@ -33,7 +34,7 @@ log = logging.getLogger(__name__)
 env = Service(name='environment', path='/environment*obj_id',
               description="Environment API",
               cors_policy=cors_policy,
-              #accept='application/json+octet-stream',
+              # accept='application/json+octet-stream',
               content_type=['application/json', 'binary'])
 
 implemented_types = ('gnome.environment.Tide',
@@ -99,6 +100,30 @@ def environment_upload(request):
     resp = Response(ujson.dumps({'filename': filename, 'name': name}))
 
     return cors_response(request, resp)
+
+
+@view_config(route_name='environment_activate', request_method='OPTIONS')
+def activate_environment_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='environment_activate', request_method='POST')
+def activate_environment(request):
+    '''
+        Activate an environment file that has already been persistently
+        uploaded.
+    '''
+    log_prefix = 'req({0}): activate_environment():'.format(id(request))
+    log.info('>>{}'.format(log_prefix))
+
+    if asbool(request.registry.settings['can_persist_uploads']):
+        file_name, name = activate_uploaded(request)
+        resp = Response(ujson.dumps({'filename': file_name, 'name': name}))
+
+        return cors_response(request, resp)
+    else:
+        log.info('<<{}'.format(log_prefix))
+        raise cors_exception(request, HTTPNotImplemented)
 
 
 def get_nodes(request):

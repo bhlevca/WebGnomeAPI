@@ -37,11 +37,11 @@ def get_size_of_open_file(fd):
 
 
 def write_to_file(file_in, out_path):
-    if isinstance(file_in, file):
-        write_fd_to_file(file_in, out_path)
-    else:
+    if isinstance(file_in, (str, unicode)):
         with open(file_in, 'rb') as openfile:
             write_fd_to_file(openfile, out_path)
+    else:
+        write_fd_to_file(file_in, out_path)
 
 
 def write_fd_to_file(fd, out_path):
