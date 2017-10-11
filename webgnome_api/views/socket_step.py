@@ -43,7 +43,6 @@ def run_model(request):
     web socket. Until interrupted using halt_model(), it will run to
     completion
     '''
-    import pdb
     def execute_async_model(active_model, socket_namespace, request):
         '''
         Meant to run in a greenlet. This function should take an active model
@@ -132,13 +131,13 @@ def run_model(request):
                 #                 current_thread().ident))
                 #pdb.set_trace()
                 if output:
+                    socket_namespace.num_sent+=1
                     socket_namespace.emit('step', output)
 
             if not socket_namespace.is_async:
                 socket_namespace.lock.clear()
                 print 'lock!'
-                if socket_namespace.lock.wait(10):
-                    print 'unlock!'
+            socket_namespace.lock.wait()
             gevent.sleep(0.01)
         socket_namespace.emit('end')
         print 'broken out, greenlet ending?'
@@ -150,10 +149,11 @@ def run_model(request):
     log_prefix = 'req{0}: run_model()'.format(id(request))
     log.info('>>' + log_prefix)
     active_model = get_active_model(request)
-    if active_model:
+    if active_model and not ns.active_greenlet:
         ns.active_greenlet = ns.spawn(execute_async_model, active_model, socket_namespace, request)
-
-
+        return None
+    else:
+        return "Already started"
 
 def get_uncertain_steps(request):
     uncertain_models = get_uncertain_models(request)
@@ -171,19 +171,36 @@ class StepNamespace(BaseNamespace):
         self.is_async = True
         self.lock = gevent.event.Event()
         self.lock.set()
+        self.num_sent=0
+        self.active_greenlet=None
 
     def recv_connect(self):
         print "STEP CONNNNNNNN"
         self.emit("step_started")
         socket_namespace = self
 
+    def recv_disconnect(self):
+        print "received disconnect signal"
+        self.on_kill()
+        self.lock.set()
+        self.num_sent=0
+
     def on_halt(self):
+        print 'halting'
+        self.lock.clear()
+
+    def on_kill(self):
         if self.active_greenlet:
             print 'killing greenlet {0}'.format(self.active_greenlet)
             self.active_greenlet.kill()
             print 'killed greenlet'
 
-    def on_ack(self, ack, numAck):
-        self.lock.wait(1)
-        self.lock.set()
-        print 'ack {0}, total {1}'.format(ack, numAck)
+    def on_isAsync(self, b):
+        self.is_async = bool(b)
+        print 'setting async to {0}'.format(b)
+
+
+    def on_ack(self, ack):
+        if ack == self.num_sent:
+            self.lock.set()
+        print 'ack {0}'.format(ack)
