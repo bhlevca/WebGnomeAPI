@@ -16,7 +16,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
-from webgnome_api.common.views import (cors_exception,
+from webgnome_api.common.views import (can_persist,
+                                       cors_exception,
                                        cors_response,
                                        get_object,
                                        cors_policy,
@@ -162,6 +163,7 @@ def activate_map_options(request):
 
 
 @view_config(route_name='map_activate', request_method='POST')
+@can_persist
 def activate_map(request):
     '''
         Activate a map that has already been persistently uploaded.
@@ -169,25 +171,21 @@ def activate_map(request):
     log_prefix = 'req({0}): activate_map():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-    if asbool(request.registry.settings['can_persist_uploads']):
-        file_name, name = activate_uploaded(request)
-        file_path = file_name.split(os.path.sep)[-1]
+    file_name, name = activate_uploaded(request)
+    file_path = file_name.split(os.path.sep)[-1]
 
-        request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
-                                    'filename': file_path,
-                                    'refloat_halflife': 6.0,
-                                    'json_': 'webapi',
-                                    'name': name
-                                    })
+    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+                                'filename': file_path,
+                                'refloat_halflife': 6.0,
+                                'json_': 'webapi',
+                                'name': name
+                                })
 
-        map_obj = create_map(request)
-        resp = Response(ujson.dumps(map_obj))
+    map_obj = create_map(request)
+    resp = Response(ujson.dumps(map_obj))
 
-        log.info('<<{}'.format(log_prefix))
-        return cors_response(request, resp)
-    else:
-        log.info('<<{}'.format(log_prefix))
-        raise cors_exception(request, HTTPNotImplemented)
+    log.info('<<{}'.format(log_prefix))
+    return cors_response(request, resp)
 
 
 def get_geojson(request, implemented_types):
