@@ -41,7 +41,7 @@ def get_help(request):
         # a directory was requested
         # aggregate the files contained with in the given directory
         # and sub dirs.
-        for path, dirnames, filenames in walk(requested_file):
+        for path, _dirnames, filenames in walk(requested_file):
             html = ''
             for fname in filenames:
                 with open(join(path, fname), 'r') as f:
@@ -51,13 +51,12 @@ def get_help(request):
             return {'path': requested_file, 'html': html}
     elif isdir(requested_file) and requested_dir is '':
         aggregate = []
-        for path, dirnames, filenames in walk(requested_file):
-            #exclude location file user guides
-            if path.count(join('model','locations')) == 0:
+        for path, _dirnames, filenames in walk(requested_file):
+            # exclude location file user guides
+            if path.count(join('model', 'locations')) == 0:
                 for fname in filenames:
                     text = ''
-                    with open(join(path
-                    , fname), 'r') as f:
+                    with open(join(path, fname), 'r') as f:
                         text = f.read()
 
                     parts_whole = publish_parts(text)
@@ -82,7 +81,7 @@ def create_help_feedback(request):
     '''Creates a feedback entry for the given help section'''
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     json_request['ts'] = int(time.time())

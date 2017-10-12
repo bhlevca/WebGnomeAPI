@@ -1,15 +1,19 @@
 '''
 Helper functions to be used by views.
 '''
+
+
 def FQNameToNameAndScope(fully_qualified_name):
     fqn = fully_qualified_name
     return (list(reversed(fqn.rsplit('.', 1)))
             if fqn.find('.') >= 0
             else [fqn, ''])
 
+
 def FQNamesToIterList(names):
     for n in names:
         yield FQNameToNameAndScope(n)
+
 
 def FQNamesToList(names):
     return list(FQNamesToIterList(names))
@@ -34,7 +38,7 @@ def FQNamesToDict(names):
 def JSONImplementsOneOf(json_obj, obj_types):
     try:
         return not JSONImplementedType(json_obj, obj_types) is None
-    except:
+    except Exception:
         return False
 
 

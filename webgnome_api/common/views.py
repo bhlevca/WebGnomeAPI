@@ -44,6 +44,22 @@ cors_policy = {'credentials': True
 log = logging.getLogger(__name__)
 
 
+def can_persist(funct):
+    '''
+        This is a decorator function intended to short-circuit any views
+        that service persistent upload information if the server is not
+        configured to do so.
+    '''
+    def helper(request):
+        if ('can_persist_uploads' in request.registry.settings.keys() and
+                asbool(request.registry.settings['can_persist_uploads'])):
+            return funct(request)
+        else:
+            raise cors_exception(request, HTTPNotImplemented)
+
+    return helper
+
+
 def cors_exception(request, exception_class, with_stacktrace=False):
     depth = 2
     http_exc = exception_class()

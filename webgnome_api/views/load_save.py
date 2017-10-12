@@ -25,7 +25,8 @@ from ..common.session_management import (init_session_objects,
                                          set_active_model,
                                          get_active_model,
                                          acquire_session_lock)
-from ..common.views import (cors_response,
+from ..common.views import (can_persist,
+                            cors_response,
                             cors_exception,
                             cors_policy,
                             process_upload)
@@ -122,6 +123,7 @@ def download_model(request):
 
 
 @persisted_files_api.get()
+@can_persist
 def get_uploaded_files(request):
     '''
         Returns a listing of the persistently uploaded files.
@@ -129,7 +131,4 @@ def get_uploaded_files(request):
         If the web server is not configured to persist uploaded files,
         then we raise a HTTPNotImplemented exception
     '''
-    if asbool(request.registry.settings['can_persist_uploads']):
-        return list_files(get_persistent_dir(request))
-    else:
-        raise cors_exception(request, HTTPNotImplemented)
+    return list_files(get_persistent_dir(request))
