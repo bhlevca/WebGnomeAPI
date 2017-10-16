@@ -15,7 +15,8 @@ from ..common.system_resources import list_files
 from ..common.common_object import (get_persistent_dir)
 from ..common.views import (can_persist,
                             cors_exception,
-                            cors_policy)
+                            cors_policy,
+                            cors_file_response)
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +41,11 @@ def get_uploaded_files(request):
     try:
         return list_files(requested_path)
     except OSError as e:
-        if e.errno == errno.ENOENT:
+        if e.errno == errno.ENOTDIR:
+            # the path was found, but it is not a directory.  Try to return
+            # a file response
+            return cors_file_response(request, requested_path)
+        elif e.errno == errno.ENOENT:
             raise cors_exception(request, HTTPNotFound)
         elif e.errno in (errno.EPERM, errno.EACCES):
             raise cors_exception(request, HTTPUnauthorized)
