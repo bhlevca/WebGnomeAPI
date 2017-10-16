@@ -3,6 +3,7 @@
     operating environment.
 """
 import os
+import stat
 import platform
 import ctypes
 import shutil
@@ -58,16 +59,46 @@ def write_fd_to_file(fd, out_path):
 def list_files(folder, show_hidden=False):
     '''
         List the files of a directory.
-        - Non-files are filtered out
+        - the up-directory '..' is always filtered out
         - Hidden files are filtered out by default, but can be optionally
           shown.
     '''
-    onlyfiles = [f for f in os.listdir(folder)
-                 if os.path.isfile(os.path.join(folder, f))]
+    files = []
 
-    if not show_hidden:
-        onlyfiles = [f for f in onlyfiles if not f.startswith('.')]
+    for f in os.listdir(folder):
+        if f == '..':
+            continue
+        if f.startswith('.') and not show_hidden:
+            continue
 
-    return [{'name': f,
-             'size': os.stat(os.path.join(folder, f)).st_size}
-            for f in onlyfiles]
+        size, file_type = file_info(folder, f)
+        files.append({'name': f,
+                      'size': size,
+                      'type': file_type})
+
+    return files
+
+
+def file_info(folder, f):
+    file_path = os.path.join(folder, f)
+    file_stat = os.stat(file_path)
+    size = file_stat.st_size
+    mode = file_stat.st_mode
+
+    if stat.S_ISDIR(mode):
+        # It's a directory
+        file_type = 'd'
+    elif stat.S_ISREG(mode):
+        # It's a file
+        file_type = 'f'
+    else:
+        # Unknown file type
+        file_type = 'u'
+
+    return size, file_type
+
+
+
+
+
+
