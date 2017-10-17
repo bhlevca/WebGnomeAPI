@@ -49,6 +49,13 @@ def run_model(request):
         and run it, writing each step's output to the socket.
         b
         '''
+        w = 6
+        socket_namespace.emit('prepared')
+        unlocked = socket_namespace.lock.wait(w)
+        if not unlocked:
+            socket_namespace.emit('timeout', 'Model not started, timed out after {0} sec'.format(w))
+            socket_namespace.on_kill()
+        log.info('model run triggered')
         while True:
             output = None
             try:
@@ -132,15 +139,20 @@ def run_model(request):
                 #pdb.set_trace()
                 if output:
                     socket_namespace.num_sent+=1
+                    log.debug(socket_namespace.num_sent)
                     socket_namespace.emit('step', output)
 
             if not socket_namespace.is_async:
                 socket_namespace.lock.clear()
                 print 'lock!'
-            socket_namespace.lock.wait()
-            gevent.sleep(0.01)
-        socket_namespace.emit('end')
-        print 'broken out, greenlet ending?'
+            #kill greenlet after 10 minutes unless unlocked
+            w = 600
+            unlocked = socket_namespace.lock.wait(w)
+            if not unlocked:
+                socket_namespace.emit('timeout', 'Model run timed out after {0} sec'.format(w))
+                socket_namespace.on_kill()
+            gevent.sleep(0.001)
+        socket_namespace.emit('complete', 'Model run completed')
 
     print 'async_step route hit'
     ns = socket_namespace
@@ -153,7 +165,8 @@ def run_model(request):
         ns.active_greenlet = ns.spawn(execute_async_model, active_model, socket_namespace, request)
         return None
     else:
-        return "Already started"
+        print "Already started"
+        return None
 
 def get_uncertain_steps(request):
     uncertain_models = get_uncertain_models(request)
@@ -163,6 +176,7 @@ def get_uncertain_steps(request):
         return None
 
 class StepNamespace(BaseNamespace):
+    inst_count=0
     def initialize(self):
         super(StepNamespace, self).initialize()
         print 'attaching namespace to module'
@@ -170,20 +184,24 @@ class StepNamespace(BaseNamespace):
         socket_namespace = self
         self.is_async = True
         self.lock = gevent.event.Event()
-        self.lock.set()
+        self.lock.clear()
         self.num_sent=0
         self.active_greenlet=None
+        self.inst = StepNamespace.inst_count
+        StepNamespace.inst_count += 1
 
     def recv_connect(self):
         print "STEP CONNNNNNNN"
+        print self.inst
         self.emit("step_started")
         socket_namespace = self
 
     def recv_disconnect(self):
         print "received disconnect signal"
         self.on_kill()
-        self.lock.set()
+        self.lock.clear()
         self.num_sent=0
+        #super(StepNamespace, self).recv_disconnect()
 
     def on_halt(self):
         print 'halting'
@@ -193,6 +211,7 @@ class StepNamespace(BaseNamespace):
         if self.active_greenlet:
             print 'killing greenlet {0}'.format(self.active_greenlet)
             self.active_greenlet.kill()
+            self.emit('killed', 'Model run terminated')
             print 'killed greenlet'
 
     def on_isAsync(self, b):
