@@ -7,6 +7,7 @@ import stat
 import platform
 import ctypes
 import shutil
+import errno
 
 
 def get_free_space(path):
@@ -56,6 +57,41 @@ def write_fd_to_file(fd, out_path):
     fd.seek(curr_position)
 
 
+def mkdir(base_path, dir_name, mode=0775):
+    '''
+        Create a directory of a specified name inside the specified base path.
+        We don't allow multiple level directory creation here.
+    '''
+    full_path = os.path.join(base_path, os.path.basename(dir_name))
+
+    try:
+        os.mkdir(full_path, mode)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+
+def rename_or_move(base_path, old_name, new_name):
+    '''
+        Rename a file or, failing that, move it into a destination directory
+        - We don't navigate to different folders. Old and new file will be
+          in the same base path.
+    '''
+    old_path = os.path.join(base_path, os.path.basename(old_name))
+    new_path = os.path.join(base_path, os.path.basename(new_name))
+
+    try:
+        os.rename(old_path, new_path)
+    except OSError as e:
+        if e.errno == errno.EISDIR:
+            try:
+                shutil.move(old_path, new_path)
+            except Exception:
+                raise
+        else:
+            raise
+
+
 def list_files(folder, show_hidden=False):
     '''
         List the files of a directory.
@@ -71,10 +107,7 @@ def list_files(folder, show_hidden=False):
         if f.startswith('.') and not show_hidden:
             continue
 
-        size, file_type = file_info(folder, f)
-        files.append({'name': f,
-                      'size': size,
-                      'type': file_type})
+        files.append(file_info(folder, f))
 
     return files
 
@@ -95,7 +128,9 @@ def file_info(folder, f):
         # Unknown file type
         file_type = 'u'
 
-    return size, file_type
+    return {'name': f,
+            'size': size,
+            'type': file_type}
 
 
 

@@ -35,6 +35,31 @@ def FQNamesToDict(names):
     return dict(FQNamesToIterList(names))
 
 
+class PyObjFromJson(object):
+    '''
+        Generalized method for interpreting a nested data structure of
+        dicts, lists, and values, such as that coming from a parsed
+        JSON string.  We consume this data structure and represent it
+        as a structure of linked python objects.
+
+        So instead of needing to access our data like this:
+            json_obj['children'][0]['name']
+        we can do this instead:
+            json_obj.children[0].name
+    '''
+    def __init__(self, data):
+        for name, value in data.iteritems():
+            setattr(self, name, self._wrap(value))
+
+    def _wrap(self, value):
+        if isinstance(value, (tuple, list, set, frozenset)):
+            return type(value)([self._wrap(v) for v in value])
+        elif isinstance(value, dict):
+            return PyObjFromJson(value)
+        else:
+            return value
+
+
 def JSONImplementsOneOf(json_obj, obj_types):
     try:
         return not JSONImplementedType(json_obj, obj_types) is None
