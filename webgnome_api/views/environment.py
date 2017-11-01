@@ -2,7 +2,6 @@
 Views for the Environment objects.
 This currently includes Wind and Tide objects.
 """
-import os
 import ujson
 import logging
 import zlib
@@ -23,6 +22,7 @@ from webgnome_api.common.views import (get_object,
                                        cors_response,
                                        cors_exception,
                                        process_upload,
+                                       can_persist,
                                        activate_uploaded)
 
 from cornice import Service
@@ -108,6 +108,7 @@ def activate_environment_options(request):
 
 
 @view_config(route_name='environment_activate', request_method='POST')
+@can_persist
 def activate_environment(request):
     '''
         Activate an environment file that has already been persistently
@@ -116,14 +117,11 @@ def activate_environment(request):
     log_prefix = 'req({0}): activate_environment():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-    if asbool(request.registry.settings['can_persist_uploads']):
-        file_name, name = activate_uploaded(request)
-        resp = Response(ujson.dumps({'filename': file_name, 'name': name}))
+    file_name, name = activate_uploaded(request)
+    resp = Response(ujson.dumps({'filename': file_name, 'name': name}))
 
-        return cors_response(request, resp)
-    else:
-        log.info('<<{}'.format(log_prefix))
-        raise cors_exception(request, HTTPNotImplemented)
+    log.info('<<{}'.format(log_prefix))
+    return cors_response(request, resp)
 
 
 def get_nodes(request):
@@ -208,6 +206,8 @@ def get_vector_data(request):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
+
+
 def get_centers(request):
     '''
         Outputs GNOME grid centers for a particular obj
@@ -261,6 +261,7 @@ def get_metadata(request):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
+
 
 def get_grid_signature(obj):
     '''

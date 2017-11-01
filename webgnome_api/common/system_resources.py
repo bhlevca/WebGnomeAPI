@@ -3,9 +3,11 @@
     operating environment.
 """
 import os
+import stat
 import platform
 import ctypes
 import shutil
+import errno
 
 
 def get_free_space(path):
@@ -55,19 +57,83 @@ def write_fd_to_file(fd, out_path):
     fd.seek(curr_position)
 
 
+def mkdir(base_path, dir_name, mode=0775):
+    '''
+        Create a directory of a specified name inside the specified base path.
+        We don't allow multiple level directory creation here.
+    '''
+    full_path = os.path.join(base_path, os.path.basename(dir_name))
+
+    try:
+        os.mkdir(full_path, mode)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+
+def rename_or_move(base_path, old_name, new_name):
+    '''
+        Rename a file or, failing that, move it into a destination directory
+        - We don't navigate to different folders. Old and new file will be
+          in the same base path.
+    '''
+    old_path = os.path.join(base_path, os.path.basename(old_name))
+    new_path = os.path.join(base_path, os.path.basename(new_name))
+
+    try:
+        os.rename(old_path, new_path)
+    except OSError as e:
+        if e.errno == errno.EISDIR:
+            try:
+                shutil.move(old_path, new_path)
+            except Exception:
+                raise
+        else:
+            raise
+
+
 def list_files(folder, show_hidden=False):
     '''
         List the files of a directory.
-        - Non-files are filtered out
+        - the up-directory '..' is always filtered out
         - Hidden files are filtered out by default, but can be optionally
           shown.
     '''
-    onlyfiles = [f for f in os.listdir(folder)
-                 if os.path.isfile(os.path.join(folder, f))]
+    files = []
 
-    if not show_hidden:
-        onlyfiles = [f for f in onlyfiles if not f.startswith('.')]
+    for f in os.listdir(folder):
+        if f == '..':
+            continue
+        if f.startswith('.') and not show_hidden:
+            continue
 
-    return [{'name': f,
-             'size': os.stat(os.path.join(folder, f)).st_size}
-            for f in onlyfiles]
+        files.append(file_info(folder, f))
+
+    return files
+
+
+def file_info(folder, f):
+    file_path = os.path.join(folder, f)
+    file_stat = os.stat(file_path)
+    size = file_stat.st_size
+    mode = file_stat.st_mode
+
+    if stat.S_ISDIR(mode):
+        # It's a directory
+        file_type = 'd'
+    elif stat.S_ISREG(mode):
+        # It's a file
+        file_type = 'f'
+    else:
+        # Unknown file type
+        file_type = 'u'
+
+    return {'name': f,
+            'size': size,
+            'type': file_type}
+
+
+
+
+
+

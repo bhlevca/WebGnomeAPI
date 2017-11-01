@@ -44,6 +44,22 @@ cors_policy = {'credentials': True
 log = logging.getLogger(__name__)
 
 
+def can_persist(funct):
+    '''
+        This is a decorator function intended to short-circuit any views
+        that service persistent upload information if the server is not
+        configured to do so.
+    '''
+    def helper(request):
+        if ('can_persist_uploads' in request.registry.settings.keys() and
+                asbool(request.registry.settings['can_persist_uploads'])):
+            return funct(request)
+        else:
+            raise cors_exception(request, HTTPNotImplemented)
+
+    return helper
+
+
 def cors_exception(request, exception_class, with_stacktrace=False):
     depth = 2
     http_exc = exception_class()
@@ -276,14 +292,17 @@ def activate_uploaded(request):
         persistently uploaded.
 
         We activate it by making a unique copy of it in the session folder.
+
+        persistent file could exist in a sub-folder inside the upload folder.
     '''
-    upload_dir = get_persistent_dir(request)
     session_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
-
-    log.info('upload_dir: {}'.format(upload_dir))
     log.info('session_dir: {}'.format(session_dir))
     log.info('max_upload_size: {}'.format(max_upload_size))
+
+    upload_dir = get_upload_dir_and_subfolders(get_persistent_dir(request),
+                                               request.POST['file-name'])
+    log.info('upload_dir: {}'.format(upload_dir))
 
     file_name, unique_name = gen_unique_filename(request.POST['file-name'])
     src_path = os.path.join(upload_dir, file_name)
@@ -323,3 +342,13 @@ def get_file_name_ext(filename_in):
     file_name, extension = os.path.splitext(base_name)
 
     return file_name, extension
+
+
+def get_upload_dir_and_subfolders(upload_dir, file_path):
+    '''
+        return a path that is the concatenation of a base path and the
+        possible sub-directories represented in a file name.
+        The up-directory is not allowed.
+    '''
+    sub_dirs = [p for p in file_path.split(os.sep) if p != '..'][:-1]
+    return os.path.join(upload_dir, *sub_dirs)
