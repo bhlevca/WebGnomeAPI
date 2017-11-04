@@ -71,21 +71,16 @@ def mkdir(base_path, dir_name, mode=0775):
             raise
 
 
-def rename_or_move(base_path, old_name, new_name):
+def rename_or_move(old_name, new_name):
     '''
         Rename a file or, failing that, move it into a destination directory
-        - We don't navigate to different folders. Old and new file will be
-          in the same base path.
     '''
-    old_path = os.path.join(base_path, os.path.basename(old_name))
-    new_path = os.path.join(base_path, os.path.basename(new_name))
-
     try:
-        os.rename(old_path, new_path)
+        os.rename(old_name, new_name)
     except OSError as e:
         if e.errno == errno.EISDIR:
             try:
-                shutil.move(old_path, new_path)
+                shutil.move(old_name, new_name)
             except Exception:
                 raise
         else:

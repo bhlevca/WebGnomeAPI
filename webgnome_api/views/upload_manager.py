@@ -75,7 +75,7 @@ def modify_filesystem(request):
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
-    requested_path = os.path.join(get_persistent_dir(request), *sub_folders)
+    base_path = get_persistent_dir(request)
 
     try:
         file_model = PyObjFromJson(ujson.loads(request.body))
@@ -88,16 +88,18 @@ def modify_filesystem(request):
     # log.info('type: {}'.format(file_model.type))
 
     if (file_model.type == 'd'):
-        return create_new_folder(request, requested_path, file_model)
+        return create_new_folder(request, base_path, sub_folders, file_model)
     else:
-        return rename_file(request, requested_path, file_model)
+        return rename_file(request, base_path, sub_folders, file_model)
 
 
-def create_new_folder(request, requested_path, file_model):
+def create_new_folder(request, base_path, sub_folders, file_model):
     '''
         Create a new folder within the uploads folder.
     '''
     log.info('creating a new folder: {}'.format(file_model.name))
+    requested_path = os.path.join(base_path, *sub_folders)
+
     try:
         mkdir(requested_path, file_model.name)
     except OSError:
@@ -106,18 +108,27 @@ def create_new_folder(request, requested_path, file_model):
     return file_info(requested_path, file_model.name)
 
 
-def rename_file(request, requested_path, file_model):
+def rename_file(request, base_path, sub_folders, file_model):
     '''
         Rename a file within the uploads folder.
     '''
-    log.info('renaming file from {} to {}'.format(file_model.name,
-                                                  file_model.new_name))
-    try:
-        old_name = os.path.basename(file_model.name)
-        new_name = os.path.basename(file_model.new_name)
+    if not validate_new_filename(file_model.new_name):
+        log.info('new_name failed validation: {}'.format(file_model.new_name))
+        raise cors_exception(request, HTTPBadRequest)
 
-        rename_or_move(requested_path, old_name, new_name)
-    except Exception:
+    try:
+        log.info('renaming file starts...')
+        old_path = os.path.join(os.path.join(base_path, *sub_folders),
+                                os.path.basename(file_model.name))
+
+        new_path = generate_new_path(base_path, sub_folders,
+                                     file_model.new_name)
+
+        log.info('renaming file from {} to {}'.format(old_path, new_path))
+
+        rename_or_move(old_path, new_path)
+    except Exception as e:
+        log.info('Exception: {}'.format(e))
         raise cors_exception(request, HTTPInternalServerError)
 
     # Backbone.js likes to sync its models with the REST services it
@@ -130,6 +141,54 @@ def rename_file(request, requested_path, file_model):
             'type': file_model.type}
 
 
+def validate_new_filename(name):
+    '''
+        When we rename a file, the allowed new name can be a single filename
+        or a path.  The up-directory, '..', is not allowed.
+
+        - 'filename': Good
+        - 'folder1/folder2/filename': Good
+        - '/folder1/folder2/filename': Good
+        - '../../filename': Bad
+
+        (Note: Here, we do not validate that the new path is valid on the
+               filesystem, simply that the path has a valid syntactic form.)
+    '''
+    if name.find('..') > 0:
+        return False
+
+    return True
+
+
+def generate_new_path(base_path, sub_folders, name):
+    '''
+        Generate a new full path name depending upon the syntactic properties
+        of the new filename.
+        Examples:
+        - 'filename':                  base_path + sub_folders + name
+        - 'folder1/folder2/filename':  base_path + sub_folders + name
+        - '/folder1/folder2/filename': base_path + name
+        - '../../filename':            shouldn't encounter this
+
+    '''
+    log.info('generate new path: {}, {}, {}'.format(base_path,
+                                                    sub_folders,
+                                                    name))
+
+    if name.startswith(os.path.sep):
+        # Absolute path
+        # Note: os.path.join has a weird gotcha when joining absolute paths
+        #       in that all previous paths are truncated.  Why anyone thought
+        #       that was a good idea is beyond me.
+        name = name[1:]
+    else:
+        # Filename or relative path
+        base_path = os.path.join(base_path, *sub_folders)
+
+    new_path = os.path.join(base_path, name)
+    log.info('new path = {}'.format(new_path))
+
+    return new_path
 
 
 
