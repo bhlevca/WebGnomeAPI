@@ -68,6 +68,7 @@ def mkdir(base_path, dir_name, mode=0775):
         os.mkdir(full_path, mode)
     except OSError as e:
         if e.errno != errno.EEXIST:
+            print e
             raise
 
 
@@ -79,12 +80,23 @@ def rename_or_move(old_name, new_name):
         os.rename(old_name, new_name)
     except OSError as e:
         if e.errno == errno.EISDIR:
-            try:
-                shutil.move(old_name, new_name)
-            except Exception:
-                raise
+            shutil.move(old_name, new_name)
         else:
             raise
+
+
+def remove_file_or_dir(file_name):
+    '''
+        Rename a file or, failing that, move it into a destination directory
+    '''
+    try:
+        os.remove(file_name)
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            # We are fine, the file didn't exist.
+            return
+        else:
+            os.rmdir(file_name)
 
 
 def list_files(folder, show_hidden=False):
