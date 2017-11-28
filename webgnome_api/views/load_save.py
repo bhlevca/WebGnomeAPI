@@ -6,12 +6,10 @@ import logging
 import tempfile
 from threading import current_thread
 
-from pyramid.settings import asbool
 from pyramid.view import view_config
 from pyramid.response import Response, FileIter
 from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPNotFound,
-                                    HTTPNotImplemented)
+                                    HTTPNotFound)
 
 from cornice import Service
 
@@ -122,6 +120,31 @@ def download_model(request):
         raise cors_response(request, HTTPNotFound('No Active Model!'))
 
 
+@view_config(route_name='persist', request_method='OPTIONS')
+def save_and_persist_model_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='persist')
+@can_persist
+def save_and_persist_model(request):
+    '''
+        Here is where we save the active model as a zipfile and
+        store it in the persistent uploads area.
+    '''
+    my_model = get_active_model(request)
+
+    if my_model:
+        base_path = get_persistent_dir(request)
+        file_name = ('{0}.zip'.format(my_model.name))
+
+        my_model.save(saveloc=base_path, name=file_name)
+
+        return cors_response(request, Response('OK'))
+    else:
+        raise cors_response(request, HTTPNotFound('No Active Model!'))
+
+
 @persisted_files_api.get()
 @can_persist
 def get_uploaded_files(request):
@@ -130,5 +153,8 @@ def get_uploaded_files(request):
 
         If the web server is not configured to persist uploaded files,
         then we raise a HTTPNotImplemented exception
+
+        TODO: We have an upload manager that has this functionality.  We need
+              to prune this.
     '''
     return list_files(get_persistent_dir(request))
