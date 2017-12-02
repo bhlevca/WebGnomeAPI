@@ -27,7 +27,8 @@ from ..common.views import (can_persist,
                             cors_response,
                             cors_exception,
                             cors_policy,
-                            process_upload)
+                            process_upload,
+                            activate_uploaded)
 
 log = logging.getLogger(__name__)
 
@@ -94,6 +95,61 @@ def upload_model(request):
     return cors_response(request, Response('OK'))
 
 
+@view_config(route_name='activate', request_method='OPTIONS')
+@can_persist
+def activate_model_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='activate', request_method='POST')
+@can_persist
+def activate_uploaded_model(request):
+    '''
+        Activates a new model from a zipfile that is stored in the
+        uploads folder, and registers it as the current active model.
+    '''
+    clean_session_dir(request)
+
+    zipfile_path, _name = activate_uploaded(request)
+    log.info('Model zipfile: {}'.format(zipfile_path))
+
+    # Now that we have our file, we will now try to load the model into
+    # memory.
+    # Now that we have our file, is it a zipfile?
+    if not is_savezip_valid(zipfile_path):
+        raise cors_response(request,
+                            HTTPBadRequest('File is not a valid zipfile!'))
+
+    # now we try to load our model from the zipfile.
+    session_lock = acquire_session_lock(request)
+    log.info('  session lock acquired (sess:{}, thr_id: {})'
+             .format(id(session_lock), current_thread().ident))
+    try:
+        log.info('loading our model from zip...')
+        new_model = load(zipfile_path)
+        new_model._cache.enabled = False
+
+        init_session_objects(request, force=True)
+
+        from ..views import implemented_types
+
+        RegisterObject(new_model, request, implemented_types)
+
+        log.info('setting active model...')
+        set_active_model(request, new_model.id)
+    except Exception:
+        raise cors_exception(request, HTTPBadRequest, with_stacktrace=True)
+    finally:
+        session_lock.release()
+        log.info('  session lock released (sess:{}, thr_id: {})'
+                 .format(id(session_lock), current_thread().ident))
+
+    # We will want to clean up our temporary zipfile when we are done.
+    os.remove(zipfile_path)
+
+    return cors_response(request, Response('OK'))
+
+
 @view_config(route_name='download')
 def download_model(request):
     '''
@@ -121,6 +177,7 @@ def download_model(request):
 
 
 @view_config(route_name='persist', request_method='OPTIONS')
+@can_persist
 def save_and_persist_model_options(request):
     return cors_response(request, request.response)
 
