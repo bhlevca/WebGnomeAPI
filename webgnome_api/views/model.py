@@ -19,7 +19,8 @@ from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
                                                ObjectImplementsOneOf,
                                                obj_id_from_url,
-                                               obj_id_from_req_payload)
+                                               obj_id_from_req_payload,
+                                               clean_session_dir)
 
 from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
@@ -106,6 +107,7 @@ def create_model(request):
              .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
+        clean_session_dir(request)
         init_session_objects(request, force=True)
 
         if json_request:

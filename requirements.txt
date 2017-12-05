@@ -1,4 +1,4 @@
-pyramid
+pyramid>=1.9
 pyramid_log
 -e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
 ujson

@@ -67,7 +67,9 @@ def main(global_config, **settings):
     config.add_renderer('json', renderer)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
     config.add_route('upload', '/upload')
+    config.add_route('activate', '/activate')
     config.add_route('download', '/download')
+    config.add_route('persist', '/persist')
 
     config.add_route('map_upload', '/map/upload')
     config.add_route('map_activate', '/map/activate')

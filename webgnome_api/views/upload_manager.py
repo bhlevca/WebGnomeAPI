@@ -2,7 +2,6 @@
 Views for the model load/save operations.
 """
 import os
-import shutil
 import errno
 import logging
 import urllib
@@ -19,7 +18,8 @@ from ..common.helpers import PyObjFromJson
 from ..common.system_resources import (list_files,
                                        file_info,
                                        mkdir,
-                                       rename_or_move)
+                                       rename_or_move,
+                                       remove_file_or_dir)
 from ..common.common_object import (get_persistent_dir)
 from ..common.views import (can_persist,
                             cors_exception,
@@ -58,7 +58,7 @@ def get_uploaded_files(request):
         elif e.errno in (errno.EPERM, errno.EACCES):
             raise cors_exception(request, HTTPUnauthorized)
         else:
-            raise
+            raise cors_exception(request, HTTPInternalServerError)
 
 
 @upload_manager.post()
@@ -82,23 +82,86 @@ def modify_filesystem(request):
     except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
-    # log.info('requested_path: {}'.format(requested_path))
-    # log.info('name: {}'.format(file_model.name))
-    # log.info('size: {}'.format(file_model.size))
-    # log.info('type: {}'.format(file_model.type))
-
     if (file_model.type == 'd'):
         return create_new_folder(request, base_path, sub_folders, file_model)
     else:
         return rename_file(request, base_path, sub_folders, file_model)
 
 
+@upload_manager.put()
+@can_persist
+def create_file_item(request):
+    '''
+        Make a new file folder or rename a previous file.
+        When we started using the filename as a Backbone model id attribute,
+        it started wanting to perform a PUT when we created a file model
+        on the client.  In addition, it is performing a PUT when we rename
+        a model. I suspect that since the filename is the identifier, it is
+        performing a PUT of the new name, followed by a DELETE of the old one.
+
+        So there are two operations we must support:
+        - Create a new folder
+        - Rename a file that already exists
+    '''
+    sub_folders = [urllib.unquote(d).encode('utf8')
+                   for d in request.matchdict['sub_folders']
+                   if d != '..']
+
+    if len(sub_folders) == 0:
+        log.error('PUT command should have the identifier in the url')
+        raise cors_exception(request, HTTPBadRequest)
+
+    base_path = get_persistent_dir(request)
+
+    try:
+        file_model = PyObjFromJson(ujson.loads(request.body))
+    except Exception:
+        log.error('PUT command payload could not be parsed')
+        raise cors_exception(request, HTTPBadRequest)
+
+    if sub_folders[-1] != file_model.name:
+        log.error('PUT command payload should match the identifier in the url')
+        raise cors_exception(request, HTTPBadRequest)
+
+    if hasattr(file_model, 'prev_name'):
+        log.info('create_file_item(): prev_name: {}'
+                 .format(file_model.prev_name))
+        return rename_file(request, base_path, sub_folders[:-1], file_model)
+    elif (file_model.type == 'd'):
+        return create_new_folder(request, base_path, sub_folders[:-1],
+                                 file_model)
+    else:
+        print('unknown file type: {}'.format(file_model))
+        raise cors_exception(request, HTTPBadRequest)
+
+
+@upload_manager.delete()
+@can_persist
+def delete_uploaded_file(request):
+    '''
+        Performs a delete of a file in the uploads folder.
+    '''
+    sub_folders = [urllib.unquote(d).encode('utf8')
+                   for d in request.matchdict['sub_folders']
+                   if d != '..']
+
+    requested_path = os.path.join(get_persistent_dir(request), *sub_folders)
+    log.info('requesting delete of file: {}'.format(requested_path))
+
+    try:
+        remove_file_or_dir(requested_path)
+    except OSError:
+        raise cors_exception(request, HTTPInternalServerError)
+
+    return {'message': 'File successfully deleted.'}
+
+
 def create_new_folder(request, base_path, sub_folders, file_model):
     '''
         Create a new folder within the uploads folder.
     '''
-    log.info('creating a new folder: {}'.format(file_model.name))
     requested_path = os.path.join(base_path, *sub_folders)
+    log.info('creating a new folder: {}'.format(file_model.name))
 
     try:
         mkdir(requested_path, file_model.name)
@@ -112,17 +175,16 @@ def rename_file(request, base_path, sub_folders, file_model):
     '''
         Rename a file within the uploads folder.
     '''
-    if not validate_new_filename(file_model.new_name):
-        log.info('new_name failed validation: {}'.format(file_model.new_name))
+    if not validate_new_filename(file_model.name):
+        log.info('new name failed validation: {}'.format(file_model.name))
         raise cors_exception(request, HTTPBadRequest)
 
     try:
         log.info('renaming file starts...')
-        old_path = os.path.join(os.path.join(base_path, *sub_folders),
-                                os.path.basename(file_model.name))
+        old_path = generate_new_path(base_path, [], file_model.prev_name)
 
         new_path = generate_new_path(base_path, sub_folders,
-                                     file_model.new_name)
+                                     file_model.name)
 
         log.info('renaming file from {} to {}'.format(old_path, new_path))
 
