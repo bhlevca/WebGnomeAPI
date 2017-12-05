@@ -24,8 +24,6 @@ from webgnome_api.common.views import cors_exception, cors_policy
 
 step_api = Service(name='step', path='/step',
                    description="Model Step API", cors_policy=cors_policy)
-rewind_api = Service(name='rewind', path='/rewind',
-                     description="Model Rewind API", cors_policy=cors_policy)
 full_run_api = Service(name='full_run', path='/full_run',
                        description="Model Full Run API",
                        cors_policy=cors_policy)
@@ -126,30 +124,6 @@ def get_step(request):
                              current_thread().ident))
 
         return output
-    else:
-        raise cors_exception(request, HTTPPreconditionFailed)
-
-
-@rewind_api.get()
-def get_rewind(request):
-    '''
-        rewinds the current active Model.
-    '''
-    active_model = get_active_model(request)
-    if active_model:
-        session_lock = acquire_session_lock(request)
-        log.info('  session lock acquired (sess:{}, thr_id: {})'
-                 .format(id(session_lock), current_thread().ident))
-
-        try:
-            active_model.rewind()
-        except:
-            raise cors_exception(request, HTTPUnprocessableEntity,
-                                 with_stacktrace=True)
-        finally:
-            session_lock.release()
-            log.info('  session lock released (sess:{}, thr_id: {})'
-                     .format(id(session_lock), current_thread().ident))
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
 
