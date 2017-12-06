@@ -3,6 +3,8 @@ import base64
 import hashlib
 import logging
 import time
+import traceback
+import sys
 from threading import current_thread
 
 from pygtail import Pygtail
@@ -140,11 +142,11 @@ def run_model(request):
                     drop_uncertain_models(request)
                     break
 
-                except:
-                    log.info('  ' + log_prefix + 'unknown exception...')
-                    raise cors_exception(request, HTTPUnprocessableEntity,
-                                         with_stacktrace=True)
-                    break
+                except Exception as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    log.critical('  ' + log_prefix + str(traceback.format_exception_only(exc_type, exc_value)))
+                    socket_namespace.emit('killed', 'Model run terminated early')
+                    return
                 finally:
                     #session_lock.release()
                     #log.info('  {} session lock released (sess:{}, thr_id: {})'
@@ -159,8 +161,8 @@ def run_model(request):
                 if not socket_namespace.is_async:
                     socket_namespace.lock.clear()
                     print 'lock!'
-                #kill greenlet after 10 minutes unless unlocked
-                w = 600
+                #kill greenlet after 100 minutes unless unlocked
+                w = 6000
                 unlocked = socket_namespace.lock.wait(w)
                 if not unlocked:
                     socket_namespace.emit('timeout', 'Model run timed out after {0} sec'.format(w))
@@ -168,8 +170,8 @@ def run_model(request):
                 gevent.sleep(0.001)
         except GreenletExit:
             log.info('Greenlet exiting early')
-        finally:
-            socket_namespace.emit('complete', 'Model run completed')\
+            socket_namespace.emit('killed', 'Model run terminated early')
+        socket_namespace.emit('complete', 'Model run completed')
 
     print 'async_step route hit'
     #ns = socket_namespace

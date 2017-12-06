@@ -15,6 +15,7 @@ from webgnome_api.views.socket_logger import LoggerNamespace
 from webgnome_api.views.socket_step import StepNamespace
 
 
+
 class WSNamespace(BaseNamespace):
 
 
