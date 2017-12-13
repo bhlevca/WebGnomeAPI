@@ -61,14 +61,14 @@ def get_grid(request):
 #             resp.headers.add('Access-Control-Expose-Headers', 'shape')
 #             resp.headers.add('shape', str(dshape))
 #             return cors_response(request, resp)
-#         if route == 'nodes':
-#             resp.body = get_nodes(request)
-#             resp.headers.add('content-encoding', 'deflate')
-#             return cors_response(request, resp)
-#         if route == 'centers':
-#             resp.body = get_centers(request)
-#             resp.headers.add('content-encoding', 'deflate')
-#             return cors_response(request, resp)
+        if route == 'nodes':
+            resp.body = get_nodes(request)
+            resp.headers.add('content-encoding', 'deflate')
+            return cors_response(request, resp)
+        if route == 'centers':
+            resp.body = get_centers(request)
+            resp.headers.add('content-encoding', 'deflate')
+            return cors_response(request, resp)
         if route == 'metadata':
             return get_metadata(request)
     else:
@@ -116,6 +116,64 @@ def get_lines(request):
             lengths, lines = obj.get_lines()
 
             return (zlib.compress(lengths.tobytes() + lines.tobytes()), len(lengths))
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
+
+def get_centers(request):
+    '''
+        Outputs GNOME grid centers for a particular obj
+    '''
+
+    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None:
+            centers = obj.get_centers()
+            return zlib.compress(centers.astype(np.float32).tobytes())
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
+
+def get_nodes(request):
+    '''
+        Outputs the object's grid nodes in binary format
+    '''
+    log_prefix = 'req({0}): get_grid():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None:
+            nodes = obj.get_nodes()
+
+            return zlib.compress(nodes.astype(np.float32).tobytes())
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
