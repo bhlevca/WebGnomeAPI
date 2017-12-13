@@ -36,7 +36,6 @@ env = Service(name='environment', path='/environment*obj_id',
               cors_policy=cors_policy,
               # accept='application/json+octet-stream',
               content_type=['application/json', 'binary'])
-
 implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Wind',
                      'gnome.environment.Water',
@@ -44,7 +43,6 @@ implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.environment_objects.GridCurrent',
                      'gnome.environment.environment_objects.GridWind',
                      )
-
 
 @env.get()
 def get_environment(request):
@@ -248,9 +246,7 @@ def get_metadata(request):
     try:
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
-
-        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
-
+        if obj is not None:
             return obj.get_metadata()
         else:
             exc = cors_exception(request, HTTPNotFound)
