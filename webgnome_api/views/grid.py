@@ -114,8 +114,9 @@ def get_lines(request):
 
         if obj is not None:
             lengths, lines = obj.get_lines()
+            lines_bytes = ''.join([l.tobytes() for l in lines])
 
-            return (zlib.compress(lengths.tobytes() + lines.tobytes()), len(lengths))
+            return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
