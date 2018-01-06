@@ -251,8 +251,3 @@ def generate_new_path(base_path, sub_folders, name):
     log.info('new path = {}'.format(new_path))
 
     return new_path
-
-
-
-
-

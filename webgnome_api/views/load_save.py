@@ -182,7 +182,7 @@ def save_and_persist_model_options(request):
     return cors_response(request, request.response)
 
 
-@view_config(route_name='persist')
+@view_config(route_name='persist', request_method='POST')
 @can_persist
 def save_and_persist_model(request):
     '''
@@ -193,7 +193,12 @@ def save_and_persist_model(request):
 
     if my_model:
         base_path = get_persistent_dir(request)
-        file_name = ('{0}.zip'.format(my_model.name))
+
+        requested_name = request.POST['name']
+        if requested_name is not None:
+            file_name = ('{0}.zip'.format(requested_name))
+        else:
+            file_name = ('{0}.zip'.format(my_model.name))
 
         my_model.save(saveloc=base_path, name=file_name)
 
