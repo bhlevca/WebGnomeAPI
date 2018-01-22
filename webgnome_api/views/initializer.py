@@ -9,7 +9,7 @@ from webgnome_api.common.views import (get_object,
 from cornice import Service
 
 initializer = Service(name='initializer', path='/initializer*obj_id',
-                      description="Iinitializer API", cors_policy=cors_policy)
+                      description="Initializer API", cors_policy=cors_policy)
 
 module_name = 'gnome.spill.elements'
 module_attrs = ('InitWindages',

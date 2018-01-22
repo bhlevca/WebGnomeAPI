@@ -1,9 +1,9 @@
-pyramid
+pyramid>=1.9
 pyramid_log
-gevent-socketio
+-e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
 ujson
 Paste
-cornice
+cornice==1.2.1
 pyramid-redis-sessions
 docutils
 awesome-slugify

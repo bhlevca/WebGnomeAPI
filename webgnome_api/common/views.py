@@ -3,26 +3,25 @@ Common Gnome object request handlers.
 """
 import os
 import sys
-import platform
 import traceback
 import ujson
-import shutil
 import uuid
 import logging
-import ctypes
 
 from threading import current_thread
 
+from pyramid.settings import asbool
+from pyramid.interfaces import ISessionFactory
+from pyramid.response import FileResponse
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound,
                                     HTTPInsufficientStorage,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
-from pyramid.interfaces import ISessionFactory
-
-from pyramid.response import FileResponse
-
+from .system_resources import (get_free_space,
+                               get_size_of_open_file,
+                               write_to_file)
 from .helpers import (JSONImplementsOneOf,
                       FQNamesToList,
                       PyClassFromName)
@@ -33,7 +32,7 @@ from .common_object import (CreateObject,
                             obj_id_from_url,
                             obj_id_from_req_payload,
                             get_session_dir,
-                            clean_session_dir)
+                            get_persistent_dir)
 
 from .session_management import (get_session_objects,
                                  get_session_object,
@@ -43,6 +42,22 @@ cors_policy = {'credentials': True
                }
 
 log = logging.getLogger(__name__)
+
+
+def can_persist(funct):
+    '''
+        This is a decorator function intended to short-circuit any views
+        that service persistent upload information if the server is not
+        configured to do so.
+    '''
+    def helper(request):
+        if ('can_persist_uploads' in request.registry.settings.keys() and
+                asbool(request.registry.settings['can_persist_uploads'])):
+            return funct(request)
+        else:
+            raise cors_exception(request, HTTPNotImplemented)
+
+    return helper
 
 
 def cors_exception(request, exception_class, with_stacktrace=False):
@@ -72,6 +87,11 @@ def cors_response(request, response):
     req_headers = request.headers.get('Access-Control-Request-Headers')
     if req_headers is not None:
         response.headers.add('Access-Control-Allow-Headers', req_headers)
+
+    req_method = request.headers.get('Access-Control-Request-Method')
+    if req_method is not None:
+        response.headers.add('Access-Control-Allow-Methods',
+                             ','.join((req_method, 'OPTIONS')))
 
     return response
 
@@ -127,7 +147,7 @@ def create_object(request, implemented_types):
 
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -140,7 +160,7 @@ def create_object(request, implemented_types):
     try:
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
         obj = CreateObject(json_request, get_session_objects(request))
-    except:
+    except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
@@ -159,7 +179,7 @@ def update_object(request, implemented_types):
 
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -174,7 +194,7 @@ def update_object(request, implemented_types):
 
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
-        except:
+        except Exception:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
@@ -212,55 +232,123 @@ def process_upload(request, field_name):
                                                'could not re-establish session'
                                                ))
 
-    session_dir = get_session_dir(request)
+    upload_dir = get_session_dir(request)
     max_upload_size = eval(request.registry.settings['max_upload_size'])
 
-    log.info('save_file_dir: {0}'.format(session_dir))
-    log.info('max_upload_size: {0}'.format(max_upload_size))
+    persist_upload = asbool(request.POST.get('persist_upload', False))
+
+    if 'can_persist_uploads' in request.registry.settings.keys():
+        can_persist = asbool(request.registry.settings['can_persist_uploads'])
+    else:
+        can_persist = False
+
+    log.info('save_file_dir: {}'.format(upload_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    log.info('persist_upload?: {}'.format(persist_upload))
+    log.info('can_persist?: {}'.format(can_persist))
 
     input_file = request.POST[field_name].file
+    file_name, unique_name = gen_unique_filename(request.POST[field_name]
+                                                 .filename)
+    file_path = os.path.join(upload_dir, unique_name)
 
-    # split and select last in array incase a path was pathed as the name
-    file_name = request.POST[field_name].filename.split(os.path.sep)[-1]
-    extension = '.' + file_name.split('.')[-1]
-    # add uuid to the file name incase the user accidentaly uploads
-    # multiple files with the same name for different objects.
-    orig_file_name = file_name
-    file_name = file_name.replace(extension,
-                                  '-' + str(uuid.uuid4()) + extension)
-    file_path = os.path.join(session_dir, file_name)
-
-    # check the size of our incoming file
-    input_file.seek(0, 2)
-    size = input_file.tell()
-    log.info('Incoming file size: {0}'.format(size))
+    size = get_size_of_open_file(input_file)
+    log.info('Incoming file size: {}'.format(size))
 
     if size > max_upload_size:
         raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {0}'
+                            HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
 
-    # now we check if we have enough space to save the file.
-    if platform.system() == 'Windows':
-        fb = ctypes.c_ulonglong(0)
-        ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(session_dir),
-                                                   None, None,
-                                                   ctypes.pointer(fb))
-        free_bytes = fb.value
-    else:
-        stat_vfs = os.statvfs(session_dir)
-        free_bytes = stat_vfs.f_bavail * stat_vfs.f_frsize
-
-    if size >= free_bytes:
+    if size >= get_free_space(upload_dir):
         raise cors_response(request,
                             HTTPInsufficientStorage('Not enough space '
                                                     'to save the file'))
 
-    # Finally write the data to the session temporary dir
-    input_file.seek(0)
-    with open(file_path, 'wb') as output_file:
-        shutil.copyfileobj(input_file, output_file)
+    write_to_file(input_file, file_path)
 
-    log.info('\tSuccessfully uploaded file "{0}"'.format(file_path))
+    log.info('Successfully uploaded file "{0}"'.format(file_path))
 
-    return file_path, orig_file_name
+    if persist_upload and can_persist:
+        log.info('Persisting file "{0}"'.format(file_path))
+
+        upload_dir = get_persistent_dir(request)
+        if size >= get_free_space(upload_dir):
+            raise cors_response(request,
+                                HTTPInsufficientStorage('Not enough space '
+                                                        'to persist the file'))
+
+        persistent_path = os.path.join(upload_dir, file_name)
+
+        write_to_file(input_file, persistent_path)
+
+    return file_path, file_name
+
+
+def activate_uploaded(request):
+    '''
+        This view is intended to activate a file that has already been
+        persistently uploaded.
+
+        We activate it by making a unique copy of it in the session folder.
+
+        persistent file could exist in a sub-folder inside the upload folder.
+    '''
+    session_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+    log.info('session_dir: {}'.format(session_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    upload_dir = get_upload_dir_and_subfolders(get_persistent_dir(request),
+                                               request.POST['file-name'])
+    log.info('upload_dir: {}'.format(upload_dir))
+
+    file_name, unique_name = gen_unique_filename(request.POST['file-name'])
+    src_path = os.path.join(upload_dir, file_name)
+    dest_path = os.path.join(session_dir, unique_name)
+
+    if file_name not in os.listdir(upload_dir):
+        raise cors_response(request, HTTPBadRequest('File does not exist!'))
+
+    size = os.path.getsize(src_path)
+    log.info('File size: {}'.format(size))
+
+    if size >= get_free_space(session_dir):
+        # basically we need to make a copy of the file to activate it.
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to activate the file'))
+
+    write_to_file(src_path, dest_path)
+
+    log.info('Successfully activated file "{0}"'.format(dest_path))
+
+    return dest_path, file_name
+
+
+def gen_unique_filename(filename_in):
+    # add uuid to the file name in case the user accidentally uploads
+    # multiple files with the same name for different objects.
+    file_name, extension = get_file_name_ext(filename_in)
+
+    return (file_name + extension,
+            file_name + '-' + str(uuid.uuid4()) + extension)
+
+
+def get_file_name_ext(filename_in):
+    # in case a path was passed as the name
+    base_name = os.path.basename(filename_in)
+    file_name, extension = os.path.splitext(base_name)
+
+    return file_name, extension
+
+
+def get_upload_dir_and_subfolders(upload_dir, file_path):
+    '''
+        return a path that is the concatenation of a base path and the
+        possible sub-directories represented in a file name.
+        The up-directory is not allowed.
+    '''
+    sub_dirs = [p for p in file_path.split(os.sep) if p != '..'][:-1]
+    return os.path.join(upload_dir, *sub_dirs)

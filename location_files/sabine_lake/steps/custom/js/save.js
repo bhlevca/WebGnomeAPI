@@ -18,7 +18,7 @@
             sab_flow *= 1000;
         }
 
-        if (sab_flow > 20000 || sab_flow < 10) {
+        if (sab_flow > 20000000 || sab_flow < 10000) {
             errMsg = "The entered Sabine flow rate is outside the acceptable range of ";
 
             if (sab_units === 'cfs') {
@@ -45,7 +45,7 @@
             nec_flow *= 1000;
         }
 
-        if (nec_flow > 3800 || nec_flow < 1) {
+        if (nec_flow > 3800000 || nec_flow < 1000) {
             errMsg = "The entered Neches flow rate is outside the acceptable range of ";
             
             if (nec_units === 'cfs') {

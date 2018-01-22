@@ -26,41 +26,41 @@ from webgnome_api.common.views import (get_object,
                                        activate_uploaded)
 
 from cornice import Service
+import pdb
 
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
 log = logging.getLogger(__name__)
 
-env = Service(name='environment', path='/environment*obj_id',
-              description="Environment API",
-              cors_policy=cors_policy,
-              # accept='application/json+octet-stream',
-              content_type=['application/json', 'binary'])
-implemented_types = ('gnome.environment.Tide',
-                     'gnome.environment.Wind',
-                     'gnome.environment.Water',
-                     'gnome.environment.Waves',
-                     'gnome.environment.environment_objects.GridCurrent',
-                     'gnome.environment.environment_objects.GridWind',
+grid = Service(name='environment/grid', path='/grid*obj_id',
+               description="Grid API",
+               cors_policy=cors_policy,
+               content_type=['application/json', 'binary'])
+
+implemented_types = ('gnome.environment.gridded_objects_base.Grid_U',
+                     'gnome.environment.gridded_objects_base.Grid_R',
+                     'gnome.environment.gridded_objects_base.Grid_S',
                      )
 
-@env.get()
-def get_environment(request):
-    '''Returns an Gnome Environment object in JSON.'''
+@grid.get()
+def get_grid(request):
+    '''Returns an Grid object in JSON.'''
     content_requested = request.matchdict.get('obj_id')
     resp = Response(content_type='arraybuffer')
     route = content_requested[1] if len(content_requested) > 1 else None
     if (len(content_requested) > 1):
-        if route == 'grid':
-            resp.body = get_grid(request)
+        if route == 'lines':
+            resp.body, num_lengths = get_lines(request)
+            resp.headers.add('Access-Control-Expose-Headers', 'num_lengths')
+            resp.headers.add('num_lengths', str(num_lengths))
             resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
-        if route == 'vectors':
-            resp.body, dshape = get_vector_data(request)
-            resp.headers.add('content-encoding', 'deflate')
-            resp.headers.add('Access-Control-Expose-Headers', 'shape')
-            resp.headers.add('shape', str(dshape))
-            return cors_response(request, resp)
+#         if route == 'vectors':
+#             resp.body, dshape = get_vector_data(request)
+#             resp.headers.add('content-encoding', 'deflate')
+#             resp.headers.add('Access-Control-Expose-Headers', 'shape')
+#             resp.headers.add('shape', str(dshape))
+#             return cors_response(request, resp)
         if route == 'nodes':
             resp.body = get_nodes(request)
             resp.headers.add('content-encoding', 'deflate')
@@ -73,108 +73,6 @@ def get_environment(request):
             return get_metadata(request)
     else:
         return get_object(request, implemented_types)
-
-
-@env.post()
-def create_environment(request):
-    '''Creates an Environment object.'''
-    return create_object(request, implemented_types)
-
-
-@env.put()
-def update_environment(request):
-    '''Updates an Environment object.'''
-    return update_object(request, implemented_types)
-
-
-@view_config(route_name='environment_upload', request_method='OPTIONS')
-def environment_upload_options(request):
-    return cors_response(request, request.response)
-
-
-@view_config(route_name='environment_upload', request_method='POST')
-def environment_upload(request):
-    filename, name = process_upload(request, 'new_environment')
-    resp = Response(ujson.dumps({'filename': filename, 'name': name}))
-
-    return cors_response(request, resp)
-
-
-@view_config(route_name='environment_activate', request_method='OPTIONS')
-def activate_environment_options(request):
-    return cors_response(request, request.response)
-
-
-@view_config(route_name='environment_activate', request_method='POST')
-@can_persist
-def activate_environment(request):
-    '''
-        Activate an environment file that has already been persistently
-        uploaded.
-    '''
-    log_prefix = 'req({0}): activate_environment():'.format(id(request))
-    log.info('>>{}'.format(log_prefix))
-
-    file_name, name = activate_uploaded(request)
-    resp = Response(ujson.dumps({'filename': file_name, 'name': name}))
-
-    log.info('<<{}'.format(log_prefix))
-    return cors_response(request, resp)
-
-
-def get_grid(request):
-    '''
-        Outputs the object's grid cells in binary format
-    '''
-    log_prefix = 'req({0}): get_grid():'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    session_lock = acquire_session_lock(request)
-    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
-             .format(log_prefix, id(session_lock), current_thread().ident))
-    try:
-        obj_id = request.matchdict.get('obj_id')[0]
-        obj = get_session_object(obj_id, request)
-
-        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
-            cells = obj.grid.get_cells()
-
-            return zlib.compress(cells.astype(np.float32).tobytes())
-        else:
-            exc = cors_exception(request, HTTPNotFound)
-            raise exc
-    finally:
-        session_lock.release()
-        log.info('  {} session lock released (sess:{}, thr_id: {})'
-                 .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
-
-
-def get_vector_data(request):
-    log_prefix = 'req({0}): get_grid():'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    session_lock = acquire_session_lock(request)
-    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
-             .format(log_prefix, id(session_lock), current_thread().ident))
-    try:
-        obj_id = request.matchdict.get('obj_id')[0]
-        obj = get_session_object(obj_id, request)
-
-        if obj is not None and isinstance(obj, (GridCurrent, GridWind)):
-            vec_data = obj.get_data_vectors()
-
-            return zlib.compress(vec_data.tobytes()), vec_data.shape
-        else:
-            exc = cors_exception(request, HTTPNotFound)
-            raise exc
-    finally:
-        session_lock.release()
-        log.info('  {} session lock released (sess:{}, thr_id: {})'
-                 .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
 
 
 def get_metadata(request):
@@ -200,17 +98,89 @@ def get_metadata(request):
     log.info('<<' + log_prefix)
 
 
-def get_grid_signature(obj):
+def get_lines(request):
     '''
-        Here we are trying to get an n-dimensional signature of our
-        grid data.
-        There may be a better way to do this, but for now we will get the
-        euclidian distances between all sequential points and sum them.
+    Outputs the object's grid lines in binary format
     '''
-    points = obj.get_points()
+    log_prefix = 'req({0}): get_grid():'.format(id(request))
+    log.info('>>' + log_prefix)
 
-    dtype = points[0].dtype.descr
-    raw_points = points.view(dtype='<f8').reshape(-1, len(dtype))
-    point_diffs = raw_points[1:] - raw_points[:-1]
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
 
-    return abs(point_diffs.view(dtype=np.complex)).sum()
+        if obj is not None:
+            lengths, lines = obj.get_lines()
+            lines_bytes = ''.join([l.tobytes() for l in lines])
+
+            return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
+
+def get_centers(request):
+    '''
+        Outputs GNOME grid centers for a particular obj
+    '''
+
+    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None:
+            centers = obj.get_centers()
+            return zlib.compress(centers.astype(np.float32).tobytes())
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
+
+def get_nodes(request):
+    '''
+        Outputs the object's grid nodes in binary format
+    '''
+    log_prefix = 'req({0}): get_grid():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None:
+            nodes = obj.get_nodes()
+
+            return zlib.compress(nodes.astype(np.float32).tobytes())
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)

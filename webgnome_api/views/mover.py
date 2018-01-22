@@ -35,12 +35,12 @@ mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.wind_movers.WindMover',
-                     'gnome.movers.wind_movers.GridWindMover',
                      'gnome.movers.random_movers.RandomMover',
                      'gnome.movers.random_movers.RandomVerticalMover',
                      'gnome.movers.current_movers.CatsMover',
                      'gnome.movers.current_movers.ComponentMover',
                      'gnome.movers.py_current_movers.PyCurrentMover',
+                     'gnome.movers.py_wind_movers.PyWindMover',
                      'gnome.movers.current_movers.GridCurrentMover',
                      'gnome.movers.current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
@@ -103,7 +103,7 @@ def get_current_info(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, (CurrentMoversBase, GridWindMover, PyMover)):
+        if mover is not None and isinstance(mover, (CurrentMoversBase, PyMover)):
             cells = get_cells(mover)
 
             return cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).tolist()
@@ -133,7 +133,7 @@ def get_grid_centers(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, (CurrentMoversBase, GridWindMover, PyMover)):
+        if mover is not None and isinstance(mover, (CurrentMoversBase, PyMover)):
             centers = get_center_points(mover)
 
             return centers.tolist()

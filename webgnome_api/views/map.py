@@ -7,6 +7,7 @@ import os
 from threading import current_thread
 
 from cornice import Service
+
 from pyramid.view import view_config
 from pyramid.response import Response
 from pyramid.httpexceptions import (HTTPBadRequest,
@@ -14,11 +15,13 @@ from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPUnsupportedMediaType,
                                     HTTPNotImplemented)
 
-from webgnome_api.common.views import (cors_exception,
+from webgnome_api.common.views import (can_persist,
+                                       cors_exception,
                                        cors_response,
                                        get_object,
                                        cors_policy,
-                                       process_upload)
+                                       process_upload,
+                                       activate_uploaded)
 
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
@@ -70,7 +73,7 @@ def create_map(request):
 
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -86,7 +89,7 @@ def create_map(request):
 
     try:
         obj = CreateObject(json_request, get_session_objects(request))
-    except:
+    except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
@@ -103,7 +106,7 @@ def update_map(request):
     '''Updates a Gnome Map object.'''
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -114,7 +117,7 @@ def update_map(request):
     if obj:
         try:
             UpdateObject(obj, json_request, get_session_objects(request))
-        except:
+        except Exception:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
     else:
@@ -131,17 +134,56 @@ def upload_map_options(request):
 
 @view_config(route_name='map_upload', request_method='POST')
 def upload_map(request):
+    log_prefix = 'req({0}): upload_map():'.format(id(request))
+    log.info('>>{}'.format(log_prefix))
+
     file_name, name = process_upload(request, 'new_map')
     file_path = file_name.split(os.path.sep)[-1]
+    log.info('  {} file_name: {}, name: {}, file_path: {}'
+             .format(log_prefix, file_name, name, file_path))
+
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
                                 'json_': 'webapi',
                                 'name': name
                                 })
+
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))
 
+    log.info('<<{}'.format(log_prefix))
+    return cors_response(request, resp)
+
+
+@view_config(route_name='map_activate', request_method='OPTIONS')
+def activate_map_options(request):
+    return cors_response(request, request.response)
+
+
+@view_config(route_name='map_activate', request_method='POST')
+@can_persist
+def activate_map(request):
+    '''
+        Activate a map that has already been persistently uploaded.
+    '''
+    log_prefix = 'req({0}): activate_map():'.format(id(request))
+    log.info('>>{}'.format(log_prefix))
+
+    file_name, name = activate_uploaded(request)
+    file_path = file_name.split(os.path.sep)[-1]
+
+    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+                                'filename': file_path,
+                                'refloat_halflife': 6.0,
+                                'json_': 'webapi',
+                                'name': name
+                                })
+
+    map_obj = create_map(request)
+    resp = Response(ujson.dumps(map_obj))
+
+    log.info('<<{}'.format(log_prefix))
     return cors_response(request, resp)
 
 

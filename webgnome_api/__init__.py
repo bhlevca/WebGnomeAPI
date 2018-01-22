@@ -66,13 +66,23 @@ def main(global_config, **settings):
     renderer = JSONRenderer(serializer=lambda v, **kw: ujson.dumps(v))
     config.add_renderer('json', renderer)
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
-    config.add_route("upload", "/upload")
-    config.add_route("download", "/download")
-    config.add_route("map_upload", "/map/upload")
-    config.add_route("mover_upload", "/mover/upload")
-    config.add_route("environment_upload", "/environment/upload")
-    config.add_route("socket.io", "/socket.io/*remaining")
-    config.add_route("export", "/export/*file_path")
+    config.add_route('upload', '/upload')
+    config.add_route('activate', '/activate')
+    config.add_route('download', '/download')
+    config.add_route('persist', '/persist')
+
+    config.add_route('map_upload', '/map/upload')
+    config.add_route('map_activate', '/map/activate')
+
+    config.add_route('mover_upload', '/mover/upload')
+
+    config.add_route('environment_upload', '/environment/upload')
+    config.add_route('environment_activate', '/environment/activate')
+
+    config.add_route('socket.io', '/socket.io/*remaining')
+    config.add_route('logger', '/logger')
+    config.add_route('async_step','/async_step')
+    config.add_route('export', '/export/*file_path')
 
     config.scan('webgnome_api.views')
 

@@ -1,5 +1,5 @@
 """
-Common Gnome object request handlers.
+    Common Gnome object request handlers.
 """
 import os
 import shutil
@@ -89,7 +89,7 @@ def _CreateObject(payload, parent, attr_name, all_objects):
     # link the object to its associated parent attribute
     try:
         parent[attr_name] = obj
-    except:
+    except Exception:
         if parent is not None:
             raise
 
@@ -109,7 +109,7 @@ def _UpdateObject(payload, parent, attr_name, all_objects):
         # link the object to its associated parent attribute
         try:
             parent[attr_name] = obj
-        except:
+        except Exception:
             if parent is not None:
                 raise
         return obj
@@ -125,10 +125,10 @@ def ValueIsJsonObject(value):
 def ObjectId(obj):
     try:
         ident = obj['id']  # JSON Object
-    except:
+    except Exception:
         try:
             ident = obj.id  # Gnome Object
-        except:
+        except Exception:
             ident = id(obj)  # any other object
 
     return ident
@@ -190,13 +190,24 @@ def obj_id_from_req_payload(json_request):
 
 
 def get_session_dir(request):
-    temp_dir = request.registry.settings['model_data_dir']
+    model_dir = request.registry.settings['model_data_dir']
     session_id = request.session.session_id
-    session_dir = os.path.join(temp_dir, 'session', session_id)
+    session_dir = os.path.join(model_dir, 'session', session_id)
+
     if os.path.isdir(session_dir) is False:
         os.makedirs(session_dir)
 
     return session_dir
+
+
+def get_persistent_dir(request):
+    model_dir = request.registry.settings['model_data_dir']
+    persistent_dir = os.path.join(model_dir, 'persistent')
+
+    if os.path.isdir(persistent_dir) is False:
+        os.makedirs(persistent_dir)
+
+    return persistent_dir
 
 
 def list_session_dir(request):
@@ -204,11 +215,7 @@ def list_session_dir(request):
         Purely diagnostic in intent, we simply list the files in our
         session directory.
     '''
-    temp_dir = request.registry.settings['model_data_dir']
-    session_id = request.session.session_id
-    session_dir = os.path.join(temp_dir, 'session', session_id)
-    if os.path.isdir(session_dir) is False:
-        os.makedirs(session_dir)
+    session_dir = get_session_dir(request)
 
     if os.path.isdir(session_dir) is True:
         # our session folder exists, clean out any files
@@ -217,9 +224,8 @@ def list_session_dir(request):
 
 
 def clean_session_dir(request):
-    temp_dir = request.registry.settings['model_data_dir']
-    session_id = request.session.session_id
-    session_dir = os.path.join(temp_dir, 'session', session_id)
+    session_dir = get_session_dir(request)
+
     if os.path.isdir(session_dir) is True:
         # our session folder exists, clean out any files
         for f in os.listdir(session_dir):
@@ -229,7 +235,7 @@ def clean_session_dir(request):
                     shutil.rmtree(f)
                 else:
                     os.remove(f)
-            except:
+            except Exception:
                 pass
 
 

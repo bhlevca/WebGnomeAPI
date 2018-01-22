@@ -14,12 +14,14 @@ from cornice import Service
 
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
-                                       get_specifications)
+                                       get_specifications,
+                                       get_object)
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
                                                ObjectImplementsOneOf,
                                                obj_id_from_url,
-                                               obj_id_from_req_payload)
+                                               obj_id_from_req_payload,
+                                               clean_session_dir)
 
 from webgnome_api.common.session_management import (init_session_objects,
                                                     get_session_objects,
@@ -64,18 +66,7 @@ def get_model(request):
             if my_model:
                 ret = my_model.serialize()
             else:
-                ret = get_specifications(request, implemented_types)
-        else:
-            obj = get_session_object(obj_id, request)
-            if obj:
-                if ObjectImplementsOneOf(obj, implemented_types):
-                    set_active_model(request, obj.id)
-                    ret = obj.serialize()
-                else:
-                    # we refer to an object, but it is not a Model
-                    raise cors_exception(request, HTTPBadRequest)
-            else:
-                raise cors_exception(request, HTTPNotFound)
+                ret = get_object(request, implemented_types)
     finally:
         session_lock.release()
         log.info('  session lock released (sess:{}, thr_id: {})'
@@ -94,7 +85,7 @@ def create_model(request):
 
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         json_request = None
 
     if json_request and not JSONImplementsOneOf(json_request,
@@ -106,6 +97,7 @@ def create_model(request):
              .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
+        clean_session_dir(request)
         init_session_objects(request, force=True)
 
         if json_request:
@@ -118,7 +110,7 @@ def create_model(request):
         set_session_object(new_model._map, request)
 
         set_active_model(request, new_model.id)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
     finally:
@@ -145,7 +137,7 @@ def update_model(request):
     ret = None
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     if not JSONImplementsOneOf(json_request, implemented_types):
@@ -167,7 +159,7 @@ def update_model(request):
                             get_session_objects(request)):
                 set_session_object(active_model, request)
             ret = active_model.serialize()
-        except:
+        except Exception:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)
         finally:
