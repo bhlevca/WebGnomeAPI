@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "MeanFlow.cur", 
- "name": "Mean Currents", 
+ "name": "Mean Current", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000000.0, 
  "scale_value": 0.25

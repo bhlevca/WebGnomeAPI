@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "LI_tidesWAC.cur", 
- "name": "LongIslandWAC.cur", 
+ "name": "Tidal Currents", 
  "tide": "Tide_0.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000000.0, 

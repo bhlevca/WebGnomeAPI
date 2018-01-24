@@ -6,6 +6,7 @@
   21.50, 
   0.0
  ], 
+ "name": "Tidal Currents", 
  "filename": "FloodTide.cur", 
  "tide": "Tide_0.json", 
  "json_": "save", 

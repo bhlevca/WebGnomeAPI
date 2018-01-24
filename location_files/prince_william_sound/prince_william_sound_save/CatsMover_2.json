@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "ValdezTide.cur", 
- "name": "Valdez Tidal Currents", 
+ "name": "Valdez", 
  "tide": "Tide_1.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000000.0, 
