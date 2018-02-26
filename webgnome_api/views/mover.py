@@ -115,12 +115,21 @@ def upload_mover(request):
                 'json_': 'webapi',
                 }
         }
+    wind_json = {
+        'obj_type': 'gnome.environment.wind.Wind',
+        'filename': file_name,
+        'json_': 'webapi',
+        'name': name,
+        'units': 'knots'
+    }
     if ('PyWindMover' in mover_type):
         env_obj_base_json['obj_type'] = 'gnome.environment.environment_objects.GridWind'
         basic_json['wind'] = env_obj_base_json
     if ('PyCurrentMover' in mover_type):
         env_obj_base_json['obj_type'] = 'gnome.environment.environment_objects.GridCurrent'
         basic_json['current'] = env_obj_base_json
+    if ('wind_movers.WindMover' in mover_type):
+        basic_json['wind'] = wind_json
 
 
     request.body = ujson.dumps(basic_json)
