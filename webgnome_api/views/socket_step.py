@@ -2,7 +2,7 @@ import sys
 import time
 import logging
 
-from traceback import format_exception_only
+import traceback
 from collections import defaultdict
 from threading import current_thread
 
@@ -138,14 +138,13 @@ def run_model(request):
                     break
                 except Exception:
                     exc_type, exc_value, _exc_traceback = sys.exc_info()
+                    traceback.print_exc()
 
                     log.critical('  {}{}'
                                  .format(log_prefix,
-                                         format_exception_only(exc_type,
+                                         traceback.format_exception_only(exc_type,
                                                                exc_value)))
-                    socket_namespace.emit('killed',
-                                          'Model run terminated early')
-                    return
+                    raise GreenletExit
 
                 if output:
                     socket_namespace.num_sent += 1
