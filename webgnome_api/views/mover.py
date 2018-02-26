@@ -95,7 +95,7 @@ def upload_mover(request):
     log.info('  {} file_name: {}, name: {}, file_path: {}'
              .format(log_prefix, file_name, name, file_path))
 
-    mover_type = request.POST.get('obj_type', None)
+    mover_type = request.POST.get('obj_type', [])
 
     basic_json = {
         'obj_type': mover_type,
