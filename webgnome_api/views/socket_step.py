@@ -145,6 +145,7 @@ def run_model(request):
                                          traceback.format_exception_only(exc_type,
                                                                exc_value)))
                     raise GreenletExit
+                    break
 
                 if output:
                     socket_namespace.num_sent += 1
