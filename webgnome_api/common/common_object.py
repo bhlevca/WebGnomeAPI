@@ -182,6 +182,7 @@ def obj_id_from_url(request):
         matching items, at least when using the * wild card
     '''
     obj_id = request.matchdict.get('obj_id')
+
     return obj_id[0] if obj_id else None
 
 

@@ -31,7 +31,7 @@ class ModelRunTest(FunctionalTestBase):
                                                      'windage_persist': 900,
                                                      }
                                                     ],
-                                   'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE)'
+                                   'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
                                    },
                   'amount': 200,
                   'units': 'tons'

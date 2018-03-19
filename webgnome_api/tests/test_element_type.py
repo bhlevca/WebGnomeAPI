@@ -1,9 +1,6 @@
 """
 Functional tests for the Gnome ElementType object Web API
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=4)
-
 from base import FunctionalTestBase
 
 
@@ -18,7 +15,7 @@ class ElementTypeBase(FunctionalTestBase):
 
     req_data = {'obj_type': u'gnome.spill.elements.ElementType',
                 'initializers': None,
-                'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE)'
+                'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
                 }
 
     fields_to_check = ('id', 'obj_type', 'initializers')
@@ -72,8 +69,7 @@ class ElementTypeBase(FunctionalTestBase):
 
     def test_put_valid_id(self):
         self.req_data['initializers'] = self.create_init_obj(self.init_data)
-        print 'req_data:'
-        pp.pprint(self.req_data)
+
         resp = self.testapp.post_json('/element_type', params=self.req_data)
 
         req_data = resp.json_body
