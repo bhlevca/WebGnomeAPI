@@ -294,6 +294,8 @@ class StepTest(FunctionalTestBase):
     spill_data = {'obj_type': 'gnome.spill.spill.Spill',
                   'name': 'What a Name',
                   'on': True,
+                  'amount': 1000,
+                  'units': 'kg',
                   'release': {'obj_type': ('gnome.spill.release'
                                            '.PointLineRelease'),
                               'num_elements': 1000,
