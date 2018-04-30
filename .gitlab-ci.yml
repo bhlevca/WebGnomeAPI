@@ -1,0 +1,13 @@
+master: 
+  script:
+    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi
+    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi
+  only: 
+    - master
+
+develop:
+  script:
+    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:develop
+    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:develop
+  only:
+    - develop
