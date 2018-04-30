@@ -294,6 +294,8 @@ class StepTest(FunctionalTestBase):
     spill_data = {'obj_type': 'gnome.spill.spill.Spill',
                   'name': 'What a Name',
                   'on': True,
+                  'amount': 1000,
+                  'units': 'kg',
                   'release': {'obj_type': ('gnome.spill.release'
                                            '.PointLineRelease'),
                               'num_elements': 1000,
@@ -1061,7 +1063,7 @@ class StepTest(FunctionalTestBase):
         # next we perform the full run without response options and then
         # check that nothing was skimmed.
         resp = self.testapp.post_json('/full_run',
-                                     params={'response_on': False})
+                                      params={'response_on': False})
         final_step = resp.json_body
 
         print '\n\nour final step with response options inactive:'

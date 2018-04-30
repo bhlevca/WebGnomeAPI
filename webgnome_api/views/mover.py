@@ -2,20 +2,22 @@
 Views for the Mover objects.
 This currently includes ??? objects.
 """
-import logging
 import os
+import logging
+import zlib
 from threading import current_thread
 
 import ujson
+
 import numpy as np
 
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
+
 from cornice import Service
 
 from gnome.movers.current_movers import CurrentMoversBase
-from gnome.movers.wind_movers import GridWindMover
 from gnome.movers import PyMover
 
 from ..common.views import (get_object,
@@ -27,8 +29,7 @@ from ..common.views import (get_object,
                             process_upload)
 
 from ..common.session_management import (get_session_object,
-                                         acquire_session_lock,
-                                         get_active_model)
+                                         acquire_session_lock)
 
 log = logging.getLogger(__name__)
 
@@ -52,18 +53,15 @@ implemented_types = ('gnome.movers.simple_mover.SimpleMover',
 @mover.get()
 def get_mover(request):
     content_requested = request.matchdict.get('obj_id')
-    resp = Response(content_type='arraybuffer')
+
     route = content_requested[1] if len(content_requested) > 1 else None
-    if (len(content_requested) > 1):
-        if (route == 'grid'):
-            return get_current_info(request)
-        elif (route == 'centers'):
-            return get_grid_centers(request)
-        elif (route == 'vectors'):
-            resp.body, dshape = get_vector_data(request)
-            resp.headers.add('content-encoding', 'deflate')
-            resp.headers.add('Access-Control-Expose-Headers', 'shape')
-            resp.headers.add('shape', str(dshape))
+
+    if (route == 'grid'):
+        return get_current_info(request)
+    elif (route == 'centers'):
+        return get_grid_centers(request)
+    elif (route == 'vectors'):
+        return get_vector_data(request)
     else:
         return get_object(request, implemented_types)
 
@@ -123,14 +121,15 @@ def upload_mover(request):
         'units': 'knots'
     }
     if ('PyWindMover' in mover_type):
-        env_obj_base_json['obj_type'] = 'gnome.environment.environment_objects.GridWind'
+        env_obj_base_json['obj_type'] = ('gnome.environment'
+                                         '.environment_objects.GridWind')
         basic_json['wind'] = env_obj_base_json
     if ('PyCurrentMover' in mover_type):
-        env_obj_base_json['obj_type'] = 'gnome.environment.environment_objects.GridCurrent'
+        env_obj_base_json['obj_type'] = ('gnome.environment'
+                                         '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
     if ('wind_movers.WindMover' in mover_type):
         basic_json['wind'] = wind_json
-
 
     request.body = ujson.dumps(basic_json)
     mover_obj = create_mover(request)
@@ -157,7 +156,8 @@ def get_current_info(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, (CurrentMoversBase, PyMover)):
+        if (mover is not None and
+                isinstance(mover, (CurrentMoversBase, PyMover))):
             cells = get_cells(mover)
 
             return cells.reshape(-1, cells.shape[-1]*cells.shape[-2]).tolist()
@@ -187,7 +187,8 @@ def get_grid_centers(request):
         obj_id = request.matchdict.get('obj_id')[0]
         mover = get_session_object(obj_id, request)
 
-        if mover is not None and isinstance(mover, (CurrentMoversBase, PyMover)):
+        if (mover is not None and
+                isinstance(mover, (CurrentMoversBase, PyMover))):
             centers = get_center_points(mover)
 
             return centers.tolist()
@@ -213,11 +214,21 @@ def get_vector_data(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None:# and isinstance(obj, (CatsMover, GridWind)):
-            log.info('{} found mover of type: {}'.format(log_prefix, obj.__class__))
+        if obj is not None:
+            log.info('{} found mover of type: {}'
+                     .format(log_prefix, obj.__class__))
             vec_data = get_velocities(obj)
 
-            return zlib.compress(vec_data.tobytes()), vec_data.shape
+            resp = Response(content_type='arraybuffer')
+
+            resp.body, dshape = (zlib.compress(vec_data.tobytes()),
+                                 vec_data.shape)
+
+            resp.headers.add('content-encoding', 'deflate')
+            resp.headers.add('Access-Control-Expose-Headers', 'shape')
+            resp.headers.add('shape', str(dshape))
+
+            return resp
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc

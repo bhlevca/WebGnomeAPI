@@ -54,7 +54,7 @@ def run_model(request):
         b
         '''
         try:
-            wait_time = 6
+            wait_time = 16
             socket_namespace.emit('prepared')
 
             unlocked = socket_namespace.lock.wait(wait_time)
@@ -145,6 +145,7 @@ def run_model(request):
                                          traceback.format_exception_only(exc_type,
                                                                exc_value)))
                     raise GreenletExit
+                    break
 
                 if output:
                     socket_namespace.num_sent += 1
@@ -168,6 +169,7 @@ def run_model(request):
         except GreenletExit:
             log.info('Greenlet exiting early')
             socket_namespace.emit('killed', 'Model run terminated early')
+            return
 
         socket_namespace.emit('complete', 'Model run completed')
 
