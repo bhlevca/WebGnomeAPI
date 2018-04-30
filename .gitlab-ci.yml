@@ -4,6 +4,8 @@ master:
     - docker push gitlab.orr.noaa.gov:5002/webgnomeapi
   only: 
     - master
+  tags:
+    - docker
 
 develop:
   script:
@@ -11,3 +13,5 @@ develop:
     - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:develop
   only:
     - develop
+  tags:
+    - docker
