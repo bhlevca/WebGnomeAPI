@@ -14,4 +14,6 @@ RUN ln -s /config/config.ini /webgnomeapi/config.ini
 
 EXPOSE 9899
 VOLUME /config
+VOLUME /webgnomeapi/model
+WORKDIR /webgnomeapi/
 ENTRYPOINT ["/webgnomeapi/docker_start.sh"] 
