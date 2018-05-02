@@ -12,6 +12,7 @@ PyGnome
 webtest
 htmlmin
 jsmin
+gevent==1.2.2
 
 # Binary Related Packages
 gdal            # requires system binaries verison may vary based on what's available for system
