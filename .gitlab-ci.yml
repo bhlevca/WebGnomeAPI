@@ -15,3 +15,10 @@ develop:
     - develop
   tags:
     - docker
+
+test:
+  script:
+    - cd webgnome_api
+    - py.test
+  tags:
+    - test
