@@ -18,7 +18,10 @@ develop:
 
 test:
   script:
+    - pip install -r requirements.txt
+    - pip install -e .
     - cd webgnome_api
     - py.test
+
   tags:
     - test
