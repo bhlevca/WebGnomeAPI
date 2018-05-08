@@ -1,5 +1,7 @@
 master: 
   script:
+    - docker pull gitlab.orr.noaa.gov:5002/pygnome:latest
+    - docker tag gitlab.orr.noaa.gov:5002/pygnome:latest pygnome
     - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi
     - docker push gitlab.orr.noaa.gov:5002/webgnomeapi
   only: 
@@ -9,10 +11,23 @@ master:
 
 develop:
   script:
+    - docker pull gitlab.orr.noaa.gov:5002/pygnome:develop
+    - docker tag gitlab.orr.noaa.gov:5002/pygnome:develop pygnome
     - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:develop
     - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:develop
   only:
     - develop
+  tags:
+    - docker
+
+production:
+  script:
+    - docker pull gitlab.orr.noaa.gov:5002/pygnome:production
+    - docker tag gitlab.orr.noaa.gov:5002/pygnome:production pygnome
+    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:production
+    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:production
+  only:
+    - production
   tags:
     - docker
 

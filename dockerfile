@@ -1,4 +1,4 @@
-FROM gitlab.orr.noaa.gov:5002/pygnome:latest
+FROM pygnome
 RUN yum update -y
 
 RUN yum install -y redis
