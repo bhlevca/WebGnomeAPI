@@ -43,6 +43,7 @@ def run_model(request):
     '''
     sess_id = request.session.session_id
     global sess_namespaces
+
     ns = sess_namespaces.get(sess_id, None)
     if ns is None:
         raise ValueError('no namespace associated with session')
@@ -51,7 +52,6 @@ def run_model(request):
         '''
         Meant to run in a greenlet. This function should take an active model
         and run it, writing each step's output to the socket.
-        b
         '''
         try:
             wait_time = 16
@@ -87,6 +87,7 @@ def run_model(request):
                     begin_uncertain = time.time()
                     steps = get_uncertain_steps(request)
                     end = time.time()
+
                     if steps and 'WeatheringOutput' in output:
                         nominal = output['WeatheringOutput']
                         aggregate = defaultdict(list)
@@ -115,6 +116,7 @@ def run_model(request):
                                        'nominal': nominal,
                                        'low': low,
                                        'high': high}
+
                         for idx, step_output in enumerate(steps):
                             full_output[idx] = step_output['WeatheringOutput']
 
@@ -143,7 +145,7 @@ def run_model(request):
                     log.critical('  {}{}'
                                  .format(log_prefix,
                                          traceback.format_exception_only(exc_type,
-                                                               exc_value)))
+                                                                         exc_value)))
                     raise GreenletExit
                     break
 
@@ -199,7 +201,8 @@ class StepNamespace(BaseNamespace):
 
     def initialize(self):
         super(StepNamespace, self).initialize()
-        print 'attaching namespace to module'
+        print ('attaching namespace {} to module'
+               .format(self.__class__.__name__))
 
         global sess_namespaces
         sess_namespaces[self.request.session.session_id] = self
