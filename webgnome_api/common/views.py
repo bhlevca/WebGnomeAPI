@@ -110,7 +110,8 @@ def cors_file_response(request, path):
 def get_object(request, implemented_types):
     '''Returns a Gnome object in JSON.'''
     obj_id = obj_id_from_url(request)
-    if not obj_id:
+
+    if obj_id is None:
         return get_specifications(request, implemented_types)
     else:
         obj = get_session_object(obj_id, request)

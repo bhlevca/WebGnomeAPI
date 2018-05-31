@@ -1,6 +1,6 @@
 {
  "obj_type": "gnome.movers.current_movers.CatsMover", 
- "name": "OutsideSAC.cur", 
+ "name": "Offshore Currents", 
  "filename": "OutsideSAC.cur", 
  "up_cur_uncertain": 0.3, 
  "down_cur_uncertain": -1.5, 

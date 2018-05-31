@@ -56,17 +56,19 @@ def get_model(request):
     '''
     ret = None
     obj_id = obj_id_from_url(request)
+
     session_lock = acquire_session_lock(request)
     log.info('  session lock acquired (sess:{}, thr_id: {})'
              .format(id(session_lock), current_thread().ident))
 
     try:
-        if not obj_id:
+        if obj_id is None:
             my_model = get_active_model(request)
-            if my_model:
+            if my_model is not None:
                 ret = my_model.serialize()
-            else:
-                ret = get_object(request, implemented_types)
+
+        if ret is None:
+            ret = get_object(request, implemented_types)
     finally:
         session_lock.release()
         log.info('  session lock released (sess:{}, thr_id: {})'

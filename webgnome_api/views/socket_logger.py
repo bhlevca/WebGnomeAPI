@@ -4,12 +4,8 @@ import hashlib
 
 from pygtail import Pygtail
 
-from pyramid.view import view_config
-
 import gevent
-from gevent import socket
 
-from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
 
 
@@ -21,6 +17,7 @@ class LoggerNamespace(BaseNamespace):
         def send_logs():
             hasher = hashlib.sha1(self.request.session.session_id)
             session_hash = base64.urlsafe_b64encode(hasher.digest())
+
             pattern = re.compile('^(?P<date>.*?)\s+'
                                  '(?P<time>.*?)\s+'
                                  '(?P<level>.*?)\s+'
@@ -37,7 +34,9 @@ class LoggerNamespace(BaseNamespace):
                         self.emit('log', msg_obj)
 
                 gevent.sleep(0.1)
+
         self.spawn(send_logs)
+
     def on_start_logger(self):
         print "Starting logger greenlet"
         self.emit("logger_started")

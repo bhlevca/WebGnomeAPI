@@ -113,7 +113,7 @@ def get_step(request):
             log.info('  ' + log_prefix + 'stop iteration exception...')
             drop_uncertain_models(request)
             raise cors_exception(request, HTTPNotFound)
-        except:
+        except Exception:
             log.info('  ' + log_prefix + 'unknown exception...')
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
@@ -204,7 +204,7 @@ def get_full_run(request):
                 output['total_response_time'] = end - begin
 
             active_model.rewind()
-        except:
+        except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)
         finally:

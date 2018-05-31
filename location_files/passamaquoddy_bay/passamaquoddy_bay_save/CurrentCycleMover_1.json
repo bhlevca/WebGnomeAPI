@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "PQBayCur.nc4", 
- "name": "PQBayCur.nc4", 
+ "name": "Tidal Currents", 
  "topology_file": "PassamaquoddyTOP.dat", 
  "tide": "Tide_0.json", 
  "json_": "save", 
