@@ -95,43 +95,42 @@ def upload_mover(request):
 
     mover_type = request.POST.get('obj_type', [])
 
-    basic_json = {
-        'obj_type': mover_type,
-        'filename': file_name,
-        'json_': 'webapi',
-        'name': name
-        }
+    basic_json = {'obj_type': mover_type,
+                  'filename': file_name,
+                  'json_': 'webapi',
+                  'name': name}
 
-    env_obj_base_json = {
-        'obj_type': 'temp',
-        'data_file': file_name,
-        'grid_file': file_name,
-        'json_': 'webapi',
-        'grid': {
-                'obj_type': 'gnome.environment.gridded_objects_base.PyGrid',
-                'filename': file_name,
-                'json_': 'webapi',
-                }
-        }
-    wind_json = {
-        'obj_type': 'gnome.environment.wind.Wind',
-        'filename': file_name,
-        'json_': 'webapi',
-        'name': name,
-        'units': 'knots'
-    }
+    env_obj_base_json = {'obj_type': 'temp',
+                         'data_file': file_name,
+                         'grid_file': file_name,
+                         'json_': 'webapi',
+                         'grid': {'obj_type': ('gnome.environment.'
+                                               'gridded_objects_base.PyGrid'),
+                                  'filename': file_name,
+                                  'json_': 'webapi'}
+                         }
+
+    wind_json = {'obj_type': 'gnome.environment.wind.Wind',
+                 'filename': file_name,
+                 'json_': 'webapi',
+                 'name': name,
+                 'units': 'knots'}
+
     if ('PyWindMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridWind')
         basic_json['wind'] = env_obj_base_json
+
     if ('PyCurrentMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
+
     if ('wind_movers.WindMover' in mover_type):
         basic_json['wind'] = wind_json
 
     request.body = ujson.dumps(basic_json)
+
     mover_obj = create_mover(request)
     resp = Response(ujson.dumps(mover_obj))
 
