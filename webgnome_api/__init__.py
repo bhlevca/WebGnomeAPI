@@ -63,9 +63,12 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
 
     config.add_request_method(get_json, 'json', reify=True)
+
     renderer = JSONRenderer(serializer=lambda v, **kw: ujson.dumps(v))
     config.add_renderer('json', renderer)
+
     config.add_tween('webgnome_api.tweens.PyGnomeSchemaTweenFactory')
+
     config.add_route('upload', '/upload')
     config.add_route('activate', '/activate')
     config.add_route('download', '/download')
@@ -81,7 +84,7 @@ def main(global_config, **settings):
 
     config.add_route('socket.io', '/socket.io/*remaining')
     config.add_route('logger', '/logger')
-    config.add_route('async_step','/async_step')
+    config.add_route('async_step', '/async_step')
     config.add_route('export', '/export/*file_path')
 
     config.scan('webgnome_api.views')

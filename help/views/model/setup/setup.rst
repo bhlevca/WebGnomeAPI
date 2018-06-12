@@ -4,8 +4,12 @@
 Setup View
 ^^^^^^^^^^
 
-Use Setup View to configure and edit a model scenario. Individual panels are used to interact with different
-types of model input. Individual panels include buttons to add (+), edit (pencil), and delete (trashcan) components.
+.. raw:: html
+
+    Use Setup View to configure and edit a scenario to model. Individual panels are used to interact with different
+    types of model input. Individual panels include buttons to add (<span class="glyphicon glyphicon-plus"></span>), 
+    edit (<span class="glyphicon glyphicon-pencil"></span>), and delete (<span class="glyphicon glyphicon-trash"></span>) 
+    components.<p>
 
 Panels may contain multiple objects that can be edited individually. For example, multiple currents or winds can be added to the 
 model and turned on/off as desired. Objects added in each panel will appear in a list at the bottom of the panel. 
@@ -23,10 +27,10 @@ the oil will depend on some water properties.
 
 **Advanced Settings**
 
-When adding or editing a model object within a form, a pull down list of Advanced Settings appears at the bottom of the form. Although
+When adding or editing a model object, a pull down list of Advanced Settings appears at the bottom of the form. Although
 typically modified parameters appear within the form, additional control over model parameters can be accessed via this list. Note, 
 that it is VERY possible to change parameters through this list in such a way that the model will not be able to run (very little 
-validation is done on parameters that are entered this way).
+validation is done on parameters that are entered this way). 
 
 **Add Oil Removal Options**
 

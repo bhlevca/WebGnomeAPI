@@ -479,7 +479,7 @@ class StepTest(FunctionalTestBase):
         wind_data = [e for e in model1['environment']
                      if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
         water_data = [e for e in model1['environment']
-                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      if e['obj_type'] == 'gnome.environment.water.Water'
                       ][0]
 
         print 'test_weathering_step(): creating weatherer...'
@@ -548,7 +548,7 @@ class StepTest(FunctionalTestBase):
         wind_data = [e for e in model1['environment']
                      if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
         water_data = [e for e in model1['environment']
-                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      if e['obj_type'] == 'gnome.environment.water.Water'
                       ][0]
 
         print 'test_weathering_step(): creating weatherer...'
@@ -643,7 +643,7 @@ class StepTest(FunctionalTestBase):
         wind_data = [e for e in model1['environment']
                      if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
         water_data = [e for e in model1['environment']
-                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      if e['obj_type'] == 'gnome.environment.water.Water'
                       ][0]
 
         print 'test_weathering_step(): creating weatherer...'
@@ -784,7 +784,7 @@ class StepTest(FunctionalTestBase):
         wind_data = [e for e in model1['environment']
                      if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
         water_data = [e for e in model1['environment']
-                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      if e['obj_type'] == 'gnome.environment.water.Water'
                       ][0]
 
         print 'test_weathering_step(): creating weatherer...'
@@ -1002,7 +1002,7 @@ class StepTest(FunctionalTestBase):
         wind_data = [e for e in model1['environment']
                      if e['obj_type'] == 'gnome.environment.wind.Wind'][0]
         water_data = [e for e in model1['environment']
-                      if e['obj_type'] == 'gnome.environment.environment.Water'
+                      if e['obj_type'] == 'gnome.environment.water.Water'
                       ][0]
 
         print 'test_weathering_step(): creating weatherer...'

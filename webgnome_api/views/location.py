@@ -67,7 +67,7 @@ def get_location(request):
                 location_file = location_file_dirs[matching[0][0]]
                 log.info('load location: {0}'.format(location_file))
                 load_location_file(location_file, request)
-            except:
+            except Exception:
                 raise cors_exception(request, HTTPInternalServerError,
                                      with_stacktrace=True)
             finally:

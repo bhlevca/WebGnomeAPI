@@ -10,6 +10,7 @@ pygtail
 webtest
 htmlmin
 jsmin
+gevent==1.2.2
 
 # PyGnome
 
