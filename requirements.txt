@@ -6,13 +6,14 @@ Paste
 cornice==1.2.1
 pyramid-redis-sessions
 docutils
-awesome-slugify
 pygtail
-PyGnome
 webtest
 htmlmin
 jsmin
 
-# Binary Related Packages
-gdal            # requires system binaries verison may vary based on what's available for system
+# PyGnome
+
+# webgnomeapi requires pygnome, so we don't need the pygnome requirements
+# awesome-slugify
+# gdal            # requires system binaries verison may vary based on what's available for system
                 # tested with 1.11.2
