@@ -7,7 +7,7 @@ Observed beached oil
 This form allows the manual entry of volumes of observed beached oil for the mass balance. Note, if the trajectory is run with a map that contains land, 
 the model may also cause oil to come ashore due to winds and currents. These processes are completely independent and values entered here will be removed 
 from the mass balance as long as sufficient surface oil remains. (It is possible to enter larger values here than were actually released -- the amount will 
-be reduced to the amount available at the time.) Manually input beached oil is considered to be permanently stranded so do not enter any oil that will shortly refloat.
+be reduced to the amount available at the time.) Manually input beached oil is considered to be permanently stranded and will not refloat.
 
 * Select the units for the amount beached (default is barrels)
 
