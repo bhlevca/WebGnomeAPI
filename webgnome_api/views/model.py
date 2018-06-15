@@ -136,6 +136,7 @@ def update_model(request):
           - update the current active model if it exists or...
           - generate a 'Not Found' exception.
     '''
+    pdb.set_trace()
     log_prefix = 'req({0}): update_model():'.format(id(request))
     log.info('>>' + log_prefix)
 

@@ -33,6 +33,7 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
 
     return o
     '''
+    pdb.set_trace()
     otype = json_obj.get('obj_type', None)
     if otype is None:
         raise ValueError('No object type defined in payload')
