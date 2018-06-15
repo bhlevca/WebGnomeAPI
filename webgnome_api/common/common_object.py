@@ -25,12 +25,24 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
         We want to be able to handle nested object payloads, so we need
         to traverse to all leaf objects and update them first
     '''
+    '''
     json_obj = _DeserializeObject(json_obj)
 
     for o in ProcessJsonObjectTree(_CreateObject, json_obj, all_objects):
         pass
 
     return o
+    '''
+    otype = json_obj.get('obj_type', None)
+    if otype is None:
+        raise ValueError('No object type defined in payload')
+    py_class = PyClassFromName(otype)
+    id_ = json_obj.get('id', None)
+    if id_ not in all_objects:
+        new_obj = py_class.deserialize(json_obj, all_objects)
+        return new_obj
+    else:
+        return all_objects[id_]
 
 
 def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
@@ -40,9 +52,21 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
         We want to be able to handle nested object payloads, so we need
         to traverse to all leaf objects and update them first
     '''
+    '''
     json_obj = _DeserializeObject(json_obj)
 
     [o for o in ProcessJsonObjectTree(_UpdateObject, json_obj, all_objects)]
+    '''
+    otype = json_obj.get('obj_type', None)
+    if otype is None:
+        raise ValueError('No object type defined in payload')
+    py_class = PyClassFromName(otype)
+    id_ = json_obj.get('id', None)
+    if id_ not in all_objects:
+        new_obj = py_class.deserialize(json_obj, all_objects)
+        return new_obj
+    else:
+        return all_objects[id_].update(json_obj, refs=all_objects)
 
 
 def _DeserializeObject(json_obj):

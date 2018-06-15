@@ -131,9 +131,9 @@ def get_specifications(request, implemented_types):
             name = FQNamesToList((t,))[0][0]
             cls = PyClassFromName(t)
             if cls:
-                spec = dict([(n, None)
-                             for n in cls._state.get_names(['read', 'update'])
-                             ])
+                update = cls._schema().get_nodes_by_attr('update')
+                read = cls._schema().get_nodes_by_attr('read_only')
+                spec = dict([(n, None) for n in update + read])
                 spec['obj_type'] = t
                 specs[name] = spec
         except ValueError:
@@ -142,6 +142,8 @@ def get_specifications(request, implemented_types):
 
 
 def create_object(request, implemented_types):
+    import pdb
+    pdb.set_trace()
     '''Creates a Gnome object.'''
     log_prefix = 'req({0}): create_object():'.format(id(request))
     log.info('>>' + log_prefix)
