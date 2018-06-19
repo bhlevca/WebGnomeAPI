@@ -42,6 +42,7 @@ cors_policy = {'credentials': True
                }
 
 log = logging.getLogger(__name__)
+import pdb
 
 
 def can_persist(funct):
@@ -73,7 +74,7 @@ def cors_exception(request, exception_class, with_stacktrace=False):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-        http_exc.json_body = ujson.dumps([l.strip() for l in fmt][-depth:])
+        http_exc.json_body = ujson.dumps([l.strip() for l in fmt])
 
     return http_exc
 
@@ -142,8 +143,7 @@ def get_specifications(request, implemented_types):
 
 
 def create_object(request, implemented_types):
-    import pdb
-    pdb.set_trace()
+    #pdb.set_trace()
     '''Creates a Gnome object.'''
     log_prefix = 'req({0}): create_object():'.format(id(request))
     log.info('>>' + log_prefix)
@@ -176,6 +176,7 @@ def create_object(request, implemented_types):
 
 
 def update_object(request, implemented_types):
+    #pdb.set_trace()
     '''Updates a Gnome object.'''
     log_prefix = 'req({0}): update_object():'.format(id(request))
     log.info('>>' + log_prefix)

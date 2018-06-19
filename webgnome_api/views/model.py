@@ -55,7 +55,7 @@ def get_model(request):
           - return the current active model if it exists or...
           - return the specification.
     '''
-    pdb.set_trace()
+    #pdb.set_trace()
     ret = None
     obj_id = obj_id_from_url(request)
 
@@ -84,7 +84,7 @@ def create_model(request):
     '''
         Creates a new model
     '''
-    pdb.set_trace()
+    #pdb.set_trace()
     log_prefix = 'req({0}): create_object():'.format(id(request))
     log.info('>>' + log_prefix)
 
@@ -136,7 +136,7 @@ def update_model(request):
           - update the current active model if it exists or...
           - generate a 'Not Found' exception.
     '''
-    pdb.set_trace()
+    #pdb.set_trace()
     log_prefix = 'req({0}): update_model():'.format(id(request))
     log.info('>>' + log_prefix)
 

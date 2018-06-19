@@ -16,7 +16,7 @@ from gnome.spill_container import SpillContainerPair
 from webgnome_api.common.session_management import set_session_object
 
 log = logging.getLogger(__name__)
-
+import pdb
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
@@ -33,7 +33,7 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
 
     return o
     '''
-    pdb.set_trace()
+    #pdb.set_trace()
     otype = json_obj.get('obj_type', None)
     if otype is None:
         raise ValueError('No object type defined in payload')
@@ -58,6 +58,7 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
 
     [o for o in ProcessJsonObjectTree(_UpdateObject, json_obj, all_objects)]
     '''
+    #pdb.set_trace()
     otype = json_obj.get('obj_type', None)
     if otype is None:
         raise ValueError('No object type defined in payload')
@@ -67,7 +68,8 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
         new_obj = py_class.deserialize(json_obj, all_objects)
         return new_obj
     else:
-        return all_objects[id_].update(json_obj, refs=all_objects)
+        all_objects[id_].update(json_obj, refs=all_objects)
+        return all_objects[id_]
 
 
 def _DeserializeObject(json_obj):
