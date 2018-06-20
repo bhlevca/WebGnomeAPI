@@ -9,7 +9,7 @@ the model may also cause oil to come ashore due to winds and currents. These pro
 from the mass balance as long as sufficient surface oil remains. (It is possible to enter larger values here than were actually released -- the amount will 
 be reduced to the amount available at the time.) Manually input beached oil is considered to be permanently stranded and will not refloat.
 
-* Select the units for the amount beached (default is barrels)
+* Select the units for the amount beached  (default is barrels)
 
 * Enter the date and time for the observed beached oil or select the date and time using the calendar icon next to the entry box.
 
