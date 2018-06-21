@@ -16,6 +16,7 @@ develop:
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:develop pygnome
     - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:develop
     - docker tag gitlab.orr.noaa.gov:5002/webgnomeapi:develop orrerd/webgnomeapi:develop
+    - docker push orrerd/webgnomeapi:develop
     - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:develop
   only:
     - develop
