@@ -101,6 +101,7 @@ def upload_mover(request):
                   'name': name}
 
     env_obj_base_json = {'obj_type': 'temp',
+                         'name': name,
                          'data_file': file_name,
                          'grid_file': file_name,
                          'json_': 'webapi',
