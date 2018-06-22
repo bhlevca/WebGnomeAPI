@@ -1,5 +1,5 @@
 .. keywords
-   spill, location, point spill, line spill
+   spill, location, point spill, line spill, map
 
 Either a point or line spill can be placed on the map. 
 
