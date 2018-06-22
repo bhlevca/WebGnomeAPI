@@ -846,6 +846,7 @@ class CellInfoTests(FunctionalTestBase):
             not a current mover.
         '''
         params = {}
+
         params.update(self.req_data)
 
         # step 1: we create a model that contains a current mover.
@@ -859,3 +860,37 @@ class CellInfoTests(FunctionalTestBase):
         mover_id = model['movers'][1]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'),
                                 status=404)
+
+
+class PyMoverTests(FunctionalTestBase):
+    '''
+        Tests out the API for getting the current info from the
+        PyMovers in the model.
+    '''
+    req_data = {'obj_type': 'gnome.movers.py_wind_movers.PyWindMover',
+                'name': 'small_gfs_alaska.nc',
+                'filename': 'models/small_gfs_alaska.nc',
+                'wind': {'data_file': 'models/small_gfs_alaska.nc',
+                         'grid_file': 'models/small_gfs_alaska.nc',
+                         'obj_type': ('gnome.environment'
+                                      '.environment_objects.GridWind'),
+                         'grid': {'obj_type': ('gnome.environment'
+                                               '.gridded_objects_base.PyGrid'),
+                                  'filename': 'models/small_gfs_alaska.nc'
+                                  },
+                         'extrapolation_is_allowed': True,
+                         },
+                }
+
+    def test_get_valid_id(self):
+        # 1. create the object by performing a put with no id
+        # 2. get the valid id from the response
+        # 3. perform an additional get of the object with a valid id
+        # 4. check that our new JSON response matches the one from the create
+        resp1 = self.testapp.post_json('/mover', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
+
+        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
+            assert resp2.json_body[a] == resp1.json_body[a]
