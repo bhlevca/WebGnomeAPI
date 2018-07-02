@@ -1,6 +1,9 @@
 .. keywords
    spill, location, point spill, line spill, map
 
+Set Spill Location
+^^^^^^^^^^^^^^^^^^
+
 Either a point or line spill can be placed on the map. 
 
 * **Zoom** in or out by using a mouse scroll wheel or the +/- buttons on the left.
