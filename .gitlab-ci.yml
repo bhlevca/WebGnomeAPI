@@ -40,7 +40,8 @@ production:
 test:
   script:
     - yum -y update
-    - yum -y install redis-server
+    - yum -y install redis
+    - systemctl start redis
     - pip install -r requirements.txt
     - pip install -e .
     - py.test webgnome_api/tests
