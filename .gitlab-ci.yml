@@ -37,6 +37,7 @@ production:
 test:
   script:
     - yum -y update
+    - yum -y install initscripts
     - yum -y install redis
     - service redis restart
     - pip install -r requirements.txt
