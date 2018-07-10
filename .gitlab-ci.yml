@@ -39,7 +39,7 @@ test:
     - yum -y update
     - yum -y install initscripts
     - yum -y install redis
-    - service redis restart
+    - /sbin/service redis restart
     - pip install -r requirements.txt
     - pip install -e .
     - py.test webgnome_api/tests
