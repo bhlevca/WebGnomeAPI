@@ -41,7 +41,7 @@ test:
   script:
     - yum -y update
     - yum -y install redis
-    - /usr/bin/redis-server /usr/etc/redis.conf &
+    - /usr/bin/redis-server /etc/redis.conf &
     - pip install -r requirements.txt
     - pip install -e .
     - py.test webgnome_api/tests
