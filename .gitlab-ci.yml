@@ -1,3 +1,6 @@
+services:
+  - redis:latest
+
 master: 
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:latest
@@ -37,9 +40,7 @@ production:
 test:
   script:
     - yum -y update
-    - yum -y install initscripts
-    - yum -y install redis
-    - /sbin/service redis restart
+    - yum -y install redis-server
     - pip install -r requirements.txt
     - pip install -e .
     - py.test webgnome_api/tests
