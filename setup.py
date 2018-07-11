@@ -15,7 +15,8 @@ import json
 from setuptools import setup, find_packages
 from distutils.command.clean import clean
 from distutils.command.build_py import build_py as _build_py
-from setuptools.command.develop import develop as base_develop
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 # could run setup from anywhere
 here = os.path.abspath(os.path.dirname(__file__))
@@ -199,12 +200,24 @@ class compileJSON(_build_py):
             json.dump(obj, f, indent=4)
 
 
-class developall(base_develop, compileJSON):
-    description = ''
+class DevelopAll(develop, compileJSON):
+    description = ('Installs some additional things that the canned command '
+                   'does not')
 
     def run(self):
-        base_develop.run(self)
+        if not self.uninstall:
+            compileJSON.run(self)
+
+        develop.run(self)
+
+
+class InstallAll(install, compileJSON):
+    description = ('Installs some additional things that the canned command '
+                   'does not')
+
+    def run(self):
         compileJSON.run(self)
+        install.run(self)
 
 
 setup(name='webgnome_api',
@@ -221,7 +234,8 @@ setup(name='webgnome_api',
       author_email='orr.gnome@noaa.gov',
       url='',
       cmdclass={'cleanall': cleanall,
-                'developall': developall,
+                'develop': DevelopAll,
+                'install': InstallAll,
                 'compilejson': compileJSON
                 },
       packages=find_packages(),
