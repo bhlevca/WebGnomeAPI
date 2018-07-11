@@ -31,7 +31,8 @@ class cleanall(clean):
         # call base class clean
         clean.run(self)
 
-        self.clean_python_files()
+        self.clean_compiled_python_files()
+        self.clean_compiled_location_files()
 
         rm_dir = ['pyGnome.egg-info', 'build']
         for dir_ in rm_dir:
@@ -42,11 +43,18 @@ class cleanall(clean):
                 if err.errno != 2:  # ignore the not-found error
                     raise
 
-    def clean_python_files(self):
+    def clean_compiled_python_files(self):
         # clean any byte-compiled python files
         paths = [os.path.join(here, 'webgnome_api'),
                  os.path.join(here, 'location_files')]
         exts = ['*.pyc']
+
+        self.clean_files(paths, exts)
+
+    def clean_compiled_location_files(self):
+        # clean any byte-compiled python files
+        paths = [os.path.join(here, 'location_files')]
+        exts = ['compiled.json']
 
         self.clean_files(paths, exts)
 
@@ -78,7 +86,6 @@ class cleanall(clean):
 
 
 class compileJSON(_build_py):
-
     def run(self):
         paths = [os.path.join(here, 'location_files')]
         file_patterns = ['*wizard.json']
@@ -87,68 +94,87 @@ class compileJSON(_build_py):
             for path in paths:
                 for pattern in file_patterns:
                     file_list = [os.path.join(dirpath, f)
-                                 for dirpath, dirnames, files in os.walk(path)
+                                 for dirpath, _dirnames, files in os.walk(path)
                                  for f in fnmatch.filter(files, pattern)]
 
                     for f in file_list:
                         try:
-                            self.parse(self, f, css_file)
+                            self.parse(f, css_file)
                         except OSError as err:
-                            print ("Failed to find {0}. Error {1}".format(f, err))
+                            print ("Failed to find {}. Error {}"
+                                   .format(f, err))
 
             print ("Compiled {0} location(s)".format(len(file_list)))
 
-    def parse(self, obj, path, css):
+    def parse(self, path, css):
         if not hasattr(self, 'paths'):
             self.paths = set()
+
         with open(path, "r") as wizard_json:
             data = unicode(wizard_json.read(), "utf-8")
             data_obj = ujson.loads(data)
-            for key in data_obj:
-                print ("Compiling {0} location wizard".format(data_obj["name"]))
-                for step in data_obj["steps"]:
-                    dirpath = os.path.dirname(path)
-                    if dirpath not in self.paths:
-                        if step["type"] == "custom":
-                            self.fill_html_body(data_obj, dirpath, css)
-                            self.fill_js_functions(data_obj, dirpath)
-                            self.paths.add(dirpath)
-                        else:
-                            self.write_compiled_json(data_obj, dirpath)
 
-    def findHTML(self, obj, path):
-        html_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.html")]
-        return html_files
+            print ('Compiling location wizard "{}"'.format(data_obj["name"]))
 
-    def findJS(self, obj, path):
-        js_files = [os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(path) for f in fnmatch.filter(files, "*.js")]
-        return js_files
+            for step in data_obj["steps"]:
+                dirpath = os.path.dirname(path)
+                if dirpath not in self.paths:
+                    if step["type"] == "custom":
+                        self.fill_html_body(data_obj, dirpath, css)
+                        self.fill_js_functions(data_obj, dirpath)
+                        self.paths.add(dirpath)
+                    else:
+                        self.write_compiled_json(data_obj, dirpath)
 
     def fill_js_functions(self, obj, path):
         steps = obj["steps"]
-        js_file_list = self.findJS(obj, path)
+        js_file_list = self.findJS(path)
+
         for file_path in js_file_list:
-            filename = os.path.split(os.path.split(os.path.dirname(file_path))[0])[-1]
+            file_parts = file_path.split(os.path.sep)
+
+            # name of the folder 2 levels above our .js file
+            filename = file_parts[-3]
+
             js_file_name = self.grab_filename(file_path)
 
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    print("    Processing {0}".format(os.path.sep.join(file_path.split(os.path.sep)[-5:-1]) + os.path.sep + js_file_name + '.js'))
+                    print("    Processing {}{}{}.js"
+                          .format(os.path.sep.join(file_parts[-5:-1]),
+                                  os.path.sep,
+                                  js_file_name))
                     step["functions"][js_file_name] = self.jsMinify(file_path)
 
         self.write_compiled_json(obj, path)
 
+    def findJS(self, path):
+        return [os.path.join(dirpath, f)
+                for dirpath, _dirnames, files in os.walk(path)
+                for f in fnmatch.filter(files, "*.js")]
+
     def fill_html_body(self, obj, path, css):
         steps = obj["steps"]
-        html_file_list = self.findHTML(obj, path)
+        html_file_list = self.findHTML(path)
+
         for file_path in html_file_list:
+            file_parts = file_path.split(os.path.sep)
             filename = self.grab_filename(file_path)
 
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    print("    Processing {0}".format(os.path.sep.join(file_path.split(os.path.sep)[-5:-1]) + os.path.sep + filename + '.html'))
+                    print("    Processing {}{}{}.html"
+                          .format(os.path.sep.join(file_parts[-5:-1]),
+                                  os.path.sep,
+                                  filename))
                     step["body"] = self.htmlMinify(file_path, css)
+
         self.write_compiled_json(obj, path)
+
+    def findHTML(self, path):
+        return [os.path.join(dirpath, f)
+                for dirpath, _dirnames, files in os.walk(path)
+                for f in fnmatch.filter(files, "*.html")]
 
     def grab_filename(self, path):
         return os.path.basename(path).split(".")[0]
@@ -156,19 +182,17 @@ class compileJSON(_build_py):
     def htmlMinify(self, path, css):
         with open(path, "r") as myfile:
             css.seek(0)
-            css_read = unicode(css.read(), "utf-8")
-            data = u"<style>" + css_read + u"</style>" + unicode(myfile.read(), "utf-8")
-            return htmlmin.minify(data)
 
-    # def remove_head_tags(self, string):
-    #     html_re = re.compile(r'<body[^>]*\>(.*)\<\/body', re.S)
-    #     parsed_str = html_re.search(string).group()
-    #     return parsed_str
+            css_content = unicode(css.read(), "utf-8")
+            html_content = unicode(myfile.read(), "utf-8")
+
+            data = u"<style>" + css_content + u"</style>" + html_content
+
+            return htmlmin.minify(data)
 
     def jsMinify(self, path):
         with open(path, "r") as myfile:
-            data = unicode(myfile.read(), "utf-8")
-            return jsmin(data)
+            return jsmin(unicode(myfile.read(), "utf-8"))
 
     def write_compiled_json(self, obj, path):
         with open(path + "/compiled.json", 'w+') as f:
@@ -206,4 +230,4 @@ setup(name='webgnome_api',
       test_suite='webgnome_api',
       entry_points=('[paste.app_factory]\n'
                     '  main = webgnome_api:main\n'),
-)
+      )
