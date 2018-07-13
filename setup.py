@@ -23,7 +23,14 @@ from git import Repo
 # could run setup from anywhere
 here = os.path.abspath(os.path.dirname(__file__))
 
-repo_head = Repo('.').head
+repo = Repo('.')
+
+try:
+    branch_name = repo.active_branch.name
+except TypeError:
+    branch_name = 'no-branch'
+
+last_update = repo.iter_commits().next().committed_datetime.isoformat(),
 
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
@@ -229,9 +236,7 @@ setup(name='webgnome_api',
       description=('webgnome_api\n'
                    'Branch: {}\n'
                    'LastUpdate: {}'
-                   .format(repo_head.ref.name,
-                           repo_head.commit.committed_datetime.isoformat(),
-                           )),
+                   .format(branch_name, last_update)),
       long_description=README,
       classifiers=["Programming Language :: Python",
                    "Framework :: Pylons",
