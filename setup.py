@@ -18,8 +18,12 @@ from distutils.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
+from git import Repo
+
 # could run setup from anywhere
 here = os.path.abspath(os.path.dirname(__file__))
+
+repo_head = Repo('.').head
 
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
@@ -222,7 +226,12 @@ class InstallAll(install, compileJSON):
 
 setup(name='webgnome_api',
       version=0.1,
-      description='webgnome_api',
+      description=('webgnome_api\n'
+                   'Branch: {}\n'
+                   'LastUpdate: {}'
+                   .format(repo_head.ref.name,
+                           repo_head.commit.committed_datetime.isoformat(),
+                           )),
       long_description=README,
       classifiers=["Programming Language :: Python",
                    "Framework :: Pylons",
