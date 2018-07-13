@@ -97,22 +97,18 @@ def upload_mover(request):
 
     basic_json = {'obj_type': mover_type,
                   'filename': file_name,
-                  'json_': 'webapi',
                   'name': name}
 
     env_obj_base_json = {'obj_type': 'temp',
                          'data_file': file_name,
                          'grid_file': file_name,
-                         'json_': 'webapi',
                          'grid': {'obj_type': ('gnome.environment.'
                                                'gridded_objects_base.PyGrid'),
-                                  'filename': file_name,
-                                  'json_': 'webapi'}
+                                  'filename': file_name}
                          }
 
     wind_json = {'obj_type': 'gnome.environment.wind.Wind',
                  'filename': file_name,
-                 'json_': 'webapi',
                  'name': name,
                  'units': 'knots'}
 

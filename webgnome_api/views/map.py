@@ -145,7 +145,6 @@ def upload_map(request):
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
-                                'json_': 'webapi',
                                 'name': name
                                 })
 
@@ -176,7 +175,6 @@ def activate_map(request):
     request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
-                                'json_': 'webapi',
                                 'name': name
                                 })
 
