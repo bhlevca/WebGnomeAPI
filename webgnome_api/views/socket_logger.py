@@ -50,7 +50,7 @@ class LoggerNamespace(BaseNamespace):
             session_filter = logging.Filter()
             session_filter.filter = emit_msg
 
-            session_log_folder = os.path.join(os.getcwd(), 'models\\session\\'+ self.request.session.session_id)
+            session_log_folder = os.path.join(os.getcwd(), 'models', 'session', self.request.session.session_id)
             session_log_file = os.path.join(session_log_folder, self.request.session.session_id + '.log')
             session_handler = logging.handlers.RotatingFileHandler(session_log_file,
                                                                    mode='a',
