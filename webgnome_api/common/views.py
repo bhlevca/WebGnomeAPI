@@ -61,9 +61,16 @@ def can_persist(funct):
     return helper
 
 
-def cors_exception(request, exception_class, with_stacktrace=False):
+def cors_exception(request, exception_class, with_stacktrace=False,
+                   title=None, explanation=None):
     depth = 2
     http_exc = exception_class()
+
+    if title is not None:
+        http_exc.title = title
+
+    if explanation is not None:
+        http_exc.explanation = explanation
 
     hdr_val = request.headers.get('Origin')
     if hdr_val is not None:
