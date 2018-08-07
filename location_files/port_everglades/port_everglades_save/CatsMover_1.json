@@ -6,8 +6,8 @@
   26.095000, 
   0.0
  ], 
- "filename": "Tidal Currents", 
- "name": "Tide.cur", 
+ "filename": "Tide.cur", 
+ "name": "Tidal Currents", 
  "tide": "Tide_0.json", 
  "json_": "save", 
  "uncertain_eddy_diffusion": 1000.0, 

@@ -1,7 +1,8 @@
 .. keywords
    Instantaneous Release, emulsion, override, trajectory, map, substance
 
-
+Instantaneous Release
+^^^^^^^^^^^^^^^^^^^^^
 The Instantaneous Release form contains multiple sections where you may enter information. If you are running the model using the Oil Fate Wizard (weathering only mode) you will not see 
 the section titled **Position**. This section is only relevant to trajectory simulations.
 
