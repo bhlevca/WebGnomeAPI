@@ -21,7 +21,8 @@ from webgnome_api.common.views import (can_persist,
                                        get_object,
                                        cors_policy,
                                        process_upload,
-                                       activate_uploaded)
+                                       activate_uploaded,
+                                       web_ser_opts)
 
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
@@ -98,7 +99,7 @@ def create_map(request):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     set_session_object(obj, request)
-    return obj.serialize()
+    return obj.serialize(options=web_ser_opts)
 
 
 @map_api.put()
@@ -124,7 +125,7 @@ def update_map(request):
         raise cors_exception(request, HTTPNotFound)
 
     set_session_object(obj, request)
-    return obj.serialize()
+    return obj.serialize(options=web_ser_opts)
 
 
 @view_config(route_name='map_upload', request_method='OPTIONS')

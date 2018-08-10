@@ -44,6 +44,7 @@ cors_policy = {'credentials': True
 log = logging.getLogger(__name__)
 import pdb
 
+web_ser_opts = {'raw_paths': False}
 
 def can_persist(funct):
     '''
@@ -127,7 +128,7 @@ def get_object(request, implemented_types):
         obj = get_session_object(obj_id, request)
         if obj:
             if ObjectImplementsOneOf(obj, implemented_types):
-                return obj.serialize()
+                return obj.serialize(options=web_ser_opts)
             else:
                 raise cors_exception(request, HTTPUnsupportedMediaType)
         else:
@@ -181,7 +182,8 @@ def create_object(request, implemented_types):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+
+    return obj.serialize(options=web_ser_opts)
 
 
 def update_object(request, implemented_types):
@@ -219,7 +221,7 @@ def update_object(request, implemented_types):
         raise cors_exception(request, HTTPNotFound)
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+    return obj.serialize(options=web_ser_opts)
 
 
 def process_upload(request, field_name):
