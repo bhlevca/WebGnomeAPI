@@ -5,9 +5,10 @@
   -80.085,
   26.079833,
   0.0
+
  ],
- "name": "Coastal Current",
  "filename": "Outside.cur",
+ "name": "Coastal Current",
  "json_": "save",
  "scale_value": -0.125
 }
