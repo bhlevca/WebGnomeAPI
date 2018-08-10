@@ -79,8 +79,8 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
     if with_stacktrace:
-        import pdb
-        pdb.post_mortem(sys.exc_info()[2])
+        #import pdb
+        #pdb.post_mortem(sys.exc_info()[2])
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
