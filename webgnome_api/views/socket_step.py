@@ -33,6 +33,8 @@ log = logging.getLogger(__name__)
 
 sess_namespaces = {}
 
+class GnomeRuntimeError(Exception):
+    pass
 
 @async_step_api.get()
 def run_model(request):
@@ -146,8 +148,7 @@ def run_model(request):
                                  .format(log_prefix,
                                          traceback.format_exception_only(exc_type,
                                                                          exc_value)))
-                    raise GreenletExit
-                    break
+                    raise
 
                 if output:
                     socket_namespace.num_sent += 1
@@ -171,7 +172,11 @@ def run_model(request):
         except GreenletExit:
             log.info('Greenlet exiting early')
             socket_namespace.emit('killed', 'Model run terminated early')
-            return
+            return GreenletExit
+
+        except Exception as e:
+            log.info('Greenlet terminated due to exception')
+            socket_namespace.emit('runtimeError', str(e))
 
         socket_namespace.emit('complete', 'Model run completed')
 
@@ -218,24 +223,24 @@ class StepNamespace(BaseNamespace):
         StepNamespace.inst_count += 1
 
     def recv_connect(self):
-        print "STEP CONNNNNNNN"
-        print self.inst
+        log.debug("STEP CONNNNNNNN")
+        log.debug(self.inst)
         self.emit("step_started")
 
     def recv_disconnect(self):
-        print "received disconnect signal"
+        log.debug("received disconnect signal")
         self.num_sent = 0
 
     def on_halt(self):
-        print 'halting', self.request.session.session_id
+        log.debug('halting {0}'.format(self.request.session.session_id))
         self.lock.clear()
 
-    def on_kill(self):
+    def on_kill(self): #kill signal from client
         if self.active_greenlet:
-            print 'killing greenlet {0}'.format(self.active_greenlet)
-            self.active_greenlet.kill(block=False)
+            log.debug('killing greenlet {0}'.format(self.active_greenlet))
+            self.active_greenlet.kill(block=True, timeout=5)
             self.emit('killed', 'Model run terminated')
-            print 'killed greenlet'
+            log.debug('killed greenlet {0}'.format(self.active_greenlet))
             self.num_sent = 0
 
     def on_isAsync(self, b):
@@ -262,9 +267,10 @@ def get_rewind(request):
                  .format(id(session_lock), current_thread().ident))
 
         try:
-            active_model.rewind()
             if (ns and ns.active_greenlet):
-                ns.on_kill()
+                ns.active_greenlet.kill(block=False)
+                ns.num_sent = 0
+            active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
                                  with_stacktrace=True)

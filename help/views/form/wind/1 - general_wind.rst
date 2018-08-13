@@ -1,7 +1,7 @@
 .. keywords
    wind, nws, constant wind, variable wind, point
 
-About
+Wind
 ^^^^^
 
 Wind is a required element for both weathering and trajectory models.

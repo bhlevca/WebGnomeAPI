@@ -1,6 +1,9 @@
 .. keywords
    continuous release, Amount spilled, constant spill, emulsion, override, trajectory, map
 
+Continuous Release
+^^^^^^^^^^^^^^^^^^^^^
+
 The Continuous Release form contains multiple sections where you may enter information. If you are running the model using the Oil Fate Wizard (weathering only mode) you will not see 
 the section titled **Position**. This section is only relevant to trajectory simulations.
 
@@ -19,7 +22,7 @@ Substance/Oil Section
 
 * Unless you want to leave the substance as "non-weathering", click **Select Oil**. This will open the oil database. If you want to change the substance spilled, click **Change Oil** to relaunch the database.
 
-Note on **Emulsification Constant**
+Note on **Emulsification Parameter**
     The emulsification algorithm assumes that emulsion begins when some percentage of the oil has evaporated. You have the option of overriding the default value and specifying when you want emulsion to begin. Click on the button next to the entry field. Choose hours from the drop-down menu and type in the number of hours that have elapsed before emulsion begins, or choose percent from the drop-down menu and type in the percent of the spill that has evaporated.
 
 Position Section

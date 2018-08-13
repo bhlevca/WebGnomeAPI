@@ -125,7 +125,9 @@ def get_step(request):
 
         return output
     else:
-        raise cors_exception(request, HTTPPreconditionFailed)
+        raise cors_exception(request, HTTPPreconditionFailed,
+                             explanation=('Your session timed out '
+                                          '- the model is no longer active'))
 
 
 @full_run_api.post()
@@ -135,6 +137,8 @@ def get_full_run(request):
         response options.
         Returns the final step results.
     '''
+    log_prefix = 'req({0}): get_full_run():'.format(id(request))
+    log.info('>>' + log_prefix)
 
     response_on = request.json_body['response_on']
 
@@ -214,6 +218,7 @@ def get_full_run(request):
             log.info('  session lock released (sess:{}, thr_id: {})'
                      .format(id(session_lock), current_thread().ident))
 
+        log.info('<<' + log_prefix)
         return output
     else:
         raise cors_exception(request, HTTPPreconditionFailed)
