@@ -77,8 +77,6 @@ def upload_model(request):
 
         init_session_objects(request, force=True)
         refs = get_session_objects(request)
-        import pdb
-        pdb.set_trace()
         new_model._schema.register_refs(new_model._schema(), new_model, refs)
 #         from ..views import implemented_types
 #
