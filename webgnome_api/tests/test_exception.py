@@ -2,11 +2,12 @@
 Functional tests for the Gnome Environment object Web API
 These include (Wind, Tide, etc.)
 """
-from pprint import PrettyPrinter
-pp = PrettyPrinter(indent=2)
 import ujson
 
 from base import FunctionalTestBase
+
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2)
 
 
 class ExceptionTests(FunctionalTestBase):
@@ -133,3 +134,18 @@ class ModelExceptionTests(FunctionalTestBase):
 
         assert resp.status_code == 415
         assert error_resp[-1][:16] == 'InvalidUnitError'
+
+
+class StepExceptionTest(FunctionalTestBase):
+    '''
+        Tests out the exceptions in the step api
+    '''
+    def test_step_no_active_model(self):
+        # the step api should fail with no active model initialized.
+        resp = self.testapp.get('/step', expect_errors=True)
+        status_code = resp.status_code
+        explanation = resp.body.split('\n')[2]
+
+        assert status_code == 412
+        assert (explanation ==
+                'Your session timed out - the model is no longer active')
