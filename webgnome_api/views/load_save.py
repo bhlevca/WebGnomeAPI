@@ -13,7 +13,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
 
 from cornice import Service
 
-from gnome.persist import load, is_savezip_valid
+from gnome.persist import is_savezip_valid
+from gnome.model import Model
 
 from ..common.system_resources import list_files
 from ..common.common_object import (RegisterObject,
@@ -72,13 +73,12 @@ def upload_model(request):
              .format(id(session_lock), current_thread().ident))
     try:
         log.info('loading our model from zip...')
-        new_model = load(file_path)
-        new_model._cache.enabled = False
-
         init_session_objects(request, force=True)
         refs = get_session_objects(request)
-        import pdb
-        pdb.set_trace()
+
+        new_model = Model.load(file_path, refs=refs)
+        new_model._cache.enabled = False
+
         new_model._schema.register_refs(new_model._schema(), new_model, refs)
 #         from ..views import implemented_types
 #
@@ -130,11 +130,12 @@ def activate_uploaded_model(request):
              .format(id(session_lock), current_thread().ident))
     try:
         log.info('loading our model from zip...')
-        new_model = load(zipfile_path)
-        new_model._cache.enabled = False
-
         init_session_objects(request, force=True)
         refs = get_session_objects(request)
+
+        new_model = Model.load(file_path, refs=refs)
+        new_model._cache.enabled = False
+
         new_model._schema.register_refs(new_model._schema(), new_model, refs)
 #         from ..views import implemented_types
 
