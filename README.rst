@@ -4,6 +4,59 @@ WebGnomeAPI
 
 A web service that interfaces with py_gnome
 
+Installing / Running
+====================
+
+webgnomeapi is a python package. To run it you need to install the depedencies, install the package, then run it:
+
+Depedencies
+-----------
+
+**pip** You can pip install everything webgnomeapi needs (except py_gnome) with pip::
+
+    pip install -r requirements.txt
+
+**conda** If you are using a conda based system you can install most of the dependencies with conda (this requires the conda-forge channel)::
+
+  conda install --file conda_requirements.txt
+
+But not quite everytihng is avaialable as conda packages, so yoou need to install a few more with pip::
+
+    pip install -r requirements.txt
+
+Should do it.
+
+Installing the server
+---------------------
+
+Installing can abe done the usual way for a python package::
+
+  pip install ./
+
+Testing the Server
+------------------
+
+In order to run webgnomeapi, you need a redis server running first. redis can be installed with conda on OS-X (and probably Windows and Linux -- if you test it and it works, please update this doc.). ONce installed, you should be able to run a redis serve with::
+
+  redis-server
+
+Once redis is running, you should be able to run the tests with::
+
+  py.test webgnome_api/tests
+
+
+Running the Server
+------------------
+
+First start up a Redis server with::
+
+  redis-server
+
+webgnomeapi is a Pyramid application that can be run with the paste uwsgi server::
+
+  pserve config-example.ini
+
+
 Deployment Issues
 =================
 
