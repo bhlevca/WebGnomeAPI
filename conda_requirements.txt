@@ -1,0 +1,18 @@
+numpy # not strictly needed by the API, but is by gnome, etc, and adding it helps keep conda from trying to downgrade it.
+pyramid>=1.9
+ujson
+Paste
+cornice==1.2.1
+docutils
+gitpython
+awesome-slugify
+webtest
+htmlmin
+jsmin
+gevent==1.2.2
+
+# # not in conda - use pip to install
+# pygtail
+# pyramid_log
+# pyramid-redis-sessions
+# -e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
