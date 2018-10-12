@@ -38,7 +38,7 @@ Installing can be done the usual way for a python package::
 
 or::
 
-  pip install -r ./
+  pip install -e ./
 
 or::
 
