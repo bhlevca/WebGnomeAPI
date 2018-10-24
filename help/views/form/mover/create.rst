@@ -1,8 +1,8 @@
 .. keywords
    currents, movers, roms, fvcom, cats, hyrodynamic model
 
-Current Movers
-^^^^^^^^^^^^^^
+Create Current Movers
+^^^^^^^^^^^^^^^^^^^^^
 
 Choose **Load Surface Currents** to load ocean current data on a regular, curvilinear, or triangular grid (e.g. output from a hydrodynamic model). 
 At present, only specific file formats are supported (eventually any CF-compliant file should be compatible). Details on the supported file formats

@@ -1,15 +1,15 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
+ "obj_type": "gnome.movers.current_movers.CatsMover",
+ "scale": true,
  "scale_refpoint": [
-  -80.117500, 
-  26.095000, 
+  -80.117500,
+  26.095000,
   0.0
- ], 
- "filename": "Tidal Currents", 
- "name": "Tide.cur", 
- "tide": "Tide_0.json", 
- "json_": "save", 
- "uncertain_eddy_diffusion": 1000.0, 
+ ],
+ "filename": "Tide.cur",
+ "name": "Tidal Currents",
+ "tide": "Tide_0.json",
+ "json_": "save",
+ "uncertain_eddy_diffusion": 1000.0,
  "scale_value": 1.0
 }

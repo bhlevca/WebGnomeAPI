@@ -22,11 +22,6 @@ class PyGnomeSchemaTweenFactory(object):
     def add_json_key(self, json_request):
         modified = False
 
-        if ValueIsJsonObject(json_request):
-            if 'json_' not in json_request:
-                json_request['json_'] = 'webapi'
-                modified = True
-
         if isinstance(json_request, dict):
             for v in json_request.values():
                 if self.add_json_key(v):
