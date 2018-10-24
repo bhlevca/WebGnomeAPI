@@ -10,7 +10,7 @@ master:
   only: 
     - master
   tags:
-    - docker
+    - shell
     - build
 
 develop:
@@ -22,7 +22,7 @@ develop:
   only:
     - develop
   tags:
-    - docker
+    - shell
     - build
 
 production:
@@ -34,7 +34,7 @@ production:
   only:
     - production
   tags:
-    - docker
+    - shell
     - build
 
 test:
@@ -47,5 +47,4 @@ test:
     - py.test webgnome_api/tests
 
   tags:
-    - test
     - docker
