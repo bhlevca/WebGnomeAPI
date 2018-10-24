@@ -28,7 +28,7 @@ class MapTestBase(FunctionalTestBase):
 
     def test_remote_map(self):
         req = self.req_data.copy()
-        req['filename'] = 'http://gnome.orr.noaa.gov/goods/bnas/newyork.bna'
+        req['filename'] = 'https://gnome.orr.noaa.gov/goods/bnas/newyork.bna'
         resp = self.testapp.post_json('/map', params=req)
         map1 = resp.json_body
 
@@ -240,7 +240,7 @@ class MapGeoJsonTest(FunctionalTestBase):
 
     def test_all_goods_maps(self):
         req = self.req_data.copy()
-        goods_url = 'http://gnome.orr.noaa.gov/goods/bnas'
+        goods_url = 'https://gnome.orr.noaa.gov/goods/bnas'
 
         for map_file in ('newyork.bna',
                          'lakesuperior.bna',

@@ -14,7 +14,7 @@ import slugify
 from pyramid.httpexceptions import HTTPNotFound, HTTPInternalServerError
 from cornice import Service
 
-from gnome.persist import load
+from gnome.model import Model
 
 from webgnome_api.common.common_object import obj_id_from_url, RegisterObject
 from webgnome_api.common.session_management import (init_session_objects,
@@ -97,7 +97,7 @@ def load_location_file(location_file, request):
     if isdir(location_file):
         active_model = get_active_model(request)
 
-        new_model = load(location_file)
+        new_model = Model.load(location_file)
         new_model._cache.enabled = False
 
         if active_model is not None:

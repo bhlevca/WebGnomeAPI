@@ -42,7 +42,10 @@ def get_help(request):
         # aggregate the files contained with in the given directory
         # and sub dirs.
         for path, _dirnames, filenames in walk(requested_file):
+            filenames.sort()
+
             html = ''
+
             for fname in filenames:
                 with open(join(path, fname), 'r') as f:
                     html += publish_parts(f.read(),
@@ -52,6 +55,8 @@ def get_help(request):
     elif isdir(requested_file) and requested_dir is '':
         aggregate = []
         for path, _dirnames, filenames in walk(requested_file):
+            filenames.sort()
+
             # exclude location file user guides
             if path.count(join('model', 'locations')) == 0:
                 for fname in filenames:
