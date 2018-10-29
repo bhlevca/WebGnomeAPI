@@ -42,7 +42,9 @@ cors_policy = {'credentials': True
                }
 
 log = logging.getLogger(__name__)
+import pdb
 
+web_ser_opts = {'raw_paths': False}
 
 def can_persist(funct):
     '''
@@ -77,10 +79,12 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
     if with_stacktrace:
+        #import pdb
+        #pdb.post_mortem(sys.exc_info()[2])
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-        http_exc.json_body = ujson.dumps([l.strip() for l in fmt][-depth:])
+        http_exc.json_body = ujson.dumps([l.strip() for l in fmt])
 
     return http_exc
 
@@ -124,7 +128,7 @@ def get_object(request, implemented_types):
         obj = get_session_object(obj_id, request)
         if obj:
             if ObjectImplementsOneOf(obj, implemented_types):
-                return obj.serialize()
+                return obj.serialize(options=web_ser_opts)
             else:
                 raise cors_exception(request, HTTPUnsupportedMediaType)
         else:
@@ -138,9 +142,9 @@ def get_specifications(request, implemented_types):
             name = FQNamesToList((t,))[0][0]
             cls = PyClassFromName(t)
             if cls:
-                spec = dict([(n, None)
-                             for n in cls._state.get_names(['read', 'update'])
-                             ])
+                update = cls._schema().get_nodes_by_attr('update')
+                read = cls._schema().get_nodes_by_attr('read_only')
+                spec = dict([(n, None) for n in update + read])
                 spec['obj_type'] = t
                 specs[name] = spec
         except ValueError:
@@ -149,6 +153,7 @@ def get_specifications(request, implemented_types):
 
 
 def create_object(request, implemented_types):
+    #pdb.set_trace()
     '''Creates a Gnome object.'''
     log_prefix = 'req({0}): create_object():'.format(id(request))
     log.info('>>' + log_prefix)
@@ -177,10 +182,12 @@ def create_object(request, implemented_types):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+
+    return obj.serialize(options=web_ser_opts)
 
 
 def update_object(request, implemented_types):
+    #pdb.set_trace()
     '''Updates a Gnome object.'''
     log_prefix = 'req({0}): update_object():'.format(id(request))
     log.info('>>' + log_prefix)
@@ -214,7 +221,7 @@ def update_object(request, implemented_types):
         raise cors_exception(request, HTTPNotFound)
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+    return obj.serialize(options=web_ser_opts)
 
 
 def process_upload(request, field_name):

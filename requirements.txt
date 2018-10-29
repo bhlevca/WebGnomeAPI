@@ -9,10 +9,7 @@ docutils
 gitpython
 awesome-slugify
 pygtail
-PyGnome
 webtest
 htmlmin
 jsmin
 gevent==1.2.2
-
-# Binary Related Packages
