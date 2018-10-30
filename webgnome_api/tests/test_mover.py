@@ -39,7 +39,7 @@ class BaseMoverTests(FunctionalTestBase):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
 
-        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
+        for a in ('id', 'obj_type', 'active_range'):
             assert resp2.json_body[a] == resp1.json_body[a]
 
     def test_post_no_payload(self):
@@ -52,7 +52,7 @@ class BaseMoverTests(FunctionalTestBase):
         self.testapp.put_json('/mover', params=self.req_data, status=404)
 
     def check_create_properties(self, response):
-        for k in ('id', 'obj_type', 'on', 'active_start', 'active_stop'):
+        for k in ('id', 'obj_type', 'on', 'active_range'):
             assert k in response.json_body
 
 
@@ -61,8 +61,7 @@ class SimpleMoverTests(BaseMoverTests):
         Tests out the Gnome Simple Mover API
     '''
     req_data = {'obj_type': 'gnome.movers.simple_mover.SimpleMover',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'uncertainty_scale': 0.5,
                 'velocity': (1.0, 1.0, 1.0)
@@ -131,8 +130,7 @@ class WindMoverTests(BaseMoverTests):
                      }
 
     req_data = {'obj_type': 'gnome.movers.wind_movers.WindMover',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'uncertain_angle_scale': 0.4,
                 'uncertain_angle_units': u'rad',
@@ -156,7 +154,7 @@ class WindMoverTests(BaseMoverTests):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
 
-        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
+        for a in ('id', 'obj_type', 'active_range'):
             assert resp2.json_body[a] == resp1.json_body[a]
 
         for a in ('uncertain_angle_scale',
@@ -235,8 +233,7 @@ class RandomMoverTests(BaseMoverTests):
     '''
     req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover',
                 'name': u'RandomMover',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'diffusion_coef': 100000.0,
                 'uncertain_factor': 2.0
@@ -292,8 +289,7 @@ class RandomVerticalMoverTests(BaseMoverTests):
     '''
     req_data = {'obj_type': u'gnome.movers.random_movers.RandomVerticalMover',
                 'name': u'RandomVerticalMover',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'mixed_layer_depth': 10.0,
                 'vertical_diffusion_coef_above_ml': 5.0,
@@ -358,6 +354,7 @@ class CatsMoverTests(BaseMoverTests):
                 'filename': 'models/tidesWAC.CUR',
                 'scale': True,
                 'scale_value': 1.0,
+                'scale_refpoint': (-72.705, 41.2275, 0.0),
                 }
 
     def test_put_invalid_id(self):
@@ -458,8 +455,7 @@ class CurrentInfoTests(FunctionalTestBase):
                                     },
                            },
                           {'obj_type': 'gnome.movers.wind_movers.WindMover',
-                           'active_start': '-inf',
-                           'active_stop': 'inf',
+                           'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
                            'uncertain_angle_units': u'rad',
@@ -496,7 +492,7 @@ class CurrentInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
 
         # step 2: we perform some gets that have incomplete urls
         self.testapp.get('/mover/{0}'.format('current'), status=404)
@@ -519,7 +515,7 @@ class CurrentInfoTests(FunctionalTestBase):
         model = resp.json_body
         print '\n\ngot our model at: ', time.time() - begin
 
-        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][0]['id']
@@ -542,7 +538,7 @@ class CurrentInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][1]['id']
@@ -557,15 +553,13 @@ class IceInfoTests(FunctionalTestBase):
     '''
     movers_data = [{'obj_type': u'gnome.movers.simple_mover.SimpleMover',
                     'name': u'SimpleMover',
-                    'active_start': '-inf',
-                    'active_stop': 'inf',
+                    'active_range': ('-inf', 'inf'),
                     'on': True,
                     'uncertainty_scale': 0.5,
                     'velocity': (1.0, -1.0, 0.0)},
                    {'obj_type': u'gnome.movers.IceMover',
                     'name': u'IceMover',
-                    'active_start': '-inf',
-                    'active_stop': 'inf',
+                    'active_range': ('-inf', 'inf'),
                     'on': True,
                     'current_scale': 1.0,
                     'filename': u'models/acnfs_example.nc',
@@ -584,7 +578,7 @@ class IceInfoTests(FunctionalTestBase):
                         }]
 
     spills_data = [{'obj_type': u'gnome.spill.spill.Spill',
-                    'name': u'Point/Line Release',
+                    'name': u'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
                     'element_type': {'obj_type': ('gnome.spill.elements'
@@ -657,12 +651,13 @@ class IceInfoTests(FunctionalTestBase):
                                        (-126.108847, 48.3294),
                                        (-126.108847, 47.44727),
                                        (-127.465333, 47.44727)],
-                        'spillable_area': [(-127.0, 48.1),
-                                           (-126.6, 48.1),
-                                           (-126.3, 47.8),
-                                           (-126.6, 47.6),
-                                           (-127.0, 47.6),
-                                           (-127.25, 47.8)]},
+                        'spillable_area': [((-127.0, 48.1),
+                                            (-126.6, 48.1),
+                                            (-126.3, 47.8),
+                                            (-126.6, 47.6),
+                                            (-127.0, 47.6),
+                                            (-127.25, 47.8))]
+                        },
                 'environment': [],
                 'weatherers': [],
                 'movers': movers_data,
@@ -671,6 +666,9 @@ class IceInfoTests(FunctionalTestBase):
                 }
 
     def test_get_incomplete_paths(self):
+        # spillable_area = [((5, 2), (15, 2), (15, 10), (10, 10), (10, 5)
+        #                    )]
+
         params = {}
         params.update(self.req_data)
 
@@ -754,8 +752,7 @@ class CellInfoTests(FunctionalTestBase):
                 }
     req_data['movers'] = [{"obj_type": "gnome.movers.GridCurrentMover",
                            "name": "GridCurrentMover",
-                           "active_start": "-inf",
-                           "active_stop": "inf",
+                           "active_range": ('-inf', 'inf'),
                            "on": True,
                            "filename": "models/ny_cg.nc",
                            "topology_file": "models/NYTopology.dat",
@@ -766,8 +763,7 @@ class CellInfoTests(FunctionalTestBase):
                            "uncertain_along": 0.5,
                            },
                           {'obj_type': 'gnome.movers.wind_movers.WindMover',
-                           'active_start': '-inf',
-                           'active_stop': 'inf',
+                           'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
                            'uncertain_angle_units': u'rad',
@@ -892,5 +888,5 @@ class PyMoverTests(FunctionalTestBase):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/mover/{0}'.format(obj_id))
 
-        for a in ('id', 'obj_type', 'active_start', 'active_stop'):
+        for a in ('id', 'obj_type', 'active_range'):
             assert resp2.json_body[a] == resp1.json_body[a]
