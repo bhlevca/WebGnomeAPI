@@ -314,8 +314,7 @@ class NestedModelTests(FunctionalTestBase):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
                                             '.WindMover'),
-                               'active_start': '-inf',
-                               'active_stop': 'inf',
+                               'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
                                'uncertain_duration': 3.0,
@@ -348,8 +347,7 @@ class NestedModelTests(FunctionalTestBase):
         assert 'movers' in model1
         assert model1['movers'][0]['obj_type'] == ('gnome.movers.wind_movers'
                                                    '.WindMover')
-        assert 'active_start' in model1['movers'][0]
-        assert 'active_stop' in model1['movers'][0]
+        assert 'active_range' in model1['movers'][0]
         assert 'on' in model1['movers'][0]
         assert 'uncertain_angle_scale' in model1['movers'][0]
         assert 'uncertain_duration' in model1['movers'][0]
@@ -366,8 +364,7 @@ class NestedModelTests(FunctionalTestBase):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
                                             '.WindMover'),
-                               'active_start': '-inf',
-                               'active_stop': 'inf',
+                               'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
                                'uncertain_duration': 3.0,
@@ -408,8 +405,7 @@ class NestedModelTests(FunctionalTestBase):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.wind_movers'
                                             '.WindMover'),
-                               'active_start': '-inf',
-                               'active_stop': 'inf',
+                               'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
                                'uncertain_duration': 3.0,
@@ -455,8 +451,7 @@ class NestedModelTests(FunctionalTestBase):
         req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
                                             '.RandomMover'),
                                'name': u'RandomMover',
-                               'active_start': '-inf',
-                               'active_stop': 'inf',
+                               'active_range': ('-inf', 'inf'),
                                'on': True,
                                'diffusion_coef': 100000.0,
                                'uncertain_factor': 2.0
@@ -481,8 +476,7 @@ class NestedModelTests(FunctionalTestBase):
         req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
                                             '.RandomVerticalMover'),
                                'name': u'RandomVerticalMover',
-                               'active_start': '-inf',
-                               'active_stop': 'inf',
+                               'active_range': ('-inf', 'inf'),
                                'on': True,
                                'mixed_layer_depth': 10.0,
                                'vertical_diffusion_coef_above_ml': 5.0,
@@ -526,14 +520,13 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['movers'][0]['tide']['filename'] == 'CLISShio.txt'
+        assert model2['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
 
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
-                                   'active_start': '-inf',
-                                   'active_stop': 'inf',
+                                   'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
@@ -550,15 +543,13 @@ class NestedModelTests(FunctionalTestBase):
         assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers'
                                                        '.evaporation'
                                                        '.Evaporation')
-        assert 'active_start' in model1['weatherers'][0]
-        assert 'active_stop' in model1['weatherers'][0]
+        assert 'active_range' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
-                                   'active_start': '-inf',
-                                   'active_stop': 'inf',
+                                   'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
@@ -578,8 +569,7 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         weatherer = {'obj_type': u'gnome.weatherers.Evaporation',
-                     'active_start': '-inf',
-                     'active_stop': 'inf',
+                     'active_range': ('-inf', 'inf'),
                      'on': True,
                      }
         resp1 = self.testapp.post_json('/weatherer', params=weatherer)
@@ -606,8 +596,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_removed_weatherer(self):
         req_data = self.req_data.copy()
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
-                                   'active_start': '-inf',
-                                   'active_stop': 'inf',
+                                   'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
@@ -624,8 +613,7 @@ class NestedModelTests(FunctionalTestBase):
         assert model1['weatherers'][0]['obj_type'] == ('gnome.weatherers'
                                                        '.evaporation'
                                                        '.Evaporation')
-        assert 'active_start' in model1['weatherers'][0]
-        assert 'active_stop' in model1['weatherers'][0]
+        assert 'active_range' in model1['weatherers'][0]
         assert 'on' in model1['weatherers'][0]
 
         model1['weatherers'] = []
@@ -647,8 +635,7 @@ class NestedModelTests(FunctionalTestBase):
                                     'units': u'meter per second'
                                     }]
         req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
-                                   'active_start': '-inf',
-                                   'active_stop': 'inf',
+                                   'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 

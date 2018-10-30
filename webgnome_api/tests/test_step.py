@@ -354,21 +354,20 @@ class StepTest(FunctionalTestBase):
                   'wind': None}
 
     evaporation_data = {'obj_type': u'gnome.weatherers.Evaporation',
-                        'active_start': '-inf',
-                        'active_stop': 'inf',
+                        'active_range': ('-inf', 'inf'),
                         'on': True,
                         }
 
     dispersion_data = {'obj_type': u'gnome.weatherers.NaturalDispersion',
-                       'active_start': '2013-02-13T15:00:00',
-                       'active_stop': '2013-02-13T21:00:00',
+                       'active_range': ('2013-02-13T15:00:00',
+                                        '2013-02-13T21:00:00'),
                        'on': True,
                        }
 
     skimmer_data = {"obj_type": "gnome.weatherers.cleanup.Skimmer",
                     "name": "Skimmer #1",
-                    "active_start": "2013-02-13T15:00:00",
-                    "active_stop": "2013-02-15T15:00:00",
+                    "active_range": ("2013-02-13T15:00:00",
+                                     "2013-02-15T15:00:00"),
                     "efficiency": 0.2,
                     "amount": "200",
                     "units": "bbl",
@@ -1018,10 +1017,10 @@ class StepTest(FunctionalTestBase):
         self.dispersion_data['waves'] = self.waves_data
 
         self.skimmer_data['water'] = water_data
-        self.skimmer_data['active_start'] = start_time.isoformat()
-        self.skimmer_data['active_stop'] = ((start_time +
-                                             datetime.timedelta(days=1))
-                                            .isoformat())
+        self.skimmer_data['active_range'] = (start_time.isoformat(),
+                                             (start_time +
+                                              datetime.timedelta(days=1))
+                                             .isoformat())
 
         model1['weatherers'] = [self.evaporation_data,
                                 self.dispersion_data,
