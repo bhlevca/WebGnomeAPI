@@ -520,7 +520,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
-        assert model2['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+        assert model2['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()

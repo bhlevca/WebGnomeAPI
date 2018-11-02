@@ -285,7 +285,7 @@ class IceImageOutputterTests(IceJsonOutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceJsonOutputterTests(IceJsonOutputterTests):
+class IceRawJsonOutputterTests(IceJsonOutputterTests):
     '''
         Tests out the Gnome Raw Json Ice Outputter object API
     '''
