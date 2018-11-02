@@ -492,7 +492,7 @@ class CurrentInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
         # step 2: we perform some gets that have incomplete urls
         self.testapp.get('/mover/{0}'.format('current'), status=404)
@@ -515,7 +515,7 @@ class CurrentInfoTests(FunctionalTestBase):
         model = resp.json_body
         print '\n\ngot our model at: ', time.time() - begin
 
-        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][0]['id']
@@ -538,7 +538,7 @@ class CurrentInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['tide']['filename'] == 'models/CLISShio.txt'
+        assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][1]['id']
@@ -676,8 +676,8 @@ class IceInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][1]['filename'] == 'models/acnfs_example.nc'
-        assert model['movers'][1]['topology_file'] == 'models/acnfs_topo.dat'
+        assert model['movers'][1]['filename'] == 'acnfs_example.nc'
+        assert model['movers'][1]['topology_file'] == 'acnfs_topo.dat'
 
         # step 2: we perform some gets that have incomplete urls
         self.testapp.get('/mover/{0}'.format('current'), status=404)
@@ -720,8 +720,8 @@ class IceInfoTests(FunctionalTestBase):
         model = resp.json_body
         print '\n\ngot our model at: ', time.time() - begin
 
-        assert model['movers'][1]['filename'] == 'models/acnfs_example.nc'
-        assert model['movers'][1]['topology_file'] == 'models/acnfs_topo.dat'
+        assert model['movers'][1]['filename'] == 'acnfs_example.nc'
+        assert model['movers'][1]['topology_file'] == 'acnfs_topo.dat'
 
         mover_id = model['movers'][1]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
@@ -800,8 +800,8 @@ class CellInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['filename'] == 'models/ny_cg.nc'
-        assert model['movers'][0]['topology_file'] == 'models/NYTopology.dat'
+        assert model['movers'][0]['filename'] == 'ny_cg.nc'
+        assert model['movers'][0]['topology_file'] == 'NYTopology.dat'
 
         # step 2: we perform some gets that have incomplete urls
         self.testapp.get('/mover/{0}'.format('current'), status=404)
@@ -824,8 +824,8 @@ class CellInfoTests(FunctionalTestBase):
         model = resp.json_body
         print '\n\ngot our model at: ', time.time() - begin
 
-        assert model['movers'][0]['filename'] == 'models/ny_cg.nc'
-        assert model['movers'][0]['topology_file'] == 'models/NYTopology.dat'
+        assert model['movers'][0]['filename'] == 'ny_cg.nc'
+        assert model['movers'][0]['topology_file'] == 'NYTopology.dat'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][0]['id']
@@ -849,8 +849,8 @@ class CellInfoTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
 
-        assert model['movers'][0]['filename'] == 'models/ny_cg.nc'
-        assert model['movers'][0]['topology_file'] == 'models/NYTopology.dat'
+        assert model['movers'][0]['filename'] == 'ny_cg.nc'
+        assert model['movers'][0]['topology_file'] == 'NYTopology.dat'
 
         # step 2: we perform some gets that have complete urls
         mover_id = model['movers'][1]['id']
