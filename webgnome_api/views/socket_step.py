@@ -29,12 +29,15 @@ async_step_api = Service(name='async_step', path='/async_step',
 
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
+
 log = logging.getLogger(__name__)
 
 sess_namespaces = {}
 
+
 class GnomeRuntimeError(Exception):
     pass
+
 
 @async_step_api.get()
 def run_model(request):
@@ -235,7 +238,7 @@ class StepNamespace(BaseNamespace):
         log.debug('halting {0}'.format(self.request.session.session_id))
         self.lock.clear()
 
-    def on_kill(self): #kill signal from client
+    def on_kill(self):  # kill signal from client
         if self.active_greenlet:
             log.debug('killing greenlet {0}'.format(self.active_greenlet))
             self.active_greenlet.kill(block=True, timeout=5)

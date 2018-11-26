@@ -12,8 +12,7 @@ class BaseWeathererTests(FunctionalTestBase):
         Tests out the Gnome Wind object API
     '''
     req_data = {'obj_type': u'gnome.weatherers.Evaporation',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 }
 
@@ -41,7 +40,7 @@ class BaseWeathererTests(FunctionalTestBase):
         obj_id = resp1.json_body['id']
         resp2 = self.testapp.get('/weatherer/{0}'.format(obj_id))
 
-        for k in ('id', 'obj_type', 'active_start', 'on'):
+        for k in ('id', 'obj_type', 'active_range', 'on'):
             assert resp2.json_body[k] == resp1.json_body[k]
 
     def test_post_no_payload(self):
@@ -79,8 +78,13 @@ class BaseWeathererTests(FunctionalTestBase):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        self.now = datetime.now().isoformat()
-        json_obj['active_start'] = self.now
+        self.now = datetime.now()
+        self.active_range = (self.now.isoformat(),
+                             (self.now + timedelta(60 * 60 * 24)).isoformat())
+
+        print self.active_range
+
+        json_obj['active_range'] = self.active_range
         json_obj['on'] = False
 
     def check_updates(self, json_obj):
@@ -88,7 +92,7 @@ class BaseWeathererTests(FunctionalTestBase):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['active_start'] == self.now
+        assert json_obj['active_range'] == list(self.active_range)
         assert json_obj['on'] is False
 
 
@@ -100,7 +104,7 @@ class BurnTests(BaseWeathererTests):
     '''
     req_data = {'obj_type': u'gnome.weatherers.Burn',
                 'json_': 'webapi',
-                'active_start': '2014-04-09T15:00:00',
+                'active_range': ('2014-04-09T15:00:00', 'inf'),
                 'on': True,
                 'area': 10,
                 'area_units': 'm^2',
@@ -108,11 +112,19 @@ class BurnTests(BaseWeathererTests):
                 'thickness_units': 'm'
                 }
 
+    def check_updates(self, json_obj):
+        '''
+            The Burn object accepts an active range, but only utilizes the
+            start time.  The stop time is calculated internally by the object.
+        '''
+        assert json_obj['active_range'][0] == self.active_range[0]
+        assert json_obj['on'] is False
+
 
 class ROCBurnTests(BaseWeathererTests):
-    
+
     req_data = {'obj_type': u'gnome.weatherers.roc.Burn',
-                'json_':'webapi',
+                'json_': 'webapi',
                 'on': True,
                 'offset': '50',
                 'boom_length': '250',
@@ -123,23 +135,22 @@ class ROCBurnTests(BaseWeathererTests):
                 'timeseries': [["2016-12-29T07:00:00", "2016-12-29T19:00:00"],
                                ["2016-12-30T07:00:00", "2016-12-30T19:00:00"]
                                ],
-                'units': {'offset':'ft',
+                'units': {'offset': 'ft',
                           'boom_length': 'ft',
                           'boom_draft': 'in',
                           'speed': 'knots'
                           }
-               }
+                }
 
 
 class SkimmerTests(BaseWeathererTests):
     '''
     cleanup operations must have a valid datetime - cannot use -inf and inf
-    active_start/active_stop is used to get the mass removal rate
+    active_range is used to get the mass removal rate
     '''
     req_data = {'obj_type': u'gnome.weatherers.Skimmer',
                 'json_': 'webapi',
-                'active_start': '2014-04-09T15:00:00',
-                'active_stop': '2014-04-09T19:00:00',
+                'active_range': ('2014-04-09T15:00:00', '2014-04-09T19:00:00'),
                 'on': True,
                 'amount': 100,
                 'units': 'm^3',
@@ -152,8 +163,10 @@ class SkimmerTests(BaseWeathererTests):
             for new object types.
         '''
         self.now = datetime.now()
-        json_obj['active_start'] = self.now.isoformat()
-        json_obj['active_stop'] = (self.now + timedelta(days=1)).isoformat()
+
+        json_obj['active_range'] = (self.now.isoformat(),
+                                    (self.now + timedelta(days=1))
+                                    .isoformat())
         json_obj['on'] = False
 
     def check_updates(self, json_obj):
@@ -161,25 +174,24 @@ class SkimmerTests(BaseWeathererTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['active_start'] == self.now.isoformat()
-        assert json_obj['active_stop'] == ((self.now + timedelta(days=1))
-                                           .isoformat())
+        assert json_obj['active_range'] == [self.now.isoformat(),
+                                            (self.now + timedelta(days=1))
+                                            .isoformat()]
         assert json_obj['on'] is False
 
     def test_put_with_low_active_stop(self):
         '''
             Similar to test_put_valid_id, but we want to test updating
-            active_start and active_stop with a range that is outside and
+            active_range with a range that is outside and
             below the current active range.
         '''
         self.now = datetime.now()
         req_data = self.req_data
 
-        req_data['active_start'] = ((self.now + timedelta(days=3))
+        req_data['active_range'] = ((self.now + timedelta(days=3))
+                                    .isoformat(),
+                                    (self.now + timedelta(days=4))
                                     .isoformat())
-
-        req_data['active_stop'] = ((self.now + timedelta(days=4))
-                                   .isoformat())
 
         resp = self.testapp.post_json('/weatherer', params=req_data)
 
@@ -196,8 +208,7 @@ class ChemicalDispersionTests(BaseWeathererTests):
     '''
     req_data = {'obj_type': u'gnome.weatherers.ChemicalDispersion',
                 'json_': 'webapi',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'fraction_sprayed': 0.2,
                 'efficiency': 1.0,
@@ -209,8 +220,7 @@ class BeachingTests(BaseWeathererTests):
         Mock objects at present so just test that they get created
     '''
     req_data = {'obj_type': 'gnome.weatherers.manual_beaching.Beaching',
-                'active_start': '-inf',
-                'active_stop': 'inf',
+                'active_range': ('-inf', 'inf'),
                 'on': True,
                 'name': 'Beaching',
                 'units': 'm^3',
@@ -222,12 +232,16 @@ class BeachingTests(BaseWeathererTests):
 
     def perform_updates(self, json_obj):
         '''
-            We can overload this function when subclassing our tests
-            for new object types.
+            Note: When setting active range, we need to remember that the
+                  Beaching object will internally force the stop time
+                  equal to the last datetime in the timeseries.
+                  This will happen as the timeseries property is set.
         '''
-        self.now = datetime.now()
-        json_obj['active_start'] = self.now.isoformat()
-        json_obj['active_stop'] = (self.now + timedelta(days=1)).isoformat()
+        self.now = datetime(2015, 4, 27)
+
+        json_obj['active_range'] = (self.now.isoformat(),
+                                    (self.now + timedelta(days=1))
+                                    .isoformat())
         json_obj['on'] = False
 
     def check_updates(self, json_obj):
@@ -235,9 +249,10 @@ class BeachingTests(BaseWeathererTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['active_start'] == self.now.isoformat()
-        assert json_obj['active_stop'] == ((self.now + timedelta(days=1))
-                                           .isoformat())
+        end_range = datetime.strptime(self.req_data['timeseries'][-1][0],
+                                      '%Y-%m-%dT%H:%M:%S')
+        assert json_obj['active_range'] == [self.now.isoformat(),
+                                            end_range.isoformat()]
         assert json_obj['on'] is False
 
     def test_put_empty_timeseries(self):

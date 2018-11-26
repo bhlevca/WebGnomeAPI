@@ -5,6 +5,9 @@ import pytest
 
 from base import FunctionalTestBase
 
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=2, width=120)
+
 
 class ModelRunTest(FunctionalTestBase):
     '''
@@ -102,6 +105,9 @@ class ModelRunTest(FunctionalTestBase):
         model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
+        print ('model[weatherers]:')
+        pp.pprint(model1['weatherers'])
+
         # The location file we selected should have:
         # - a registered map
         # - a registered Tide
@@ -121,6 +127,11 @@ class ModelRunTest(FunctionalTestBase):
         resp = self.testapp.post_json('/weatherer', params=self.evaporate_data)
         evaporate = resp.json_body
         model1['weatherers'] = [evaporate]
+        model1['environment'].append(evaporate['water'])
+        model1['environment'].append(evaporate['wind'])
+
+        print ('model.environment = ', model1['environment'])
+        print ('evaporation.water = ', evaporate['water'])
 
         # - we need an outputter
         print 'test_all_steps(): creating outputter...'
