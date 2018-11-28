@@ -211,7 +211,10 @@ def obj_id_from_url(request):
     '''
     obj_id = request.matchdict.get('obj_id')
 
-    return obj_id[0] if obj_id else None
+    if obj_id is not None and len(obj_id) > 0:
+        return obj_id[0]
+    else:
+        return None
 
 
 def obj_id_from_req_payload(json_request):
