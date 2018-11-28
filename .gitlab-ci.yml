@@ -45,6 +45,7 @@ test:
     - /usr/bin/redis-server /etc/redis.conf &
     - pip install -r requirements.txt
     - pip install -e .
+    - pip list
     - py.test webgnome_api/tests
 
   tags:
