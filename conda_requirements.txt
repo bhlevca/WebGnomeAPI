@@ -31,4 +31,3 @@ awesome-slugify
 webtest>=2.0
 htmlmin
 jsmin
-gevent>=1.2.2

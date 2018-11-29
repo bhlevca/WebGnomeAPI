@@ -13,4 +13,6 @@
 pygtail
 pyramid_log
 pyramid-redis-sessions
+
+gevent>=1.2.2
 -e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
