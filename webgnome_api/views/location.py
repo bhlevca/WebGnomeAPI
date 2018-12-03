@@ -50,7 +50,7 @@ def get_location(request):
              for f in filenames
              if f == 'compiled.json']
 
-            [location_file_dirs.append(path + "/" + basename(path) + '_save')
+            [location_file_dirs.append(join(path, basename(path) + '_save'))
              for f in filenames
              if f == 'compiled.json']
 
