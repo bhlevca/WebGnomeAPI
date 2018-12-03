@@ -14,11 +14,10 @@ from cornice import Service
 
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
-                                       get_specifications,
-                                       get_object)
+                                       get_object,
+                                       web_ser_opts)
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
-                                               ObjectImplementsOneOf,
                                                obj_id_from_url,
                                                obj_id_from_req_payload,
                                                clean_session_dir)
@@ -65,7 +64,7 @@ def get_model(request):
         if obj_id is None:
             my_model = get_active_model(request)
             if my_model is not None:
-                ret = my_model.serialize()
+                ret = my_model.serialize(options=web_ser_opts)
 
         if ret is None:
             ret = get_object(request, implemented_types)
@@ -109,7 +108,6 @@ def create_model(request):
             new_model = Model()
 
         set_session_object(new_model, request)
-        set_session_object(new_model._map, request)
 
         set_active_model(request, new_model.id)
     except Exception:
@@ -121,7 +119,7 @@ def create_model(request):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
-    return new_model.serialize()
+    return new_model.serialize(options=web_ser_opts)
 
 
 @model.put()
@@ -160,7 +158,7 @@ def update_model(request):
             if UpdateObject(active_model, json_request,
                             get_session_objects(request)):
                 set_session_object(active_model, request)
-            ret = active_model.serialize()
+            ret = active_model.serialize(options=web_ser_opts)
         except Exception:
             raise cors_exception(request, HTTPUnsupportedMediaType,
                                  with_stacktrace=True)

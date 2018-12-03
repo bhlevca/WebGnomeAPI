@@ -1,6 +1,7 @@
 pyramid>=1.9
 pyramid_log
 -e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
+git+https://github.com/NOAA-ORR-ERD/PyNUCOS.git@v2.6.3#egg=unit_conversion
 ujson
 Paste
 cornice==1.2.1
@@ -9,10 +10,7 @@ docutils
 gitpython
 awesome-slugify
 pygtail
-PyGnome
 webtest
 htmlmin
 jsmin
 gevent==1.2.2
-
-# Binary Related Packages

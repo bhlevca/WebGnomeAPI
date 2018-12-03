@@ -13,7 +13,8 @@ from pyramid.httpexceptions import (HTTPBadRequest,
 
 from cornice import Service
 
-from gnome.persist import load, is_savezip_valid
+from gnome.persist import is_savezip_valid
+from gnome.model import Model
 
 from ..common.system_resources import list_files
 from ..common.common_object import (RegisterObject,
@@ -29,6 +30,7 @@ from ..common.views import (can_persist,
                             cors_policy,
                             process_upload,
                             activate_uploaded)
+from webgnome_api.common.session_management import get_session_objects
 
 log = logging.getLogger(__name__)
 
@@ -71,14 +73,16 @@ def upload_model(request):
              .format(id(session_lock), current_thread().ident))
     try:
         log.info('loading our model from zip...')
-        new_model = load(file_path)
+        init_session_objects(request, force=True)
+        refs = get_session_objects(request)
+
+        new_model = Model.load(file_path, refs=refs)
         new_model._cache.enabled = False
 
-        init_session_objects(request, force=True)
-
-        from ..views import implemented_types
-
-        RegisterObject(new_model, request, implemented_types)
+        new_model._schema.register_refs(new_model._schema(), new_model, refs)
+#         from ..views import implemented_types
+#
+#         RegisterObject(new_model, request, implemented_types)
 
         log.info('setting active model...')
         set_active_model(request, new_model.id)
@@ -126,14 +130,16 @@ def activate_uploaded_model(request):
              .format(id(session_lock), current_thread().ident))
     try:
         log.info('loading our model from zip...')
-        new_model = load(zipfile_path)
+        init_session_objects(request, force=True)
+        refs = get_session_objects(request)
+
+        new_model = Model.load(file_path, refs=refs)
         new_model._cache.enabled = False
 
-        init_session_objects(request, force=True)
+        new_model._schema.register_refs(new_model._schema(), new_model, refs)
+#         from ..views import implemented_types
 
-        from ..views import implemented_types
-
-        RegisterObject(new_model, request, implemented_types)
+#         RegisterObject(new_model, request, implemented_types)
 
         log.info('setting active model...')
         set_active_model(request, new_model.id)
@@ -160,12 +166,12 @@ def download_model(request):
 
     if my_model:
         tf = tempfile.NamedTemporaryFile()
-        dir_name, base_name = os.path.split(tf.name)
+        filename = tf.name
         tf.close()
 
-        my_model.save(saveloc=dir_name, name=base_name)
+        json_, saveloc, refs = my_model.save(saveloc=filename)
         response_filename = ('{0}.zip'.format(my_model.name))
-        tf = open(tf.name, 'r+b')
+        tf = open(saveloc, 'r+b')
         response = request.response
         response.content_type = 'application/zip'
         response.content_disposition = ('attachment; filename={0}'
@@ -200,7 +206,7 @@ def save_and_persist_model(request):
         else:
             file_name = ('{0}.zip'.format(my_model.name))
 
-        my_model.save(saveloc=base_path, name=file_name)
+        my_model.save(saveloc=os.path.join(base_path, file_name))
 
         return cors_response(request, Response('OK'))
     else:

@@ -43,6 +43,8 @@ cors_policy = {'credentials': True
 
 log = logging.getLogger(__name__)
 
+web_ser_opts = {'raw_paths': False}
+
 
 def can_persist(funct):
     '''
@@ -80,7 +82,17 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         exc_type, exc_value, exc_traceback = sys.exc_info()
         fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-        http_exc.json_body = ujson.dumps([l.strip() for l in fmt][-depth:])
+        # handle the stacktrace
+        if len(fmt) > depth:
+            json_strlist = [l.strip() for l in fmt][-depth:]
+        else:
+            json_strlist = [l.strip() for l in fmt]
+
+        # handle the exception message
+        if isinstance(exc_value, Exception):
+            json_strlist.append('{}'.format(exc_value))
+
+        http_exc.json_body = ujson.dumps(json_strlist)
 
     return http_exc
 
@@ -124,7 +136,7 @@ def get_object(request, implemented_types):
         obj = get_session_object(obj_id, request)
         if obj:
             if ObjectImplementsOneOf(obj, implemented_types):
-                return obj.serialize()
+                return obj.serialize(options=web_ser_opts)
             else:
                 raise cors_exception(request, HTTPUnsupportedMediaType)
         else:
@@ -138,9 +150,9 @@ def get_specifications(request, implemented_types):
             name = FQNamesToList((t,))[0][0]
             cls = PyClassFromName(t)
             if cls:
-                spec = dict([(n, None)
-                             for n in cls._state.get_names(['read', 'update'])
-                             ])
+                update = cls._schema().get_nodes_by_attr('update')
+                read = cls._schema().get_nodes_by_attr('read_only')
+                spec = dict([(n, None) for n in update + read])
                 spec['obj_type'] = t
                 specs[name] = spec
         except ValueError:
@@ -177,7 +189,8 @@ def create_object(request, implemented_types):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+
+    return obj.serialize(options=web_ser_opts)
 
 
 def update_object(request, implemented_types):
@@ -214,7 +227,7 @@ def update_object(request, implemented_types):
         raise cors_exception(request, HTTPNotFound)
 
     log.info('<<' + log_prefix)
-    return obj.serialize()
+    return obj.serialize(options=web_ser_opts)
 
 
 def process_upload(request, field_name):
