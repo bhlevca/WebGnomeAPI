@@ -13,6 +13,7 @@ from socketio.namespace import BaseNamespace
 from pyramid.httpexceptions import (HTTPPreconditionFailed,
                                     HTTPUnprocessableEntity)
 from cornice import Service
+from greenlet import GreenletExit
 
 from webgnome_api.common.session_management import (get_active_model,
                                                     get_uncertain_models,
@@ -20,9 +21,9 @@ from webgnome_api.common.session_management import (get_active_model,
                                                     set_uncertain_models,
                                                     acquire_session_lock)
 
-from webgnome_api.common.views import cors_exception, cors_policy
-from greenlet import GreenletExit
-
+from webgnome_api.common.views import (cors_exception,
+                                       cors_policy,
+                                       json_exception)
 
 async_step_api = Service(name='async_step', path='/async_step',
                          description="Async Step API", cors_policy=cors_policy)
@@ -46,6 +47,10 @@ def run_model(request):
     web socket. Until interrupted using halt_model(), it will run to
     completion
     '''
+    print 'async_step route hit'
+    log_prefix = 'req{0}: run_model()'.format(id(request))
+    log.info('>>' + log_prefix)
+
     sess_id = request.session.session_id
     global sess_namespaces
 
@@ -147,10 +152,11 @@ def run_model(request):
                     exc_type, exc_value, _exc_traceback = sys.exc_info()
                     traceback.print_exc()
 
-                    log.critical('  {}{}'
-                                 .format(log_prefix,
-                                         traceback.format_exception_only(exc_type,
-                                                                         exc_value)))
+                    msg = ('  {}{}'
+                           .format(log_prefix,
+                                   traceback.format_exception_only(exc_type,
+                                                                   exc_value)))
+                    log.critical(msg)
                     raise
 
                 if output:
@@ -177,16 +183,16 @@ def run_model(request):
             socket_namespace.emit('killed', 'Model run terminated early')
             return GreenletExit
 
-        except Exception as e:
+        except Exception:
             log.info('Greenlet terminated due to exception')
-            socket_namespace.emit('runtimeError', str(e))
+
+            json_exc = json_exception(2, True)
+            socket_namespace.emit('runtimeError', json_exc['message'])
 
         socket_namespace.emit('complete', 'Model run completed')
 
-    print 'async_step route hit'
-    log_prefix = 'req{0}: run_model()'.format(id(request))
-    log.info('>>' + log_prefix)
     active_model = get_active_model(request)
+
     if active_model and not ns.active_greenlet:
         ns.active_greenlet = ns.spawn(execute_async_model, active_model,
                                       ns, request)

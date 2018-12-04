@@ -78,6 +78,14 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
+    json_exc = json_exception(depth, with_stacktrace)
+    if json_exc is not None:
+        http_exc.json_body = ujson.dumps(json_exc)
+
+    return http_exc
+
+
+def json_exception(depth, with_stacktrace=False):
     _, exc_value, exc_traceback = sys.exc_info()
 
     if exc_value is not None:
@@ -92,9 +100,9 @@ def cors_exception(request, exception_class, with_stacktrace=False,
             else:
                 exc_json['traceback'] = [_trace_item(*i) for i in tb]
 
-        http_exc.json_body = ujson.dumps(exc_json)
-
-    return http_exc
+        return exc_json
+    else:
+        return None
 
 
 def _trace_item(filename, lineno, function, text):
