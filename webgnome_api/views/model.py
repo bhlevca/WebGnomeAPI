@@ -14,12 +14,10 @@ from cornice import Service
 
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
-                                       get_specifications,
                                        get_object,
                                        web_ser_opts)
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
-                                               ObjectImplementsOneOf,
                                                obj_id_from_url,
                                                obj_id_from_req_payload,
                                                clean_session_dir)
@@ -44,7 +42,6 @@ model = Service(name='model', path='/model*obj_id', description="Model API",
 
 implemented_types = ('gnome.model.Model',
                      )
-import pdb
 
 
 @model.get()
@@ -56,7 +53,6 @@ def get_model(request):
           - return the current active model if it exists or...
           - return the specification.
     '''
-    #pdb.set_trace()
     ret = None
     obj_id = obj_id_from_url(request)
 
@@ -85,7 +81,6 @@ def create_model(request):
     '''
         Creates a new model
     '''
-    #pdb.set_trace()
     log_prefix = 'req({0}): create_object():'.format(id(request))
     log.info('>>' + log_prefix)
 
@@ -113,7 +108,6 @@ def create_model(request):
             new_model = Model()
 
         set_session_object(new_model, request)
-        #set_session_object(new_model._map, request)
 
         set_active_model(request, new_model.id)
     except Exception:
@@ -137,7 +131,6 @@ def update_model(request):
           - update the current active model if it exists or...
           - generate a 'Not Found' exception.
     '''
-    #pdb.set_trace()
     log_prefix = 'req({0}): update_model():'.format(id(request))
     log.info('>>' + log_prefix)
 

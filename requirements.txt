@@ -1,15 +1,18 @@
-pyramid>=1.9
-pyramid_log
--e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
-ujson
-Paste
-cornice==1.2.1
-pyramid-redis-sessions
-docutils
-gitpython
-awesome-slugify
+# These are extra software packages necessary in order to run the WebGnomeApi
+# web server.
+#
+# The main reason these are separate from conda_requirements.txt is that they
+# are not found in any of the main conda channel repositories, so they are
+# pip installable only.
+#
+# To prepere the WebGnomeAPI environment, one would normally do the following:
+#
+#     $ conda install --file conda_requirements.txt
+#     $ pip install -r requirements.txt
+
 pygtail
-webtest
-htmlmin
-jsmin
-gevent==1.2.2
+pyramid_log
+pyramid-redis-sessions
+
+gevent>=1.2.2
+-e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio

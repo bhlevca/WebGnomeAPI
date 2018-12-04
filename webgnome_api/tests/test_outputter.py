@@ -63,10 +63,13 @@ class OutputterTests(FunctionalTestBase):
     def test_put_valid_id(self):
         resp = self.testapp.post_json('/outputter', params=self.req_data)
         outputter = resp.json_body
+        print 'Created outputter:'
+        pp.pprint(outputter)
 
         self.perform_updates(outputter)
-        print 'Response:'
-        pp.pprint(resp.json_body)
+        print '\nUpdated outputter before put:'
+        pp.pprint(outputter)
+
         resp = self.testapp.put_json('/outputter', params=outputter)
         print 'Response:'
         pp.pprint(resp.json_body)
@@ -282,7 +285,7 @@ class IceImageOutputterTests(IceJsonOutputterTests):
         assert json_obj['output_zero_step'] is False
 
 
-class IceJsonOutputterTests(IceJsonOutputterTests):
+class IceRawJsonOutputterTests(IceJsonOutputterTests):
     '''
         Tests out the Gnome Raw Json Ice Outputter object API
     '''

@@ -40,7 +40,7 @@ class ExceptionTests(FunctionalTestBase):
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-1][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
     def test_put(self):
         resp = self.testapp.post_json('/environment', params=self.req_data)
@@ -59,7 +59,7 @@ class ExceptionTests(FunctionalTestBase):
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-1][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
 
 class ModelExceptionTests(FunctionalTestBase):
@@ -103,7 +103,7 @@ class ModelExceptionTests(FunctionalTestBase):
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-1][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
     def test_put_with_nested_environment(self):
         req_data = self.req_data.copy()
@@ -133,7 +133,7 @@ class ModelExceptionTests(FunctionalTestBase):
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-1][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
 
 class StepExceptionTest(FunctionalTestBase):
