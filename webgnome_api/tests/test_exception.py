@@ -34,7 +34,7 @@ class ExceptionTests(FunctionalTestBase):
         resp = self.testapp.post_json('/environment', params=req_data,
                                       expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
@@ -53,7 +53,7 @@ class ExceptionTests(FunctionalTestBase):
                                      params=req_data,
                                      expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
@@ -97,7 +97,7 @@ class ModelExceptionTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data,
                                       expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
@@ -127,7 +127,8 @@ class ModelExceptionTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1,
                                      expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        print ('json_body: {}'.format(resp.json_body))
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
