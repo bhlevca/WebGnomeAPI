@@ -80,7 +80,7 @@ def cors_exception(request, exception_class, with_stacktrace=False,
 
     json_exc = json_exception(depth, with_stacktrace)
     if json_exc is not None:
-        http_exc.json_body = ujson.dumps(json_exc)
+        http_exc.json_body = json_exc
 
     return http_exc
 

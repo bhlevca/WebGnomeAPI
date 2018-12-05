@@ -172,8 +172,7 @@ def get_grid_centers(request):
     '''
         Outputs GNOME grid centers for a particular mover
     '''
-
-    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log_prefix = 'req({0}): get_grid_centers():'.format(id(request))
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
@@ -254,6 +253,7 @@ def get_grid_signature(mover):
 
 def get_cells(mover):
     grid_data = mover.get_grid_data()
+
     if not isinstance(mover, PyMover):
         d_t = grid_data.dtype.descr
         u_t = d_t[0][1]
