@@ -21,7 +21,7 @@ be reduced to the amount available at the time.) Manually input beached oil is c
 
 * Click Add Entry.
 
-* Repeat for each observed beached time and amount.
+* Repeat for each observation.
 
 * Click Save.
 
