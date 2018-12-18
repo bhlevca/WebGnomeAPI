@@ -1,18 +1,33 @@
-numpy # not strictly needed by the API, but is by gnome, etc, and adding it helps keep conda from trying to downgrade it.
+# These are software packages necessary to run the WebGnomeAPI web server.
+# The format of this file should be compatible with either conda or pip,
+# so these packages can be installed with the commands:
+#
+#     $ conda install --file conda_requirements.txt
+#       -- or --
+#     $ pip install -r conda_requirements.txt
+#
+# In addition to this list of packages, there is a file separate from
+# conda_requirements.txt called simply requirements.txt.  This file contains
+# a list of packages that are not found in any of the main conda channel
+# repositories, so they are pip installable only.
+#
+# So after the previous step, one would normally do the following:
+#
+#     $ pip install -r requirements.txt
+
+# numpy is not strictly needed by the API, but is by gnome, etc,
+# and adding it helps keep conda from trying to downgrade it.
+numpy
+
+unit_conversion>=2.6
+
 pyramid>=1.9
 ujson
 Paste
-cornice==1.2.1
+cornice>=3.4
 docutils
 gitpython
 awesome-slugify
-webtest
+webtest>=2.0
 htmlmin
 jsmin
-gevent==1.2.2
-
-# # not in conda - use pip to install
-# pygtail
-# pyramid_log
-# pyramid-redis-sessions
-# -e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio

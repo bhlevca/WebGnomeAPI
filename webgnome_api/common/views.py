@@ -78,23 +78,30 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    if with_stacktrace:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
+    _, exc_value, exc_traceback = sys.exc_info()
 
-        # handle the stacktrace
-        if len(fmt) > depth:
-            json_strlist = [l.strip() for l in fmt][-depth:]
-        else:
-            json_strlist = [l.strip() for l in fmt]
+    if exc_value is not None:
+        exc_json = {'exc_type': exc_value.__class__.__name__,
+                    'message': exc_value.message}
 
-        # handle the exception message
-        if isinstance(exc_value, Exception):
-            json_strlist.append('{}'.format(exc_value))
+        if with_stacktrace:
+            tb = traceback.extract_tb(exc_traceback)
 
-        http_exc.json_body = ujson.dumps(json_strlist)
+            if len(tb) > depth:
+                exc_json['traceback'] = [_trace_item(*i) for i in tb[-depth:]]
+            else:
+                exc_json['traceback'] = [_trace_item(*i) for i in tb]
+
+        http_exc.json_body = ujson.dumps(exc_json)
 
     return http_exc
+
+
+def _trace_item(filename, lineno, function, text):
+    return {'file': filename,
+            'lineno': lineno,
+            'function': function,
+            'text': text}
 
 
 def cors_response(request, response):
