@@ -221,10 +221,13 @@ def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
 
+def get_session_base_dir(request):
+    return request.registry.settings['session_dir']
+
+
 def get_session_dir(request):
-    model_dir = request.registry.settings['model_data_dir']
-    session_id = request.session.session_id
-    session_dir = os.path.join(model_dir, 'session', session_id)
+    session_dir = os.path.join(get_session_base_dir(request),
+                               request.session.session_id)
 
     if os.path.isdir(session_dir) is False:
         os.makedirs(session_dir)
@@ -233,8 +236,7 @@ def get_session_dir(request):
 
 
 def get_persistent_dir(request):
-    model_dir = request.registry.settings['model_data_dir']
-    persistent_dir = os.path.join(model_dir, 'persistent')
+    persistent_dir = request.registry.settings['persistent_dir']
 
     if os.path.isdir(persistent_dir) is False:
         os.makedirs(persistent_dir)

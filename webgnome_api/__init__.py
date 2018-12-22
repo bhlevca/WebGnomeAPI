@@ -6,12 +6,19 @@ import os
 import logging
 
 import ujson
+
 from pyramid.config import Configurator
 from pyramid.renderers import JSON as JSONRenderer
+
+from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
 
 logging.basicConfig()
+
+
+class DummySession(object):
+    session_id = 'DummySession'
 
 
 def reconcile_directory_settings(settings):
@@ -62,6 +69,24 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
 
+    # pyramid_redis_sessions will create a session object for every request,
+    # even the CORS preflight requests, and if there is no session cookie,
+    # a new session key will be created.  And the CORS preflight requests
+    # will never have a session cookie.  So we overload the session factory
+    # function here and add a special case for CORS preflight requests.
+    session_factory = session_factory_from_settings(settings)
+
+    def overloaded_session_factory(request, **kwargs):
+        if request.method.lower() == 'options':
+            # OPTIONS requests never have a session cookie, even when there
+            # is a valid session
+            return DummySession()
+        else:
+            return session_factory(request, **kwargs)
+
+    config.set_session_factory(overloaded_session_factory)
+
+    # we use ujson to load our JSON payloads
     config.add_request_method(get_json, 'json', reify=True)
 
     renderer = JSONRenderer(serializer=lambda v, **kw: ujson.dumps(v))
