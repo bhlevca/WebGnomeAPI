@@ -253,6 +253,7 @@ def process_upload(request, field_name):
     # Then we can re-establish our session with the request after
     # checking that our session id is valid.
     redis_session_id = request.POST['session']
+
     if redis_session_id in request.session.redis.keys():
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
