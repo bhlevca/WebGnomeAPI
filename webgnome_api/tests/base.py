@@ -33,8 +33,8 @@ class FunctionalTestBase(GnomeTestCase):
 
     def tearDown(self):
         'Clean up any images the model generated after running tests.'
-        test_images_dir = os.path.join(self.project_root, 'static', 'img',
-                                       self.settings['model_data_dir'])
+        test_images_dir = os.path.join(self.settings['model_data_dir'],
+                                       'images')
         shutil.rmtree(test_images_dir, ignore_errors=True)
 
         self.cleanup_web_app_upon_shutdown()
