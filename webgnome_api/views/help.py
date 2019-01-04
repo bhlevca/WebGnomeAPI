@@ -92,8 +92,8 @@ def create_help_feedback(request):
     json_request['ts'] = int(time.time())
 
     # find redis using redis sessions config
-    rhost = request.registry.settings.get('redis.help.host', 'localhost')
-    rport = request.registry.settings.get('redis.help.port', 6379)
+    rhost = request.registry.settings.get('redis.sessions.host', 'localhost')
+    rport = request.registry.settings.get('redis.sessions.port', 6379)
 
     client = redis.Redis(host=rhost, port=rport)
 

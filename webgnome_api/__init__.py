@@ -2,10 +2,12 @@
     Main entry point
 """
 import os
-
+import shutil
 import logging
 
 import ujson
+
+from redis import StrictRedis
 
 from pyramid.config import Configurator
 from pyramid.renderers import JSON as JSONRenderer
@@ -52,6 +54,57 @@ def get_json(request):
     return ujson.loads(request.text)
 
 
+def overload_redis_session_factory(settings, config):
+    '''
+        pyramid_redis_sessions will create a session object for every request,
+        even the CORS preflight requests, and if there is no session cookie,
+        a new session key will be created.  And the CORS preflight requests
+        will never have a session cookie.  So we overload the session factory
+        function here and add a special case for CORS preflight requests.
+    '''
+    session_factory = session_factory_from_settings(settings)
+
+    def overloaded_session_factory(request, **kwargs):
+        if request.method.lower() == 'options':
+            return DummySession()
+        else:
+            return session_factory(request, **kwargs)
+
+    config.set_session_factory(overloaded_session_factory)
+
+
+def start_session_cleaner(settings):
+    '''
+        When a session expires, we need to cleanup the session folder that was
+        created for it, but pyramid_redis_sessions has no builtin way to add
+        or register custom functions to do this.
+        So we need to hook directly into the Redis publish/subscribe
+        functionality.  Here we will look for expired key events.
+    '''
+    host = settings.get('redis.sessions.host', 'localhost')
+    port = int(settings.get('redis.sessions.port', 6379))
+    session_dir = settings.get('session_dir', './models/session')
+
+    redis = StrictRedis(host=host, port=port)
+
+    def event_handler(msg, session_dir=session_dir):
+        cleanup_dir = os.path.join(session_dir, msg['data'])
+
+        try:
+            shutil.rmtree(cleanup_dir)
+        except OSError as err:
+            if err.errno == 2:  # not-found error.  Print message & continue.
+                print ('Session Cleaner: Folder {} does not exist!'
+                       .format(cleanup_dir))
+            else:
+                raise
+
+    pubsub = redis.pubsub()
+    pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
+
+    pubsub.run_in_thread(sleep_time=1.0)
+
+
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['objects'] = {}
@@ -69,22 +122,8 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
 
-    # pyramid_redis_sessions will create a session object for every request,
-    # even the CORS preflight requests, and if there is no session cookie,
-    # a new session key will be created.  And the CORS preflight requests
-    # will never have a session cookie.  So we overload the session factory
-    # function here and add a special case for CORS preflight requests.
-    session_factory = session_factory_from_settings(settings)
-
-    def overloaded_session_factory(request, **kwargs):
-        if request.method.lower() == 'options':
-            # OPTIONS requests never have a session cookie, even when there
-            # is a valid session
-            return DummySession()
-        else:
-            return session_factory(request, **kwargs)
-
-    config.set_session_factory(overloaded_session_factory)
+    overload_redis_session_factory(settings, config)
+    start_session_cleaner(settings)
 
     # we use ujson to load our JSON payloads
     config.add_request_method(get_json, 'json', reify=True)
