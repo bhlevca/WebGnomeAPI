@@ -50,13 +50,12 @@ test:
   script:
     - yum update -y
     - yum install redis -y
-    - redis-server --daemonize yes #/usr/bin/redis-server /etc/redis.conf &
+    - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
     - pip install -r requirements.txt
     - pip install -e .
     - pip list
     - py.test webgnome_api/tests
-    - redis-cli shtudown
 
   tags:
     - docker
