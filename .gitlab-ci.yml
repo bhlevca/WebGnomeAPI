@@ -6,6 +6,7 @@ services:
   - redis:latest
 
 master: 
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:latest
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:latest pygnome
@@ -18,6 +19,7 @@ master:
     - build
 
 develop:
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:develop
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:develop pygnome
@@ -30,6 +32,7 @@ develop:
     - build
 
 production:
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:production
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:production pygnome
@@ -42,6 +45,7 @@ production:
     - build
 
 test:
+  stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:latest
   script:
     - yum update -y
