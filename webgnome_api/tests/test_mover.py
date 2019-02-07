@@ -581,15 +581,14 @@ class IceInfoTests(FunctionalTestBase):
                     'name': u'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'element_type': {'obj_type': ('gnome.spill.elements'
-                                                  '.element_type.ElementType'),
-                                     'name': u'ElementType',
-                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
-                                                       'name': u'windages',
-                                                       'windage_persist': 900,
-                                                       'windage_range': (0.01,
-                                                                         0.04)}
-                                                      ],
+                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                  'name': u'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
+                                                    'name': u'windages',
+                                                    'windage_persist': 900,
+                                                    'windage_range': (0.01,
+                                                                      0.04)
+                                                    }],
                                      },
                     'release': {'end_position': (-164.01696, 72.921024, 0.0),
                                 'end_release_time': None,
@@ -604,15 +603,14 @@ class IceInfoTests(FunctionalTestBase):
                     'name': u'Spill',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'element_type': {'obj_type': ('gnome.spill.elements'
-                                                  '.element_type.ElementType'),
-                                     'name': u'ElementType',
-                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
-                                                       'name': u'windages',
-                                                       'windage_persist': 900,
-                                                       'windage_range': (0.01,
-                                                                         0.04)}
-                                                      ],
+                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                  'name': u'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
+                                                    'name': u'windages',
+                                                    'windage_persist': 900,
+                                                    'windage_range': (0.01,
+                                                                      0.04)
+                                                    }],
                                      },
                     'release': {'obj_type': ('gnome.spill.release'
                                              '.SpatialRelease'),
