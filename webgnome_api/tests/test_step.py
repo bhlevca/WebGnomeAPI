@@ -306,15 +306,13 @@ class StepTest(FunctionalTestBase):
                               'end_position': [144.664166, 13.441944, 0.0],
                               'start_position': [144.664166, 13.441944, 0.0],
                               },
-                  'element_type': {'obj_type': ('gnome.spill.elements'
-                                                '.ElementType'),
-                                   'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                     'windage_range': [0.01,
-                                                                       0.04],
-                                                     'windage_persist': 900,
-                                                     }
-                                                    ]
-                                   },
+                  'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                  'windage_range': [0.01,
+                                                                    0.04],
+                                                  'windage_persist': 900,
+                                                  }]
+                               },
                   }
 
     wind_data = {'obj_type': 'gnome.environment.Wind',
@@ -737,14 +735,12 @@ class StepTest(FunctionalTestBase):
         # So what do we still need?
         # - we need a spill
         print '\n\ndefining our spill data'
-        element_type = {"json_": "webapi",
-                        "obj_type": ("gnome.spill.elements.ElementType"),
-                        "substance": self.substance_data,
-                        "initializers": [{"windage_range": [0.01, 0.04],
-                                          "obj_type": ("gnome.spill.elements"
-                                                       ".InitWindages"),
-                                          "windage_persist": 900}]
+        substance = {"obj_type": 'gnome.spill.substance.GnomeOil',
+                     "initializers": [{"windage_range": [0.01, 0.04],
+                                       "obj_type": 'gnome.spill.initializers.InitWindages',
+                                       "windage_persist": 900}]
                         }
+        substance.update(self.substance_data)
 
         spill_data = {"release": {"json_": "webapi",
                                   "obj_type": ("gnome.spill.release"
@@ -761,7 +757,7 @@ class StepTest(FunctionalTestBase):
                                   "end_release_time": "2015-05-15T16:00:00"},
                       "on": True,
                       "obj_type": "gnome.spill.spill.Spill",
-                      "element_type": element_type,
+                      "substance": substance,
                       "name": "Spill #1",
                       "amount": 2000,
                       "units": "bbl",
@@ -811,7 +807,7 @@ class StepTest(FunctionalTestBase):
         model1 = resp.json_body
 
         print '\n\nOur substance returned data...'
-        pp.pprint(model1['spills'][0]['element_type']['substance'])
+        pp.pprint(model1['spills'][0]['substance'])
 
         assert 'id' in model1['spills'][0]
         assert 'id' in model1['weatherers'][0]
@@ -942,14 +938,12 @@ class StepTest(FunctionalTestBase):
         # So what do we still need?
         # - we need a spill
         print '\n\ndefining our spill data'
-        element_type = {"json_": "webapi",
-                        "obj_type": ("gnome.spill.elements.ElementType"),
-                        "substance": self.substance_data,
-                        "initializers": [{"windage_range": [0.01, 0.04],
-                                          "obj_type": ("gnome.spill.elements"
-                                                       ".InitWindages"),
-                                          "windage_persist": 900}]
-                        }
+        substance = {"obj_type": "gnome.spill.substance.GnomeOil",
+                     "initializers": [{"windage_range": [0.01, 0.04],
+                                       "obj_type": "gnome.spill.initializers.InitWindages",
+                                       "windage_persist": 900}]
+                     }
+        substance.update(self.substance_data)
 
         spill_data = {"release": {"json_": "webapi",
                                   "obj_type": ("gnome.spill.release"
@@ -966,7 +960,7 @@ class StepTest(FunctionalTestBase):
                                   "end_release_time": start_time.isoformat()},
                       "on": True,
                       "obj_type": "gnome.spill.spill.Spill",
-                      "element_type": element_type,
+                      "substance": substance,
                       "name": "Spill #1",
                       "amount": 2000,
                       "units": "bbl",
