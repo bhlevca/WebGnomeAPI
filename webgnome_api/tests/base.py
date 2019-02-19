@@ -56,6 +56,8 @@ class FunctionalTestBase(GnomeTestCase):
             if session_umodels is not None:
                 session_umodels.stop()
 
+        settings['redis_pubsub_thread'].stop()
+
         if hasattr(registry, '_redis_sessions'):
             registry._redis_sessions.connection_pool.disconnect()
 
