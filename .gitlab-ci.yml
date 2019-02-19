@@ -56,6 +56,8 @@ test:
     - pip install -e .
     - pip list
     - py.test webgnome_api/tests
+    - ps
+    - jobs
 
   tags:
     - docker
