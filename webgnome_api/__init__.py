@@ -102,7 +102,7 @@ def start_session_cleaner(settings):
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    pubsub.run_in_thread(sleep_time=1.0)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0)
 
 
 def main(global_config, **settings):
@@ -119,11 +119,11 @@ def main(global_config, **settings):
 
     reconcile_directory_settings(settings)
     load_cors_origins(settings, 'cors_policy.origins')
+    start_session_cleaner(settings)
 
     config = Configurator(settings=settings)
 
     overload_redis_session_factory(settings, config)
-    start_session_cleaner(settings)
 
     # we use ujson to load our JSON payloads
     config.add_request_method(get_json, 'json', reify=True)
