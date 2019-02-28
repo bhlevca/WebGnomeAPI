@@ -6,17 +6,52 @@ import shutil
 import logging
 
 import ujson
+import gevent
 
 from redis import StrictRedis
 
 from pyramid.config import Configurator
 from pyramid.renderers import JSON as JSONRenderer
+from pyramid.threadlocal import get_current_request
+from pyramid_log import Formatter, _WrapDict, _DottedLookup
 
 from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
 
 logging.basicConfig()
+
+
+class WebgnomeFormatter(Formatter):
+
+    def format(self, record):
+        #Format the specific record as text.
+        has_session_hash = hasattr(record, 'session_hash')
+        if not has_session_hash:
+            record.session_hash = '<no session>'
+            gvt = gevent.getcurrent()
+            gvt_session_hash = isinstance(gvt, gevent.Greenlet) and hasattr(gvt, 'session_hash')
+            if gvt_session_hash:
+                record.session_hash = gvt.session_hash
+            else:
+                request = get_current_request()
+                if request is not None:
+                    record.session_hash = request.session_hash
+
+        # magic_record.__dict__ support dotted attribute lookup
+
+        magic_record = _WrapDict(record, _DottedLookup)
+
+        # Disable logging during disable to prevent recursion (in case
+        # a logged request property generates a log message)
+        save_disable = logging.root.manager.disable
+        logging.disable(record.levelno)
+        try:
+            return logging.Formatter.format(self, magic_record)
+        finally:
+            logging.disable(save_disable)
+            if not has_session_hash and hasattr(record, 'session_hash'):
+                del record.session_hash
 
 
 class DummySession(object):

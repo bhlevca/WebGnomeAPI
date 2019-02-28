@@ -31,13 +31,17 @@ async_step_api = Service(name='async_step', path='/async_step',
 rewind_api = Service(name='rewind', path='/rewind',
                      description="Model Rewind API", cors_policy=cors_policy)
 
-log = logging.getLogger(__name__)
-
 sess_namespaces = {}
 
+log = logging.getLogger(__name__)
 
 class GnomeRuntimeError(Exception):
     pass
+
+
+def get_greenlet_logger(request):
+    adpt = logging.LoggerAdapter(log, {'request': request})
+    return adpt
 
 
 @async_step_api.get()
@@ -63,6 +67,8 @@ def run_model(request):
         Meant to run in a greenlet. This function should take an active model
         and run it, writing each step's output to the socket.
         '''
+        print request.session_hash
+        log = get_greenlet_logger(request)
         try:
             wait_time = 16
             socket_namespace.emit('prepared')
@@ -78,7 +84,6 @@ def run_model(request):
             while True:
                 output = None
                 try:
-                    # pdb.set_trace()
                     if active_model.current_time_step == -1:
                         # our first step, establish uncertain models
                         drop_uncertain_models(request)
@@ -153,8 +158,7 @@ def run_model(request):
                     traceback.print_exc()
 
                     msg = ('  {}{}'
-                           .format(log_prefix,
-                                   traceback.format_exception_only(exc_type,
+                           .format(log_prefix, traceback.format_exception_only(exc_type,
                                                                    exc_value)))
                     log.critical(msg)
                     raise
@@ -196,6 +200,7 @@ def run_model(request):
     if active_model and not ns.active_greenlet:
         ns.active_greenlet = ns.spawn(execute_async_model, active_model,
                                       ns, request)
+        ns.active_greenlet.session_hash = request.session_hash
         return None
     else:
         print "Already started"
