@@ -72,19 +72,23 @@ def setup_output(request, obj_type, clean_dir):
 def process_outputter(request, clean_dir=False):
     try:
         json_request = ujson.loads(request.body)
-    except:
+    except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
     obj_type = json_request['obj_type']
     output_dir = setup_output(request, obj_type, clean_dir)
 
-    if obj_type == 'gnome.outputters.netcdf.NetCDFOutput':
-        json_request['netcdf_filename'] = os.path.join(output_dir,
-                                                       json_request['name'])
-    else:
-        json_request['filename'] = os.path.join(output_dir,
-                                                json_request['name'])
+    fix_filename(json_request, output_dir)
 
     request.body = ujson.dumps(json_request)
 
     return request
+
+
+def fix_filename(json_obj, output_dir):
+    try:
+        filename = json_obj['filename']
+    except KeyError:
+        filename = json_obj['name']
+
+    json_obj['filename'] = os.path.join(output_dir, filename)

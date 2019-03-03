@@ -23,18 +23,20 @@ logging.basicConfig()
 
 
 class WebgnomeFormatter(Formatter):
-
     def format(self, record):
-        #Format the specific record as text.
+        # Format the specific record as text.
         has_session_hash = hasattr(record, 'session_hash')
         if not has_session_hash:
             record.session_hash = '<no session>'
             gvt = gevent.getcurrent()
-            gvt_session_hash = isinstance(gvt, gevent.Greenlet) and hasattr(gvt, 'session_hash')
+            gvt_session_hash = (isinstance(gvt, gevent.Greenlet) and
+                                hasattr(gvt, 'session_hash'))
+
             if gvt_session_hash:
                 record.session_hash = gvt.session_hash
             else:
                 request = get_current_request()
+
                 if request is not None:
                     record.session_hash = request.session_hash
 
@@ -46,10 +48,12 @@ class WebgnomeFormatter(Formatter):
         # a logged request property generates a log message)
         save_disable = logging.root.manager.disable
         logging.disable(record.levelno)
+
         try:
             return logging.Formatter.format(self, magic_record)
         finally:
             logging.disable(save_disable)
+
             if not has_session_hash and hasattr(record, 'session_hash'):
                 del record.session_hash
 
@@ -74,6 +78,7 @@ def reconcile_directory_settings(settings):
     if not os.path.exists(locations_dir):
         raise EnvironmentError('Location files folder path {0} '
                                'does not exist!!'.format(locations_dir))
+
     if not os.path.isdir(locations_dir):
         raise EnvironmentError('Location files folder path {0} '
                                'is not a directory!!'.format(locations_dir))

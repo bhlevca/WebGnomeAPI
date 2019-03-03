@@ -59,6 +59,7 @@ def download_file(request):
         return response
     elif isfile(output_path):
         log.info('<<' + log_prefix)
+
         return FileResponse(output_path, request)
     else:
         raise cors_response(request, HTTPNotFound('File(s) requested do not '
