@@ -40,8 +40,8 @@ class PyGnomeSchemaTweenFactory(object):
             return a 'fixed' path.
 
             Note: This should be a bit smarter in the future.  Maybe we could
-                  institute a grammar for deciding whether a file exists in the
-                  session folder or the persistent folder.
+                  formalize a simple grammar for deciding whether a file exists
+                  in the session folder or the persistent folder.
         '''
         session_dir = get_session_dir(request)
 
