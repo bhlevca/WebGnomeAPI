@@ -25,14 +25,6 @@ def CreateObject(json_obj, all_objects, deserialize_obj=True):
         We want to be able to handle nested object payloads, so we need
         to traverse to all leaf objects and update them first
     '''
-    '''
-    json_obj = _DeserializeObject(json_obj)
-
-    for o in ProcessJsonObjectTree(_CreateObject, json_obj, all_objects):
-        pass
-
-    return o
-    '''
     otype = json_obj.get('obj_type', None)
     if otype is None:
         raise ValueError('No object type defined in payload')
@@ -52,8 +44,37 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
     '''
         The Main entry point to be used by our views.
 
-        We want to be able to handle nested object payloads, so we need
-        to traverse to all leaf objects and update them first
+        We want to be able to handle nested object payloads, and this is now
+        apparently handled internally by PyGnome.  This gives us a bit of a
+        conundrum.
+
+        We have a few contexts to consider for our payload:
+        - PyGnome: This is a self contained module that is originally built
+                   primarily for scripting.  As such, it has update methods
+                   that consider only the context of the PyGnome model
+                   structures.  For example, if a shapefile outputter is
+                   updated with a filename, it will take the filename at
+                   face value.
+        - WebGnomeAPI: A web server manages two contexts in regards to
+                       information it is persisting.
+                       1 - Where is it internally storing the data?
+                       2 - How does it present that data to the entity
+                           requesting it?
+                       The web server will maintain configurable paths in the
+                       filesystem for storing temporary session data files and
+                       persistent files. So the context can have different
+                       behaviors, depending upon where the data is stored,
+                       but in the context of a file in a file system, the data
+                       will be internally stored at a fully qualified pathname,
+                       and will be presented as a partial pathname (URL?)
+                       to the requestor.
+
+         This means we need to treat the incoming data such as filenames
+         before we pass the data to PyGnome's update method.  It also means
+         we need to similarly treat the outgoing data to the requestor.
+
+         It will probably be easiest to handle this in the tween, so look for
+         the implementation there.
     '''
     otype = json_obj.get('obj_type', None)
     if otype is None:
@@ -68,81 +89,8 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
         return new_obj
     else:
         all_objects[id_].update(json_obj, refs=all_objects)
+
         return all_objects[id_]
-
-
-def _DeserializeObject(json_obj):
-    '''
-        The py_gnome deserialize method can handle nested payloads
-    '''
-    py_class = PyClassFromName(json_obj['obj_type'])
-
-    return py_class.deserialize(json_obj)
-
-
-def ProcessJsonObjectTree(function, payload, all_objects,
-                          parent=None, attr_name=None):
-    if (isinstance(payload, dict)):
-        for k, v in payload.items():
-            for o in ProcessJsonObjectTree(function, v, all_objects,
-                                           payload, k):
-                yield o
-
-        obj = function(payload, parent, attr_name, all_objects)
-        yield obj
-    elif (isinstance(payload, (list, tuple))):
-        for i, v in enumerate(payload):
-            for o in ProcessJsonObjectTree(function, v, all_objects,
-                                           payload, i):
-                yield o
-
-
-def _CreateObject(payload, parent, attr_name, all_objects):
-    '''
-        Get the payload's associated object or create one.
-        Then assign it to the parent (json)objects attribute
-    '''
-    if 'obj_type' not in payload:
-        'not a nested object, just pass the dict unchanged'
-        obj = payload
-    elif ObjectExists(payload, all_objects):
-        obj = all_objects[ObjectId(payload)]
-    else:
-        py_class = PyClassFromName(payload['obj_type'])
-        obj = py_class.new_from_dict(payload)
-
-        all_objects[obj.id] = obj
-
-    # link the object to its associated parent attribute
-    try:
-        parent[attr_name] = obj
-    except Exception:
-        if parent is not None:
-            raise
-
-    return obj
-
-
-def _UpdateObject(payload, parent, attr_name, all_objects):
-    '''
-        Update the object with its associated payload.
-        Then assign it to the parent (json)objects attribute
-    '''
-    if ObjectExists(payload, all_objects):
-        obj = all_objects[ObjectId(payload)]
-
-        obj.update_from_dict(payload)
-
-        # link the object to its associated parent attribute
-        try:
-            parent[attr_name] = obj
-        except Exception:
-            if parent is not None:
-                raise
-
-        return obj
-    else:
-        return _CreateObject(payload, parent, attr_name, all_objects)
 
 
 def ValueIsJsonObject(value):
@@ -299,7 +247,7 @@ def get_file_path(request, json_request=None):
     if json_request is None:
         json_request = ujson.loads(request.body)
 
-    if (json_request['filename'][:4] == 'http' and
+    if (json_request['filename'].startswith('http') and
             json_request['filename'].find(goods_url) != -1):
         resp = urllib2.urlopen(json_request['filename'])
 
@@ -316,7 +264,7 @@ def get_file_path(request, json_request=None):
 
         json_request['filename'] = fname
 
-    if json_request['filename'][:6] == 'goods:' and goods_dir != '':
+    if json_request['filename'].startswith('goods:') and goods_dir != '':
         full_path = os.path.join(goods_dir, json_request['filename'][6:])
     else:
         full_path = os.path.join(session_dir, json_request['filename'])
