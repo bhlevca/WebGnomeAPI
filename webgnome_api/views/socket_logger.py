@@ -19,7 +19,7 @@ class LoggerNamespace(BaseNamespace):
         self.sess_hash = self.request.session_hash
 
     def recv_connect(self):
-        print "CONN LOGGER"
+        print "CONN LOGGER " + self.sess_hash
         self.emit("connected")
 
         overall_logger = logging.root

@@ -8,7 +8,7 @@ Choose **Load Surface Currents** to load ocean current data on a regular, curvil
 At present, only specific file formats are supported (eventually any CF-compliant file should be compatible). Details on the supported file formats
 can be found in the |location_link|. 
 
-"WebGNOME-ready" files for some publically available models can also be downloaded from |location_link2|.
+"WebGNOME-ready" files for some publicly available models can also be downloaded from |location_link2|.
 
 The **NOAA Emergency Response Model (CATS)** is a hydrodynamic model used by the NOAA Emergency Response Division.
 

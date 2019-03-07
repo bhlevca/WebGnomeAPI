@@ -153,13 +153,13 @@ class NetCDFOutputterTests(OutputterTests):
     '''
     req_data = {'obj_type': u'gnome.outputters.netcdf.NetCDFOutput',
                 'name': u'sample_model.nc',
-                'netcdf_filename': u'sample_model.nc',
+                'filename': u'sample_model.nc',
                 'compress': True,
                 'output_last_step': True,
                 'output_zero_step': True}
 
     def check_created_values(self, json_obj1, json_obj2):
-        for k in ('name', 'netcdf_filename',
+        for k in ('name', 'filename',
                   'compress', 'output_last_step', 'output_zero_step'):
             assert json_obj1[k] == json_obj2[k]
 

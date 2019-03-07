@@ -34,13 +34,13 @@ class ExceptionTests(FunctionalTestBase):
         resp = self.testapp.post_json('/environment', params=req_data,
                                       expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-2][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
     def test_put(self):
         resp = self.testapp.post_json('/environment', params=self.req_data)
@@ -53,13 +53,13 @@ class ExceptionTests(FunctionalTestBase):
                                      params=req_data,
                                      expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-2][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
 
 class ModelExceptionTests(FunctionalTestBase):
@@ -97,13 +97,13 @@ class ModelExceptionTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data,
                                       expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-2][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
     def test_put_with_nested_environment(self):
         req_data = self.req_data.copy()
@@ -127,13 +127,14 @@ class ModelExceptionTests(FunctionalTestBase):
         resp = self.testapp.put_json('/model', params=model1,
                                      expect_errors=True)
         print 'status:', (resp.status_code,)
-        error_resp = ujson.loads(resp.json_body)
+        print ('json_body: {}'.format(resp.json_body))
+        error_resp = resp.json_body
 
         print 'json_body:'
         pp.pprint(error_resp)
 
         assert resp.status_code == 415
-        assert error_resp[-2][:16] == 'InvalidUnitError'
+        assert error_resp['exc_type'] == 'InvalidUnitError'
 
 
 class StepExceptionTest(FunctionalTestBase):

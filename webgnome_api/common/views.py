@@ -78,23 +78,38 @@ def cors_exception(request, exception_class, with_stacktrace=False,
         http_exc.headers.add('Access-Control-Allow-Origin', hdr_val)
         http_exc.headers.add('Access-Control-Allow-Credentials', 'true')
 
-    if with_stacktrace:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        fmt = traceback.format_exception(exc_type, exc_value, exc_traceback)
-
-        # handle the stacktrace
-        if len(fmt) > depth:
-            json_strlist = [l.strip() for l in fmt][-depth:]
-        else:
-            json_strlist = [l.strip() for l in fmt]
-
-        # handle the exception message
-        if isinstance(exc_value, Exception):
-            json_strlist.append('{}'.format(exc_value))
-
-        http_exc.json_body = ujson.dumps(json_strlist)
+    json_exc = json_exception(depth, with_stacktrace)
+    if json_exc is not None:
+        http_exc.json_body = json_exc
 
     return http_exc
+
+
+def json_exception(depth, with_stacktrace=False):
+    _, exc_value, exc_traceback = sys.exc_info()
+
+    if exc_value is not None:
+        exc_json = {'exc_type': exc_value.__class__.__name__,
+                    'message': exc_value.message}
+
+        if with_stacktrace:
+            tb = traceback.extract_tb(exc_traceback)
+
+            if len(tb) > depth:
+                exc_json['traceback'] = [_trace_item(*i) for i in tb[-depth:]]
+            else:
+                exc_json['traceback'] = [_trace_item(*i) for i in tb]
+
+        return exc_json
+    else:
+        return None
+
+
+def _trace_item(filename, lineno, function, text):
+    return {'file': filename,
+            'lineno': lineno,
+            'function': function,
+            'text': text}
 
 
 def cors_response(request, response):
@@ -238,6 +253,7 @@ def process_upload(request, field_name):
     # Then we can re-establish our session with the request after
     # checking that our session id is valid.
     redis_session_id = request.POST['session']
+
     if redis_session_id in request.session.redis.keys():
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
