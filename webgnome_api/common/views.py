@@ -81,7 +81,10 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     json_exc = json_exception(depth, with_stacktrace)
     if json_exc is not None:
         http_exc.json_body = json_exc
-
+    if False and with_stacktrace: #remove false to use
+        pass
+        import pdb
+        pdb.post_mortem(sys.exc_info()[2])
     return http_exc
 
 
