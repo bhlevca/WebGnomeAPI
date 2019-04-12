@@ -81,6 +81,12 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     json_exc = json_exception(depth, with_stacktrace)
     if json_exc is not None:
         http_exc.json_body = json_exc
+    if ('develop_mode' in request.registry.settings.keys() and
+                asbool(request.registry.settings['develop_mode'])):
+        if with_stacktrace: #remove false to use
+            pass
+            import pdb
+            pdb.post_mortem(sys.exc_info()[2])
 
     return http_exc
 
@@ -245,6 +251,42 @@ def update_object(request, implemented_types):
     return obj.serialize(options=web_ser_opts)
 
 
+def process_upload(request):
+    redis_session_id = request.POST['session']
+
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
+
+    upload_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    persist_upload = asbool(request.POST.get('persist_upload', False))
+
+    if 'can_persist_uploads' in request.registry.settings.keys():
+        can_persist = asbool(request.registry.settings['can_persist_uploads'])
+    else:
+        can_persist = False
+
+    log.info('save_file_dir: {}'.format(upload_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    log.info('persist_upload?: {}'.format(persist_upload))
+    log.info('can_persist?: {}'.format(can_persist))
+
+
+
 def process_upload(request, field_name):
     # For some reason, the multipart form does not contain
     # a session cookie, and Nathan so far has not been able to explicitly
@@ -252,6 +294,8 @@ def process_upload(request, field_name):
     # hidden POST content.
     # Then we can re-establish our session with the request after
     # checking that our session id is valid.
+    import pdb
+    pdb.set_trace()
     redis_session_id = request.POST['session']
 
     if redis_session_id in request.session.redis.keys():
