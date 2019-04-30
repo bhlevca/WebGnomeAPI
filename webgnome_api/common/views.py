@@ -28,6 +28,7 @@ from .helpers import (JSONImplementsOneOf,
 
 from .common_object import (CreateObject,
                             UpdateObject,
+                            RegisterObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
                             obj_id_from_req_payload,
@@ -199,8 +200,10 @@ def create_object(request, implemented_types):
              .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
+        log.info(request.session.session_id)
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
         obj = CreateObject(json_request, get_session_objects(request))
+        RegisterObject(obj, request)
     except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
@@ -249,6 +252,30 @@ def update_object(request, implemented_types):
 
     log.info('<<' + log_prefix)
     return obj.serialize(options=web_ser_opts)
+
+
+def switch_to_existing_session(request):
+    '''
+    Allows us to re-establish contact with a session
+    before processing form data, if the session ID is passed in as hidden
+    POST content.
+    '''
+    redis_session_id = request.POST['session']
+
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
 
 
 def process_upload(request, field_name):
@@ -328,6 +355,97 @@ def process_upload(request, field_name):
 
     return file_path, file_name
 
+def process_upload2(request):
+    '''
+    New verion of process_upload that can handle multi-file uploads as well as
+    custom keyword/argument pairs passed from the client.
+    '''
+
+    import pdb
+    pdb.set_trace()
+    redis_session_id = request.POST['session']
+
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
+
+    upload_dir = get_session_dir(request)
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    persist_upload = asbool(request.POST.get('persist_upload', False))
+
+    if 'can_persist_uploads' in request.registry.settings.keys():
+        can_persist = asbool(request.registry.settings['can_persist_uploads'])
+    else:
+        can_persist = False
+
+    log.info('save_file_dir: {}'.format(upload_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    log.info('persist_upload?: {}'.format(persist_upload))
+    log.info('can_persist?: {}'.format(can_persist))
+
+    filelist = request.POST['filelist']
+    if filelist == 'filelist.txt':
+        #get file list from text file, then verify all files are present
+        #in this POST request.
+        pass
+    else:
+        #use file list 'as is'
+        filelist = filelist.split('*')
+
+    #for each file, process into server
+    for i, name in enumerate(filelist):
+        for j in range(0, len(filelist)):
+            fn = request.POST['file['+i+']']
+
+    input_file = request.POST[field_name].file
+    file_name, unique_name = gen_unique_filename(request.POST[field_name]
+                                                 .filename)
+    file_path = os.path.join(upload_dir, unique_name)
+
+    size = get_size_of_open_file(input_file)
+    log.info('Incoming file size: {}'.format(size))
+
+    if size > max_upload_size:
+        raise cors_response(request,
+                            HTTPBadRequest('file is too big!  Max size = {}'
+                                           .format(max_upload_size)))
+
+    if size >= get_free_space(upload_dir):
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to save the file'))
+
+    write_to_file(input_file, file_path)
+
+    log.info('Successfully uploaded file "{0}"'.format(file_path))
+
+    if persist_upload and can_persist:
+        log.info('Persisting file "{0}"'.format(file_path))
+
+        upload_dir = get_persistent_dir(request)
+        if size >= get_free_space(upload_dir):
+            raise cors_response(request,
+                                HTTPInsufficientStorage('Not enough space '
+                                                        'to persist the file'))
+
+        persistent_path = os.path.join(upload_dir, file_name)
+
+        write_to_file(input_file, persistent_path)
+
+    return file_path, file_name
 
 def activate_uploaded(request):
     '''

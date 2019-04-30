@@ -14,6 +14,7 @@ from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
 
 from webgnome_api.common.session_management import set_session_object
+from gnome.gnomeobject import GnomeId
 
 log = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ def ObjectImplementsOneOf(model_object, obj_types):
     return False
 
 
-def RegisterObject(obj, request, implemented_types):
+def RegisterObject(obj, request):
     '''
         Recursively register an object plus all contained child objects.
         Registering means we put the object somewhere it can be looked up
@@ -136,20 +137,22 @@ def RegisterObject(obj, request, implemented_types):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
+    log.info(request.session.session_id)
     sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
 
-    if (isinstance(obj, implemented_types)):
+    if (isinstance(obj, GnomeId)):
         set_session_object(obj, request)
+        log.info(obj)
 
     if isinstance(obj, sequence_types):
         for i in obj:
-            if (isinstance(i, implemented_types)):
-                RegisterObject(i, request, implemented_types)
+            if (isinstance(i, GnomeId)):
+                RegisterObject(i, request)
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if (isinstance(attr, implemented_types + sequence_types)):
-                RegisterObject(attr, request, implemented_types)
+            if (isinstance(attr, sequence_types)):
+                RegisterObject(attr, request)
 
 
 def obj_id_from_url(request):
@@ -168,9 +171,8 @@ def obj_id_from_url(request):
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
-
 def get_session_base_dir(request):
-    return request.registry.settings['session_dir']
+    return os.path.normpath(request.registry.settings['session_dir'])
 
 
 def get_session_dir(request):
@@ -184,7 +186,7 @@ def get_session_dir(request):
 
 
 def get_persistent_dir(request):
-    persistent_dir = request.registry.settings['persistent_dir']
+    persistent_dir = os.path.normpath(request.registry.settings['persistent_dir'])
 
     if os.path.isdir(persistent_dir) is False:
         os.makedirs(persistent_dir)
