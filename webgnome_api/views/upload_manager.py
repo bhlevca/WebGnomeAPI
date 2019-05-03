@@ -7,9 +7,14 @@ import logging
 import urllib
 import ujson
 
+from pyramid.settings import asbool
+from pyramid.interfaces import ISessionFactory
+from pyramid.response import Response
+
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPBadRequest,
                                     HTTPUnauthorized,
+                                    HTTPInsufficientStorage,
                                     HTTPInternalServerError)
 
 from cornice import Service
@@ -19,11 +24,18 @@ from ..common.system_resources import (list_files,
                                        file_info,
                                        mkdir,
                                        rename_or_move,
-                                       remove_file_or_dir)
-from ..common.common_object import (get_persistent_dir)
+                                       remove_file_or_dir,
+                                       get_free_space,
+                                       get_size_of_open_file,
+                                       write_to_file)
+from ..common.common_object import (get_session_dir,
+                                    get_persistent_dir)
 from ..common.views import (can_persist,
+                            get_size_of_open_file,
+                            gen_unique_filename,
                             cors_exception,
                             cors_policy,
+                            cors_response,
                             cors_file_response)
 
 log = logging.getLogger(__name__)
@@ -60,7 +72,7 @@ def get_uploaded_files(request):
         else:
             raise cors_exception(request, HTTPInternalServerError)
 
-
+"""
 @upload_manager.post()
 @can_persist
 def modify_filesystem(request):
@@ -86,7 +98,116 @@ def modify_filesystem(request):
         return create_new_folder(request, base_path, sub_folders, file_model)
     else:
         return rename_file(request, base_path, sub_folders, file_model)
+"""
 
+@upload_manager.post()
+def modify_filesystem(request):
+    '''
+        Make a file system modification within the uploads folder.
+        Currently, we support the following actions:
+        - create a new directory
+        - rename a file
+        - move a file into a directory (similar to renaming)
+    '''
+    if (request.POST.get('action', None) == 'upload_files'):
+        path, filename = process_upload(request)
+        resp = Response(ujson.dumps(path))
+        return resp
+    sub_folders = [urllib.unquote(d).encode('utf8')
+                   for d in request.matchdict['sub_folders']
+                   if d != '..']
+
+    base_path = get_persistent_dir(request)
+
+    try:
+        file_model = PyObjFromJson(ujson.loads(request.body))
+    except Exception:
+        raise cors_exception(request, HTTPBadRequest)
+
+    if (file_model.type == 'd'):
+        return create_new_folder(request, base_path, sub_folders, file_model)
+    else:
+        return rename_file(request, base_path, sub_folders, file_model)
+
+def process_upload(request):
+    '''
+    New verion of process_upload that can handle multi-file uploads as well as
+    custom keyword/argument pairs passed from the client.
+
+    returns an in-order list full paths to the file and an in-order list of
+    the basename of the file
+    '''
+
+    redis_session_id = request.POST['session']
+
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
+
+    upload_dir = os.path.relpath(get_session_dir(request))
+    max_upload_size = eval(request.registry.settings['max_upload_size'])
+
+    persist_upload = asbool(request.POST.get('persist_upload', False))
+
+    if 'can_persist_uploads' in request.registry.settings.keys():
+        can_persist = asbool(request.registry.settings['can_persist_uploads'])
+    else:
+        can_persist = False
+
+    log.info('save_file_dir: {}'.format(upload_dir))
+    log.info('max_upload_size: {}'.format(max_upload_size))
+
+    log.info('persist_upload?: {}'.format(persist_upload))
+    log.info('can_persist?: {}'.format(can_persist))
+
+    #for each file, process into server
+    input_file = request.POST['file'].file
+    fn = request.POST['file'].filename
+    file_name, unique_name = gen_unique_filename(fn)
+    file_path = os.path.join(upload_dir, unique_name)
+
+    size = get_size_of_open_file(input_file)
+    log.info('Incoming file size: {}'.format(size))
+
+    if size > max_upload_size:
+        raise cors_response(request,
+                            HTTPBadRequest('file is too big!  Max size = {}'
+                                           .format(max_upload_size)))
+
+    if size >= get_free_space(upload_dir):
+        raise cors_response(request,
+                            HTTPInsufficientStorage('Not enough space '
+                                                    'to save the file'))
+
+    write_to_file(input_file, file_path)
+
+    log.info('Successfully uploaded file "{0}"'.format(file_path))
+
+    if persist_upload and can_persist:
+        log.info('Persisting file "{0}"'.format(file_path))
+
+        upload_dir = get_persistent_dir(request)
+        if size >= get_free_space(upload_dir):
+            raise cors_response(request,
+                                HTTPInsufficientStorage('Not enough space '
+                                                        'to persist the file'))
+
+        persistent_path = os.path.join(upload_dir, file_name)
+
+        write_to_file(input_file, persistent_path)
+
+    return file_path, file_name
 
 @upload_manager.put()
 @can_persist
@@ -103,6 +224,8 @@ def create_file_item(request):
         - Create a new folder
         - Rename a file that already exists
     '''
+    import pdb
+    pdb.set_trace()
     sub_folders = [urllib.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']

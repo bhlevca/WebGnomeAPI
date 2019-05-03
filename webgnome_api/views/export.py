@@ -6,8 +6,6 @@ from os.path import isfile, isdir, basename, join, sep
 import logging
 import zipfile
 
-from uuid import uuid4
-
 from pyramid.view import view_config
 from pyramid.response import FileResponse
 from pyramid.httpexceptions import HTTPNotFound
@@ -25,7 +23,6 @@ def download_file(request):
     log_prefix = 'req({0}): download_file():'.format(id(request))
     log.info('>>' + log_prefix)
 
-    obj_id = uuid4()
     session_path = get_session_dir(request)
     file_path = sep.join(map(str, request.matchdict['file_path']))
     output_path = join(session_path, file_path)
@@ -39,7 +36,8 @@ def download_file(request):
         raise cors_response(request, HTTPNotFound('No Active Model!'))
 
     if isdir(output_path):
-        output_zip_path = "{0}_{1}_output.zip".format(model_name, obj_id)
+        short_dirname = basename(output_path).split('.')[-1]
+        output_zip_path = "{0}_{1}.zip".format(model_name, short_dirname)
         zip_path = join(output_path, output_zip_path)
         zf = zipfile.ZipFile(zip_path, "w")
 
@@ -59,6 +57,7 @@ def download_file(request):
         return response
     elif isfile(output_path):
         log.info('<<' + log_prefix)
+
         return FileResponse(output_path, request)
     else:
         raise cors_response(request, HTTPNotFound('File(s) requested do not '

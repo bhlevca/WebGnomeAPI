@@ -33,8 +33,8 @@ class FunctionalTestBase(GnomeTestCase):
 
     def tearDown(self):
         'Clean up any images the model generated after running tests.'
-        test_images_dir = os.path.join(self.project_root, 'static', 'img',
-                                       self.settings['model_data_dir'])
+        test_images_dir = os.path.join(self.settings['model_data_dir'],
+                                       'images')
         shutil.rmtree(test_images_dir, ignore_errors=True)
 
         self.cleanup_web_app_upon_shutdown()
@@ -55,6 +55,8 @@ class FunctionalTestBase(GnomeTestCase):
             print 'our session umodels object:', session_umodels
             if session_umodels is not None:
                 session_umodels.stop()
+
+        settings['redis_pubsub_thread'].stop()
 
         if hasattr(registry, '_redis_sessions'):
             registry._redis_sessions.connection_pool.disconnect()

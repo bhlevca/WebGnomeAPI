@@ -26,7 +26,10 @@ from ..common.views import (get_object,
                             cors_policy,
                             cors_response,
                             cors_exception,
-                            process_upload)
+                            switch_to_existing_session,
+                            process_upload2)
+
+from ..common.common_object import RegisterObject
 
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
@@ -69,6 +72,7 @@ def get_mover(request):
 @mover.post()
 def create_mover(request):
     '''Creates a Mover object.'''
+    log.info(request.session.session_id)
     return create_object(request, implemented_types)
 
 
@@ -85,13 +89,17 @@ def mover_upload_options(request):
 
 @view_config(route_name='mover_upload', request_method='POST')
 def upload_mover(request):
+    switch_to_existing_session(request)
     log_prefix = 'req({0}): upload_mover():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-    file_name, name = process_upload(request, 'new_mover')
-    file_path = file_name.split(os.path.sep)[-1]
-    log.info('  {} file_name: {}, name: {}, file_path: {}'
-             .format(log_prefix, file_name, name, file_path))
+    file_list = request.POST['file_list']
+    file_list = ujson.loads(file_list)
+    name = request.POST['name']
+    file_name = file_list
+
+    log.info('  {} file_name: {}, name: {}'
+             .format(log_prefix, file_name, name))
 
     mover_type = request.POST.get('obj_type', [])
 
@@ -172,8 +180,7 @@ def get_grid_centers(request):
     '''
         Outputs GNOME grid centers for a particular mover
     '''
-
-    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log_prefix = 'req({0}): get_grid_centers():'.format(id(request))
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
@@ -254,6 +261,7 @@ def get_grid_signature(mover):
 
 def get_cells(mover):
     grid_data = mover.get_grid_data()
+
     if not isinstance(mover, PyMover):
         d_t = grid_data.dtype.descr
         u_t = d_t[0][1]

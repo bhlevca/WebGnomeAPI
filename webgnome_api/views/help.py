@@ -90,7 +90,12 @@ def create_help_feedback(request):
         raise cors_exception(request, HTTPBadRequest)
 
     json_request['ts'] = int(time.time())
-    client = redis.Redis('localhost')
+
+    # find redis using redis sessions config
+    rhost = request.registry.settings.get('redis.sessions.host', 'localhost')
+    rport = request.registry.settings.get('redis.sessions.port', 6379)
+
+    client = redis.Redis(host=rhost, port=rport)
 
     if 'index' not in json_request:
         json_request['index'] = client.incr('index')

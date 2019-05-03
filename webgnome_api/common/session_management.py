@@ -26,6 +26,7 @@ def get_session_objects(request):
 
 def get_session_object(obj_id, request):
     objects = get_session_objects(request)
+
     return objects.get(obj_id, None)
 
 
