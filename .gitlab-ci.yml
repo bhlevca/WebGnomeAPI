@@ -1,7 +1,12 @@
+stages:
+  - test
+  - build
+
 services:
   - redis:latest
 
 master: 
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:latest
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:latest pygnome
@@ -14,6 +19,7 @@ master:
     - build
 
 develop:
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:develop
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:develop pygnome
@@ -26,6 +32,7 @@ develop:
     - build
 
 production:
+  stage: build
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:production
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:production pygnome
@@ -38,16 +45,19 @@ production:
     - build
 
 test:
+  stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:latest
   script:
     - yum update -y
     - yum install redis -y
-    - /usr/bin/redis-server /etc/redis.conf &
+    - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
     - pip install -r requirements.txt
     - pip install -e .
     - pip list
     - py.test webgnome_api/tests
+    - ps
+    - jobs
 
   tags:
     - docker
