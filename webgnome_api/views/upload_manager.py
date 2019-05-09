@@ -110,9 +110,19 @@ def modify_filesystem(request):
         - move a file into a directory (similar to renaming)
     '''
     if (request.POST.get('action', None) == 'upload_files'):
-        path, filename = process_upload(request)
-        resp = Response(ujson.dumps(path))
+        paths, filename = process_upload(request)
+        resp = Response(ujson.dumps(paths))
         return resp
+
+    if (request.POST.get('action', None) == 'activate_file'):
+        filelist = ujson.loads(request.POST.get('filelist'))
+        upload_dir = os.path.relpath(get_persistent_dir(request))
+        paths = []
+        for f in filelist:
+            paths.append(os.path.join(upload_dir, f))
+        resp = Response(ujson.dumps(paths))
+        return resp
+
     sub_folders = [urllib.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
@@ -137,7 +147,6 @@ def process_upload(request):
     returns an in-order list full paths to the file and an in-order list of
     the basename of the file
     '''
-
     redis_session_id = request.POST['session']
 
     if redis_session_id in request.session.redis.keys():
@@ -174,7 +183,7 @@ def process_upload(request):
     #for each file, process into server
     input_file = request.POST['file'].file
     fn = request.POST['file'].filename
-    file_name, unique_name = gen_unique_filename(fn)
+    file_name, unique_name = gen_unique_filename(fn, upload_dir)
     file_path = os.path.join(upload_dir, unique_name)
 
     size = get_size_of_open_file(input_file)

@@ -26,8 +26,7 @@ from ..common.views import (get_object,
                             cors_policy,
                             cors_response,
                             cors_exception,
-                            switch_to_existing_session,
-                            process_upload2)
+                            switch_to_existing_session)
 
 from ..common.common_object import RegisterObject
 
