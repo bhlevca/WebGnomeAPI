@@ -52,7 +52,7 @@ test:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
-    - pip install -r requirements.txt
+    - pip install -r pip_requirements.txt
     - pip install -e .
     - pip list
     - py.test webgnome_api/tests

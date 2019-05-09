@@ -471,11 +471,11 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['movers'][0]['diffusion_coef'] == 100000.0
 
-    def test_put_with_nested_sparse_random_vertical_mover(self):
+    def test_put_with_nested_sparse_random_mover_3d(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
-                                            '.RandomVerticalMover'),
-                               'name': u'RandomVerticalMover',
+                                            '.RandomMover3D'),
+                               'name': u'RandomMover3D',
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'mixed_layer_depth': 10.0,

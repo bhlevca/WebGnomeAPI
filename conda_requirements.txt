@@ -6,28 +6,35 @@
 #       -- or --
 #     $ pip install -r conda_requirements.txt
 #
+# However, we are mostly testing useing conda (and the conda-forge repo), so
+# all bets are off with pip.
+
 # In addition to this list of packages, there is a file separate from
-# conda_requirements.txt called simply requirements.txt.  This file contains
+# conda_requirements.txt called pip_requirements.txt.  This file contains
 # a list of packages that are not found in any of the main conda channel
 # repositories, so they are pip installable only.
 #
 # So after the previous step, one would normally do the following:
 #
-#     $ pip install -r requirements.txt
+#     $ pip install --no-deps -r requirements.txt
 
 # numpy is not strictly needed by the API, but is by gnome, etc,
-# and adding it helps keep conda from trying to downgrade it.
-numpy
-
-unit_conversion>=2.6
+# and adding it helps keep conda from trying to up- or down-grade it.
+numpy=1.15.*
 
 pyramid>=1.9
-ujson
-Paste
+repoze.lru  # required by Pyramid, but not brought in for some reason :-(
+paste
+pastedeploy>=2.0
 cornice>=3.4
+ujson
 docutils
-gitpython
-awesome-slugify
 webtest>=2.0
 htmlmin
 jsmin
+
+pycparser
+gevent
+gevent-websocket
+
+
