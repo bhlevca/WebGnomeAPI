@@ -28,8 +28,6 @@ from ..common.views import (get_object,
                             cors_exception,
                             switch_to_existing_session)
 
-from ..common.common_object import RegisterObject
-
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
 

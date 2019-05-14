@@ -233,8 +233,6 @@ def create_file_item(request):
         - Create a new folder
         - Rename a file that already exists
     '''
-    import pdb
-    pdb.set_trace()
     sub_folders = [urllib.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
