@@ -46,7 +46,7 @@ production:
 
 test_master:
   stage: test
-  image: gitlab.orr.noaa.gov:5002/pygnome:master
+  image: gitlab.orr.noaa.gov:5002/pygnome:latest
   script:
     - yum update -y
     - yum install redis -y
