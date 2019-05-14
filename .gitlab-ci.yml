@@ -44,7 +44,45 @@ production:
     - shell
     - build
 
-test_develop:
+test_master:
+  stage: test
+  image: gitlab.orr.noaa.gov:5002/pygnome:master
+  script:
+    - yum update -y
+    - yum install redis -y
+    - redis-server --daemonize yes
+    - conda install --file conda_requirements.txt
+    - pip install -r pip_requirements.txt
+    - pip install -e .
+    - pip list
+    - py.test webgnome_api/tests
+    - ps
+    - jobs
+  only:
+    - master
+  tags:
+    - docker
+
+test_production:
+  stage: test
+  image: gitlab.orr.noaa.gov:5002/pygnome:production
+  script:
+    - yum update -y
+    - yum install redis -y
+    - redis-server --daemonize yes
+    - conda install --file conda_requirements.txt
+    - pip install -r pip_requirements.txt
+    - pip install -e .
+    - pip list
+    - py.test webgnome_api/tests
+    - ps
+    - jobs
+  only:
+    - production
+  tags:
+    - docker
+
+test:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:develop
   script:
@@ -58,25 +96,8 @@ test_develop:
     - py.test webgnome_api/tests
     - ps
     - jobs
-  only:
-    - CI_Experiment
-  tags:
-    - docker
-
-test:
-  stage: test
-  image: gitlab.orr.noaa.gov:5002/pygnome:latest
-  script:
-    - yum update -y
-    - yum install redis -y
-    - redis-server --daemonize yes
-    - conda install --file conda_requirements.txt
-    - pip install -r pip_requirements.txt
-    - pip install -e .
-    - pip list
-    - py.test webgnome_api/tests
-    - ps
-    - jobs
-
+  except:
+    - master
+    - production
   tags:
     - docker
