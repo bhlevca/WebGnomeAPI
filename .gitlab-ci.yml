@@ -58,10 +58,8 @@ test_develop:
     - py.test webgnome_api/tests
     - ps
     - jobs
-
   only:
     -CI_Experiment
-
   tags:
     - docker
 
