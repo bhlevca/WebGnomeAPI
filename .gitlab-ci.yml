@@ -59,7 +59,7 @@ test_develop:
     - ps
     - jobs
   only:
-    -CI_Experiment
+    - CI_Experiment
   tags:
     - docker
 
