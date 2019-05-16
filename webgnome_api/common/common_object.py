@@ -151,7 +151,7 @@ def RegisterObject(obj, request):
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if (isinstance(attr, sequence_types)):
+            if (isinstance(attr, GnomeId) or isinstance(attr, sequence_types)):
                 RegisterObject(attr, request)
 
 
