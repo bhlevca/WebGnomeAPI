@@ -17,7 +17,7 @@ class MapTestBase(FunctionalTestBase):
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
-"""
+    """
     def test_goods_map(self):
         req = self.req_data.copy()
         req['filename'] = 'goods:Test.bna'
@@ -37,7 +37,7 @@ class MapTestBase(FunctionalTestBase):
         # just some checks to see that we got our map
         assert len(map1['map_bounds']) == 4
         assert basename(map1['filename']) == 'newyork.bna'
-"""
+    """
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
 
