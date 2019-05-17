@@ -2,6 +2,8 @@
 Functional tests for the Gnome Map object Web API
 """
 from os.path import basename
+import webtest
+import ujson
 
 from base import FunctionalTestBase
 
@@ -15,7 +17,7 @@ class MapTestBase(FunctionalTestBase):
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
-
+"""
     def test_goods_map(self):
         req = self.req_data.copy()
         req['filename'] = 'goods:Test.bna'
@@ -35,7 +37,7 @@ class MapTestBase(FunctionalTestBase):
         # just some checks to see that we got our map
         assert len(map1['map_bounds']) == 4
         assert basename(map1['filename']) == 'newyork.bna'
-
+"""
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
 
@@ -98,10 +100,13 @@ class MapTestBase(FunctionalTestBase):
         self.check_updates(resp.json_body)
 
     def test_file_upload(self):
-        field_name = 'new_map'
-        file_name = 'models/Test.bna'
-        resp = self.testapp.post('/map/upload', {'session': '1234'},
-                                 upload_files=[(field_name, file_name,)]
+        file_names = ['models/Test.bna',]
+        self.setup_map_file()
+        resp = self.testapp.post('/map/upload',
+                                 {'session': '1234',
+                                  'file_list': ujson.dumps(file_names),
+                                  'name':'Test',
+                                  'obj_type':'gnome.map.MapFromBNA'}
                                  )
         map_obj = resp.json_body
 
@@ -205,7 +210,7 @@ class GnomeMapTest(FunctionalTestBase):
         '''
         pass
 
-
+"""
 class MapGeoJsonTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
@@ -290,7 +295,7 @@ class MapGeoJsonTest(FunctionalTestBase):
                             assert len(c) == 2
                 else:
                     assert False
-
+"""
 
 class ParamMapTest(FunctionalTestBase):
     '''

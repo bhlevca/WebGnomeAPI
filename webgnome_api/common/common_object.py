@@ -13,7 +13,7 @@ from .helpers import FQNamesToDict, PyClassFromName
 from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
 
-from webgnome_api.common.session_management import set_session_object
+from webgnome_api.common.session_management import set_session_object, get_session_object
 from gnome.gnomeobject import GnomeId
 
 log = logging.getLogger(__name__)
@@ -137,7 +137,7 @@ def RegisterObject(obj, request):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
-    log.info(request.session.session_id)
+    log.info('registering {0} on session {1}'.format(obj, request.session.session_id))
     sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
 
     if (isinstance(obj, GnomeId)):
@@ -151,7 +151,8 @@ def RegisterObject(obj, request):
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
             attr = getattr(obj, k)
-            if (isinstance(attr, GnomeId) or isinstance(attr, sequence_types)):
+            if ((isinstance(attr, GnomeId) and get_session_object(attr.id, request) is None)
+                or isinstance(attr, sequence_types)):
                 RegisterObject(attr, request)
 
 
