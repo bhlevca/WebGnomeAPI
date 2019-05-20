@@ -13,7 +13,7 @@ class MapTestBase(FunctionalTestBase):
         Tests out the Gnome Map object API
     '''
     req_data = {'obj_type': 'gnome.map.MapFromBNA',
-                'filename': 'Test.bna',
+                'filename': 'models/Test.bna',
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
