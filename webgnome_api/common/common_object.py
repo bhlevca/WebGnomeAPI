@@ -150,7 +150,11 @@ def RegisterObject(obj, request):
                 RegisterObject(i, request)
     elif hasattr(obj, '__dict__'):
         for k in dir(obj):
-            attr = getattr(obj, k)
+            attr = None
+            try:
+                attr = getattr(obj, k)
+            except Exception as e:
+                log.warning(str(e))
             if ((isinstance(attr, GnomeId) and get_session_object(attr.id, request) is None)
                 or isinstance(attr, sequence_types)):
                 RegisterObject(attr, request)
