@@ -91,7 +91,7 @@ def load_cors_origins(settings, key):
 
 
 def get_json(request):
-    return ujson.loads(request.text)
+    return ujson.loads(request.text, ensure_ascii=False)
 
 
 def overload_redis_session_factory(settings, config):
