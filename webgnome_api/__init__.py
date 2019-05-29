@@ -142,7 +142,7 @@ def start_session_cleaner(settings):
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=True)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=False)
 
 
 def main(global_config, **settings):
