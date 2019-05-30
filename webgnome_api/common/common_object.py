@@ -137,12 +137,11 @@ def RegisterObject(obj, request):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
-    log.info('registering {0} on session {1}'.format(obj, request.session.session_id))
     sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
 
     if (isinstance(obj, GnomeId)):
         set_session_object(obj, request)
-        log.info(obj)
+        log.info('registering {0} on session {1}'.format(obj.name, request.session.session_id))
 
     if isinstance(obj, sequence_types):
         for i in obj:
