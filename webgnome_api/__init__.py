@@ -41,7 +41,6 @@ class WebgnomeFormatter(Formatter):
                     record.session_hash = request.session_hash
 
         # magic_record.__dict__ support dotted attribute lookup
-
         magic_record = _WrapDict(record, _DottedLookup)
 
         # Disable logging during disable to prevent recursion (in case
@@ -53,10 +52,6 @@ class WebgnomeFormatter(Formatter):
             return logging.Formatter.format(self, magic_record)
         finally:
             logging.disable(save_disable)
-
-            if not has_session_hash and hasattr(record, 'session_hash'):
-                del record.session_hash
-
 
 class DummySession(object):
     session_id = 'DummySession'
