@@ -133,7 +133,7 @@ def activate_uploaded_model(request):
         init_session_objects(request, force=True)
         refs = get_session_objects(request)
 
-        new_model = Model.load(file_path, refs=refs)
+        new_model = Model.load(zipfile_path, refs=refs)
         new_model._cache.enabled = False
 
         new_model._schema.register_refs(new_model._schema(), new_model, refs)

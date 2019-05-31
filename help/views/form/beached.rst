@@ -1,7 +1,7 @@
 .. keywords
    beached, observed beached, manual beaching
 
-Observed beached oil
+Observed Beached Oil
 ^^^^^^^^^^^^^^^^^^^^
 
 This form allows the manual entry of volumes of observed beached oil for the mass balance. Note, if the trajectory is run with a map that contains land, 

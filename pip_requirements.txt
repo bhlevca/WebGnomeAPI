@@ -5,15 +5,17 @@
 # are not found in any of the main conda channel repositories, so they are
 # pip installable only.
 #
-# To prepere the WebGnomeAPI environment, one would normally do the following:
+# To prepare the WebGnomeAPI environment, one would normally do the following:
 #
 #     $ conda install --file conda_requirements.txt
-#     $ pip install -r requirements.txt
+#     $ pip install -r pip_requirements.txt
 
 pygtail
 pyramid_log
+redis
 pyramid-redis-sessions
 
-gevent>=1.2.2
--e git+https://github.com/NOAA-ORR-ERD/gevent-socketio.git#egg=gevent-socketio
-git+https://github.com/NOAA-ORR-ERD/PyNUCOS.git@v2.6.3#egg=unit_conversion
+
+# erd's build of gevent-socketio
+https://github.com/NOAA-ORR-ERD/gevent-socketio/archive/v0.3.7.tar.gz
+
