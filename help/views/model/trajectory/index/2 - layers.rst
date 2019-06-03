@@ -1,14 +1,19 @@
 .. keywords
    layers, USGS, navigational, charts, maps
 
+Layers
+^^^^^^^^^^
+
 The **Layers** tab on the right side of the window allows you to show or hide information on the trajectory map.
 
 Imagery
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*******
+
 Background maps or basemaps including NOAA Navigational Charts, Bing Maps Aerial (satellite imagery), Open Street Map or no imagery can be selected from this panel.
 
 Model Map
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**********
+
 Information on the *Model Map* can be toggled on and off using the following checkboxes in this panel:
   	* Coastlines- indicates the polygon of the coast in which a spill can impact
    	* Spillable Area- indicates the polygon within which a spill can be created
@@ -16,7 +21,8 @@ Information on the *Model Map* can be toggled on and off using the following che
    	* Graticule- displays the latitude and longitude grid on the map
 
 Spills
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*******
+
 Toggle on or off the model *particles* or the *spill location* checkboxes or edit layer properties for the spill using the three dots button. The layer properties have more of the following options under Spill Appearance:
 	* Toggle on or off the Particles or the Spill Location checkboxes 
 	* Particle size- adjust the model particle size
@@ -29,7 +35,8 @@ Toggle on or off the model *particles* or the *spill location* checkboxes or edi
 You can also reset your changes back to default settings with the Reset to Default button. 
 
 Environmental Data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+******************
+
 Toggle on or off the Tidal Currents or Offshore Currents and associated grids using the checkboxes. You can also edit the Tidal Currents or Offshore Currents Appearance by adjusting their arrow (e.g. color, alpha or scale) or grid (e.g. color or alpha) 
 
 You can also reset your changes back to default settings with the Reset to Default button. 
