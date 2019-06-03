@@ -13,11 +13,9 @@ The coastline modeled in this Location File is part of Alaska's (and Canada's) b
 The North Slope shoreline is irregular, containing many small bays, lagoons, spits, beaches, and barrier islands. Extensive mud flats often occur in the deltas of the rivers. Some of the larger rivers discharging into the Beaufort Sea form depositional deltas that extend several miles from the shore. Most of the coastline is low-lying, with only small bluffs less than 10 feet (3 meters) high. Some areas of the coast are directly exposed to the open ocean, and other sections are protected by chains of barrier islands that are composed of sand and gravel (Committee 2003).
 
 Gwydyr Bay is a lagoon area west of Prudhoe Bay, between the Return Islands and the mainland in northeastern Alaska. Harrison Bay is a large inlet north and west of the Colville River Delta. Rivers in this area tend to be fast-flowing and braided, with extensive delta systems. The river systems support a diversity of plant and animal life, and can serve as corridors for migrating mammals and birds (Committee 2003). 
-<<<<<<< HEAD
-======================================
-=======
-=====================================
->>>>>>> ef8035ba9988a8f1cff2b049eae57ab81d349263
+
+North Slope Location File
+============================================
 
 The North Slope Location File simulates open water conditions (generally occurring mid-July through mid-September) in the coastal area between Harrison Bay and the Mackenzie River delta in Canada, including the Arctic National Wildlife Refuge (ANWR) as well as Gwydyr Bay and Stefansson Sound. The Location File contains circulation patterns that simulate the wind-driven coastal circulation and the flows of some of the region's larger rivers. Because the tidal currents are generally less than 5 cm s-1 (Endicott 1992), tides have not been included in the simulation. The Location File includes detailed circulation between the numerous barrier islands of this region; however, other than the field work done for the earlier *Harrison and Gwydyr Bays* Location File, we lack data for calibration of the currents.
 
