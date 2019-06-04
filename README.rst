@@ -12,31 +12,38 @@ webgnomeapi is a python package. To run it you need to install the dependencies,
 Dependencies
 ------------
 
-**pip** You can pip install everything webgnomeapi needs (except py_gnome) with pip::
+The webgnomeAPI is pretty worthless without py_gnome, and py_gnome is easiest to get going with conda and conda-forge.
 
-    pip install -r requirements.txt
+conda
+.....
 
-NOTE: as py_gnome is really hard to get going with just piip, you probably want to use conda anyway.
+If you are using a conda based system you can install most of the dependencies with conda. This requires the conda-forge channel)::
 
-**conda** If you are using a conda based system you can install most of the dependencies with conda
-(this requires the conda-forge channel)::
+    conda config --add channels conda-forge
+
+(You probably already did that for py_gnome)
+
+Install the requirements::
 
   conda install --file conda_requirements.txt
 
-But not quite everything is available as conda packages, so you need to install a few more with pip::
+Not quite everything is available as conda packages, so you need to install a few more with pip::
 
-    pip install -r requirements.txt
+    pip install -r pip_requirements.txt
 
 Should do it.
+
+pip
+...
+
+In theory, you can install everything webgnomeapi needs with pip, except py_gnome and its dependencies. You can give that a try with::
+
+    pip install -r conda_requirements.txt -r pip_requirements.txt
 
 Installing the server
 ---------------------
 
-Installing can be done the usual way for a python package::
-
-  pip install ./
-
-or::
+Installing the server from code can be done the usual way for a python package::
 
   pip install -e ./
 

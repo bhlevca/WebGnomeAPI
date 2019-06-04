@@ -28,6 +28,7 @@ from .helpers import (JSONImplementsOneOf,
 
 from .common_object import (CreateObject,
                             UpdateObject,
+                            RegisterObject,
                             ObjectImplementsOneOf,
                             obj_id_from_url,
                             obj_id_from_req_payload,
@@ -81,10 +82,13 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     json_exc = json_exception(depth, with_stacktrace)
     if json_exc is not None:
         http_exc.json_body = json_exc
-    if False and with_stacktrace: #remove false to use
-        pass
-        import pdb
-        pdb.post_mortem(sys.exc_info()[2])
+    if ('develop_mode' in request.registry.settings.keys() and
+                asbool(request.registry.settings['develop_mode'])):
+        if with_stacktrace: #remove false to use
+            pass
+            import pdb
+            pdb.post_mortem(sys.exc_info()[2])
+
     return http_exc
 
 
@@ -93,7 +97,8 @@ def json_exception(depth, with_stacktrace=False):
 
     if exc_value is not None:
         exc_json = {'exc_type': exc_value.__class__.__name__,
-                    'message': exc_value.message}
+                    'message': traceback.format_exception_only(_, exc_value)
+                    }
 
         if with_stacktrace:
             tb = traceback.extract_tb(exc_traceback)
@@ -196,8 +201,10 @@ def create_object(request, implemented_types):
              .format(log_prefix, id(session_lock), current_thread().ident))
 
     try:
+        log.info(request.session.session_id)
         log.info('  ' + log_prefix + 'creating ' + json_request['obj_type'])
         obj = CreateObject(json_request, get_session_objects(request))
+        RegisterObject(obj, request)
     except Exception:
         raise cors_exception(request, HTTPUnsupportedMediaType,
                              with_stacktrace=True)
@@ -246,6 +253,30 @@ def update_object(request, implemented_types):
 
     log.info('<<' + log_prefix)
     return obj.serialize(options=web_ser_opts)
+
+
+def switch_to_existing_session(request):
+    '''
+    Allows us to re-establish contact with a session
+    before processing form data, if the session ID is passed in as hidden
+    POST content.
+    '''
+    redis_session_id = request.POST['session']
+
+    if redis_session_id in request.session.redis.keys():
+        def get_specific_session_id(redis, timeout, serialize, generator,
+                                    session_id=redis_session_id):
+            return session_id
+
+        factory = request.registry.queryUtility(ISessionFactory)
+        request.session = factory(request,
+                                  new_session_id=get_specific_session_id)
+
+        if request.session.session_id != redis_session_id:
+            raise cors_response(request,
+                                HTTPBadRequest('multipart form request '
+                                               'could not re-establish session'
+                                               ))
 
 
 def process_upload(request, field_name):
@@ -325,7 +356,6 @@ def process_upload(request, field_name):
 
     return file_path, file_name
 
-
 def activate_uploaded(request):
     '''
         This view is intended to activate a file that has already been
@@ -367,13 +397,26 @@ def activate_uploaded(request):
     return dest_path, file_name
 
 
-def gen_unique_filename(filename_in):
+def gen_unique_filename(filename_in, upload_dir=None):
     # add uuid to the file name in case the user accidentally uploads
     # multiple files with the same name for different objects.
-    file_name, extension = get_file_name_ext(filename_in)
-
-    return (file_name + extension,
-            file_name + '-' + str(uuid.uuid4()) + extension)
+    if upload_dir:
+        existing_files = os.listdir(upload_dir)
+        file_name, extension = get_file_name_ext(filename_in)
+        fmtstring = file_name + '{0}' + extension
+        new_fn = fmtstring.format('')
+        i = 1;
+        while i < 255:
+            if new_fn not in existing_files:
+                return (file_name + extension, new_fn)
+            else:
+                new_fn = fmtstring.format(' ('+ str(i) + ')')
+                i+=1
+        raise ValueError('File uploaded too many times')
+    else:
+        file_name, extension = get_file_name_ext(filename_in)
+        return (file_name + extension,
+                file_name + '-' + str(uuid.uuid4()) + extension)
 
 
 def get_file_name_ext(filename_in):

@@ -283,12 +283,12 @@ class RandomMoverTests(BaseMoverTests):
         assert json_obj['on'] is False
 
 
-class RandomVerticalMoverTests(BaseMoverTests):
+class RandomMover3DTests(BaseMoverTests):
     '''
-        Tests out the Gnome Random Vertical Mover API
+        Tests out the Gnome Random Mover 3D API
     '''
-    req_data = {'obj_type': u'gnome.movers.random_movers.RandomVerticalMover',
-                'name': u'RandomVerticalMover',
+    req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover3D',
+                'name': u'RandomMover3D',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'mixed_layer_depth': 10.0,
@@ -317,7 +317,7 @@ class RandomVerticalMoverTests(BaseMoverTests):
         self.check_updates(resp.json_body)
 
     def check_create_properties(self, response):
-        super(RandomVerticalMoverTests, self).check_create_properties(response)
+        super(RandomMover3DTests, self).check_create_properties(response)
 
         # specific to SimpleMover()
         assert 'velocity' in response.json_body
@@ -385,7 +385,7 @@ class CatsMoverTests(BaseMoverTests):
         self.check_updates(resp.json_body)
 
     def check_create_properties(self, response):
-        super(RandomVerticalMoverTests, self).check_create_properties(response)
+        super(RandomMover3DTests, self).check_create_properties(response)
 
         # specific to SimpleMover()
         assert 'velocity' in response.json_body
