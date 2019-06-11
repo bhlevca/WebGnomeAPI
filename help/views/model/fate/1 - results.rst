@@ -4,11 +4,11 @@
 Evaluate Model Results
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The screen comprises nine tabs. Oil Budget - Table, Oil Budget - Graph, Evaporation, Dispersion, Sedimentation, Water, Density, Viscosity, and ICS209.
+The screen comprises of four tabs: Oil Budget - Table, Oil Budget - Graph, Weathering, and ICS209.
 
-You may edit you model at any time, however, switching from Weathering Only to Trajectory only or from Trajectory Only to Weathering Only may result in the model being reset and any data already entered being deleted. You do have the option of changing from Weathering Only or Trajectory Only to a Weathering & Trajectory model without the loss of data.
+You may edit you model at any time, however, switching from Fate View to Map View or from Map View to Fate may result in the model being reset and any data already entered being deleted. You do have the option of changing from Fate View or Map View to a Weathering & Trajectory model without the loss of data.
 
-When choosing Weathering & Trajectory, you have the option of switching between the Trajectory results (map) and the Weathering results. Click the small icons for Trajectory or Weathering in the top right corner to switch between these results.
+When choosing Fate View & Map View, you have the option of switching between the Map View and the Fate View results. Click the small icons for Map View or Fate View in the top right corner to switch between these results.
 
 If for any reason this page does not respond as predicted, please refresh your browser window. This should take care of most problems. If you continue to have difficulties, please contact us.
 
