@@ -1,16 +1,12 @@
 .. keywords
    evaluate, oil budget, graph, table, evaporation, density, water, viscosity, ics209, export, weathering, trajectory
 
-Evaluate Model Results
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Fate View
+^^^^^^^^^^
 
-The screen comprises of four tabs: Oil Budget - Table, Oil Budget - Graph, Weathering, and ICS209.
+The Fate View has four tabs: Oil Budget - Table, Oil Budget - Graph, Weathering, and ICS209.
 
-You may edit you model at any time, however, switching from Fate View to Map View or from Map View to Fate may result in the model being reset and any data already entered being deleted. You do have the option of changing from Fate View or Map View to a Weathering & Trajectory model without the loss of data.
-
-When choosing Fate View & Map View, you have the option of switching between the Map View and the Fate View results. Click the small icons for Map View or Fate View in the top right corner to switch between these results.
-
-If for any reason this page does not respond as predicted, please refresh your browser window. This should take care of most problems. If you continue to have difficulties, please contact us.
+You may edit you model at any time by switching back to Setup View via the menu buttons on the right.
 
 
 Export Options
