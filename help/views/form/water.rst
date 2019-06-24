@@ -17,8 +17,11 @@ Sediment load is another process that can affect the behavior of an oil slick. W
 Wave heights are used to calculate wave energy and to estimate the rate of dispersion of oil from the surface slick into the water column. You can either have the wave climate computed from the wind or specify a known wave significant wave height. If computing from the Wind, you can specify the fetch over which it blows `fetch <https://en.wikipedia.org/wiki/Fetch_(geography)>`_. GNOME defaults to unlimited fetch -- if you specify a fetch, it will limit the wave energy, and thus result in smaller dispersion.
 
 * The default option is if you select Compute from Wind (Unlimited Fetch)
+
 * If you select Compute from Wind and Fetch, enter a value for Fetch and select the units from the drop-down menu. 
+
 * If you select Known Wave Height, enter a value for height and select the units.
+
 * If you select I'm in a River, enter a value for height and select the units. Note the Caution
 
 Some water properties data sources:
