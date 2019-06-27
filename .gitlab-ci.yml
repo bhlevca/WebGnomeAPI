@@ -55,7 +55,7 @@ test_master:
     - pip install -r pip_requirements.txt
     - pip install -e .
     - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   only:
@@ -74,7 +74,7 @@ test_production:
     - pip install -r pip_requirements.txt
     - pip install -e .
     - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   only:
@@ -93,7 +93,7 @@ test:
     - pip install -r pip_requirements.txt
     - pip install -e .
     - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   except:
