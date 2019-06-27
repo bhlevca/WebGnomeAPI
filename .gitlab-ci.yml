@@ -57,7 +57,7 @@ test_master:
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
+    - conda list
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -79,7 +79,7 @@ test_production:
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
+    - conda list
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -101,7 +101,8 @@ test:
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
+    - conda list
+    - echo $PATH
     - pytest webgnome_api/tests
     - ps
     - jobs
