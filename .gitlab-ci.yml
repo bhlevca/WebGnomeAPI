@@ -51,6 +51,7 @@ test_master:
     - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
+    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
@@ -71,6 +72,7 @@ test_production:
     - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
+    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
@@ -91,6 +93,7 @@ test:
     - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
+    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
