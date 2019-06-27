@@ -53,6 +53,11 @@ test_master:
     - redis-server --daemonize yes
     - conda init bash
     - source /root/.bashrc
+    # make sure the conda channels are set up right
+    # the last channel you add will be first on the list
+    - conda config --add channels defaults
+    - conda config --add channels NOAA-ORR-ERD
+    - conda config --add channels conda-forge
     - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
@@ -75,6 +80,11 @@ test_production:
     - redis-server --daemonize yes
     - conda init bash
     - source /root/.bashrc
+    # make sure the conda channels are set up right
+    # the last channel you add will be first on the list
+    - conda config --add channels defaults
+    - conda config --add channels NOAA-ORR-ERD
+    - conda config --add channels conda-forge
     - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
@@ -97,6 +107,11 @@ test:
     - redis-server --daemonize yes
     - conda init bash
     - source /root/.bashrc
+    # make sure the conda channels are set up right
+    # the last channel you add will be first on the list
+    - conda config --add channels defaults
+    - conda config --add channels NOAA-ORR-ERD
+    - conda config --add channels conda-forge
     - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
