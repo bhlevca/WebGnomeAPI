@@ -178,7 +178,7 @@ def download_model(request):
         tf.close()
 
         json_, saveloc, refs = my_model.save(saveloc=filename)
-        response_filename = ('{0}.zip'.format(my_model.name))
+        response_filename = ('{0}.gnome'.format(my_model.name))
         tf = open(saveloc, 'r+b')
         response = request.response
         response.content_type = 'application/zip'

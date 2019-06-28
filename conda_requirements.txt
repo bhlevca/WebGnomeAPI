@@ -29,6 +29,7 @@ pastedeploy>=2.0
 cornice>=3.4
 ujson
 docutils
+pytest
 webtest>=2.0
 htmlmin
 jsmin
