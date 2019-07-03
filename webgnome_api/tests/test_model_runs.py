@@ -19,23 +19,22 @@ class ModelRunTest(FunctionalTestBase):
                   'release': {'obj_type': ('gnome.spill.release'
                                            '.PointLineRelease'),
                               'num_elements': 1000,
-                              'num_released': 0,
                               'release_time': '2014-08-06T08:00:00',
                               'end_release_time': '2014-08-06T08:00:00',
                               'start_time_invalid': False,
                               'end_position': [-72.419992, 41.202120, 0.0],
                               'start_position': [-72.419992, 41.202120, 0.0]
                               },
-                  'element_type': {'obj_type': ('gnome.spill.elements'
-                                                '.ElementType'),
-                                   'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                     'windage_range': [0.01,
-                                                                       0.04],
-                                                     'windage_persist': 900,
-                                                     }
-                                                    ],
-                                   'substance': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
-                                   },
+                  'substance': {'obj_type': ('gnome.spill.substance.GnomeOil'),
+                                'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                  'windage_range': [0.01,
+                                                                    0.04],
+                                                  'windage_persist': 900,
+                                                  }
+                                                  ],
+                                'name': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)',
+                                'standard_density': 876.70384138785619,
+                                },
                   'amount': 200,
                   'units': 'tons'
                   }
