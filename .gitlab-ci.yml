@@ -48,21 +48,11 @@ test_master:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:latest
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
-    - conda init bash
-    - source /root/.bashrc
-    # make sure the conda channels are set up right
-    # the last channel you add will be first on the list
-    - conda config --add channels defaults
-    - conda config --add channels NOAA-ORR-ERD
-    - conda config --add channels conda-forge
-    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - conda list
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -75,21 +65,11 @@ test_production:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:production
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
-    - conda init bash
-    - source /root/.bashrc
-    # make sure the conda channels are set up right
-    # the last channel you add will be first on the list
-    - conda config --add channels defaults
-    - conda config --add channels NOAA-ORR-ERD
-    - conda config --add channels conda-forge
-    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - conda list
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -102,22 +82,11 @@ test:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:develop
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
-    - conda init bash
-    - source /root/.bashrc
-    # make sure the conda channels are set up right
-    # the last channel you add will be first on the list
-    - conda config --add channels defaults
-    - conda config --add channels NOAA-ORR-ERD
-    - conda config --add channels conda-forge
-    - conda activate base
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - conda list
-    - echo $PATH
     - pytest webgnome_api/tests
     - ps
     - jobs
