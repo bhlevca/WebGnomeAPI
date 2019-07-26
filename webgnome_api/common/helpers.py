@@ -80,6 +80,8 @@ def update_savefile(file_path):
                             new_zf.writestr(fname, buffer)
 
                 # Generate new substance object
+                if water_json is None:
+                    water_json = (None, None)
                 substance = Substance_from_ElementType(element_type_json[1], water_json[1])
                 substance_fn = substance['name'] + '.json'
             
