@@ -100,7 +100,7 @@ def create_help_feedback(request):
     if 'index' not in json_request:
         json_request['index'] = client.incr('index')
 
-    client.set('feedback' + str(json_request['index']), json_request)
+    client.set('feedback' + str(json_request['index']), str(json_request))
 
     return json_request
 
