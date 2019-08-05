@@ -156,12 +156,16 @@ def run_model(request):
                 except Exception:
                     exc_type, exc_value, _exc_traceback = sys.exc_info()
                     traceback.print_exc()
+                    if ('develop_mode' in request.registry.settings.keys() and
+                                request.registry.settings['develop_mode'].lower() == 'true'):
+                        import pdb
+                        pdb.post_mortem(sys.exc_info()[2])
 
                     msg = ('  {}{}'
                            .format(log_prefix, traceback.format_exception_only(exc_type,
                                                                    exc_value)))
                     log.critical(msg)
-                    raise
+                    raise   
 
                 if output:
                     socket_namespace.num_sent += 1

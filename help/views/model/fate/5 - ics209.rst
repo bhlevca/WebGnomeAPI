@@ -2,7 +2,7 @@
    ics209, export, report
 
 ICS209
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^
 
 This tab is designed to help the user fill out the ICS209 form. While the graph initially shows the entire spill run, you can change the start and end time to show only a portion of the run.
 

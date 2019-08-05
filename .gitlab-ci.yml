@@ -48,14 +48,12 @@ test_master:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:latest
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   only:
@@ -67,14 +65,12 @@ test_production:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:production
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   only:
@@ -86,14 +82,12 @@ test:
   stage: test
   image: gitlab.orr.noaa.gov:5002/pygnome:develop
   script:
-    - yum update -y
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
     - pip install -r pip_requirements.txt
     - pip install -e .
-    - pip list
-    - py.test webgnome_api/tests
+    - pytest webgnome_api/tests
     - ps
     - jobs
   except:

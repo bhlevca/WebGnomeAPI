@@ -11,7 +11,7 @@ from cornice import Service
 initializer = Service(name='initializer', path='/initializer*obj_id',
                       description="Initializer API", cors_policy=cors_policy)
 
-module_name = 'gnome.spill.elements'
+module_name = 'gnome.spill.initializers'
 module_attrs = ('InitWindages',
                 'InitMassFromPlume',
                 'InitRiseVelFromDist',

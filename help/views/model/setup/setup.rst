@@ -46,4 +46,4 @@ Special cases like a Constant Wind or Horizontal Diffusion are extrapolated for 
 
 .. |location_link| raw:: html
 
-   <a href="https://gnome-stage.orr.noaa.gov/doc/" target="_blank">User Guide</a>
+   <a href="https://gnome.orr.noaa.gov/doc/" target="_blank">User Guide</a>
