@@ -26,23 +26,23 @@ def update_savefile(file_path):
                 "obj_type": "gnome.spill.substance.NonWeatheringSubstance", 
                 "name": "NonWeatheringSubstance", 
                 "standard_density": 1000.0, 
-                "initializers": et_json['initializers'],
+                "initializers": et_json.get('initializers',[]),
                 "is_weatherable": False, 
                 "id": "v0-v1-update-id-0"
             }
         else:
-            for inits in et_json['initializers']:
+            for inits in et_json.get('initializers', []):
                 inits['obj_type'] = inits['obj_type'].replace('.elements.', '.')
             substance = {
                 "obj_type": "gnome.spill.substance.GnomeOil", 
-                "name": et_json['substance'],  
-                "initializers": et_json['initializers'],
+                "name": et_json.get('substance', 'Unknown Oil'),  
+                "initializers": et_json.get('initializers', []),
                 "is_weatherable": True,
                 "water": water,
                 "id": "v0-v1-update-id-1"
             }
-            if isinstance(et_json['substance'], dict):
-                substance.update(et_json['substance'])
+            if isinstance(et_json.get('substance', None), dict):
+                substance.update(et_json.get('substance'))
 
         return substance
 
