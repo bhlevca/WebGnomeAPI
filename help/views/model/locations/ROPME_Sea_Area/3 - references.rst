@@ -27,15 +27,21 @@ Please contact any of the following for wind forecasts and historical data:
 
 **Oil Spill Response**
 
-.. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
 
-`NOAA's Emergency Response Division (ERD)`_
+|erd_link|
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.
 
 **General Information**
 
 
-.. _Marine Emergency Mutual Aid Centre (MEMAC): http://www.memac-rsa.org/
+|memac_link|
 
-`Marine Emergency Mutual Aid Centre (MEMAC)`_
+.. |erd_link| raw:: html
+
+   <a href="http://response.restoration.noaa.gov" target="_blank">NOAA's Emergency Response Division (ERD)</a>
+
+.. |memac_link| raw:: html
+
+   <a href="http://www.memac-rsa.org" target="_blank">Marine Emergency Mutual Aid Centre (MEMAC)</a>
+
