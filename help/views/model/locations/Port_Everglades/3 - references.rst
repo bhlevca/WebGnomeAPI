@@ -46,7 +46,7 @@ Tools and information for emergency responders and planners, and others concerne
 
 .. |nws_ft_lauderdale_link| raw:: html
 
-   <a href="http://forecast.weather.gov/MapClick.php?lat=44.90618742200047&lon=-66.98997651399964" target="_blank">Fort Lauderdale, FL</a>
+   <a href="http://forecast.weather.gov/MapClick.php?lat=26.1425&lon=-80.1395" target="_blank">Fort Lauderdale, FL</a>
 
 .. |nws_miami_link| raw:: html
 
