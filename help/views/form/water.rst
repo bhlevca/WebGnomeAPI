@@ -6,7 +6,7 @@ Water Properties
 
 Both salinity and temperature are needed to determine the density of seawater. Density is a major factor in determining whether an oil will float or sink. 
 
-Water Temperature is can be set in multiple units. If you have no idea, you can often find data fr the US from at the `National Data Buoy Center <https://www.ndbc.noaa.gov/>`_.
+Water Temperature is can be set in multiple units. If you have no idea, you can often find data fr the US from at the |ndbc_link|.
 * Enter a water temperature and select units from the drop-down menu.
 
 * Select an approximate salinity value in Practical Salinity Units (PSU) from the drop-down menu or enter a custom value.
@@ -28,6 +28,11 @@ Some water properties data sources:
 
 |location_link1|
 
+.. |ndbc_link| raw:: html
+
+   <a href="http://www.ndbc.noaa.gov" target="_blank">National Data Buoy Center</a>
+
 .. |location_link1| raw:: html
 
    <a href="https://www.nodc.noaa.gov/dsdt/cwtg/" target="_blank">NOAA Coastal Waters Temperature Guide</a>
+   
