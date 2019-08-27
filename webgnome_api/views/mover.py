@@ -219,12 +219,14 @@ def get_vector_data(request):
                      .format(log_prefix, obj.__class__))
             vec_data = get_velocities(obj)
 
-            resp = Response(content_type='arraybuffer')
+            resp = Response(
+                content_type='arraybuffer',
+                content_encoding='deflate'
+            )
 
             resp.body, dshape = (zlib.compress(vec_data.tobytes()),
                                  vec_data.shape)
 
-            resp.headers.add('content-encoding', 'deflate')
             resp.headers.add('Access-Control-Expose-Headers', 'shape')
             resp.headers.add('shape', str(dshape))
 
