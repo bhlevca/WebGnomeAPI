@@ -46,28 +46,22 @@ implemented_types = ('gnome.environment.gridded_objects_base.Grid_U',
 def get_grid(request):
     '''Returns an Grid object in JSON.'''
     content_requested = request.matchdict.get('obj_id')
-    resp = Response(content_type='arraybuffer')
+    resp = Response(
+        content_type='arraybuffer',
+        content_encoding='deflate'
+    )
     route = content_requested[1] if len(content_requested) > 1 else None
     if (len(content_requested) > 1):
         if route == 'lines':
             resp.body, num_lengths = get_lines(request)
             resp.headers.add('Access-Control-Expose-Headers', 'num_lengths')
             resp.headers.add('num_lengths', str(num_lengths))
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
-#         if route == 'vectors':
-#             resp.body, dshape = get_vector_data(request)
-#             resp.headers.add('content-encoding', 'deflate')
-#             resp.headers.add('Access-Control-Expose-Headers', 'shape')
-#             resp.headers.add('shape', str(dshape))
-#             return cors_response(request, resp)
         if route == 'nodes':
             resp.body = get_nodes(request)
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'centers':
             resp.body = get_centers(request)
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'metadata':
             return get_metadata(request)

@@ -142,8 +142,7 @@ Tools and information for emergency responders and planners, and others concerne
 
 .. |iwin_text_link| raw:: html
 
-   <a href="http://iwin.nws.noaa.gov/iwin/textversion/state/la.html" target="_blank">Interactive Weather Information Network (IWIN), Forecasts from Louisiana (text only version)`_
-</a>
+   <a href="http://iwin.nws.noaa.gov/iwin/textversion/state/la.html" target="_blank">Interactive Weather Information Network (IWIN), Forecasts from Louisiana (text only version)</a>
 
 .. |erd_link| raw:: html
 

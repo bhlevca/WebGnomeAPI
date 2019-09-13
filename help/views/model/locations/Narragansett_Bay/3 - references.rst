@@ -41,8 +41,6 @@ Environmental profile and watershed information focused on rivers, streams, lake
 
 |erd_link|
 
-`NOAA's Emergency Response Division (ERD)`_
-
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.
 
 .. |tides_currents_link| raw:: html

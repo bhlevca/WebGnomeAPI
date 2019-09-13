@@ -11,6 +11,13 @@ Wind-driven currents play an important role in circulation near the Hawaiian Isl
 
 All current patterns were created with the NOAA Current Analysis for Trajectory Simulation (CATS) hydrodynamic application.
 
-.. _TAP II: http://response.restoration.noaa.gov/tap
+The Kaneohe Bay Trajectory Analysis Planner (|tap_link| ™) is available free of charge from the Emergency Response Division (ERD) of NOAA OR&R. This program and its documentation can be used for oil spill planning and risk analysis. More information is available at |url_link|.
 
-The Kaneohe Bay Trajectory Analysis Planner (`TAP II`_ ™) is available free of charge from the Emergency Response Division (ERD) of NOAA OR&R. This program and its documentation can be used for oil spill planning and risk analysis. More information is available at http://response.restoration.noaa.gov/tap.
+.. |tap_link| raw:: html
+
+   <a href="http://response.restoration.noaa.gov/tap" target="_blank">TAP II</a>
+
+.. |url_link| raw:: html
+
+   <a href="http://response.restoration.noaa.gov/tap" target="_blank">http://response.restoration.noaa.gov/tap</a>
+

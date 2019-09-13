@@ -48,26 +48,25 @@ implemented_types = ('gnome.environment.Tide',
 def get_environment(request):
     '''Returns an Gnome Environment object in JSON.'''
     content_requested = request.matchdict.get('obj_id')
-    resp = Response(content_type='arraybuffer')
+    resp = Response(
+        content_type='arraybuffer',
+        content_encoding='deflate'
+    )
     route = content_requested[1] if len(content_requested) > 1 else None
     if (len(content_requested) > 1):
         if route == 'grid':
             resp.body = get_grid(request)
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'vectors':
             resp.body, dshape = get_vector_data(request)
-            resp.headers.add('content-encoding', 'deflate')
             resp.headers.add('Access-Control-Expose-Headers', 'shape')
             resp.headers.add('shape', str(dshape))
             return cors_response(request, resp)
         if route == 'nodes':
             resp.body = get_nodes(request)
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'centers':
             resp.body = get_centers(request)
-            resp.headers.add('content-encoding', 'deflate')
             return cors_response(request, resp)
         if route == 'metadata':
             return get_metadata(request)
