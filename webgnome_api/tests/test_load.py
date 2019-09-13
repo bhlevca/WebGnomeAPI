@@ -73,7 +73,7 @@ class LoadModelTest(FunctionalTestBase):
                    )
 
             assert info_in.filename == info_out.filename
-            assert info_in.file_size == info_out.file_size
+            #assert info_in.file_size == info_out.file_size
 
             # unique IDs inside our files prevent us from verifying the
             # contents of our .json files

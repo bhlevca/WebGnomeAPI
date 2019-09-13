@@ -29,7 +29,8 @@ Holbrook, J. R., R. D. Muench, D. G. Kachel, and C. Wright, 1980b. Circulation i
 
 Masson, D. and P. F. Cummins, 1999. Numerical Simulations of a Buoyancy- Driven Coastal Countercurrent off Vancouver Island, *Journal of Physical Oceanography*, **29**, pp. 418-435.
 
-U. S. Coast Guard Marine Safety Office Puget Sound On-Scene Coordinator's Report, Major Oil Spill Clean Up, T/V Arco Anchorage at Port Angeles, Washington, 21 December 1985 - 28 April 1986.
+U.S. Coast Guard Marine Safety Office Puget Sound On-Scene Coordinator's Report, Major Oil Spill Clean Up, T/V Arco Anchorage at Port Angeles, Washington, 21 December 1985 - 28 April 1986.
+
 
 **Weather and Online Information**
 

@@ -1,7 +1,7 @@
 .. keywords
    ROPME, Indian, location
 
-About the Regional Organization for the Protection of the Marine Environment (ROPME) sea area
+About the Regional Organization for the Protection of the Marine Environment (ROPME) Sea Area
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The Regional Organization for the Protection of the Marine Environment (ROPME) Sea Area is located in the northwest corner of the Indian Ocean and is known for its oil production. Bahrain, Iran, Iraq, Kuwait, Qatar, Saudi Arabia, and the United Arab Emirates (UAE) produced 27% of the world's oil in 1998. The area also holds 64% of the world's oil reserves. The Strait of Hormuz transports 15.4 million barrels of oil per day (1998 estimate) and is the world's most important "chokepoint" for oil transportation (U.S. Energy Information Administration 1999).

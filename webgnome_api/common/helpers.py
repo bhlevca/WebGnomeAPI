@@ -5,9 +5,10 @@ Helper functions to be used by views.
 import zipfile
 import ujson
 import logging
+import sys
 
 log = logging.getLogger(__name__)
-def update_savefile(file_path):
+def update_savefile(file_path, request):
     '''
     Takes a zipfile containing no version.txt and up-converts it to 'version 1'.
     This functions purpose is to upgrade save files to maintain compatibility
@@ -31,8 +32,6 @@ def update_savefile(file_path):
                 "id": "v0-v1-update-id-0"
             }
         else:
-            for inits in et_json.get('initializers', []):
-                inits['obj_type'] = inits['obj_type'].replace('.elements.', '.')
             substance = {
                 "obj_type": "gnome.spill.substance.GnomeOil", 
                 "name": et_json.get('substance', 'Unknown Oil'),  
