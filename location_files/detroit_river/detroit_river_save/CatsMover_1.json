@@ -7,7 +7,7 @@
   0.0
  ], 
  "filename": "Erie.cur", 
- "name": "Tidal Currents", 
+ "name": "River Currents", 
  "right_cur_uncertain": 0.01, 
  "left_cur_uncertain": -0.01, 
  "json_": "save", 

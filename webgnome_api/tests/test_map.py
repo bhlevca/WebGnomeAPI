@@ -114,6 +114,21 @@ class MapTestBase(FunctionalTestBase):
         assert basename(map_obj['filename'])[:4] == 'Test'
         assert basename(map_obj['filename'])[-4:] == '.bna'
 
+    def test_get_raster(self):
+        self.setup_map_file()
+        resp1 = self.testapp.post_json('/map', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        #resp2 = self.testapp.get('/map/{0}/raster'.format(obj_id))
+        #JAH: Can't actually test this because webob does the wrong
+        #thing when trying to decompress the body. Below is error and
+        #webob code
+        '''
+        # Weird feature: http://bugs.python.org/issue5784
+        self.body = zlib.decompress(self.body, -15)
+        error: Error -3 while decompressing data: invalid stored block lengths
+        '''
+
     def perform_updates(self, json_obj):
         '''
             We can overload this function when subclassing our tests

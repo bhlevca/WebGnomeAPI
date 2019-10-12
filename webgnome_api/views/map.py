@@ -4,6 +4,8 @@ Views for the Map objects.
 import ujson
 import logging
 import os
+import zlib
+import numpy as np
 from threading import current_thread
 
 from cornice import Service
@@ -54,11 +56,22 @@ log = logging.getLogger(__name__)
 @map_api.get()
 def get_map(request):
     '''Returns a Gnome Map object in JSON.'''
-    obj_ids = request.matchdict.get('obj_id')
-
-    if (len(obj_ids) >= 2 and
-            obj_ids[1] == 'geojson'):
-        return get_geojson(request, implemented_types)
+    content_requested = request.matchdict.get('obj_id')
+    resp = Response(
+        content_type='arraybuffer',
+        content_encoding='deflate'
+    )
+    route = content_requested[1] if len(content_requested) > 1 else None
+    if (len(content_requested) > 1):
+        if route == 'raster':
+            resp.body, shape, bbox = get_raster(request)
+            resp.headers.add('Access-Control-Expose-Headers', 'shape')
+            resp.headers.add('Access-Control-Expose-Headers', 'bbox')
+            resp.headers.add('shape', str(shape))
+            resp.headers.add('bbox', str(bbox))
+            return cors_response(request, resp)
+        if route == 'geojson':
+          return get_geojson(request, implemented_types)
     else:
         return get_object(request, implemented_types)
 
@@ -171,3 +184,33 @@ def get_geojson(request, implemented_types):
             raise cors_exception(request, HTTPNotImplemented)
     else:
         raise cors_exception(request, HTTPNotFound)
+
+
+def get_raster(request):
+    '''
+        Outputs the map's raster in binary format
+    '''
+    log_prefix = 'req({0}): get_raster():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+
+        if obj is not None:
+            raster = obj.raster.copy()
+            #transpose for client
+            bbox = obj.land_polys.bounding_box.AsPoly().reshape(-1).tolist()
+            return zlib.compress(np.ascontiguousarray(raster.T).tobytes()), raster.T.shape, bbox
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)

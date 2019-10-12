@@ -36,9 +36,7 @@ The Kuparuk River flows into Gwydyr Bay and is also simulated with user interact
 
 The three flow values available in the pull-down menu are the mean flow rate (2250 cfs) plus/minus the standard deviation (1550 cfs) calculated from historical flow data from 1971-1999. The historical measurements were taken between July 1 and August 31, with flow rates greater than 10,000 cfs discarded, as we did not simulate these flooding conditions in this Location File.
 
-.. _USGS Current Water Data for the Nation: http://waterdata.usgs.gov/nwis/rt
-
-To obtain real-time or historical flow values for the Kuparuk River, visit `USGS Current Water Data for the Nation`_ . On the interactive map, click Alaska (AK). Next, either click the Kuparuk River on the Alaska map or select "Statewide Streamflow Table." Under the heading, "Arctic Slope", select station number "15896000" for the station Kuparuk River near Deadhorse, Alaska.
+To obtain real-time or historical flow values for the Kuparuk River, visit |usgs_link|. On the interactive map, click Alaska (AK). Next, either click the Kuparuk River on the Alaska map or select "Statewide Streamflow Table." Under the heading, "Arctic Slope", select station number "15896000" for the station Kuparuk River near Deadhorse, Alaska.
 
 Mackenzie River Flow
 ------------------------------------------------
@@ -47,11 +45,22 @@ The Mackenzie River flows into the Beaufort Sea and is simulated via user intera
 
 The three flow values available in the pull-down menu are the high, medium and low flow rates (30000, 20000, and 10000 m3 s-1) calculated from historical flow data from 1972-2010. 
 
-.. _Mackenzie River at Arctic Red River: http://www.wateroffice.ec.gc.ca/graph/graph_e.html?stn=10LC014
+To obtain real-time or historical flow values for the Mackenzie River, see the Environment Canada – Water Survey of Canada hydrometric data web page for the |red_river_link|. Under the heading, Data Category, select "Real-Time." Under the heading, Parameter Type, select "Discharge." Next to Parameter Type, click "Redraw." A time-series graph of the discharge is provided in cubic meters per second.
 
-To obtain real-time or historical flow values for the Mackenzie River, see the Environment Canada – Water Survey of Canada hydrometric data web page for the `Mackenzie River at Arctic Red River`_ . Under the heading, Data Category, select "Real-Time." Under the heading, Parameter Type, select "Discharge." Next to Parameter Type, click "Redraw." A time-series graph of the discharge is provided in cubic meters per second.
+**Note:** For the Mackenzie River, high, mean, and low estimates were derived from |historical_link| (and from investigation of the hydrology of the Mackenzie River by the Water Survey of Canada. Additional analysis of these data was provided by the |gewex_link| (Global Energy & Water Cycle Experiment) Study. In situ measurements of discharge and the resultant current speeds at principal channels of the Mackenzie were provided by Water Survey of Canada (Roger Pilling – Hydrometric Supervisor, personal communication, June 21, 2012).
 
-.. _historical data recorded from 1972 to 2010: http://www.wsc.ec.gc.ca/applications/H2O/graph-eng.cfm?station=10LC014&report=daily&year=2010
-.. _Canadian Mackenzie GEWEX: http://www.usask.ca/geography/MAGS/Data/discharge/discharge_e.html
+.. |usgs_link| raw:: html
 
-**Note:** For the Mackenzie River, high, mean, and low estimates were derived from `historical data recorded from 1972 to 2010`_ (and from investigation of the hydrology of the Mackenzie River by the Water Survey of Canada. Additional analysis of these data was provided by the `Canadian Mackenzie GEWEX`_ (Global Energy & Water Cycle Experiment) Study. In situ measurements of discharge and the resultant current speeds at principal channels of the Mackenzie were provided by Water Survey of Canada (Roger Pilling – Hydrometric Supervisor, personal communication, June 21, 2012).
+   <a href="http://waterdata.usgs.gov/nwis/rt" target="_blank">USGS Current Water Data for the Nation</a>
+
+.. |red_river_link| raw:: html
+
+   <a href="http://www.wateroffice.ec.gc.ca/graph/graph_e.html?stn=10LC014" target="_blank">Mackenzie River at Arctic Red River</a>
+
+.. |historical_link| raw:: html
+
+   <a href="http://www.wsc.ec.gc.ca/applications/H2O/graph-eng.cfm?station=10LC014&report=daily&year=2010" target="_blank">historical data recorded from 1972 to 2010</a>
+
+.. |gewex_link| raw:: html
+
+   <a href="http://www.usask.ca/geography/MAGS/Data/discharge/discharge_e.html" target="_blank">Canadian Mackenzie GEWEX</a>

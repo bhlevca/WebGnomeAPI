@@ -18,13 +18,13 @@
             sab_flow *= 1000;
         }
 
-        if (sab_flow > 20000000 || sab_flow < 10000) {
+        if (sab_flow > 20000 || sab_flow < 10) {
             errMsg = "The entered Sabine flow rate is outside the acceptable range of ";
 
             if (sab_units === 'cfs') {
-                errMsg += "10,000 and 20,000,000 cfs!";
+                errMsg += "10 and 20,000 cfs!";
             } else if (sab_units === 'kcfs') {
-                errMsg += "10 and 20,000 kcfs!";
+                errMsg += ".01 and 20 kcfs!";
             }
 
             return errMsg;
@@ -45,13 +45,13 @@
             nec_flow *= 1000;
         }
 
-        if (nec_flow > 3800000 || nec_flow < 1000) {
+        if (nec_flow > 3800 || nec_flow < 1) {
             errMsg = "The entered Neches flow rate is outside the acceptable range of ";
             
             if (nec_units === 'cfs') {
-                errMsg += "1,000 and 3,800,000 cfs!";
+                errMsg += "1 and 3,800 cfs!";
             } else if (nec_units === 'kcfs') {
-                errMsg += "1 and 3,800 kcfs!";
+                errMsg += ".001 and 3.8 kcfs!";
             }
 
             return errMsg;

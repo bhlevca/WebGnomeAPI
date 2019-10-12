@@ -5,9 +5,10 @@ Helper functions to be used by views.
 import zipfile
 import ujson
 import logging
+import sys
 
 log = logging.getLogger(__name__)
-def update_savefile(file_path):
+def update_savefile(file_path, request):
     '''
     Takes a zipfile containing no version.txt and up-converts it to 'version 1'.
     This functions purpose is to upgrade save files to maintain compatibility
@@ -26,19 +27,22 @@ def update_savefile(file_path):
                 "obj_type": "gnome.spill.substance.NonWeatheringSubstance", 
                 "name": "NonWeatheringSubstance", 
                 "standard_density": 1000.0, 
-                "initializers": et_json['initializers'],
+                "initializers": et_json.get('initializers',[]),
                 "is_weatherable": False, 
                 "id": "v0-v1-update-id-0"
             }
         else:
             substance = {
                 "obj_type": "gnome.spill.substance.GnomeOil", 
-                "name": et_json['substance'],  
-                "initializers": et_json['initializers'],
+                "name": et_json.get('substance', 'Unknown Oil'),  
+                "initializers": et_json.get('initializers', []),
                 "is_weatherable": True,
                 "water": water,
                 "id": "v0-v1-update-id-1"
             }
+            if isinstance(et_json.get('substance', None), dict):
+                substance.update(et_json.get('substance'))
+
         return substance
 
     import pdb
@@ -99,7 +103,12 @@ def update_savefile(file_path):
         return file_path + '.updated'
             
     except:
-        pdb.post_mortem()
+        if ('develop_mode' in request.registry.settings.keys() and
+                    request.registry.settings['develop_mode'].lower() == 'true'):
+            import pdb
+            pdb.post_mortem(sys.exc_info()[2])
+        raise TypeError('This savefile format is deprecated and can not be loaded by WebGNOME')
+        #pdb.post_mortem()
 
 
 

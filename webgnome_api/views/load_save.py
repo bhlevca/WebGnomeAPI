@@ -69,7 +69,7 @@ def upload_model(request):
                                                     'valid zipfile!'))
 
     # Update the savefile if it is pre-SpillRefactor
-    fp = update_savefile(file_path)
+    fp = update_savefile(file_path, request)
     resp_msg = 'OK'
     if (fp != file_path):
         resp_msg = 'UPDATED_MODEL'
