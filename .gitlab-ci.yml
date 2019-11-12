@@ -10,8 +10,8 @@ master:
   script:
     - docker pull gitlab.orr.noaa.gov:5002/pygnome:master
     - docker tag gitlab.orr.noaa.gov:5002/pygnome:master pygnome
-    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi
-    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi
+    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:master
+    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:master
   only:
     - master
   tags:
