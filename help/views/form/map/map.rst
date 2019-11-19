@@ -1,5 +1,5 @@
 .. keywords
-   map, bna, coastline, paramterized, shoreline
+   map, bna, coastline, shoreline
    
 The **Name** of the map is automatically specified from the uploaded file name. This can be edited to a more meaningful name if desired.
 

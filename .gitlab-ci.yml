@@ -8,10 +8,10 @@ services:
 master:
   stage: build
   script:
-    - docker pull gitlab.orr.noaa.gov:5002/pygnome:latest
-    - docker tag gitlab.orr.noaa.gov:5002/pygnome:latest pygnome
-    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi
-    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi
+    - docker pull gitlab.orr.noaa.gov:5002/pygnome:master
+    - docker tag gitlab.orr.noaa.gov:5002/pygnome:master pygnome
+    - docker build -f dockerfile . -t gitlab.orr.noaa.gov:5002/webgnomeapi:master
+    - docker push gitlab.orr.noaa.gov:5002/webgnomeapi:master
   only:
     - master
   tags:
@@ -46,7 +46,7 @@ production:
 
 test_master:
   stage: test
-  image: gitlab.orr.noaa.gov:5002/pygnome:latest
+  image: gitlab.orr.noaa.gov:5002/pygnome:master
   script:
     - yum install redis -y
     - redis-server --daemonize yes
