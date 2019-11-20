@@ -16,7 +16,6 @@ from cornice import Service
 from gnome.persist import is_savezip_valid
 from gnome.model import Model
 
-from ..common.helpers import update_savefile
 from ..common.system_resources import list_files
 from ..common.common_object import (RegisterObject,
                                     clean_session_dir,
@@ -68,13 +67,7 @@ def upload_model(request):
         raise cors_response(request, HTTPBadRequest('Incoming file is not a '
                                                     'valid zipfile!'))
 
-    # Update the savefile if it is pre-SpillRefactor
-    fp = update_savefile(file_path, request)
     resp_msg = 'OK'
-    if (fp != file_path):
-        resp_msg = 'UPDATED_MODEL'
-    file_path = fp
-
     # now we try to load our model from the zipfile.
     session_lock = acquire_session_lock(request)
     log.info('  session lock acquired (sess:{}, thr_id: {})'
