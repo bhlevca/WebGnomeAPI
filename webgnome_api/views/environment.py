@@ -23,6 +23,7 @@ from webgnome_api.common.views import (get_object,
                                        cors_exception,
                                        process_upload,
                                        can_persist,
+                                       switch_to_existing_session,
                                        activate_uploaded)
 
 from cornice import Service
@@ -92,12 +93,31 @@ def environment_upload_options(request):
 
 
 @view_config(route_name='environment_upload', request_method='POST')
-def environment_upload(request):
-    filename, name = process_upload(request, 'new_environment')
-    resp = Response(ujson.dumps({'filename': filename, 'name': name}))
+def upload_environment(request):
+    switch_to_existing_session(request)
+    log_prefix = 'req({0}): upload_environment():'.format(id(request))
+    log.info('>>{}'.format(log_prefix))
 
+
+    file_list = request.POST['file_list']
+    file_list = ujson.loads(file_list)
+    name = request.POST['name']
+    file_name = file_list[0]
+
+    log.info('  {} file_name: {}, name: {}'
+             .format(log_prefix, file_name, name))
+
+    env_type = request.POST.get('obj_type', [])
+    request.body = ujson.dumps({'obj_type': env_type,
+                                'filename': file_name,
+                                'name': name
+                                })
+
+    env_obj = create_environment(request)
+    resp = Response(ujson.dumps(env_obj))
+
+    log.info('<<{}'.format(log_prefix))
     return cors_response(request, resp)
-
 
 @view_config(route_name='environment_activate', request_method='OPTIONS')
 def activate_environment_options(request):

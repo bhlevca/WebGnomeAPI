@@ -1,9 +1,6 @@
 .. keywords
    currents, movers, gridded, roms, fvcom, hyrodynamic model
    
-Gridded Mover
--------------
-
 The **Name** by default is set from the uploaded file name. 
 
 **Start Time** and **End Time** are also set from the file and indicate the time span of the model values in the file. They are read-only values shown here for reference only.
