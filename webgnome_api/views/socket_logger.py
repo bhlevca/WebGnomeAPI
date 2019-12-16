@@ -2,8 +2,6 @@ import re
 import base64
 import hashlib
 
-from pygtail import Pygtail
-
 import gevent
 
 from socketio.namespace import BaseNamespace
