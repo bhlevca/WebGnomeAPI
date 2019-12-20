@@ -10,7 +10,6 @@
 #     $ conda install --file conda_requirements.txt
 #     $ pip install -r pip_requirements.txt
 
-pygtail
 pyramid_log
 redis
 pyramid-redis-sessions
