@@ -27,7 +27,8 @@ implemented_types = ('gnome.outputters.outputter.Outputter',
                      'gnome.outputters.json.IceJsonOutput',
                      'gnome.outputters.image.IceImageOutput',
                      'gnome.outputters.kmz.KMZOutput',
-                     'gnome.outputters.shape.ShapeOutput'
+                     'gnome.outputters.shape.ShapeOutput',
+                     'gnome.outputters.binary.BinaryOutput'
                      )
 
 
