@@ -641,7 +641,7 @@ class IceInfoTests(FunctionalTestBase):
                 'make_default_refs': True,
                 'uncertain': True,
                 'valid': True,
-                'map': {'obj_type': u'gnome.map.MapFromBNA',
+                'map': {'obj_type': u'gnome.maps.map.MapFromBNA',
                         'name': u'MapBounds_Island.bna',
                         'filename': 'models/MapBounds_Island.bna',
                         'refloat_halflife': 6.0,

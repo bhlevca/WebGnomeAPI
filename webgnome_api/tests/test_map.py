@@ -12,7 +12,7 @@ class MapTestBase(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.MapFromBNA',
+    req_data = {'obj_type': 'gnome.maps.map.MapFromBNA',
                 'filename': 'models/Test.bna',
                 'refloat_halflife': 1.0
                 }
@@ -106,7 +106,7 @@ class MapTestBase(FunctionalTestBase):
                                  {'session': '1234',
                                   'file_list': ujson.dumps(file_names),
                                   'name':'Test',
-                                  'obj_type':'gnome.map.MapFromBNA'}
+                                  'obj_type':'gnome.maps.map.MapFromBNA'}
                                  )
         map_obj = resp.json_body
 
@@ -148,7 +148,7 @@ class GnomeMapTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.GnomeMap',
+    req_data = {'obj_type': 'gnome.maps.map.GnomeMap',
                 }
     fields_to_check = ('id', 'obj_type')
 
@@ -230,7 +230,7 @@ class MapGeoJsonTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.MapFromBNA',
+    req_data = {'obj_type': 'gnome.maps.map.MapFromBNA',
                 'filename': 'Test.bna',
                 'refloat_halflife': 1.0
                 }
@@ -316,7 +316,7 @@ class ParamMapTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.ParamMap',
+    req_data = {'obj_type': 'gnome.maps.map.ParamMap',
                 }
 
     def test_put_valid_id(self):
