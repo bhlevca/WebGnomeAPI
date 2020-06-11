@@ -14,5 +14,5 @@ This tab shows graphs of:
 * oil density as a function of time
 * oil viscosity as a function of time
 
-In the graphs, the line represents the most likely amount, while the shading represents uncertainty. Hovering your mouse over the graph will show the values of the data for that time period on the graph to appear. For longer duration spills, this graph may take some time to load. 
+Hovering your mouse over the graph will show the values of the data for that time period on the graph to appear. For longer duration spills, this graph may take some time to load. 
 

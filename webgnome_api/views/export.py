@@ -3,6 +3,7 @@ Views for file download operations.
 """
 from os import walk
 from os.path import isfile, isdir, basename, join, sep
+import ujson
 import logging
 import zipfile
 
@@ -14,9 +15,30 @@ from webgnome_api.common.common_object import get_session_dir
 from webgnome_api.common.session_management import get_active_model
 from webgnome_api.common.views import cors_response
 
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy,
+                                       cors_response,
+                                       cors_exception,
+                                       process_upload,
+                                       can_persist,
+                                       switch_to_existing_session,
+                                       activate_uploaded)
+
+from cornice import Service
+
+'''
+This file is deprecated and is retained only in case of tests
+'''
+
 
 log = logging.getLogger(__name__)
-
+export = Service(name='export', path='/export*',
+              description="Export API",
+              cors_policy=cors_policy,
+              # accept='application/json+octet-stream',
+              content_type=['application/json'])
 
 @view_config(route_name='export', request_method='GET')
 def download_file(request):

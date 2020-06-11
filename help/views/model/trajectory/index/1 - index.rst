@@ -1,11 +1,10 @@
 .. keywords
    trajectory, zoom, ruler, area, fixed, moving, spill
 
-Trajectory
-^^^^^^^^^^
+Map View
+^^^^^^^^
 
-This view shows the trajectory of the oil along with various basemaps and environmental data (e.g. currents and winds) 
-(see Layers).
+This view shows the movement of the particles (oil) along with various basemaps and environmental data (e.g. currents and winds which can be turned on via the **Layers** menu).
 
 **Running the trajectory**
 
