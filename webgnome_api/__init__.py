@@ -183,7 +183,6 @@ def main(global_config, **settings):
 
     config.add_route('socket.io', '/socket.io/*remaining')
     config.add_route('logger', '/logger')
-    config.add_route('export', '/export/*file_path')
 
     config.scan('webgnome_api.views')
 
