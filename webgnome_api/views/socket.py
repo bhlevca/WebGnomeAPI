@@ -1,12 +1,10 @@
 
 from pyramid.view import view_config
-from pyramid.response import Response
 
 from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
 from webgnome_api.views.socket_logger import LoggerNamespace
 from webgnome_api.views.socket_step import StepNamespace
-from ..common.views import cors_response
 
 
 @view_config(route_name='socket.io')
@@ -18,7 +16,6 @@ def socketio_service(request):
                                        '/step_socket': StepNamespace,
                                        },
                            request=request)
-    resp = Response()
     print 'socketio_manage() returned:', resp
     return resp
 

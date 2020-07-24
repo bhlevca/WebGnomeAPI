@@ -12,11 +12,4 @@ A table will appear below the graph based on the start and end times that you se
 
 Use the drop-down menu to the right to change the units shown in the graph and table. 
 
-Export Options
-=================================
 
-To export into a spreadsheet, click on the CSV (comma-separated values) option. This file can then be imported into your spreadsheet.
-
-To copy the information into a document such as Microsoft word, click on the html option. Highlight the text or data that you want to copy and then paste it into your document.
-
-To print the page, click on print.

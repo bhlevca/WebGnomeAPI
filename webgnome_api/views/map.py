@@ -45,9 +45,9 @@ from webgnome_api.common.helpers import JSONImplementsOneOf
 map_api = Service(name='map', path='/map*obj_id',
                   description="Map API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.map.GnomeMap',
-                     'gnome.map.MapFromBNA',
-                     'gnome.map.ParamMap',
+implemented_types = ('gnome.maps.map.GnomeMap',
+                     'gnome.maps.map.MapFromBNA',
+                     'gnome.maps.map.ParamMap',
                      )
 
 log = logging.getLogger(__name__)
@@ -130,7 +130,8 @@ def upload_map(request):
     log.info('  {} file_name: {}, name: {}'
              .format(log_prefix, file_name, name))
 
-    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+    # fixme: why is this not just calling the pygnome code directly?
+    request.body = ujson.dumps({'obj_type': 'gnome.maps.map.MapFromBNA',
                                 'filename': file_name,
                                 'refloat_halflife': 6.0,
                                 'name': name
@@ -160,7 +161,7 @@ def activate_map(request):
     file_name, name = activate_uploaded(request)
     file_path = file_name.split(os.path.sep)[-1]
 
-    request.body = ujson.dumps({'obj_type': 'gnome.map.MapFromBNA',
+    request.body = ujson.dumps({'obj_type': 'gnome.maps.map.MapFromBNA',
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
                                 'name': name

@@ -33,6 +33,11 @@ Not quite everything is available as conda packages, so you need to install a fe
 
 Should do it.
 
+To run the API, you also need a redis server. If you have one installed from a another source, that will work fine. If not, then you can use conda to get it::
+
+  conda install redis
+
+
 pip
 ...
 

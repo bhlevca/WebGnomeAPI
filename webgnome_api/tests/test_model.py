@@ -168,7 +168,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_map(self):
         req_data = self.req_data.copy()
-        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+        req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
                            'filename': 'models/Test.bna',
                            'refloat_halflife': 1.0
                            }
@@ -181,7 +181,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_map(self):
         req_data = self.req_data.copy()
-        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+        req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
                            'filename': 'models/Test.bna',
                            'refloat_halflife': 1.0
                            }
