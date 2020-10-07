@@ -170,12 +170,12 @@ class SpatialReleaseTests(ReleaseTests):
         self.check_updates(resp.json_body)
 
     def perform_updates(self, json_obj):
-        json_obj['start_position'] = [[100.0, 100.0, 0.0],
+        json_obj['custom_positions'] = [[100.0, 100.0, 0.0],
                                       [100.0, 100.0, 0.0]]
 
     def check_updates(self, json_obj):
         assert all([i == j
-                    for i, j in zip(json_obj['start_position'],
+                    for i, j in zip(json_obj['custom_positions'],
                                     [[100.0, 100.0, 0.0],
                                      [100.0, 100.0, 0.0]]
                                     )
