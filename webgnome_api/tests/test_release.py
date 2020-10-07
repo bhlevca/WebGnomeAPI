@@ -137,7 +137,7 @@ class SpatialReleaseTests(ReleaseTests):
     req_data = {'obj_type': u'gnome.spill.release.SpatialRelease',
                 'name': u'SpatialRelease',
                 'release_time': '2014-08-02T21:20:50',
-                'start_position': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
+                'custom_positions': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
                 }
 
     def test_get_valid_id(self):

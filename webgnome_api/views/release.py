@@ -1,6 +1,10 @@
 """
 Views for the Release objects.
 """
+import ujson
+import logging
+import zlib
+from threading import current_thread
 from webgnome_api.common.views import (get_object,
                                        create_object,
                                        update_object,
@@ -33,8 +37,6 @@ from webgnome_api.common.session_management import (init_session_objects,
                                                     acquire_session_lock)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
-import logging
-import ujson
 
 from cornice import Service
 
@@ -67,6 +69,8 @@ def get_release(request):
             resp.headers.add('Access-Control-Expose-Headers', 'num_lengths')
             resp.headers.add('num_lengths', str(num_lengths))
             return cors_response(request, resp)
+        if route == 'metadata':
+            return get_metadata(request)
     else:
         return get_object(request, implemented_types)
 
@@ -109,7 +113,7 @@ def get_start_positions(request):
 
     log.info('<<' + log_prefix)
 
-def get_polygons(request, implemented_types):
+def get_polygons(request):
     '''
         Outputs the SpatialRelease's Polygons in binary format
     '''
@@ -123,11 +127,11 @@ def get_polygons(request, implemented_types):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and isinstance(obj, (SpatialRelease)):
-            lengths, weights, thicknesses, lines = obj.get_polygons()
+        if obj is not None and obj.obj_type == 'gnome.spill.release.SpatialRelease':
+            lengths, lines = obj.get_polygons()
             lines_bytes = ''.join([l.tobytes() for l in lines])
 
-            return ((weights.tobytes(), thicknesses.tobytes(), zlib.compress(lengths.tobytes() + lines_bytes)), len(lengths))
+            return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc
@@ -137,6 +141,29 @@ def get_polygons(request, implemented_types):
                  .format(log_prefix, id(session_lock), current_thread().ident))
 
     log.info('<<' + log_prefix)
+
+def get_metadata(request):
+    log_prefix = 'req({0}): get_metadata():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    session_lock = acquire_session_lock(request)
+    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+             .format(log_prefix, id(session_lock), current_thread().ident))
+    try:
+        obj_id = request.matchdict.get('obj_id')[0]
+        obj = get_session_object(obj_id, request)
+        if obj is not None:
+            return obj.get_metadata()
+        else:
+            exc = cors_exception(request, HTTPNotFound)
+            raise exc
+    finally:
+        session_lock.release()
+        log.info('  {} session lock released (sess:{}, thr_id: {})'
+                 .format(log_prefix, id(session_lock), current_thread().ident))
+
+    log.info('<<' + log_prefix)
+
 
 @view_config(route_name='release_upload', request_method='OPTIONS')
 def release_upload_options(request):
