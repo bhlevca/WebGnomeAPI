@@ -2,14 +2,14 @@
 Functional tests for the Model Web API
 """
 from gnome.multi_model_broadcast import ModelBroadcaster
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
 
 
 class ModelTests(FunctionalTestBase):
-    req_data = {'obj_type': u'gnome.model.Model',
+    req_data = {'obj_type': 'gnome.model.Model',
                 'cache_enabled': False,
                 'duration': 86400.0,
                 'start_time': '2014-04-09T15:00:00',
@@ -87,8 +87,8 @@ class ModelTests(FunctionalTestBase):
         # we should not have any adios uncertainty models if we
         # have no weathering
         app = self.testapp.app
-        assert not [v for s in app.registry.settings['objects'].values()
-                    for v in s.values()
+        assert not [v for s in list(app.registry.settings['objects'].values())
+                    for v in list(s.values())
                     if isinstance(v, ModelBroadcaster)]
 
     def test_post_no_payload_twice(self):
@@ -146,13 +146,13 @@ class ModelTests(FunctionalTestBase):
         # we should not have any adios uncertainty models if we
         # have no weathering
         app = self.testapp.app
-        assert not [v for s in app.registry.settings['objects'].values()
-                    for v in s.values()
+        assert not [v for s in list(app.registry.settings['objects'].values())
+                    for v in list(s.values())
                     if isinstance(v, ModelBroadcaster)]
 
 
 class NestedModelTests(FunctionalTestBase):
-    req_data = {'obj_type': u'gnome.model.Model',
+    req_data = {'obj_type': 'gnome.model.Model',
                 'cache_enabled': False,
                 'duration': 86400.0,
                 'start_time': '2014-04-09T15:00:00',
@@ -199,15 +199,15 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_environment(self):
         req_data = self.req_data.copy()
         req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }]
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -223,15 +223,15 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_environment(self):
         req_data = self.req_data.copy()
         req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }]
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -247,15 +247,15 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_environment_inside_model(self):
         req_data = self.req_data.copy()
         req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }]
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -271,8 +271,8 @@ class NestedModelTests(FunctionalTestBase):
 
         # we should not have any adios uncertainty runs yet
         app = self.testapp.app
-        assert not [v for s in app.registry.settings['objects'].values()
-                    for v in s.values()
+        assert not [v for s in list(app.registry.settings['objects'].values())
+                    for v in list(s.values())
                     if isinstance(v, ModelBroadcaster)]
 
     def test_put_with_sparse_environment(self):
@@ -282,15 +282,15 @@ class NestedModelTests(FunctionalTestBase):
         '''
         req_data = self.req_data.copy()
         wind_data = {'obj_type': 'gnome.environment.Wind',
-                     'description': u'Wind Object',
+                     'description': 'Wind Object',
                      'updated_at': '2014-03-26T14:52:45.385126',
-                     'source_type': u'undefined',
-                     'source_id': u'undefined',
+                     'source_type': 'undefined',
+                     'source_id': 'undefined',
                      'timeseries': [('2012-11-06T20:10:30',
                                      (1.0, 0.0)),
                                     ('2012-11-06T20:15:30',
                                      (1.0, 270.0))],
-                     'units': u'meter per second'
+                     'units': 'meter per second'
                      }
 
         resp = self.testapp.post_json('/model', params=req_data)
@@ -321,11 +321,11 @@ class NestedModelTests(FunctionalTestBase):
                                'uncertain_speed_scale': 2.0,
                                'uncertain_time_delay': 0.0,
                                'wind': {'obj_type': 'gnome.environment.Wind',
-                                        'description': u'Wind Object',
+                                        'description': 'Wind Object',
                                         'updated_at': '2014-03-26T14:52:45.39',
-                                        'source_type': u'undefined',
-                                        'source_id': u'undefined',
-                                        'units': u'meter per second',
+                                        'source_type': 'undefined',
+                                        'source_id': 'undefined',
+                                        'units': 'meter per second',
                                         'timeseries': [('2012-11-06T20:10:30',
                                                         (1.0, 0.0)),
                                                        ('2012-11-06T20:11:30',
@@ -371,11 +371,11 @@ class NestedModelTests(FunctionalTestBase):
                                'uncertain_speed_scale': 2.0,
                                'uncertain_time_delay': 0.0,
                                'wind': {'obj_type': 'gnome.environment.Wind',
-                                        'description': u'Wind Object',
+                                        'description': 'Wind Object',
                                         'updated_at': '2014-03-26T14:52:45.39',
-                                        'source_type': u'undefined',
-                                        'source_id': u'undefined',
-                                        'units': u'meter per second',
+                                        'source_type': 'undefined',
+                                        'source_id': 'undefined',
+                                        'units': 'meter per second',
                                         'timeseries': [('2012-11-06T20:10:30',
                                                         (1.0, 0.0)),
                                                        ('2012-11-06T20:11:30',
@@ -412,11 +412,11 @@ class NestedModelTests(FunctionalTestBase):
                                'uncertain_speed_scale': 2.0,
                                'uncertain_time_delay': 0.0,
                                'wind': {'obj_type': 'gnome.environment.Wind',
-                                        'description': u'Wind Object',
+                                        'description': 'Wind Object',
                                         'updated_at': '2014-03-26T14:52:45.39',
-                                        'source_type': u'undefined',
-                                        'source_id': u'undefined',
-                                        'units': u'meter per second',
+                                        'source_type': 'undefined',
+                                        'source_id': 'undefined',
+                                        'units': 'meter per second',
                                         'timeseries': [('2012-11-06T20:10:30',
                                                         (1.0, 0.0)),
                                                        ('2012-11-06T20:11:30',
@@ -437,7 +437,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # create a sparse mover
         mover = dict([(k, v)
-                      for k, v in model1['movers'][0].iteritems()
+                      for k, v in model1['movers'][0].items()
                       if k in ('id', 'obj_type')])
         model1['movers'][0] = mover
 
@@ -448,9 +448,9 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_sparse_random_mover(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
+        req_data['movers'] = [{'obj_type': ('gnome.movers.random_movers'
                                             '.RandomMover'),
-                               'name': u'RandomMover',
+                               'name': 'RandomMover',
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'diffusion_coef': 100000.0,
@@ -462,7 +462,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # create a sparse mover
         mover = dict([(k, v)
-                      for k, v in model1['movers'][0].iteritems()
+                      for k, v in model1['movers'][0].items()
                       if k in ('id', 'obj_type')])
         model1['movers'][0] = mover
 
@@ -473,9 +473,9 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_sparse_random_mover_3d(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
+        req_data['movers'] = [{'obj_type': ('gnome.movers.random_movers'
                                             '.RandomMover3D'),
-                               'name': u'RandomMover3D',
+                               'name': 'RandomMover3D',
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'mixed_layer_depth': 10.0,
@@ -488,7 +488,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # create a sparse mover
         mover = dict([(k, v)
-                      for k, v in model1['movers'][0].iteritems()
+                      for k, v in model1['movers'][0].items()
                       if k in ('id', 'obj_type')])
         model1['movers'][0] = mover
 
@@ -499,7 +499,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_sparse_cats_mover(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': u'gnome.movers.current_movers.CatsMover',
+        req_data['movers'] = [{'obj_type': 'gnome.movers.current_movers.CatsMover',
                                'filename': 'models/tidesWAC.CUR',
                                'scale': True,
                                'scale_value': 1.0,
@@ -513,7 +513,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # create a sparse mover
         mover = dict([(k, v)
-                      for k, v in model1['movers'][0].iteritems()
+                      for k, v in model1['movers'][0].items()
                       if k in ('id', 'obj_type')])
         model1['movers'][0] = mover
 
@@ -525,14 +525,14 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_weatherer(self):
         req_data = self.req_data.copy()
 
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+        req_data['weatherers'] = [{'obj_type': 'gnome.weatherers.Evaporation',
                                    'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
-        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+        req_data['outputters'] = [{'obj_type': ('gnome.outputters.weathering'
                                                 '.WeatheringOutput'),
-                                   'name': u'WeatheringOutput',
+                                   'name': 'WeatheringOutput',
                                    'output_last_step': True,
                                    'output_zero_step': True}]
 
@@ -548,7 +548,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+        req_data['weatherers'] = [{'obj_type': 'gnome.weatherers.Evaporation',
                                    'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
@@ -568,7 +568,7 @@ class NestedModelTests(FunctionalTestBase):
         resp = self.testapp.post_json('/model', params=req_data)
         model1 = resp.json_body
 
-        weatherer = {'obj_type': u'gnome.weatherers.Evaporation',
+        weatherer = {'obj_type': 'gnome.weatherers.Evaporation',
                      'active_range': ('-inf', 'inf'),
                      'on': True,
                      }
@@ -577,9 +577,9 @@ class NestedModelTests(FunctionalTestBase):
 
         model1['weatherers'] = [weatherer]
 
-        outputter = {'obj_type': (u'gnome.outputters.weathering'
+        outputter = {'obj_type': ('gnome.outputters.weathering'
                                   '.WeatheringOutput'),
-                     'name': u'WeatheringOutput',
+                     'name': 'WeatheringOutput',
                      'output_last_step': True,
                      'output_zero_step': True}
 
@@ -595,14 +595,14 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_removed_weatherer(self):
         req_data = self.req_data.copy()
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+        req_data['weatherers'] = [{'obj_type': 'gnome.weatherers.Evaporation',
                                    'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
-        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+        req_data['outputters'] = [{'obj_type': ('gnome.outputters.weathering'
                                                 '.WeatheringOutput'),
-                                   'name': u'WeatheringOutput',
+                                   'name': 'WeatheringOutput',
                                    'output_last_step': True,
                                    'output_zero_step': True}]
 
@@ -624,24 +624,24 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_weatherer_inside_model(self):
         req_data = self.req_data.copy()
         req_data['environment'] = [{'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }]
-        req_data['weatherers'] = [{'obj_type': u'gnome.weatherers.Evaporation',
+        req_data['weatherers'] = [{'obj_type': 'gnome.weatherers.Evaporation',
                                    'active_range': ('-inf', 'inf'),
                                    'on': True,
                                    }]
 
-        req_data['outputters'] = [{'obj_type': (u'gnome.outputters.weathering'
+        req_data['outputters'] = [{'obj_type': ('gnome.outputters.weathering'
                                                 '.WeatheringOutput'),
-                                   'name': u'WeatheringOutput',
+                                   'name': 'WeatheringOutput',
                                    'output_last_step': True,
                                    'output_zero_step': True}]
 
@@ -721,30 +721,30 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_create_model_then_add_wind(self):
         req_wind_data = {'obj_type': 'gnome.environment.Wind',
-                         'description': u'Wind Object',
+                         'description': 'Wind Object',
                          'updated_at': '2014-03-26T14:52:45.385126',
-                         'source_type': u'undefined',
-                         'source_id': u'undefined',
+                         'source_type': 'undefined',
+                         'source_id': 'undefined',
                          'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
                                         ('2012-11-06T20:15:30', (1.0, 270.0))],
-                         'units': u'meter per second'
+                         'units': 'meter per second'
                          }
 
-        print 'creating model...'
+        print('creating model...')
         resp = self.testapp.post_json('/model', params=self.req_data)
         model1 = resp.json_body
 
-        print 'creating wind...'
+        print('creating wind...')
         resp = self.testapp.post_json('/environment', params=req_wind_data)
         wind_data = resp.json_body
 
         model1['environment'] = [{'obj_type': wind_data['obj_type'],
                                   'id': wind_data['id'],
                                   'name': 'Custom Wind',
-                                  'units': u'meter per second'
+                                  'units': 'meter per second'
                                   }]
 
-        print 'updating model with sparse existing wind...'
+        print('updating model with sparse existing wind...')
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
@@ -759,30 +759,30 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_create_model_then_replace_wind(self):
         req_wind_data = {'obj_type': 'gnome.environment.Wind',
-                         'description': u'Wind Object',
+                         'description': 'Wind Object',
                          'updated_at': '2014-03-26T14:52:45.385126',
-                         'source_type': u'undefined',
-                         'source_id': u'undefined',
+                         'source_type': 'undefined',
+                         'source_id': 'undefined',
                          'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
                                         ('2012-11-06T20:15:30', (1.0, 270.0))],
-                         'units': u'meter per second'
+                         'units': 'meter per second'
                          }
 
-        print 'creating model...'
+        print('creating model...')
         resp = self.testapp.post_json('/model', params=self.req_data)
         model1 = resp.json_body
 
-        print 'creating wind...'
+        print('creating wind...')
         resp = self.testapp.post_json('/environment', params=req_wind_data)
         wind_data = resp.json_body
 
         model1['environment'] = [{'obj_type': wind_data['obj_type'],
                                   'id': wind_data['id'],
                                   'name': 'Custom Wind',
-                                  'units': u'meter per second'
+                                  'units': 'meter per second'
                                   }]
 
-        print 'updating model with sparse existing wind...'
+        print('updating model with sparse existing wind...')
         resp = self.testapp.put_json('/model', params=model1)
         model2 = resp.json_body
 
@@ -795,19 +795,19 @@ class NestedModelTests(FunctionalTestBase):
         assert model3['environment'][0]['id'] == wind_data['id']
         assert model3['environment'][0]['name'] == 'Custom Wind'
 
-        print 'creating new wind...'
+        print('creating new wind...')
         resp = self.testapp.post_json('/environment', params=req_wind_data)
         wind2_data = resp.json_body
 
         model3['environment'] = [{'obj_type': wind2_data['obj_type'],
                                   'id': wind2_data['id'],
                                   'name': 'Custom Wind 2',
-                                  'units': u'meter per second'
+                                  'units': 'meter per second'
                                   }]
 
-        print '\nwind_data id:', wind_data['id']
-        print 'wind2_data id:', wind2_data['id']
-        print 'updating model with new existing wind...'
+        print('\nwind_data id:', wind_data['id'])
+        print('wind2_data id:', wind2_data['id'])
+        print('updating model with new existing wind...')
         resp = self.testapp.put_json('/model', params=model3)
         model4 = resp.json_body
 
@@ -934,7 +934,7 @@ class NestedModelTests(FunctionalTestBase):
 
         # create a sparse spill
         spill = dict([(k, v)
-                      for k, v in model1['spills'][0].iteritems()
+                      for k, v in model1['spills'][0].items()
                       if k in ('id', 'obj_type')])
         model1['spills'][0] = spill
 

@@ -103,7 +103,7 @@ def update_savefile(file_path, request):
         return file_path + '.updated'
             
     except:
-        if ('develop_mode' in request.registry.settings.keys() and
+        if ('develop_mode' in list(request.registry.settings.keys()) and
                     request.registry.settings['develop_mode'].lower() == 'true'):
             import pdb
             pdb.post_mortem(sys.exc_info()[2])
@@ -158,7 +158,7 @@ class PyObjFromJson(object):
             json_obj.children[0].name
     '''
     def __init__(self, data):
-        for name, value in data.iteritems():
+        for name, value in data.items():
             setattr(self, name, self._wrap(value))
 
     def _wrap(self, value):

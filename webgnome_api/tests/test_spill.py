@@ -4,14 +4,14 @@ Functional tests for the Gnome Spill object Web API
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class SpillTests(FunctionalTestBase):
     '''
         Tests out the Gnome Spill object API
     '''
-    rel_req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
+    rel_req_data = {'obj_type': 'gnome.spill.release.PointLineRelease',
                     'num_elements': 100,
                     'num_released': 0,
                     'release_time': '2014-04-15T13:22:20.930570',
@@ -21,15 +21,15 @@ class SpillTests(FunctionalTestBase):
                     'start_position': (28.0, -78.0, 0.0),
                     }
 
-    init_req_data = {'obj_type': u'gnome.spill.initializers.InitWindages',
+    init_req_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
                      'windage_range': (0.01, 0.04),
                      'windage_persist': 900,
                      }
-    substance_req_data = {'obj_type': u'gnome.spill.substance.NonWeatheringSubstance',
+    substance_req_data = {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
                           'initializers': None,
                           }
 
-    req_data = {'obj_type': u'gnome.spill.spill.Spill',
+    req_data = {'obj_type': 'gnome.spill.spill.Spill',
                 'name': 'What a Name',
                 'release': None,
                 'substance': None
@@ -57,7 +57,7 @@ class SpillTests(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -148,7 +148,7 @@ class SpillTests(FunctionalTestBase):
 
         # create a sparse substance
         elem_type = dict([(k, v)
-                          for k, v in req_data['substance'].iteritems()
+                          for k, v in req_data['substance'].items()
                           if k in ('id', 'obj_type')])
         req_data['substance'] = elem_type
 

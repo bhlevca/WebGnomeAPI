@@ -24,7 +24,7 @@ class PyGnomeSchemaTweenFactory(object):
         modified = False
 
         if isinstance(json_request, dict):
-            for v in json_request.values():
+            for v in list(json_request.values()):
                 if self.add_json_key(v):
                     modified = True
         elif isinstance(json_request, (list, tuple)):
@@ -63,7 +63,7 @@ class PyGnomeSchemaTweenFactory(object):
             folder.
         '''
         if ValueIsJsonObject(json_data):
-            for k, v in json_data.items():
+            for k, v in list(json_data.items()):
                 if k == 'filename':
                     json_data[k] = self.fix_filename(request,
                                                      json_data['obj_type'],

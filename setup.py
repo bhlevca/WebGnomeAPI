@@ -30,7 +30,7 @@ try:
 except TypeError:
     branch_name = 'no-branch'
 
-last_update = repo.iter_commits().next().committed_datetime.isoformat(),
+last_update = repo.iter_commits().__next__().committed_datetime.isoformat(),
 
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
@@ -48,7 +48,7 @@ class cleanall(clean):
 
         rm_dir = ['pyGnome.egg-info', 'build']
         for dir_ in rm_dir:
-            print "Deleting auto-generated directory: {0}".format(dir_)
+            print("Deleting auto-generated directory: {0}".format(dir_))
             try:
                 shutil.rmtree(dir_)
             except OSError as err:
@@ -85,15 +85,15 @@ class cleanall(clean):
                             self.delete_file(f)
 
     def delete_file(self, filepath):
-        print "Deleting auto-generated file: {0}".format(filepath)
+        print("Deleting auto-generated file: {0}".format(filepath))
         try:
             if os.path.isdir(filepath):
                 shutil.rmtree(filepath)
             else:
                 os.remove(filepath)
         except OSError as err:
-            print("Failed to remove {0}. Error: {1}"
-                  .format(filepath, err))
+            print(("Failed to remove {0}. Error: {1}"
+                  .format(filepath, err)))
             # raise
 
 
@@ -113,20 +113,20 @@ class compileJSON(_build_py):
                         try:
                             self.parse(f, css_file)
                         except OSError as err:
-                            print ("Failed to find {}. Error {}"
-                                   .format(f, err))
+                            print(("Failed to find {}. Error {}"
+                                   .format(f, err)))
 
-            print ("Compiled {0} location(s)".format(len(file_list)))
+            print(("Compiled {0} location(s)".format(len(file_list))))
 
     def parse(self, path, css):
         if not hasattr(self, 'paths'):
             self.paths = set()
 
         with open(path, "r") as wizard_json:
-            data = unicode(wizard_json.read(), "utf-8")
+            data = wizard_json.read()
             data_obj = ujson.loads(data)
 
-            print ('Compiling location wizard "{}"'.format(data_obj["name"]))
+            print(('Compiling location wizard "{}"'.format(data_obj["name"])))
 
             for step in data_obj["steps"]:
                 dirpath = os.path.dirname(path)
@@ -152,10 +152,10 @@ class compileJSON(_build_py):
 
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    print("    Processing {}{}{}.js"
+                    print(("    Processing {}{}{}.js"
                           .format(os.path.sep.join(file_parts[-5:-1]),
                                   os.path.sep,
-                                  js_file_name))
+                                  js_file_name)))
                     step["functions"][js_file_name] = self.jsMinify(file_path)
 
         self.write_compiled_json(obj, path)
@@ -175,10 +175,10 @@ class compileJSON(_build_py):
 
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    print("    Processing {}{}{}.html"
+                    print(("    Processing {}{}{}.html"
                           .format(os.path.sep.join(file_parts[-5:-1]),
                                   os.path.sep,
-                                  filename))
+                                  filename)))
                     step["body"] = self.htmlMinify(file_path, css)
 
         self.write_compiled_json(obj, path)
@@ -195,16 +195,16 @@ class compileJSON(_build_py):
         with open(path, "r") as myfile:
             css.seek(0)
 
-            css_content = unicode(css.read(), "utf-8")
-            html_content = unicode(myfile.read(), "utf-8")
+            css_content = css.read()
+            html_content = myfile.read()
 
-            data = u"<style>" + css_content + u"</style>" + html_content
+            data = "<style>" + css_content + "</style>" + html_content
 
             return htmlmin.minify(data)
 
     def jsMinify(self, path):
         with open(path, "r") as myfile:
-            return jsmin(unicode(myfile.read(), "utf-8"))
+            return jsmin(myfile.read())
 
     def write_compiled_json(self, obj, path):
         with open(path + "/compiled.json", 'w+') as f:

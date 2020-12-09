@@ -5,6 +5,7 @@ from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
 from webgnome_api.views.socket_logger import LoggerNamespace
 from webgnome_api.views.socket_step import StepNamespace
+from pyramid.response import Response
 
 
 @view_config(route_name='socket.io')
@@ -16,8 +17,9 @@ def socketio_service(request):
                                        '/step_socket': StepNamespace,
                                        },
                            request=request)
-    print 'socketio_manage() returned:', resp
-    return resp
+    print('socketio_manage() returned:', resp)
+    #return resp
+    return Response()
 
 
 class WSNamespace(BaseNamespace):
@@ -26,7 +28,7 @@ class WSNamespace(BaseNamespace):
         self.emit(echo, *args, **kwargs)
 
     def on_getsession(self):
-        print self.session
+        print(self.session)
 
     def recv_connect(self):
-        print "CONN WS"
+        print("CONN WS")

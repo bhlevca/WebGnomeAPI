@@ -4,7 +4,7 @@ Functional tests for the Gnome Location object Web API
 import os
 import zipfile
 
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class LoadModelTest(FunctionalTestBase):
@@ -68,9 +68,9 @@ class LoadModelTest(FunctionalTestBase):
                                             key=lambda x: x.filename),
                                      sorted(z_out.infolist(),
                                             key=lambda x: x.filename)):
-            print ((info_in.filename, info_out.filename),
+            print(((info_in.filename, info_out.filename),
                    (info_in.file_size, info_out.file_size)
-                   )
+                   ))
 
             assert info_in.filename == info_out.filename
             #assert info_in.file_size == info_out.file_size

@@ -89,7 +89,7 @@ def run_export_model(request):
     When the greenlet running the model dies, it removes the outputters that were added
     via a linked function
     '''
-    print 'async export hit'
+    print('async export hit')
     log_prefix = 'req{0}: run_export_model()'.format(id(request))
     log.info('>>' + log_prefix)
 
@@ -109,7 +109,7 @@ def run_export_model(request):
     outpjson = payload['outputters']
     model_filename = payload['model_name']
     td = tempfile.mkdtemp()
-    for itm in outpjson.values():
+    for itm in list(outpjson.values()):
         itm['filename'] = os.path.join(td, itm['filename'])
         obj = CreateObject(itm, get_session_objects(request))
         temporary_outputters.append(obj)
@@ -159,7 +159,7 @@ def run_export_model(request):
                     ns.emit('export_finished', end_filename)
 
             except Exception:
-                if ('develop_mode' in request.registry.settings.keys() and
+                if ('develop_mode' in list(request.registry.settings.keys()) and
                             request.registry.settings['develop_mode'].lower() == 'true'):
                     import pdb
                     pdb.post_mortem(sys.exc_info()[2])
@@ -173,7 +173,7 @@ def run_export_model(request):
         ns.active_greenlet.link(get_export_cleanup())
         return None
     else:
-        print "Already started"
+        print("Already started")
         return None
 
 
@@ -185,7 +185,7 @@ def run_model(request):
     web socket. Until interrupted using halt_model(), it will run to
     completion
     '''
-    print 'async_step route hit'
+    print('async_step route hit')
     log_prefix = 'req{0}: run_model()'.format(id(request))
     log.info('>>' + log_prefix)
 
@@ -203,7 +203,7 @@ def run_model(request):
         ns.active_greenlet.session_hash = request.session_hash
         return None
     else:
-        print "Already started"
+        print("Already started")
         return None
 
 
@@ -217,7 +217,7 @@ def execute_async_model(
     Meant to run in a greenlet. This function should take an active model
     and run it, writing each step's output to the socket.
     '''
-    print request.session_hash
+    print(request.session_hash)
     log = get_greenlet_logger(request)
     log_prefix = 'req{0}: execute_async_model()'.format(id(request))
     try:
@@ -269,12 +269,12 @@ def execute_async_model(
                         if (isinstance(step_output, tuple) and
                                 len(step_output) >= 3 and
                                 isinstance(step_output[1], Exception)):
-                            raise step_output[1], None, step_output[2]
+                            raise step_output[1].with_traceback(step_output[2])
 
-                        for k, v in step_output['WeatheringOutput'].iteritems():
+                        for k, v in step_output['WeatheringOutput'].items():
                             aggregate[k].append(v)
 
-                    for k, v in aggregate.iteritems():
+                    for k, v in aggregate.items():
                         low[k] = min(v)
                         high[k] = max(v)
 
@@ -307,7 +307,7 @@ def execute_async_model(
             except Exception:
                 exc_type, exc_value, _exc_traceback = sys.exc_info()
                 traceback.print_exc()
-                if ('develop_mode' in request.registry.settings.keys() and
+                if ('develop_mode' in list(request.registry.settings.keys()) and
                             request.registry.settings['develop_mode'].lower() == 'true'):
                     import pdb
                     pdb.post_mortem(sys.exc_info()[2])
@@ -327,7 +327,7 @@ def execute_async_model(
 
             if not socket_namespace.is_async:
                 socket_namespace.lock.clear()
-                print 'lock!'
+                print('lock!')
 
             # kill greenlet after 100 minutes unless unlocked
             wait_time = 6000
@@ -369,12 +369,12 @@ class StepNamespace(BaseNamespace):
 
     def initialize(self):
         super(StepNamespace, self).initialize()
-        print ('attaching namespace {} to module'
-               .format(self.__class__.__name__))
+        print(('attaching namespace {} to module'
+               .format(self.__class__.__name__)))
 
         global sess_namespaces
         sess_namespaces[self.request.session.session_id] = self
-        print self.request.session.session_id
+        print(self.request.session.session_id)
 
         self.is_async = True
         self.lock = gevent.event.Event()
@@ -408,12 +408,12 @@ class StepNamespace(BaseNamespace):
 
     def on_isAsync(self, b):
         self.is_async = bool(b)
-        print 'setting async to {0}'.format(b)
+        print('setting async to {0}'.format(b))
 
     def on_ack(self, ack):
         if ack == self.num_sent:
             self.lock.set()
-        print 'ack {0}'.format(ack)
+        print('ack {0}'.format(ack))
 
 
 @rewind_api.get()
@@ -421,7 +421,7 @@ def get_rewind(request):
     '''
         rewinds the current active Model.
     '''
-    print 'rewinding', request.session.session_id
+    print('rewinding', request.session.session_id)
     active_model = get_active_model(request)
     ns = sess_namespaces.get(request.session.session_id, None)
     if active_model:

@@ -54,7 +54,7 @@ def can_persist(funct):
         configured to do so.
     '''
     def helper(request):
-        if ('can_persist_uploads' in request.registry.settings.keys() and
+        if ('can_persist_uploads' in list(request.registry.settings.keys()) and
                 asbool(request.registry.settings['can_persist_uploads'])):
             return funct(request)
         else:
@@ -82,7 +82,7 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     json_exc = json_exception(depth, with_stacktrace)
     if json_exc is not None:
         http_exc.json_body = json_exc
-    if ('develop_mode' in request.registry.settings.keys() and
+    if ('develop_mode' in list(request.registry.settings.keys()) and
                 asbool(request.registry.settings['develop_mode'])):
         if with_stacktrace: #remove false to use
             pass
@@ -263,7 +263,7 @@ def switch_to_existing_session(request):
     '''
     redis_session_id = request.POST['session']
 
-    if redis_session_id in request.session.redis.keys():
+    if redis_session_id in list(request.session.redis.keys()):
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
             return session_id
@@ -288,7 +288,7 @@ def process_upload(request, field_name):
     # checking that our session id is valid.
     redis_session_id = request.POST['session']
 
-    if redis_session_id in request.session.redis.keys():
+    if redis_session_id in list(request.session.redis.keys()):
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
             return session_id
@@ -308,7 +308,7 @@ def process_upload(request, field_name):
 
     persist_upload = asbool(request.POST.get('persist_upload', False))
 
-    if 'can_persist_uploads' in request.registry.settings.keys():
+    if 'can_persist_uploads' in list(request.registry.settings.keys()):
         can_persist = asbool(request.registry.settings['can_persist_uploads'])
     else:
         can_persist = False

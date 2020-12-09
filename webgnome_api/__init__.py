@@ -62,7 +62,7 @@ def reconcile_directory_settings(settings):
 
     for d in (save_file_dir,):
         if not os.path.exists(d):
-            print 'Creating folder {0}'.format(d)
+            print(('Creating folder {0}'.format(d)))
             os.mkdir(d)
         elif not os.path.isdir(d):
             raise EnvironmentError('Folder path {0} '
@@ -129,7 +129,7 @@ def start_session_cleaner(settings):
             shutil.rmtree(cleanup_dir)
         except OSError as err:
             if err.errno == 2:  # not-found error.  Print message & continue.
-                print ('Session Cleaner: Folder {} does not exist!'
+                print('Session Cleaner: Folder {} does not exist!'
                        .format(cleanup_dir))
             else:
                 raise
@@ -147,7 +147,7 @@ def main(global_config, **settings):
     settings['uncertain_models'] = {}
     try:
         os.mkdir('ipc_files')
-    except OSError, e:
+    except OSError as e:
         # it is ok if the folder already exists.
         if e.errno != 17:
             raise

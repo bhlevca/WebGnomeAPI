@@ -19,6 +19,6 @@ for d in dirs:
 
     try:
         m = load(model)
-        print "successfully loaded: {0}".format(model)
+        print("successfully loaded: {0}".format(model))
     except:
-        print "FAILED: {0}".format(model)
+        print("FAILED: {0}".format(model))

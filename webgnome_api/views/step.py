@@ -80,12 +80,12 @@ def get_step(request):
                     if (isinstance(step_output, tuple) and
                             len(step_output) >= 3 and
                             isinstance(step_output[1], Exception)):
-                        raise step_output[1], None, step_output[2]
+                        raise step_output[1].with_traceback(step_output[2])
 
-                    for k, v in step_output['WeatheringOutput'].iteritems():
+                    for k, v in step_output['WeatheringOutput'].items():
                         aggregate[k].append(v)
 
-                for k, v in aggregate.iteritems():
+                for k, v in aggregate.items():
                     low[k] = min(v)
                     high[k] = max(v)
 
@@ -182,10 +182,10 @@ def get_full_run(request):
                 full_output = {}
 
                 for idx, step_output in enumerate(steps):
-                    for k, v in step_output['WeatheringOutput'].iteritems():
+                    for k, v in step_output['WeatheringOutput'].items():
                         aggregate[k].append(v)
 
-                for k, v in aggregate.iteritems():
+                for k, v in aggregate.items():
                     low[k] = min(v)
                     high[k] = max(v)
 

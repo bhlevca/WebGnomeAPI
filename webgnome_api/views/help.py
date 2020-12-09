@@ -6,7 +6,7 @@ from os.path import sep, join, isfile, isdir
 
 import time
 import ujson
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import redis
 
 from docutils.core import publish_parts
@@ -26,7 +26,7 @@ help_svc = Service(name='help', path='/help*dir',
 def get_help(request):
     '''Get the requested help file if it exists'''
     help_dir = get_help_dir_from_config(request)
-    requested_dir = (urllib.unquote(sep.join(request.matchdict['dir']))
+    requested_dir = (urllib.parse.unquote(sep.join(request.matchdict['dir']))
                      .encode('utf8'))
     requested_file = join(help_dir, requested_dir)
 

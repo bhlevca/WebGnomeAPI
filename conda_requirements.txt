@@ -19,10 +19,10 @@
 #     $ pip install --no-deps -r requirements.txt
 
 
-python=2.7.*
+python
 # numpy is not strictly needed by the API, but is by gnome, etc,
 # and adding it helps keep conda from trying to up- or down-grade it.
-numpy=1.16.*
+numpy
 
 pyramid>=1.9
 repoze.lru  # required by Pyramid, but not brought in for some reason :-(
@@ -35,10 +35,13 @@ pytest
 webtest>=2.0
 htmlmin
 jsmin
+pyramid_log
+#Sredis
+#pyramid-redis-sessions
 
 pycparser
 gevent
-gevent-websocket
+#gevent-websocket
 
 redis-py
 # we need the redis server to manage sessions

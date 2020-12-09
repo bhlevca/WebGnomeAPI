@@ -4,7 +4,7 @@ Views for the model load/save operations.
 import os
 import errno
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import ujson
 
 from pyramid.settings import asbool
@@ -52,7 +52,7 @@ def get_uploaded_files(request):
     '''
         Returns a listing of the persistently uploaded files.
     '''
-    sub_folders = [urllib.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -123,7 +123,7 @@ def modify_filesystem(request):
         resp = Response(ujson.dumps(paths))
         return resp
 
-    sub_folders = [urllib.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -149,7 +149,7 @@ def process_upload(request):
     '''
     redis_session_id = request.POST['session']
 
-    if redis_session_id in request.session.redis.keys():
+    if redis_session_id in list(request.session.redis.keys()):
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
             return session_id
@@ -169,7 +169,7 @@ def process_upload(request):
 
     persist_upload = asbool(request.POST.get('persist_upload', False))
 
-    if 'can_persist_uploads' in request.registry.settings.keys():
+    if 'can_persist_uploads' in list(request.registry.settings.keys()):
         can_persist = asbool(request.registry.settings['can_persist_uploads'])
     else:
         can_persist = False
@@ -233,7 +233,7 @@ def create_file_item(request):
         - Create a new folder
         - Rename a file that already exists
     '''
-    sub_folders = [urllib.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -261,7 +261,7 @@ def create_file_item(request):
         return create_new_folder(request, base_path, sub_folders[:-1],
                                  file_model)
     else:
-        print('unknown file type: {}'.format(file_model))
+        print(('unknown file type: {}'.format(file_model)))
         raise cors_exception(request, HTTPBadRequest)
 
 
@@ -271,7 +271,7 @@ def delete_uploaded_file(request):
     '''
         Performs a delete of a file in the uploads folder.
     '''
-    sub_folders = [urllib.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d).encode('utf8')
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 

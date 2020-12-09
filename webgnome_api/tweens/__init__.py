@@ -1,1 +1,1 @@
-from py_gnome import PyGnomeSchemaTweenFactory
+from .py_gnome import PyGnomeSchemaTweenFactory
