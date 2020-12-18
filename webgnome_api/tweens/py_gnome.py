@@ -79,7 +79,7 @@ class PyGnomeSchemaTweenFactory(object):
 
     def generate_short_session_id(self, request):
         if hasattr(request, 'session'):
-            hasher = hashlib.sha1(request.session.session_id)
+            hasher = hashlib.sha1(request.session.session_id.encode('utf-8'))
             request.session_hash = base64.urlsafe_b64encode(hasher.digest())
 
     def before_the_handler(self, request):
@@ -101,7 +101,7 @@ class PyGnomeSchemaTweenFactory(object):
             #       and then turn it back into a string.
             #       I tried just leaving it as a JSON object, but the
             #       request body doesn't accept anything but a string.
-            request.body = ujson.dumps(json_request)
+            request.body = ujson.dumps(json_request).encode('utf-8')
 
         self.generate_short_session_id(request)
 

@@ -1,8 +1,10 @@
 
 from pyramid.view import view_config
 
-from socketio import socketio_manage
-from socketio.namespace import BaseNamespace
+#from socketio import socketio_manage
+#from socketio.namespace import BaseNamespace
+socketio_manage = 1
+BaseNamespace = object
 from webgnome_api.views.socket_logger import LoggerNamespace
 from webgnome_api.views.socket_step import StepNamespace
 from pyramid.response import Response

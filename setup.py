@@ -257,5 +257,7 @@ setup(name='webgnome_api',
       zip_safe=False,
       test_suite='webgnome_api',
       entry_points=('[paste.app_factory]\n'
-                    '  main = webgnome_api:main\n'),
+                    '  main = webgnome_api:main\n'
+                    '[paste.server_factory]\n'
+                    '  srv = webgnome_api:server_factory\n'),
       )

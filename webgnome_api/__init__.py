@@ -4,9 +4,9 @@
 import os
 import shutil
 import logging
-
 import ujson
 import gevent
+import socketio
 
 from redis import StrictRedis
 
@@ -18,6 +18,10 @@ from pyramid_log import Formatter, _WrapDict, _DottedLookup
 from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
+from webgnome_api.socket.sockserv import WebgnomeSocketioServer
+
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 
 logging.basicConfig()
 
@@ -139,6 +143,14 @@ def start_session_cleaner(settings):
 
     settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=False)
 
+def server_factory(global_config, host, port):
+    port = int(port)
+    def serve(app):
+        import pdb
+        pdb.set_trace()
+        pywsgi.WSGIServer((host, port), app,
+                          handler_class=WebSocketHandler).serve_forever()
+    return serve
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
@@ -183,9 +195,16 @@ def main(global_config, **settings):
     config.add_route('environment_upload', '/environment/upload')
     config.add_route('environment_activate', '/environment/activate')
 
-    config.add_route('socket.io', '/socket.io/*remaining')
+    #config.add_route('socket.io', '/socket.io/*remaining')
     config.add_route('logger', '/logger')
 
-    config.scan('webgnome_api.views')
+    config.scan('webgnome_api.views', ignore=[
+        'webgnome_api.views.socket',
+        'webgnome_api.views.socket_logger',
+        'webgnome_api.views.socket_step'
+    ])
 
-    return config.make_wsgi_app()
+    wapi =  config.make_wsgi_app()
+    sio = WebgnomeSocketioServer(app_settings=settings)
+    app = socketio.WSGIApp(sio, wapi)
+    return app

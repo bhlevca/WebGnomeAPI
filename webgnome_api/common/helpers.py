@@ -216,5 +216,5 @@ def JSONImplementedType(json_obj, obj_types):
 
 def PyClassFromName(fully_qualified_name):
     name, scope = FQNameToNameAndScope(fully_qualified_name)
-    my_module = __import__(scope, globals(), locals(), [str(name)], -1)
+    my_module = __import__(scope, globals(), locals(), [str(name)], 0)
     return getattr(my_module, name)
