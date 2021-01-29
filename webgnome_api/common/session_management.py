@@ -1,4 +1,4 @@
-"""
+""" 
 Common Gnome object request handlers.
 """
 from threading import Lock

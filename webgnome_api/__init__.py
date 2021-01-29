@@ -18,7 +18,7 @@ from pyramid_log import Formatter, _WrapDict, _DottedLookup
 from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
-from webgnome_api.socket.sockserv import WebgnomeSocketioServer
+from webgnome_api.socket.sockserv import WebgnomeSocketioServer, MyCustomNamespace
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
@@ -127,6 +127,8 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
+        import pdb
+        pdb.set_trace()
         cleanup_dir = os.path.join(session_dir, msg['data'])
 
         try:
@@ -146,8 +148,20 @@ def start_session_cleaner(settings):
 def server_factory(global_config, host, port):
     port = int(port)
     def serve(app):
-        import pdb
-        pdb.set_trace()
+        #app is gzip middlware; app.application == webgnome_api
+        sio = WebgnomeSocketioServer(
+            app_settings=global_config,
+            api_app=app.application,
+            async_mode='gevent',
+            #logger=True,
+            #ping_interval=2,
+            #ping_timeout=10
+            )
+        ns = MyCustomNamespace('/')
+        sio.register_namespace(ns)
+        app.application.registry['sio_ns'] = ns #to allow access to socketio side from pyramid side
+        #sio.register_namespace(LoggerNamespace('/logger'))
+        app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
     return serve
@@ -157,6 +171,8 @@ def main(global_config, **settings):
     settings['objects'] = {}
 
     settings['uncertain_models'] = {}
+    import pdb
+    pdb.set_trace()
     try:
         os.mkdir('ipc_files')
     except OSError as e:
@@ -195,16 +211,14 @@ def main(global_config, **settings):
     config.add_route('environment_upload', '/environment/upload')
     config.add_route('environment_activate', '/environment/activate')
 
-    #config.add_route('socket.io', '/socket.io/*remaining')
+    config.add_route('socket.io', '/socket.io/*remaining')
     config.add_route('logger', '/logger')
 
     config.scan('webgnome_api.views', ignore=[
-        'webgnome_api.views.socket',
-        'webgnome_api.views.socket_logger',
-        'webgnome_api.views.socket_step'
+        #'webgnome_api.views.socket',
+        #'webgnome_api.views.socket_logger',
+        #'webgnome_api.views.socket_step'
     ])
 
     wapi =  config.make_wsgi_app()
-    sio = WebgnomeSocketioServer(app_settings=settings)
-    app = socketio.WSGIApp(sio, wapi)
-    return app
+    return wapi

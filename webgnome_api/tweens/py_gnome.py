@@ -80,7 +80,7 @@ class PyGnomeSchemaTweenFactory(object):
     def generate_short_session_id(self, request):
         if hasattr(request, 'session'):
             hasher = hashlib.sha1(request.session.session_id.encode('utf-8'))
-            request.session_hash = base64.urlsafe_b64encode(hasher.digest())
+            request.session_hash = base64.urlsafe_b64encode(hasher.digest()).decode()
 
     def before_the_handler(self, request):
         # code to be executed for each request

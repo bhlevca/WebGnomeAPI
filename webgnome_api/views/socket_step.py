@@ -6,6 +6,7 @@ import tempfile
 import os
 import zipfile
 import shutil
+import pdb
 
 import traceback
 from collections import defaultdict
@@ -13,7 +14,6 @@ from threading import current_thread
 
 import gevent
 
-from socketio.namespace import BaseNamespace
 from pyramid.response import FileResponse
 
 from pyramid.httpexceptions import (HTTPPreconditionFailed,
@@ -94,9 +94,8 @@ def run_export_model(request):
     log.info('>>' + log_prefix)
 
     sess_id = request.session.session_id
-    global sess_namespaces
+    ns = request.registry.get('sio_ns')
 
-    ns = sess_namespaces.get(sess_id, None)
     if ns is None:
         raise ValueError('no namespace associated with session')
     
@@ -166,15 +165,23 @@ def run_export_model(request):
                 raise
         return cleanup
 
-    if active_model and not ns.active_greenlet:
-        ns.active_greenlet = ns.spawn(execute_async_model, active_model,
-                                      ns, request, False)
-        ns.active_greenlet.session_hash = request.session_hash
-        ns.active_greenlet.link(get_export_cleanup())
-        return None
-    else:
-        print("Already started")
-        return None
+    sid = ns.get_sockid_from_sessid(request.session.session_id)
+    if sid is None:
+        raise ValueError('no sock_session associated with pyramid_session')
+    with ns.session(sid) as sock_session:
+        sock_session['num_sent'] = 0
+        if active_model and not ns.active_greenlets.get(sid):
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request)
+            gl.session_hash = request.session_hash
+            return None
+        else:
+            print("Already started")
+            return None
 
 
 
@@ -185,31 +192,42 @@ def run_model(request):
     web socket. Until interrupted using halt_model(), it will run to
     completion
     '''
+    import pdb
+    pdb.set_trace()
     print('async_step route hit')
     log_prefix = 'req{0}: run_model()'.format(id(request))
     log.info('>>' + log_prefix)
 
     sess_id = request.session.session_id
-    global sess_namespaces
+    ns = request.registry.get('sio_ns')
 
-    ns = sess_namespaces.get(sess_id, None)
     if ns is None:
         raise ValueError('no namespace associated with session')
-    
+
     active_model = get_active_model(request)
-    if active_model and not ns.active_greenlet:
-        ns.active_greenlet = ns.spawn(execute_async_model, active_model,
-                                      ns, request)
-        ns.active_greenlet.session_hash = request.session_hash
-        return None
-    else:
-        print("Already started")
-        return None
+    sid = ns.get_sockid_from_sessid(request.session.session_id)
+    if sid is None:
+        raise ValueError('no sock_session associated with pyramid_session')
+    with ns.session(sid) as sock_session:
+        sock_session['num_sent'] = 0
+        if active_model and not ns.active_greenlets.get(sid):
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request)
+            gl.session_hash = request.session_hash
+            return None
+        else:
+            print("Already started")
+            return None
 
 
 def execute_async_model(
     active_model=None,
     socket_namespace=None,
+    sockid=None,
     request=None,
     send_output=True
     ):
@@ -220,16 +238,17 @@ def execute_async_model(
     print(request.session_hash)
     log = get_greenlet_logger(request)
     log_prefix = 'req{0}: execute_async_model()'.format(id(request))
+    sock_session_copy = socket_namespace.get_session(sockid) #use get_session to get a clone of the session
     try:
         wait_time = 16
-        socket_namespace.emit('prepared')
-
-        unlocked = socket_namespace.lock.wait(wait_time)
-        if not unlocked:
-            socket_namespace.emit('timeout',
-                                    'Model not started, timed out after '
-                                    '{0} sec'.format(wait_time))
-            socket_namespace.on_kill()
+        socket_namespace.emit('prepared', room=sockid)
+        with socket_namespace.session(sockid) as sock_session:
+            unlocked = sock_session['lock'].wait(wait_time)
+            if not unlocked:
+                socket_namespace.emit('timeout',
+                                        'Model not started, timed out after '
+                                        '{0} sec'.format(wait_time), room=sockid)
+                socket_namespace.on_model_kill(sockid)
 
         log.info('model run triggered')
         while True:
@@ -318,43 +337,62 @@ def execute_async_model(
                 log.critical(msg)
                 raise   
 
-            socket_namespace.num_sent += 1
-            log.debug(socket_namespace.num_sent)
+            sock_session_copy['num_sent'] += 1
+            log.debug(sock_session_copy['num_sent'])
             if output and send_output:
-                socket_namespace.emit('step', output)
+                socket_namespace.emit('step', output, room=sockid)
             else:
-                socket_namespace.emit('step', socket_namespace.num_sent)
+                socket_namespace.emit('step', sock_session_copy['num_sent'])
 
             if not socket_namespace.is_async:
-                socket_namespace.lock.clear()
-                print('lock!')
+                with socket_namespace.session(sockid) as sock_session:
+                    sock_session['lock'].clear()
+                    print('lock!')
 
             # kill greenlet after 100 minutes unless unlocked
             wait_time = 6000
-            unlocked = socket_namespace.lock.wait(wait_time)
-            if not unlocked:
-                socket_namespace.emit('timeout',
-                                        'Model run timed out after {0} sec'
-                                        .format(wait_time))
-                socket_namespace.on_kill()
+            with socket_namespace.session(sockid) as sock_session:
+                sock_session['lock'].wait(wait_time)
+                print('lock!')
+                unlocked = sock_session['lock']
+                if not unlocked:
+                    socket_namespace.emit('timeout',
+                                            'Model run timed out after {0} sec'
+                                            .format(wait_time), room=sockid)
+                    socket_namespace.on_model_kill(sockid)
 
             gevent.sleep(0.001)
     except GreenletExit:
         log.info('Greenlet exiting early')
-        socket_namespace.emit('killed', 'Model run terminated early')
+        socket_namespace.emit('killed', 'Model run terminated early', room=sockid)
         raise
 
     except Exception:
+        exc_type, exc_value, _exc_traceback = sys.exc_info()
+        traceback.print_exc()
+        if ('develop_mode' in list(request.registry.settings.keys()) and
+                    request.registry.settings['develop_mode'].lower() == 'true'):
+            import pdb
+            pdb.post_mortem(sys.exc_info()[2])
+
+        msg = ('  {}{}'
+                .format(log_prefix, traceback.format_exception_only(exc_type,
+                                                        exc_value)))
+        log.critical(msg)
         log.info('Greenlet terminated due to exception')
 
         json_exc = json_exception(2, True)
-        socket_namespace.emit('runtimeError', json_exc['message'])
+        socket_namespace.emit('runtimeError', json_exc['message'], room=sockid)
         raise
 
+    finally:
+        with socket_namespace.session(sockid) as sock_session:
+            for k,v in sock_session.items():
+                if sock_session_copy[k] != v:
+                    log.info('{0} session property {1} changing from {2} to {3}'.format(sockid, k, v, sock_session_copy[k]))
+        socket_namespace.save_session(sockid, sock_session_copy)
+
     socket_namespace.emit('complete', 'Model run completed')
-
-
-
 
 def get_uncertain_steps(request):
     uncertain_models = get_uncertain_models(request)
@@ -363,59 +401,6 @@ def get_uncertain_steps(request):
     else:
         return None
 
-
-class StepNamespace(BaseNamespace):
-    inst_count = 0
-
-    def initialize(self):
-        super(StepNamespace, self).initialize()
-        print(('attaching namespace {} to module'
-               .format(self.__class__.__name__)))
-
-        global sess_namespaces
-        sess_namespaces[self.request.session.session_id] = self
-        print(self.request.session.session_id)
-
-        self.is_async = True
-        self.lock = gevent.event.Event()
-        self.lock.clear()
-        self.num_sent = 0
-        self.active_greenlet = None
-
-        self.inst = StepNamespace.inst_count
-        StepNamespace.inst_count += 1
-
-    def recv_connect(self):
-        log.debug("STEP CONNNNNNNN")
-        log.debug(self.inst)
-        self.emit("step_started")
-
-    def recv_disconnect(self):
-        log.debug("received disconnect signal")
-        self.num_sent = 0
-
-    def on_halt(self):
-        log.debug('halting {0}'.format(self.request.session.session_id))
-        self.lock.clear()
-
-    def on_kill(self):  # kill signal from client
-        if self.active_greenlet:
-            log.debug('killing greenlet {0}'.format(self.active_greenlet))
-            self.active_greenlet.kill(block=True, timeout=5)
-            self.emit('killed', 'Model run terminated')
-            log.debug('killed greenlet {0}'.format(self.active_greenlet))
-            self.num_sent = 0
-
-    def on_isAsync(self, b):
-        self.is_async = bool(b)
-        print('setting async to {0}'.format(b))
-
-    def on_ack(self, ack):
-        if ack == self.num_sent:
-            self.lock.set()
-        print('ack {0}'.format(ack))
-
-
 @rewind_api.get()
 def get_rewind(request):
     '''
@@ -423,16 +408,18 @@ def get_rewind(request):
     '''
     print('rewinding', request.session.session_id)
     active_model = get_active_model(request)
-    ns = sess_namespaces.get(request.session.session_id, None)
+    ns = request.registry.get('sio_ns')
     if active_model:
         session_lock = acquire_session_lock(request)
         log.info('  session lock acquired (sess:{}, thr_id: {})'
                  .format(id(session_lock), current_thread().ident))
 
         try:
-            if (ns and ns.active_greenlet):
-                ns.active_greenlet.kill(block=False)
-                ns.num_sent = 0
+            sio = ns.get_sockid_from_sessid(request.session.session_id)
+            if (ns and ns.active_greenlets.get(sio)):
+                with ns.session(sio) as sock_session:
+                    ns.active_greenlets.get(sio).kill(block=False)
+                    sock_session['num_sent'] = 0
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
