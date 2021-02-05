@@ -145,7 +145,7 @@ class StepExceptionTest(FunctionalTestBase):
         # the step api should fail with no active model initialized.
         resp = self.testapp.get('/step', expect_errors=True)
         status_code = resp.status_code
-        explanation = resp.body.split('\n')[2]
+        explanation = resp.body.encode('utf-8').split('\n')[2]
 
         assert status_code == 412
         assert (explanation ==

@@ -72,7 +72,7 @@ def setup_output(request, obj_type, clean_dir):
 
 def process_outputter(request, clean_dir=False):
     try:
-        json_request = ujson.loads(request.body)
+        json_request = ujson.loads(request.body.decode('utf-8'))
     except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
@@ -81,7 +81,7 @@ def process_outputter(request, clean_dir=False):
 
     fix_filename(json_request, output_dir)
 
-    request.body = ujson.dumps(json_request)
+    request.body = ujson.dumps(json_request).encode('utf-8')
 
     return request
 

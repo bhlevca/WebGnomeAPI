@@ -126,8 +126,7 @@ def get_step(request):
         return output
     else:
         raise cors_exception(request, HTTPPreconditionFailed,
-                             explanation=('Your session timed out '
-                                          '- the model is no longer active'))
+                             explanation=(b'Your session timed out - the model is no longer active'))
 
 
 @full_run_api.post()

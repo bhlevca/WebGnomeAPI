@@ -353,7 +353,7 @@ class CatsMoverTests(BaseMoverTests):
 
     req_data = {'obj_type': 'gnome.movers.current_movers.CatsMover',
                 'filename': os.path.join('models', 'tidesWAC.CUR'),
-                'scale': True,
+                #'scale': True, Cannot use any longer due to pygnome changes
                 'scale_value': 1.0,
                 'scale_refpoint': (-72.705, 41.2275, 0.0),
                 }
@@ -396,7 +396,6 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        json_obj['scale'] = False
         json_obj['scale_value'] = 2.0
         json_obj['scale_refpoint'] = [-50.0, 50.0, 10.0]
 
@@ -415,7 +414,6 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['scale'] is False
         assert json_obj['scale_value'] == 2.0
         assert json_obj['scale_refpoint'] == [-50.0, 50.0, 10.0]
 

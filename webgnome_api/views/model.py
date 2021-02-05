@@ -85,7 +85,7 @@ def create_model(request):
     log.info('>>' + log_prefix)
 
     try:
-        json_request = ujson.loads(request.body)
+        json_request = ujson.loads(request.body.decode('utf-8'))
     except Exception:
         json_request = None
 
@@ -136,7 +136,7 @@ def update_model(request):
 
     ret = None
     try:
-        json_request = ujson.loads(request.body)
+        json_request = ujson.loads(request.body.decode('utf-8'))
     except Exception:
         raise cors_exception(request, HTTPBadRequest)
 

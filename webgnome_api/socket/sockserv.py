@@ -30,7 +30,7 @@ class WebgnomeSocketioServer(socketio.Server):
     def _handle_connect(self, eio_sid, namespace):
         return super(WebgnomeSocketioServer, self)._handle_connect(eio_sid, namespace)
 
-class MyCustomNamespace(socketio.Namespace):
+class WebgnomeNamespace(socketio.Namespace):
 
 #req = self.server.app.application.request_factory(environ)
 #req.registry = self.server.app.application.registry
@@ -52,6 +52,11 @@ class MyCustomNamespace(socketio.Namespace):
         #websocket connection is actually still successful?
         ctx = self.server.app.request_context(environ)
         session_id = ctx.request.session.session_id
+        if session_id not in self.server.app.registry.settings['objects']:
+            #connection has come in either before the session has been properly established,
+            #or an old client socket is attempting to reconnect to a new API
+            self.disconnect(sid)
+            return False
         sess_hash = generate_short_session_id(session_id)
         lock = gevent.event.Event()
         lock.clear()
@@ -74,6 +79,8 @@ class MyCustomNamespace(socketio.Namespace):
 
     def on_disconnect(self, sid):
         with self.session(sid) as sock_session:
+            if not sock_session:
+                return "session_not_found"
             #pdb.set_trace()
             session_id = sock_session['session_id']
             del self.sio_sessionid_map[session_id]

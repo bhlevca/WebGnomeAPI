@@ -194,7 +194,7 @@ def upload_release(request):
     release_json.update(request.POST)
     release_json.pop('session')
 
-    request.body = ujson.dumps(release_json)
+    request.body = ujson.dumps(release_json).encode('utf-8')
 
     release_obj = create_release(request)
     resp = Response(ujson.dumps(release_obj))
