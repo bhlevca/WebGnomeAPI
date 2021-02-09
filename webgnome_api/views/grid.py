@@ -26,7 +26,6 @@ from webgnome_api.common.views import (get_object,
                                        activate_uploaded)
 
 from cornice import Service
-import pdb
 
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
@@ -70,7 +69,7 @@ def get_grid(request):
 
 
 def get_metadata(request):
-    log_prefix = 'req({0}): get_current_info():'.format(id(request))
+    log_prefix = 'req({0}): get_metadata():'.format(id(request))
     log.info('>>' + log_prefix)
 
     session_lock = acquire_session_lock(request)
