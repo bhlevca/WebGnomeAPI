@@ -37,7 +37,7 @@ htmlmin
 jsmin
 pyramid_log
 #Sredis
-#pyramid-redis-sessions
+pyramid_redis_sessions
 
 pycparser
 gevent
