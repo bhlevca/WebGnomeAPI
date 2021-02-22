@@ -42,7 +42,7 @@ pyramid_redis_sessions
 pycparser
 gevent
 python-socketio
-#gevent-websocket
+gevent-websocket
 
 redis-py
 # we need the redis server to manage sessions
