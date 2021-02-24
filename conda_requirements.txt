@@ -38,7 +38,6 @@ jsmin
 pyramid_log
 #Sredis
 pyramid_redis_sessions
-oil_library
 
 pycparser
 gevent
