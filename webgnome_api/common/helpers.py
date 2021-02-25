@@ -45,8 +45,6 @@ def update_savefile(file_path, request):
 
         return substance
 
-    import pdb
-    #pdb.set_trace()
     try:
         with zipfile.ZipFile(file_path, 'r') as zf:
             if 'version.txt' in zf.namelist():

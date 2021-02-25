@@ -192,8 +192,6 @@ def run_model(request):
     web socket. Until interrupted using halt_model(), it will run to
     completion
     '''
-    import pdb
-    pdb.set_trace()
     print('async_step route hit')
     log_prefix = 'req{0}: run_model()'.format(id(request))
     log.info('>>' + log_prefix)
