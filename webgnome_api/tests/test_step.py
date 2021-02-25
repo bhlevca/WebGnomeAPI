@@ -582,7 +582,7 @@ class StepTest(FunctionalTestBase):
 
         weathering_out = [v for v in list(first_step['WeatheringOutput'].values())
                           if isinstance(v, dict)][0]
-        assert len(weathering_out) == 12
+        assert len(weathering_out) == 11
 
         resp = self.testapp.get('/step')
         second_step = resp.json_body
