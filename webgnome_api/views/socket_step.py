@@ -413,11 +413,12 @@ def get_rewind(request):
                  .format(id(session_lock), current_thread().ident))
 
         try:
-            sio = ns.get_sockid_from_sessid(request.session.session_id)
-            if (ns and ns.active_greenlets.get(sio)):
-                with ns.session(sio) as sock_session:
-                    ns.active_greenlets.get(sio).kill(block=False)
-                    sock_session['num_sent'] = 0
+            if ns:
+                sio = ns.get_sockid_from_sessid(request.session.session_id)
+                if (ns.active_greenlets.get(sio)):
+                    with ns.session(sio) as sock_session:
+                        ns.active_greenlets.get(sio).kill(block=False)
+                        sock_session['num_sent'] = 0
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,

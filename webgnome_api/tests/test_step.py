@@ -581,7 +581,7 @@ class StepTest(FunctionalTestBase):
         assert first_step['step_num'] == 0
 
         weathering_out = [v for v in list(first_step['WeatheringOutput'].values())
-                          if isinstance(v, dict)]
+                          if isinstance(v, dict)][0]
         assert len(weathering_out) == 12
 
         resp = self.testapp.get('/step')
