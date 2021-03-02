@@ -10,10 +10,6 @@
 #     $ conda install --file conda_requirements.txt
 #     $ pip install -r pip_requirements.txt
 
-pyramid_log
-redis
-pyramid-redis-sessions
-
 
 # erd's build of gevent-socketio
 https://github.com/NOAA-ORR-ERD/gevent-socketio/archive/v0.3.7.tar.gz
