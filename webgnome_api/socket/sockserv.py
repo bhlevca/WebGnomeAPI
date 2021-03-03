@@ -6,6 +6,7 @@ import hashlib
 import re
 import os
 import gevent
+import pathlib
 
 from ..common.session_management import get_session_objects
 
@@ -174,6 +175,9 @@ class WebgnomeNamespace(socketio.Namespace):
             session_filter.filter = gen_emit_msg(sess_hash)
 
             session_log_folder = os.path.join(os.getcwd(), 'models', 'session', sess_id)
+            if not os.path.exists(session_log_folder):
+                pathlib.Path(session_log_folder).mkdir(parents=True, exist_ok=True)
+
             session_log_file = os.path.join(session_log_folder, sess_id + '.log')
             session_handler = logging.handlers.RotatingFileHandler(session_log_file,
                                                                    mode='a',
