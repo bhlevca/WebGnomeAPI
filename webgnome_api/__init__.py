@@ -4,6 +4,7 @@
 import os
 import shutil
 import logging
+from pathlib import Path
 import ujson
 import gevent
 import socketio
@@ -22,6 +23,8 @@ from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespa
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+
+__version__ = "0.9"
 
 logging.basicConfig()
 

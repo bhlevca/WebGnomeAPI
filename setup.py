@@ -6,6 +6,7 @@
 import os
 import glob
 import shutil
+from pathlib import Path
 import fnmatch
 import htmlmin
 from jsmin import jsmin
@@ -21,10 +22,9 @@ from setuptools.command.install import install
 from git import Repo
 
 # could run setup from anywhere
-here = os.path.abspath(os.path.dirname(__file__))
+here = Path(__file__).absolute().parent
 
 repo = Repo('.')
-
 try:
     branch_name = repo.active_branch.name
 except TypeError:
@@ -32,7 +32,7 @@ except TypeError:
 
 last_update = repo.iter_commits().__next__().committed_datetime.isoformat(),
 
-with open(os.path.join(here, 'README.rst')) as f:
+with open(here / 'README.rst', encoding='utf-8') as f:
     README = f.read()
 
 
@@ -57,55 +57,46 @@ class cleanall(clean):
 
     def clean_compiled_python_files(self):
         # clean any byte-compiled python files
-        paths = [os.path.join(here, 'webgnome_api'),
-                 os.path.join(here, 'location_files')]
+        paths = [here / 'webgnome_api',
+                 here / 'location_files']
         exts = ['*.pyc']
 
         self.clean_files(paths, exts)
 
     def clean_compiled_location_files(self):
         # clean any byte-compiled python files
-        paths = [os.path.join(here, 'location_files')]
+        paths = [here / 'location_files']
         exts = ['compiled.json']
 
         self.clean_files(paths, exts)
 
     def clean_files(self, paths, exts):
         for path in paths:
-            # first, any local files directly under the path
             for ext in exts:
-                for f in glob.glob(os.path.join(path, ext)):
+                for f in path.rglob(ext):
                     self.delete_file(f)
-
-            # next, walk any sub-directories
-            for root, dirs, _files in os.walk(path, topdown=False):
-                for d in dirs:
-                    for ext in exts:
-                        for f in glob.glob(os.path.join(root, d, ext)):
-                            self.delete_file(f)
 
     def delete_file(self, filepath):
         print("Deleting auto-generated file: {0}".format(filepath))
         try:
-            if os.path.isdir(filepath):
+            if filepath.is_dir():
                 shutil.rmtree(filepath)
             else:
                 os.remove(filepath)
         except OSError as err:
             print(("Failed to remove {0}. Error: {1}"
                   .format(filepath, err)))
-            # raise
 
 
 class compileJSON(_build_py):
     def run(self):
-        paths = [os.path.join(here, 'location_files')]
+        paths = [here / 'location_files']
         file_patterns = ['*wizard.json']
 
-        with open(os.path.join(here, 'location_files/style.css'), "r") as css_file:
+        with open(here / 'location_files/style.css', "r") as css_file:
             for path in paths:
                 for pattern in file_patterns:
-                    file_list = [os.path.join(dirpath, f)
+                    file_list = [Path(dirpath) / f
                                  for dirpath, _dirnames, files in os.walk(path)
                                  for f in fnmatch.filter(files, pattern)]
 
@@ -129,7 +120,7 @@ class compileJSON(_build_py):
             print(('Compiling location wizard "{}"'.format(data_obj["name"])))
 
             for step in data_obj["steps"]:
-                dirpath = os.path.dirname(path)
+                dirpath = path.parent
                 if dirpath not in self.paths:
                     if step["type"] == "custom":
                         self.fill_html_body(data_obj, dirpath, css)
@@ -140,59 +131,31 @@ class compileJSON(_build_py):
 
     def fill_js_functions(self, obj, path):
         steps = obj["steps"]
-        js_file_list = self.findJS(path)
 
-        for file_path in js_file_list:
-            file_parts = file_path.split(os.path.sep)
-
+        for file_path in path.rglob("*.js"):
             # name of the folder 2 levels above our .js file
-            filename = file_parts[-3]
+            filename = file_path.parts[-3]
 
-            js_file_name = self.grab_filename(file_path)
+            js_file_name = file_path.stem
 
             for step in steps:
                 if step["type"] == "custom" and step["name"] == filename:
-                    print(("    Processing {}{}{}.js"
-                          .format(os.path.sep.join(file_parts[-5:-1]),
-                                  os.path.sep,
-                                  js_file_name)))
+                    print(f"    Processing {file_path}")
                     step["functions"][js_file_name] = self.jsMinify(file_path)
 
         self.write_compiled_json(obj, path)
 
-    def findJS(self, path):
-        return [os.path.join(dirpath, f)
-                for dirpath, _dirnames, files in os.walk(path)
-                for f in fnmatch.filter(files, "*.js")]
-
     def fill_html_body(self, obj, path, css):
         steps = obj["steps"]
-        html_file_list = self.findHTML(path)
-
-        for file_path in html_file_list:
-            file_parts = file_path.split(os.path.sep)
-            filename = self.grab_filename(file_path)
-
+        for file_path in path.rglob("*.html"):
             for step in steps:
-                if step["type"] == "custom" and step["name"] == filename:
-                    print(("    Processing {}{}{}.html"
-                          .format(os.path.sep.join(file_parts[-5:-1]),
-                                  os.path.sep,
-                                  filename)))
+                if step["type"] == "custom" and step["name"] == file_path.stem:
+                    print(f"    Processing {file_path}")
                     step["body"] = self.htmlMinify(file_path, css)
-
         self.write_compiled_json(obj, path)
 
-    def findHTML(self, path):
-        return [os.path.join(dirpath, f)
-                for dirpath, _dirnames, files in os.walk(path)
-                for f in fnmatch.filter(files, "*.html")]
-
-    def grab_filename(self, path):
-        return os.path.basename(path).split(".")[0]
-
     def htmlMinify(self, path, css):
-        with open(path, "r") as myfile:
+        with open(path, "r", encoding='utf-8') as myfile:
             css.seek(0)
 
             css_content = css.read()
@@ -203,11 +166,11 @@ class compileJSON(_build_py):
             return htmlmin.minify(data)
 
     def jsMinify(self, path):
-        with open(path, "r") as myfile:
+        with open(path, "r", encoding='utf-8') as myfile:
             return jsmin(myfile.read())
 
     def write_compiled_json(self, obj, path):
-        with open(path + "/compiled.json", 'w+') as f:
+        with open(path / "compiled.json", 'w+') as f:
             json.dump(obj, f, indent=4)
 
 
@@ -231,8 +194,21 @@ class InstallAll(install, compileJSON):
         install.run(self)
 
 
+def get_version(pkg_name):
+    """
+    Reads the version string from the package __init__ and returns it
+    """
+    with open(Path(pkg_name) / "__init__.py",
+              encoding="utf-8") as init_file:
+        for line in init_file:
+            parts = line.strip().partition("=")
+            if parts[0].strip() == "__version__":
+                return parts[2].strip().strip("'").strip('"')
+    return None
+
+
 setup(name='webgnome_api',
-      version=0.9,
+      version=get_version('webgnome_api'),
       description=('webgnome_api\n'
                    'Branch: {}\n'
                    'LastUpdate: {}'
