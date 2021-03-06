@@ -263,7 +263,7 @@ def switch_to_existing_session(request):
     '''
     redis_session_id = request.POST['session']
 
-    if redis_session_id in list(request.session.redis.keys()):
+    if redis_session_id.encode('utf-8') in list(request.session.redis.keys()):
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
             return session_id
@@ -288,7 +288,7 @@ def process_upload(request, field_name):
     # checking that our session id is valid.
     redis_session_id = request.POST['session']
 
-    if redis_session_id in list(request.session.redis.keys()):
+    if redis_session_id.encode('utf-8') in list(request.session.redis.keys()):
         def get_specific_session_id(redis, timeout, serialize, generator,
                                     session_id=redis_session_id):
             return session_id
