@@ -119,6 +119,8 @@ def run_export_model(request):
         active_model.outputters += o
         log.info('attaching export outputter: ' + o.filename)
 
+    sid = ns.get_sockid_from_sessid(request.session.session_id)
+
     def get_export_cleanup():
         def cleanup(grn):
             try :
@@ -134,7 +136,7 @@ def run_export_model(request):
                 if (grn.exception or isinstance(grn.value, GreenletExit)):
                     #A cleanly stopped Greenlet may exit with GreenletExit
                     #Do not consider this a 'successful' export run even if files exist
-                    ns.emit('export_failed')
+                    ns.emit('export_failed', room=sid)
                 else:
                     if len(temporary_outputters) > 1:
                         #need to zip up outputs
@@ -155,7 +157,7 @@ def run_export_model(request):
 
                         shutil.move(obj_fn, os.path.join(session_path, end_filename))
 
-                    ns.emit('export_finished', end_filename)
+                    ns.emit('export_finished', end_filename, room=sid)
 
             except Exception:
                 if ('develop_mode' in list(request.registry.settings.keys()) and
@@ -165,7 +167,6 @@ def run_export_model(request):
                 raise
         return cleanup
 
-    sid = ns.get_sockid_from_sessid(request.session.session_id)
     if sid is None:
         raise ValueError('no sock_session associated with pyramid_session')
     with ns.session(sid) as sock_session:
@@ -178,6 +179,7 @@ def run_export_model(request):
                 sid,
                 request)
             gl.session_hash = request.session_hash
+            gl.link(get_export_cleanup())
             return None
         else:
             print("Already started")
