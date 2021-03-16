@@ -10,6 +10,7 @@ import pathlib
 
 from ..common.session_management import get_session_objects
 
+log = logging.getLogger(__name__)
 
 def generate_short_session_id(sessid):
     hasher = hashlib.sha1(sessid.encode('utf-8'))
