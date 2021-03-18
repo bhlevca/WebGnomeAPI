@@ -29,9 +29,6 @@ class WebgnomeSocketioServer(socketio.Server):
             **kwargs
             )
 
-    def _handle_connect(self, eio_sid, namespace):
-        return super(WebgnomeSocketioServer, self)._handle_connect(eio_sid, namespace)
-
 class WebgnomeNamespace(socketio.Namespace):
 
 #req = self.server.app.application.request_factory(environ)
