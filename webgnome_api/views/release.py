@@ -129,7 +129,7 @@ def get_polygons(request):
 
         if obj is not None and obj.obj_type == 'gnome.spill.release.SpatialRelease':
             lengths, lines = obj.get_polygons()
-            lines_bytes = ''.join([l.tobytes() for l in lines])
+            lines_bytes = b''.join([l.tobytes() for l in lines])
 
             return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
         else:
