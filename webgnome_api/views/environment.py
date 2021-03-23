@@ -111,7 +111,7 @@ def upload_environment(request):
     request.body = ujson.dumps({'obj_type': env_type,
                                 'filename': file_name,
                                 'name': name
-                                })
+                                }).encode('utf-8')
 
     env_obj = create_environment(request)
     resp = Response(ujson.dumps(env_obj))
