@@ -45,11 +45,12 @@ release = Service(name='release', path='/release*obj_id',
 
 implemented_types = ('gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
+                     'gnome.spill.release.NESDISRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
                      )
 
 log = logging.getLogger(__name__)
-geojson_types = ('gnome.spill.release.SpatialRelease',)
+geojson_types = ('gnome.spill.release.SpatialRelease', 'gnome.spill.release.NESDISRelease')
 
 @release.get()
 def get_release(request):
@@ -127,7 +128,7 @@ def get_polygons(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and obj.obj_type == 'gnome.spill.release.SpatialRelease':
+        if obj is not None and obj.obj_type in geojson_types:
             lengths, lines = obj.get_polygons()
             lines_bytes = b''.join([l.tobytes() for l in lines])
 
