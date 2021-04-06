@@ -24,7 +24,7 @@ def get_package_info_response(request):
             '</html>'
             .format(get_pkg_info_table('webgnome_api'),
                     get_pkg_info_table('pygnome'),
-                    get_pkg_info_table('oil_library')
+#                    get_pkg_info_table('oil_library')
                     )
             )
 
