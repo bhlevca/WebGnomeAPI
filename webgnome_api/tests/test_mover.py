@@ -3,6 +3,7 @@ Functional tests for the Mover Web API
 """
 import time
 import pytest
+import os
 from base import FunctionalTestBase
 
 
@@ -283,12 +284,12 @@ class RandomMoverTests(BaseMoverTests):
         assert json_obj['on'] is False
 
 
-class RandomVerticalMoverTests(BaseMoverTests):
+class RandomMover3DTests(BaseMoverTests):
     '''
-        Tests out the Gnome Random Vertical Mover API
+        Tests out the Gnome Random Mover 3D API
     '''
-    req_data = {'obj_type': u'gnome.movers.random_movers.RandomVerticalMover',
-                'name': u'RandomVerticalMover',
+    req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover3D',
+                'name': u'RandomMover3D',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'mixed_layer_depth': 10.0,
@@ -317,7 +318,7 @@ class RandomVerticalMoverTests(BaseMoverTests):
         self.check_updates(resp.json_body)
 
     def check_create_properties(self, response):
-        super(RandomVerticalMoverTests, self).check_create_properties(response)
+        super(RandomMover3DTests, self).check_create_properties(response)
 
         # specific to SimpleMover()
         assert 'velocity' in response.json_body
@@ -347,11 +348,11 @@ class CatsMoverTests(BaseMoverTests):
         - Kinda needs a Tide object
     '''
     tide_data = {'obj_type': 'gnome.environment.Tide',
-                 'filename': 'models/CLISShio.txt',
+                 'filename': os.path.join('models','CLISShio.txt')
                  }
 
     req_data = {'obj_type': u'gnome.movers.current_movers.CatsMover',
-                'filename': 'models/tidesWAC.CUR',
+                'filename': os.path.join('models', 'tidesWAC.CUR'),
                 'scale': True,
                 'scale_value': 1.0,
                 'scale_refpoint': (-72.705, 41.2275, 0.0),
@@ -385,7 +386,7 @@ class CatsMoverTests(BaseMoverTests):
         self.check_updates(resp.json_body)
 
     def check_create_properties(self, response):
-        super(RandomVerticalMoverTests, self).check_create_properties(response)
+        super(RandomMover3DTests, self).check_create_properties(response)
 
         # specific to SimpleMover()
         assert 'velocity' in response.json_body
@@ -447,11 +448,11 @@ class CurrentInfoTests(FunctionalTestBase):
                 'spills': [],
                 }
     req_data['movers'] = [{'obj_type': u'gnome.movers.CatsMover',
-                           'filename': 'models/tidesWAC.CUR',
+                           'filename': os.path.join('models','tidesWAC.CUR'),
                            'scale': True,
                            'scale_value': 1.0,
                            'tide': {'obj_type': 'gnome.environment.Tide',
-                                    'filename': 'models/CLISShio.txt',
+                                    'filename': os.path.join('models','CLISShio.txt'),
                                     },
                            },
                           {'obj_type': 'gnome.movers.wind_movers.WindMover',
@@ -562,8 +563,8 @@ class IceInfoTests(FunctionalTestBase):
                     'active_range': ('-inf', 'inf'),
                     'on': True,
                     'current_scale': 1.0,
-                    'filename': u'models/acnfs_example.nc',
-                    'topology_file': u'models/acnfs_topo.dat',
+                    'filename': os.path.join('models','acnfs_example.nc'),
+                    'topology_file': os.path.join('models','acnfs_topo.dat'),
                     'uncertain_along': 0.5,
                     'uncertain_cross': 0.25,
                     'uncertain_duration': 24.0,
@@ -581,15 +582,14 @@ class IceInfoTests(FunctionalTestBase):
                     'name': u'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'element_type': {'obj_type': ('gnome.spill.elements'
-                                                  '.element_type.ElementType'),
-                                     'name': u'ElementType',
-                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
-                                                       'name': u'windages',
-                                                       'windage_persist': 900,
-                                                       'windage_range': (0.01,
-                                                                         0.04)}
-                                                      ],
+                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                  'name': u'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
+                                                    'name': u'windages',
+                                                    'windage_persist': 900,
+                                                    'windage_range': (0.01,
+                                                                      0.04)
+                                                    }],
                                      },
                     'release': {'end_position': (-164.01696, 72.921024, 0.0),
                                 'end_release_time': None,
@@ -604,21 +604,20 @@ class IceInfoTests(FunctionalTestBase):
                     'name': u'Spill',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'element_type': {'obj_type': ('gnome.spill.elements'
-                                                  '.element_type.ElementType'),
-                                     'name': u'ElementType',
-                                     'initializers': [{'obj_type': u'gnome.spill.elements.initializers.InitWindages',
-                                                       'name': u'windages',
-                                                       'windage_persist': 900,
-                                                       'windage_range': (0.01,
-                                                                         0.04)}
-                                                      ],
+                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                  'name': u'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
+                                                    'name': u'windages',
+                                                    'windage_persist': 900,
+                                                    'windage_range': (0.01,
+                                                                      0.04)
+                                                    }],
                                      },
                     'release': {'obj_type': ('gnome.spill.release'
                                              '.SpatialRelease'),
                                 'name': u'SpatialRelease',
                                 'release_time': '2015-05-14T00:00:00',
-                                'start_position': [(-127.1, 47.93, 0.0),
+                                'custom_positions': [(-127.1, 47.93, 0.0),
                                                    (-127.033, 47.948, 0.0),
                                                    (-126.967, 47.968, 0.0),
                                                    (-126.9, 47.987, 0.0),
@@ -643,9 +642,9 @@ class IceInfoTests(FunctionalTestBase):
                 'make_default_refs': True,
                 'uncertain': True,
                 'valid': True,
-                'map': {'obj_type': u'gnome.map.MapFromBNA',
+                'map': {'obj_type': u'gnome.maps.map.MapFromBNA',
                         'name': u'MapBounds_Island.bna',
-                        'filename': 'models/MapBounds_Island.bna',
+                        'filename': os.path.join('models','MapBounds_Island.bna'),
                         'refloat_halflife': 6.0,
                         'map_bounds': [(-127.465333, 48.3294),
                                        (-126.108847, 48.3294),
@@ -754,8 +753,8 @@ class CellInfoTests(FunctionalTestBase):
                            "name": "GridCurrentMover",
                            "active_range": ('-inf', 'inf'),
                            "on": True,
-                           "filename": "models/ny_cg.nc",
-                           "topology_file": "models/NYTopology.dat",
+                           "filename": os.path.join('models','ny_cg.nc'),
+                           "topology_file": os.path.join('models','NYTopology.dat'),
                            "current_scale": 1.0,
                            "uncertain_time_delay": 0.0,
                            "uncertain_duration": 24.0,
@@ -865,14 +864,14 @@ class PyMoverTests(FunctionalTestBase):
     '''
     req_data = {'obj_type': 'gnome.movers.py_wind_movers.PyWindMover',
                 'name': 'small_gfs_alaska.nc',
-                'filename': 'models/small_gfs_alaska.nc',
-                'wind': {'data_file': 'models/small_gfs_alaska.nc',
-                         'grid_file': 'models/small_gfs_alaska.nc',
+                'filename': os.path.join('models','small_gfs_alaska.nc'),
+                'wind': {'data_file': os.path.join('models','small_gfs_alaska.nc'),
+                         'grid_file': os.path.join('models','small_gfs_alaska.nc'),
                          'obj_type': ('gnome.environment'
                                       '.environment_objects.GridWind'),
                          'grid': {'obj_type': ('gnome.environment'
                                                '.gridded_objects_base.PyGrid'),
-                                  'filename': 'models/small_gfs_alaska.nc'
+                                  'filename': os.path.join('models','small_gfs_alaska.nc')
                                   },
                          'extrapolation_is_allowed': True,
                          },

@@ -168,7 +168,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_map(self):
         req_data = self.req_data.copy()
-        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+        req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
                            'filename': 'models/Test.bna',
                            'refloat_halflife': 1.0
                            }
@@ -181,7 +181,7 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_map(self):
         req_data = self.req_data.copy()
-        req_data['map'] = {'obj_type': 'gnome.map.MapFromBNA',
+        req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
                            'filename': 'models/Test.bna',
                            'refloat_halflife': 1.0
                            }
@@ -471,11 +471,11 @@ class NestedModelTests(FunctionalTestBase):
 
         assert model2['movers'][0]['diffusion_coef'] == 100000.0
 
-    def test_put_with_nested_sparse_random_vertical_mover(self):
+    def test_put_with_nested_sparse_random_mover_3d(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': (u'gnome.movers.random_movers'
-                                            '.RandomVerticalMover'),
-                               'name': u'RandomVerticalMover',
+                                            '.RandomMover3D'),
+                               'name': u'RandomMover3D',
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'mixed_layer_depth': 10.0,
@@ -830,13 +830,12 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'element_type': {'obj_type': ('gnome.spill.elements'
-                                                     '.ElementType'),
-                                        'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                          'windage_range': [0.01, 0.04],
-                                                          'windage_persist': 900,
-                                                          }
-                                                         ]
+                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                       'windage_range': [0.01, 0.04],
+                                                       'windage_persist': 900,
+                                                       }
+                                                       ]
                                         },
                        }]
         req_data['spills'] = spill_data
@@ -850,7 +849,7 @@ class NestedModelTests(FunctionalTestBase):
         assert 'name' in model1['spills'][0]
         assert 'on' in model1['spills'][0]
         assert 'release' in model1['spills'][0]
-        assert 'element_type' in model1['spills'][0]
+        assert 'substance' in model1['spills'][0]
 
         assert 'name' in model1['spills'][0]['release']
         assert 'num_elements' in model1['spills'][0]['release']
@@ -859,7 +858,7 @@ class NestedModelTests(FunctionalTestBase):
         assert 'start_position' in model1['spills'][0]['release']
         assert 'end_position' in model1['spills'][0]['release']
 
-        assert 'initializers' in model1['spills'][0]['element_type']
+        assert 'initializers' in model1['spills'][0]['substance']
 
     def test_put_with_nested_spill(self):
         req_data = self.req_data.copy()
@@ -877,13 +876,12 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'element_type': {'obj_type': ('gnome.spill.elements'
-                                                     '.ElementType'),
-                                        'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                          'windage_range': [0.01, 0.04],
-                                                          'windage_persist': 900,
-                                                          }
-                                                         ]
+                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                       'windage_range': [0.01, 0.04],
+                                                       'windage_persist': 900,
+                                                       }
+                                                       ]
                                         },
                        }]
         req_data['spills'] = spill_data
@@ -922,13 +920,11 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'element_type': {'obj_type': ('gnome.spill.elements'
-                                                     '.ElementType'),
-                                        'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
-                                                          'windage_range': [0.01, 0.04],
-                                                          'windage_persist': 900,
-                                                          }
-                                                         ]
+                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                       'windage_range': [0.01, 0.04],
+                                                       'windage_persist': 900,
+                                                       }]
                                         },
                        }]
         req_data['spills'] = spill_data
@@ -964,13 +960,11 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'element_type': {'obj_type': ('gnome.spill.elements'
-                                                     '.ElementType'),
-                                        'initializers': [{'obj_type': 'gnome.spill.elements.InitWindages',
+                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                                        'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
                                                           'windage_range': [0.01, 0.04],
                                                           'windage_persist': 900,
-                                                          }
-                                                         ]
+                                                          }]
                                         },
                        }]
         req_data['spills'] = spill_data

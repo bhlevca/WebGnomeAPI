@@ -17,7 +17,7 @@ The webgnomeAPI is pretty worthless without py_gnome, and py_gnome is easiest to
 conda
 .....
 
-If you are using a conda based system you can install most of the dependencies with conda. This requires the conda-forge channel)::
+If you are using a conda based system you can install all of the dependencies with conda. This requires the conda-forge channel)::
 
     conda config --add channels conda-forge
 
@@ -40,6 +40,14 @@ In theory, you can install everything webgnomeapi needs with pip, except py_gnom
 
     pip install -r conda_requirements.txt -r pip_requirements.txt
 
+
+To run the API, you also need a redis server. If you have one installed from a another source, that will work fine. If not, then you can use conda to get it::
+
+  conda install redis
+
+(or uncomment that line in the conda_requirements.txt file)
+
+
 Installing the server
 ---------------------
 
@@ -55,7 +63,7 @@ or::
 Testing the Server
 ------------------
 
-In order to run webgnomeapi, you need a redis server running first. redis can be installed with conda on OS-X (and probably Windows and Linux -- if you test it and it works, please update this doc.). Once installed, you should be able to run a redis server with::
+In order to run webgnomeapi, you need a redis server running first. redis can be installed with conda, or, on Linux, with the system package manager. Once installed, you should be able to run a redis server with::
 
   redis-server
 
@@ -101,3 +109,5 @@ The current solution to this last bit is to always provide a port to the client'
 
 
 Until we upgrade gevent we're stuck with 0.9 and this issue.
+
+(NOTE: the next version, now in the develop branch, is using Python3.8 and updated async implimentation that avoides these issues)

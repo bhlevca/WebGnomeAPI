@@ -14,9 +14,7 @@ Neimeyer, Gary C. 1977. *Numerical Methods for the Simulation of Hydrodynamic an
 National Oceanic and Atmospheric Administration. 2000. Trajectory Analysis Planner (TAP II™): Kaneohe Bay Technical Documentation, 46 pp.
 
 
-.. _NOAA OceanWatch - Central Pacific: http://oceanwatch.pifsc.noaa.gov/
-
-`NOAA OceanWatch - Central Pacific`_
+|oceanwatch_link|
 
 A holding of oceanographic satellite remote sensing datasets, as well as some of the near-real time satellite-based products available for the Pacific region. The NOAA OceanWatch - Central Pacific website provides access to their Live Access Server, THREDDS/OPeNDAP server, and data catalog.
 
@@ -24,49 +22,68 @@ A holding of oceanographic satellite remote sensing datasets, as well as some of
 **Weather and Weather**
 
 
-.. _Honolulu, HI: http://www.prh.noaa.gov/pr/hnl/
-
-National Weather Service Forecast Office: `Honolulu, HI`_
+National Weather Service Forecast Office: |nws_link|
 
 Current conditions and forecasts for the Hawaiian Islands.
 
 
-.. _Hawaiian Islands Recent Marine Data: http://www.ndbc.noaa.gov/maps/Hawaii.shtml
-
-National Data Buoy Center: `Hawaiian Islands Recent Marine Data`_
+National Data Buoy Center: |ndbc_marine_link|
 
 Click a station on the map to view marine data from moored buoy and C-MAN stations in Hawaiian coastal waters.
 
-.. _NWS Forecast: http://www.ndbc.noaa.gov/data/Forecasts/FZHW50.PHFO.html
-
-National Data Buoy Center: `NWS Forecast`_
+National Data Buoy Center: |ndbc_nws_link|
 
 Coastal waters forecast, synopsis for Hawaiian coastal waters.
 
 
-.. _Current conditions and forecast at Kaneohe MCBH, Hawaii: http://www.wunderground.com/US/HI/Kaneohe.html
+The Weather Underground, Inc. - |weather_underground_link|
 
-The Weather Underground, Inc. - `Current conditions and forecast at Kaneohe MCBH, Hawaii`_
-
-.. _Marine forecast for Hawaiian waters: http://www.wunderground.com/MAR/PH/150.html
-
-The Weather Underground, Inc. - `Marine forecast for Hawaiian waters`_
+The Weather Underground, Inc. - |weather_underground_marine_link|
 
 
 **General Information**
 
 
-.. _Hawaii Institute of Marine Biology (HIMB) at Coconut Island: http://www.hawaii.edu/HIMB/
-
-`Hawaii Institute of Marine Biology (HIMB) at Coconut Island`_
+|himb_link|
 
 A world-renowned research institute situated on Coconut Island in Kaneohe Bay. Ongoing research at HIMB covers many disciplines of tropical marine science.
 
 
 **Oil Spill Response**
 
-.. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
-
-`NOAA's Emergency Response Division (ERD)`_
+|erd_link|
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.
+
+.. |oceanwatch_link| raw:: html
+
+   <a href="http://oceanwatch.pifsc.noaa.gov" target="_blank">NOAA OceanWatch - Central Pacific</a>
+
+.. |nws_link| raw:: html
+
+   <a href="http://www.prh.noaa.gov/pr/hnl" target="_blank">Honolulu, HI</a>
+
+.. |ndbc_marine_link| raw:: html
+
+   <a href="http://www.ndbc.noaa.gov/maps/Hawaii.shtml" target="_blank">Hawaiian Islands Recent Marine Data</a>
+
+.. |ndbc_nws_link| raw:: html
+
+   <a href="http://www.ndbc.noaa.gov/data/Forecasts/FZHW50.PHFO.html" target="_blank">NWS Forecast</a>
+
+.. |weather_underground_link| raw:: html
+
+   <a href="http://www.wunderground.com/US/HI/Kaneohe.html" target="_blank">Current conditions and forecast at Kaneohe MCBH, Hawaii</a>
+
+.. |weather_underground_marine_link| raw:: html
+
+   <a href="http://www.wunderground.com/MAR/PH/150.html" target="_blank">Marine forecast for Hawaiian waters</a>
+
+.. |himb_link| raw:: html
+
+   <a href="http://www.hawaii.edu/HIMB" target="_blank">Hawaii Institute of Marine Biology (HIMB) at Coconut Island</a>
+
+.. |erd_link| raw:: html
+
+   <a href="http://response.restoration.noaa.gov" target="_blank">NOAA's Emergency Response Division (ERD)</a>
+

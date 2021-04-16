@@ -26,7 +26,7 @@ from ..common.views import (get_object,
                             cors_policy,
                             cors_response,
                             cors_exception,
-                            process_upload)
+                            switch_to_existing_session)
 
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
@@ -39,9 +39,10 @@ mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.wind_movers.WindMover',
                      'gnome.movers.random_movers.RandomMover',
-                     'gnome.movers.random_movers.RandomVerticalMover',
+                     'gnome.movers.random_movers.RandomMover3D',
                      'gnome.movers.current_movers.CatsMover',
                      'gnome.movers.current_movers.ComponentMover',
+                     'gnome.movers.current_movers.CurrentCycleMover',
                      'gnome.movers.py_current_movers.PyCurrentMover',
                      'gnome.movers.py_wind_movers.PyWindMover',
                      'gnome.movers.current_movers.GridCurrentMover',
@@ -69,6 +70,7 @@ def get_mover(request):
 @mover.post()
 def create_mover(request):
     '''Creates a Mover object.'''
+    log.info(request.session.session_id)
     return create_object(request, implemented_types)
 
 
@@ -85,13 +87,17 @@ def mover_upload_options(request):
 
 @view_config(route_name='mover_upload', request_method='POST')
 def upload_mover(request):
+    switch_to_existing_session(request)
     log_prefix = 'req({0}): upload_mover():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-    file_name, name = process_upload(request, 'new_mover')
-    file_path = file_name.split(os.path.sep)[-1]
-    log.info('  {} file_name: {}, name: {}, file_path: {}'
-             .format(log_prefix, file_name, name, file_path))
+    file_list = request.POST['file_list']
+    file_list = ujson.loads(file_list)
+    name = request.POST['name']
+    file_name = file_list
+
+    log.info('  {} file_name: {}, name: {}'
+             .format(log_prefix, file_name, name))
 
     mover_type = request.POST.get('obj_type', [])
 
@@ -214,12 +220,14 @@ def get_vector_data(request):
                      .format(log_prefix, obj.__class__))
             vec_data = get_velocities(obj)
 
-            resp = Response(content_type='arraybuffer')
+            resp = Response(
+                content_type='arraybuffer',
+                content_encoding='deflate'
+            )
 
             resp.body, dshape = (zlib.compress(vec_data.tobytes()),
                                  vec_data.shape)
 
-            resp.headers.add('content-encoding', 'deflate')
             resp.headers.add('Access-Control-Expose-Headers', 'shape')
             resp.headers.add('shape', str(dshape))
 

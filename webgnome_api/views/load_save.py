@@ -67,6 +67,7 @@ def upload_model(request):
         raise cors_response(request, HTTPBadRequest('Incoming file is not a '
                                                     'valid zipfile!'))
 
+    resp_msg = 'OK'
     # now we try to load our model from the zipfile.
     session_lock = acquire_session_lock(request)
     log.info('  session lock acquired (sess:{}, thr_id: {})'
@@ -96,7 +97,7 @@ def upload_model(request):
     # We will want to clean up our tempfile when we are done.
     os.remove(file_path)
 
-    return cors_response(request, Response('OK'))
+    return cors_response(request, Response(resp_msg))
 
 
 @view_config(route_name='activate', request_method='OPTIONS')
@@ -133,7 +134,7 @@ def activate_uploaded_model(request):
         init_session_objects(request, force=True)
         refs = get_session_objects(request)
 
-        new_model = Model.load(file_path, refs=refs)
+        new_model = Model.load(zipfile_path, refs=refs)
         new_model._cache.enabled = False
 
         new_model._schema.register_refs(new_model._schema(), new_model, refs)
@@ -170,7 +171,7 @@ def download_model(request):
         tf.close()
 
         json_, saveloc, refs = my_model.save(saveloc=filename)
-        response_filename = ('{0}.zip'.format(my_model.name))
+        response_filename = ('{0}.gnome'.format(my_model.name))
         tf = open(saveloc, 'r+b')
         response = request.response
         response.content_type = 'application/zip'

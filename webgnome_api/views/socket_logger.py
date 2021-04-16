@@ -2,8 +2,6 @@ import re
 import base64
 import hashlib
 
-from pygtail import Pygtail
-
 import gevent
 
 from socketio.namespace import BaseNamespace
@@ -45,8 +43,8 @@ class LoggerNamespace(BaseNamespace):
 
         def gen_emit_msg(sess_hash):
             def emit_msg(logrecord):
-                msg_obj = pattern.match(formatter.format(logrecord)).groupdict()
-                if self.sess_hash == msg_obj['session_hash']:
+                if hasattr(logrecord, 'session_hash') and logrecord.session_hash == self.sess_hash:
+                    msg_obj = pattern.match(formatter.format(logrecord)).groupdict()
                     del msg_obj['session_hash']
                     self.emit('log', msg_obj)
                     return True

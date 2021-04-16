@@ -1,6 +1,0 @@
-.. keywords
-   sedimentation
-
-Sedimentation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-

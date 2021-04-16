@@ -2,6 +2,116 @@
 Helper functions to be used by views.
 '''
 
+import zipfile
+import ujson
+import logging
+import sys
+
+log = logging.getLogger(__name__)
+def update_savefile(file_path, request):
+    '''
+    Takes a zipfile containing no version.txt and up-converts it to 'version 1'.
+    This functions purpose is to upgrade save files to maintain compatibility
+    after the SpillRefactor upgrades.
+    '''
+    def Substance_from_ElementType(et_json, water):
+        '''
+        Takes element type cstruct with a substance, creates an appropriate GnomeOil cstruct
+        '''
+        if 'substance' not in et_json:
+            '''
+            Note the id of the new cstructs. The ID IS required at this stage, because
+            the load process will use it later to establish references between objects
+            '''
+            substance = {
+                "obj_type": "gnome.spill.substance.NonWeatheringSubstance", 
+                "name": "NonWeatheringSubstance", 
+                "standard_density": 1000.0, 
+                "initializers": et_json.get('initializers',[]),
+                "is_weatherable": False, 
+                "id": "v0-v1-update-id-0"
+            }
+        else:
+            substance = {
+                "obj_type": "gnome.spill.substance.GnomeOil", 
+                "name": et_json.get('substance', 'Unknown Oil'),  
+                "initializers": et_json.get('initializers', []),
+                "is_weatherable": True,
+                "water": water,
+                "id": "v0-v1-update-id-1"
+            }
+            if isinstance(et_json.get('substance', None), dict):
+                substance.update(et_json.get('substance'))
+
+        return substance
+
+    import pdb
+    #pdb.set_trace()
+    try:
+        with zipfile.ZipFile(file_path, 'r') as zf:
+            if 'version.txt' in zf.namelist():
+                log.debug('version.txt found')
+                with zf.open('version.txt') as vf:
+                    v = vf.readline()
+                    if v != '0':
+                        log.debug('version is not 0')
+                        return file_path
+
+            log.debug('updating save file from v0 to v1 (Spill Refactor)')
+            water_json = element_type_json = None
+            spills = []
+            inits = []
+            with zipfile.ZipFile(file_path + '.updated', 'w') as new_zf:
+                for fname in zf.namelist():
+                    buffer = zf.read(fname)
+                    with zf.open(fname) as json_file:
+                        try:
+                            json_ = ujson.load(json_file)
+                            if 'obj_type' in json_:
+                                if 'Water' in json_['obj_type'] and 'environment' in json_['obj_type'] and water_json is None:
+                                    water_json = (fname, json_)
+                                if 'element_type' in json_['obj_type'] and element_type_json is None:
+                                    element_type_json = (fname, json_)
+                                    continue #to skip this file
+                                if 'gnome.spill.spill.Spill' in json_['obj_type']:
+                                    spills.append((fname, json_))
+                                    continue
+                                if 'initializers' in json_['obj_type']:
+                                    inits.append((fname, json_))
+                                    continue
+                            new_zf.writestr(fname, buffer)
+                        except:
+                            new_zf.writestr(fname, buffer)
+
+                # Generate new substance object
+                if water_json is None:
+                    water_json = (None, None)
+                substance = Substance_from_ElementType(element_type_json[1], water_json[1])
+                substance_fn = substance['name'] + '.json'
+            
+                # Write modified and new files to zip
+                new_zf.writestr(substance['name'] + '.json', ujson.dumps(substance, indent=True))
+                for spill in spills:
+                    fn, sp = spill
+                    del sp['element_type']
+                    sp['substance'] = substance_fn
+                    new_zf.writestr(fn, ujson.dumps(sp, indent=True))
+                for init in inits:
+                    fn, init = init
+                    init['obj_type'] = init['obj_type'].replace('.elements.', '.')
+                    new_zf.writestr(fn, ujson.dumps(init, indent=True))
+        return file_path + '.updated'
+            
+    except:
+        if ('develop_mode' in request.registry.settings.keys() and
+                    request.registry.settings['develop_mode'].lower() == 'true'):
+            import pdb
+            pdb.post_mortem(sys.exc_info()[2])
+        raise TypeError('This savefile format is deprecated and can not be loaded by WebGNOME')
+        #pdb.post_mortem()
+
+
+
 
 def FQNameToNameAndScope(fully_qualified_name):
     fqn = fully_qualified_name

@@ -2,6 +2,8 @@
 Functional tests for the Gnome Map object Web API
 """
 from os.path import basename
+import webtest
+import ujson
 
 from base import FunctionalTestBase
 
@@ -10,12 +12,12 @@ class MapTestBase(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.MapFromBNA',
-                'filename': 'Test.bna',
+    req_data = {'obj_type': 'gnome.maps.map.MapFromBNA',
+                'filename': 'models/Test.bna',
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
-
+    """
     def test_goods_map(self):
         req = self.req_data.copy()
         req['filename'] = 'goods:Test.bna'
@@ -35,7 +37,7 @@ class MapTestBase(FunctionalTestBase):
         # just some checks to see that we got our map
         assert len(map1['map_bounds']) == 4
         assert basename(map1['filename']) == 'newyork.bna'
-
+    """
     def test_get_no_id(self):
         resp = self.testapp.get('/map')
 
@@ -98,16 +100,34 @@ class MapTestBase(FunctionalTestBase):
         self.check_updates(resp.json_body)
 
     def test_file_upload(self):
-        field_name = 'new_map'
-        file_name = 'models/Test.bna'
-        resp = self.testapp.post('/map/upload', {'session': '1234'},
-                                 upload_files=[(field_name, file_name,)]
+        file_names = ['models/Test.bna',]
+        self.setup_map_file()
+        resp = self.testapp.post('/map/upload',
+                                 {'session': '1234',
+                                  'file_list': ujson.dumps(file_names),
+                                  'name':'Test',
+                                  'obj_type':'gnome.maps.map.MapFromBNA'}
                                  )
         map_obj = resp.json_body
 
         assert len(map_obj['map_bounds']) == 4
         assert basename(map_obj['filename'])[:4] == 'Test'
         assert basename(map_obj['filename'])[-4:] == '.bna'
+
+    def test_get_raster(self):
+        self.setup_map_file()
+        resp1 = self.testapp.post_json('/map', params=self.req_data)
+
+        obj_id = resp1.json_body['id']
+        #resp2 = self.testapp.get('/map/{0}/raster'.format(obj_id))
+        #JAH: Can't actually test this because webob does the wrong
+        #thing when trying to decompress the body. Below is error and
+        #webob code
+        '''
+        # Weird feature: http://bugs.python.org/issue5784
+        self.body = zlib.decompress(self.body, -15)
+        error: Error -3 while decompressing data: invalid stored block lengths
+        '''
 
     def perform_updates(self, json_obj):
         '''
@@ -128,7 +148,7 @@ class GnomeMapTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.GnomeMap',
+    req_data = {'obj_type': 'gnome.maps.map.GnomeMap',
                 }
     fields_to_check = ('id', 'obj_type')
 
@@ -205,12 +225,12 @@ class GnomeMapTest(FunctionalTestBase):
         '''
         pass
 
-
+"""
 class MapGeoJsonTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.MapFromBNA',
+    req_data = {'obj_type': 'gnome.maps.map.MapFromBNA',
                 'filename': 'Test.bna',
                 'refloat_halflife': 1.0
                 }
@@ -290,13 +310,13 @@ class MapGeoJsonTest(FunctionalTestBase):
                             assert len(c) == 2
                 else:
                     assert False
-
+"""
 
 class ParamMapTest(FunctionalTestBase):
     '''
         Tests out the Gnome Map object API
     '''
-    req_data = {'obj_type': 'gnome.map.ParamMap',
+    req_data = {'obj_type': 'gnome.maps.map.ParamMap',
                 }
 
     def test_put_valid_id(self):

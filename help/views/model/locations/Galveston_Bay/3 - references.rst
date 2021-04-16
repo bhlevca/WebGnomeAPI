@@ -18,59 +18,77 @@ Ward, G. H. 1993. Galveston Bay Hydrography and Transport Model Validation. Tech
 
 **Weather and Online Information**
 
-.. _NOAA National Weather Service Internet Weather Source: http://weather.noaa.gov/
-
-`NOAA National Weather Service Internet Weather Source`_
+|nws_link|
 
 A summary of current conditions, weather forecasts, and wind data from local airports over the previous 24 hours.
 
 
-.. _NOAA National Weather Service (NWS) Marine Forecasts: http://www.nws.noaa.gov
-
-`NOAA National Weather Service (NWS) Marine Forecasts`_
+|nws_marine_link|
 
 Coastal marine forecasts for the U.S., subdivided by zone.
 
 
-.. _Galveston, TX: http://www.wunderground.com/US/TX/Galveston.html
-
-The Weather Underground, Inc.: `Galveston, TX`_
+The Weather Underground, Inc.: |weather_underground_link|
 
 Weather conditions and forecasts for Galveston, TX.
 
 
 **General Information**
 
-.. _Galveston Bay Bibliography (the Bay Bib): http://repositories.tdl.org/tamug-ir/handle/1969.3/10190
-
-`Galveston Bay Bibliography (the Bay Bib)`_
+|bay_bib_link|
 
 A bibliography of more than 6000 Galveston Bay references, including published and unpublished reports, books, videos, photographs, charts and maps, computer files, journal articles, press releases, manuscripts, etc. The Bay Bib is a component of Galveston Bay Information Center at Texas A&M University at Galveston.
 
-.. _The State of the Bay: http://repositories.tdl.org/tamug-ir/handle/1969.3/26314
 
-`The State of the Bay`_: A Characterization of the Galveston Bay Ecosystem
+The State of the Bay : |state_of_bay_link|
 
 A comprehensive overview of Galveston Bay, published with permission of the Galveston Bay National Estuary Program.
 
 
-.. _Galveston Bay Estuary Program: http://www.gbep.state.tx.us/
-
-`Galveston Bay Estuary Program`_
+|gbep_link|
 
 A program of the Texas Natural Resource Conservation Commission, the Galveston Bay Estuary Program is a continuation of the National Estuary Program (NEP) established for Galveston Bay in 1989. This site describes the program, its projects and activities, the state of the bay, etc.
 
 
 **Oil Spill Response**
 
-.. _NOAA's Emergency Response Division (ERD): http://response.restoration.noaa.gov
-
-`NOAA's Emergency Response Division (ERD)`_
+|erd_link|
 
 Tools and information for emergency responders and planners, and others concerned about the effects of oil and hazardous chemicals in our waters and along our coasts.
 
-.. _Hydrodynamic & Oil Spill Modeling - Galveston Bay: http://midgewater.twdb.state.tx.us/bays_estuaries/framegalvwind.html
-
-`Hydrodynamic & Oil Spill Modeling - Galveston Bay`_
+|twdb_link|
 
 An animated computer model of currents in Galveston Bay provided by the Texas Water Development Board and the Texas General Land Office.
+
+
+.. |nws_link| raw:: html
+
+   <a href="http://weather.noaa.gov" target="_blank">NOAA National Weather Service Internet Weather Source</a>
+
+.. |nws_marine_link| raw:: html
+
+   <a href="http://www.nws.noaa.gov" target="_blank">NOAA National Weather Service (NWS) Marine Forecasts</a>
+
+.. |weather_underground_link| raw:: html
+
+   <a href="http://www.wunderground.com/US/TX/Galveston.html" target="_blank">Galveston, TX</a>
+
+.. |bay_bib_link| raw:: html
+
+   <a href="http://repositories.tdl.org/tamug-ir/handle/1969.3/10190" target="_blank">Galveston Bay Bibliography (the Bay Bib)</a>
+
+.. |state_of_bay_link| raw:: html
+
+   <a href="http://repositories.tdl.org/tamug-ir/handle/1969.3/26314" target="_blank">A Characterization of the Galveston Bay Ecosystem</a>
+
+.. |gbep_link| raw:: html
+
+   <a href="http://www.gbep.state.tx.us" target="_blank">Galveston Bay Estuary Program</a>
+
+.. |erd_link| raw:: html
+
+   <a href="http://response.restoration.noaa.gov" target="_blank">NOAA's Emergency Response Division (ERD)</a>
+
+.. |twdb_link| raw:: html
+
+   <a href="http://midgewater.twdb.state.tx.us/bays_estuaries/framegalvwind.html" target="_blank">Hydrodynamic & Oil Spill Modeling - Galveston Bay</a>
