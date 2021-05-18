@@ -19,12 +19,10 @@ def get_package_info_response(request):
             '        <h1>WebGnome API Server Package Versions</h1>'
             '        <p>{}</p>'
             '        <p>{}</p>'
-            '        <p>{}</p>'
             '    </body>'
             '</html>'
             .format(get_pkg_info_table('webgnome_api'),
                     get_pkg_info_table('pygnome'),
-#                    get_pkg_info_table('oil_library')
                     )
             )
 
