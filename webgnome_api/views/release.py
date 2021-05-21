@@ -43,7 +43,8 @@ from cornice import Service
 release = Service(name='release', path='/release*obj_id',
                   description="Release API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.release.PointLineRelease',
+implemented_types = ('gnome.spill.release.Release',
+                     'gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
                      'gnome.spill.release.NESDISRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
@@ -111,8 +112,7 @@ def get_start_positions(request):
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
                  .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
+        log.info('<<' + log_prefix)
 
 def get_polygons(request):
     '''
@@ -140,8 +140,7 @@ def get_polygons(request):
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
                  .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
+        log.info('<<' + log_prefix)
 
 def get_metadata(request):
     log_prefix = 'req({0}): get_metadata():'.format(id(request))

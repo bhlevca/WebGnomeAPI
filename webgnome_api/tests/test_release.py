@@ -130,12 +130,12 @@ class PointLineReleaseTests(ReleaseTests):
                     ])
 
 
-class SpatialReleaseTests(ReleaseTests):
+class BasicReleaseTests(ReleaseTests):
     '''
         Tests out the Gnome Spatial Release object API
     '''
-    req_data = {'obj_type': 'gnome.spill.release.SpatialRelease',
-                'name': 'SpatialRelease',
+    req_data = {'obj_type': 'gnome.spill.release.Release',
+                'name': 'Release',
                 'release_time': '2014-08-02T21:20:50',
                 'custom_positions': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
                 }
