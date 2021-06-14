@@ -4,7 +4,7 @@
 Layers
 ^^^^^^^^^^
 
-The **Layers** tab on the right side of the window allows you to show or hide information on the trajectory map.
+The **Layers** tab on the right side of the window allows you to show or hide the layers panel. This panel allows you to select what layers are displayed as well as customize the information presented.
 
 Imagery
 *******
