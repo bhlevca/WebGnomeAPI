@@ -6,7 +6,7 @@ from os.path import sep, join, isfile, isdir
 
 import time
 import ujson
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import redis
 
 from docutils.core import publish_parts
@@ -26,8 +26,7 @@ help_svc = Service(name='help', path='/help*dir',
 def get_help(request):
     '''Get the requested help file if it exists'''
     help_dir = get_help_dir_from_config(request)
-    requested_dir = (urllib.unquote(sep.join(request.matchdict['dir']))
-                     .encode('utf8'))
+    requested_dir = urllib.parse.unquote(sep.join(request.matchdict['dir']))
     requested_file = join(help_dir, requested_dir)
 
     if isfile(requested_file + '.rst'):
@@ -37,7 +36,7 @@ def get_help(request):
             html = publish_parts(f.read(), writer_name='html')['html_body']
 
         return {'path': requested_file, 'html': html}
-    elif isdir(requested_file) and requested_dir is not '':
+    elif isdir(requested_file) and requested_dir != '':
         # a directory was requested
         # aggregate the files contained with in the given directory
         # and sub dirs.
@@ -52,7 +51,7 @@ def get_help(request):
                                           writer_name='html')['html_body']
 
             return {'path': requested_file, 'html': html}
-    elif isdir(requested_file) and requested_dir is '':
+    elif isdir(requested_file) and requested_dir != '':
         aggregate = []
         for path, _dirnames, filenames in walk(requested_file):
             filenames.sort()

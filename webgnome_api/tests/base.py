@@ -51,8 +51,8 @@ class FunctionalTestBase(GnomeTestCase):
         registry = self.testapp.app.registry
         settings = registry.settings
 
-        for session_umodels in settings['uncertain_models'].values():
-            print 'our session umodels object:', session_umodels
+        for session_umodels in list(settings['uncertain_models'].values()):
+            print(('our session umodels object:', session_umodels))
             if session_umodels is not None:
                 session_umodels.stop()
 

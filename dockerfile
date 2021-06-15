@@ -5,7 +5,6 @@ RUN yum install -y redis
 
 COPY ./ /webgnomeapi/
 RUN cd webgnomeapi && conda install --file conda_requirements.txt
-RUN cd webgnomeapi && pip install -r pip_requirements.txt
 RUN cd webgnomeapi && pip install -e .
 RUN cd webgnomeapi && python setup.py compilejson
 

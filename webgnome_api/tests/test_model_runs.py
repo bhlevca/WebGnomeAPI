@@ -3,7 +3,7 @@ Functional tests for the Gnome Location object Web API
 """
 import pytest
 
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2, width=120)
@@ -32,7 +32,7 @@ class ModelRunTest(FunctionalTestBase):
                                                   'windage_persist': 900,
                                                   }
                                                   ],
-                                'name': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)',
+                                'name': 'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)',
                                 'standard_density': 876.70384138785619,
                                 },
                   'amount': 200,
@@ -55,9 +55,9 @@ class ModelRunTest(FunctionalTestBase):
                     'output_zero_step': True,
                     }
 
-    weathering_out = {'obj_type': (u'gnome.outputters.weathering'
+    weathering_out = {'obj_type': ('gnome.outputters.weathering'
                                    '.WeatheringOutput'),
-                      'name': u'WeatheringOutput',
+                      'name': 'WeatheringOutput',
                       'output_last_step': True,
                       'output_zero_step': True
                       }
@@ -68,7 +68,7 @@ class ModelRunTest(FunctionalTestBase):
                                'name': 'ConstantWind',
                                'timeseries': [('2012-11-06T20:10:30',
                                                (1.0, 0.0))],
-                               'units': u'meter per second'},
+                               'units': 'meter per second'},
                       'water': {'obj_type': 'gnome.environment.Water',
                                 'temperature': 46,
                                 'salinity': 32,
@@ -97,7 +97,7 @@ class ModelRunTest(FunctionalTestBase):
         assert 'coordinates' in resp.json_body['geometry']
 
         # OK, if we get this far, we should have an active model
-        print 'test_all_steps(): getting model...'
+        print('test_all_steps(): getting model...')
         resp = self.testapp.get('/model')
         model1 = resp.json_body
         model1['start_time'] = self.spill_data['release']['release_time']
@@ -116,7 +116,7 @@ class ModelRunTest(FunctionalTestBase):
         # - maybe a wind and a windmover??? (optional)
 
         # - we need a spill
-        print 'test_all_steps(): creating spill...'
+        print('test_all_steps(): creating spill...')
         resp = self.testapp.post_json('/spill', params=self.spill_data)
         spill = resp.json_body
         model1['spills'] = [spill]
@@ -128,11 +128,11 @@ class ModelRunTest(FunctionalTestBase):
         model1['environment'].append(evaporate['water'])
         model1['environment'].append(evaporate['wind'])
 
-        print ('model.environment = ', model1['environment'])
-        print ('evaporation.water = ', evaporate['water'])
+        print(('model.environment = ', model1['environment']))
+        print(('evaporation.water = ', evaporate['water']))
 
         # - we need an outputter
-        print 'test_all_steps(): creating outputter...'
+        print('test_all_steps(): creating outputter...')
 
         resp = self.testapp.post_json('/outputter',
                                       params=self.geojson_data)
@@ -153,40 +153,40 @@ class ModelRunTest(FunctionalTestBase):
         assert model1['outputters'][1]['id'] == weathering_out['id']
 
         # Alright, now we can try to cycle through our steps.
-        print 'num_steps = ', num_time_steps
+        print('num_steps = ', num_time_steps)
 
         for s in range(num_time_steps):
             resp = self.testapp.get('/step')
             step = resp.json_body
 
-            print step.keys()
+            print(list(step.keys()))
             assert step['step_num'] == s
 
             assert 'TrajectoryGeoJsonOutput' in step
-            print step['TrajectoryGeoJsonOutput'].keys()
+            print(list(step['TrajectoryGeoJsonOutput'].keys()))
 
             for output_key in ('certain', 'uncertain', 'time_stamp'):
                 assert output_key in step['TrajectoryGeoJsonOutput']
 
             for output_key in ('certain', 'uncertain'):
-                print step['TrajectoryGeoJsonOutput'][output_key].keys()
+                print(list(step['TrajectoryGeoJsonOutput'][output_key].keys()))
 
                 assert 'features' in step['TrajectoryGeoJsonOutput'][output_key]
                 for f in step['TrajectoryGeoJsonOutput'][output_key]['features']:
-                    print f.keys()
+                    print(list(f.keys()))
 
                     assert 'geometry' in f
-                    print f['geometry'].keys()
+                    print(list(f['geometry'].keys()))
 
                     assert 'coordinates' in f['geometry']
-                    print f['geometry']['coordinates']
+                    print(f['geometry']['coordinates'])
 
                     assert 'properties' in f
-                    print f['properties']
+                    print(f['properties'])
                     assert f['properties']['status_code'] == 2
                     assert f['properties']['spill_num'] == 0
                     assert f['properties']['sc_type'] == 'forecast'
 
         # an additional call to /step should generate a 404
         resp = self.testapp.get('/step', status=404)
-        print 'done!'
+        print('done!')

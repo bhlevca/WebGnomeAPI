@@ -5,7 +5,7 @@ from os.path import basename
 import webtest
 import ujson
 
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class MapTestBase(FunctionalTestBase):
@@ -46,7 +46,7 @@ class MapTestBase(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -160,7 +160,7 @@ class GnomeMapTest(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -323,7 +323,7 @@ class ParamMapTest(FunctionalTestBase):
         self.setup_map_file()
         resp = self.testapp.post_json('/map', params=self.req_data)
         map1 = resp.json_body
-        print map1
+        print(map1)
 
         resp = self.testapp.get('/map/{0}/geojson'.format(map1['id']))
         geo_json = resp.json_body

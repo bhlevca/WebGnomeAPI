@@ -43,13 +43,15 @@ from cornice import Service
 release = Service(name='release', path='/release*obj_id',
                   description="Release API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.release.PointLineRelease',
+implemented_types = ('gnome.spill.release.Release',
+                     'gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
+                     'gnome.spill.release.NESDISRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
                      )
 
 log = logging.getLogger(__name__)
-geojson_types = ('gnome.spill.release.SpatialRelease',)
+geojson_types = ('gnome.spill.release.SpatialRelease', 'gnome.spill.release.NESDISRelease')
 
 @release.get()
 def get_release(request):
@@ -110,8 +112,7 @@ def get_start_positions(request):
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
                  .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
+        log.info('<<' + log_prefix)
 
 def get_polygons(request):
     '''
@@ -127,9 +128,9 @@ def get_polygons(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and obj.obj_type == 'gnome.spill.release.SpatialRelease':
+        if obj is not None and obj.obj_type in geojson_types:
             lengths, lines = obj.get_polygons()
-            lines_bytes = ''.join([l.tobytes() for l in lines])
+            lines_bytes = b''.join([l.tobytes() for l in lines])
 
             return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
         else:
@@ -139,8 +140,7 @@ def get_polygons(request):
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
                  .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
+        log.info('<<' + log_prefix)
 
 def get_metadata(request):
     log_prefix = 'req({0}): get_metadata():'.format(id(request))
@@ -194,7 +194,7 @@ def upload_release(request):
     release_json.update(request.POST)
     release_json.pop('session')
 
-    request.body = ujson.dumps(release_json)
+    request.body = ujson.dumps(release_json).encode('utf-8')
 
     release_obj = create_release(request)
     resp = Response(ujson.dumps(release_obj))

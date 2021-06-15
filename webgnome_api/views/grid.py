@@ -107,7 +107,7 @@ def get_lines(request):
 
         if obj is not None:
             lengths, lines = obj.get_lines()
-            lines_bytes = ''.join([l.tobytes() for l in lines])
+            lines_bytes = b''.join([l.tobytes() for l in lines])
 
             return (zlib.compress(lengths.tobytes() + lines_bytes), len(lengths))
         else:

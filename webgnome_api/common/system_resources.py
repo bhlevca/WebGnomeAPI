@@ -39,7 +39,7 @@ def get_size_of_open_file(fd):
 
 
 def write_to_file(file_in, out_path):
-    if isinstance(file_in, (str, unicode)):
+    if isinstance(file_in, str):
         with open(file_in, 'rb') as openfile:
             write_fd_to_file(openfile, out_path)
     else:
@@ -57,7 +57,7 @@ def write_fd_to_file(fd, out_path):
     fd.seek(curr_position)
 
 
-def mkdir(base_path, dir_name, mode=0775):
+def mkdir(base_path, dir_name, mode=0o775):
     '''
         Create a directory of a specified name inside the specified base path.
         We don't allow multiple level directory creation here.
@@ -68,7 +68,7 @@ def mkdir(base_path, dir_name, mode=0775):
         os.mkdir(full_path, mode)
     except OSError as e:
         if e.errno != errno.EEXIST:
-            print e
+            print(e)
             raise
 
 

@@ -132,7 +132,7 @@ def upload_mover(request):
     if ('wind_movers.WindMover' in mover_type):
         basic_json['wind'] = wind_json
 
-    request.body = ujson.dumps(basic_json)
+    request.body = ujson.dumps(basic_json).encode('utf-8')
 
     mover_obj = create_mover(request)
     resp = Response(ujson.dumps(mover_obj))

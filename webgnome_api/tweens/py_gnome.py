@@ -24,7 +24,7 @@ class PyGnomeSchemaTweenFactory(object):
         modified = False
 
         if isinstance(json_request, dict):
-            for v in json_request.values():
+            for v in list(json_request.values()):
                 if self.add_json_key(v):
                     modified = True
         elif isinstance(json_request, (list, tuple)):
@@ -63,7 +63,7 @@ class PyGnomeSchemaTweenFactory(object):
             folder.
         '''
         if ValueIsJsonObject(json_data):
-            for k, v in json_data.items():
+            for k, v in list(json_data.items()):
                 if k == 'filename':
                     json_data[k] = self.fix_filename(request,
                                                      json_data['obj_type'],
@@ -79,8 +79,8 @@ class PyGnomeSchemaTweenFactory(object):
 
     def generate_short_session_id(self, request):
         if hasattr(request, 'session'):
-            hasher = hashlib.sha1(request.session.session_id)
-            request.session_hash = base64.urlsafe_b64encode(hasher.digest())
+            hasher = hashlib.sha1(request.session.session_id.encode('utf-8'))
+            request.session_hash = base64.urlsafe_b64encode(hasher.digest()).decode()
 
     def before_the_handler(self, request):
         # code to be executed for each request
@@ -101,7 +101,7 @@ class PyGnomeSchemaTweenFactory(object):
             #       and then turn it back into a string.
             #       I tried just leaving it as a JSON object, but the
             #       request body doesn't accept anything but a string.
-            request.body = ujson.dumps(json_request)
+            request.body = ujson.dumps(json_request).encode('utf-8')
 
         self.generate_short_session_id(request)
 

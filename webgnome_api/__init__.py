@@ -4,9 +4,10 @@
 import os
 import shutil
 import logging
-
+from pathlib import Path
 import ujson
 import gevent
+import socketio
 
 from redis import StrictRedis
 
@@ -18,6 +19,12 @@ from pyramid_log import Formatter, _WrapDict, _DottedLookup
 from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
+from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespace
+
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
+
+__version__ = "0.9"
 
 logging.basicConfig()
 
@@ -62,7 +69,7 @@ def reconcile_directory_settings(settings):
 
     for d in (save_file_dir,):
         if not os.path.exists(d):
-            print 'Creating folder {0}'.format(d)
+            print(('Creating folder {0}'.format(d)))
             os.mkdir(d)
         elif not os.path.isdir(d):
             raise EnvironmentError('Folder path {0} '
@@ -123,13 +130,13 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
-        cleanup_dir = os.path.join(session_dir, msg['data'])
+        cleanup_dir = os.path.join(str(session_dir), str(msg['data']))
 
         try:
             shutil.rmtree(cleanup_dir)
         except OSError as err:
             if err.errno == 2:  # not-found error.  Print message & continue.
-                print ('Session Cleaner: Folder {} does not exist!'
+                print('Session Cleaner: Folder {} does not exist!'
                        .format(cleanup_dir))
             else:
                 raise
@@ -137,8 +144,28 @@ def start_session_cleaner(settings):
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=False)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=True)
 
+def server_factory(global_config, host, port):
+    port = int(port)
+    def serve(app):
+        #app is gzip middlware; app.application == webgnome_api
+        sio = WebgnomeSocketioServer(
+            app_settings=global_config,
+            api_app=app.application,
+            async_mode='gevent',
+            #logger=True,
+            #ping_interval=2,
+            #ping_timeout=10
+            )
+        ns = WebgnomeNamespace('/')
+        sio.register_namespace(ns)
+        app.application.registry['sio_ns'] = ns #to allow access to socketio side from pyramid side
+        #sio.register_namespace(LoggerNamespace('/logger'))
+        app = socketio.WSGIApp(sio, app)
+        pywsgi.WSGIServer((host, port), app,
+                          handler_class=WebSocketHandler).serve_forever()
+    return serve
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
@@ -147,7 +174,7 @@ def main(global_config, **settings):
     settings['uncertain_models'] = {}
     try:
         os.mkdir('ipc_files')
-    except OSError, e:
+    except OSError as e:
         # it is ok if the folder already exists.
         if e.errno != 17:
             raise
@@ -186,6 +213,11 @@ def main(global_config, **settings):
     config.add_route('socket.io', '/socket.io/*remaining')
     config.add_route('logger', '/logger')
 
-    config.scan('webgnome_api.views')
+    config.scan('webgnome_api.views', ignore=[
+        #'webgnome_api.views.socket',
+        #'webgnome_api.views.socket_logger',
+        #'webgnome_api.views.socket_step'
+    ])
 
-    return config.make_wsgi_app()
+    wapi =  config.make_wsgi_app()
+    return wapi

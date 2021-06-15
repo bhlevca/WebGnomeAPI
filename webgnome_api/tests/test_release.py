@@ -1,14 +1,14 @@
 """
 Functional tests for the Gnome Release object Web API
 """
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class ReleaseTests(FunctionalTestBase):
     '''
         Tests out the Gnome Release object API
     '''
-    req_data = {'obj_type': u'gnome.spill.release.PointLineRelease',
+    req_data = {'obj_type': 'gnome.spill.release.PointLineRelease',
                 }
 
     options_headers = {'Origin': 'http://0.0.0.0:8080',
@@ -33,7 +33,7 @@ class ReleaseTests(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -75,7 +75,7 @@ class PointLineReleaseTests(ReleaseTests):
         Tests out the Gnome Release object API
     '''
     req_data = {
-                'obj_type': u'gnome.spill.release.PointLineRelease',
+                'obj_type': 'gnome.spill.release.PointLineRelease',
                 'num_elements': 100,
                 'num_released': 0,
                 'release_time': '2014-04-15T13:22:20.930570',
@@ -130,12 +130,12 @@ class PointLineReleaseTests(ReleaseTests):
                     ])
 
 
-class SpatialReleaseTests(ReleaseTests):
+class BasicReleaseTests(ReleaseTests):
     '''
         Tests out the Gnome Spatial Release object API
     '''
-    req_data = {'obj_type': u'gnome.spill.release.SpatialRelease',
-                'name': u'SpatialRelease',
+    req_data = {'obj_type': 'gnome.spill.release.Release',
+                'name': 'Release',
                 'release_time': '2014-08-02T21:20:50',
                 'custom_positions': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
                 }
