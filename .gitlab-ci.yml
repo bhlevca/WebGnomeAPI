@@ -57,6 +57,7 @@ test_master:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
+    - pip install -e .
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -72,6 +73,7 @@ test_production:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
+    - pip install -e .
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -87,6 +89,7 @@ test_develop:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
+    - pip install -e .
     - pytest webgnome_api/tests
     - ps
     - jobs
