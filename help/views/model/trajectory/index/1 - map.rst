@@ -20,6 +20,7 @@ This is an important distinction because once the model is run on the server the
 
 
 .. |controls_img| raw:: html
+
    <img src="img/trajectory_controls.png">
 
 
