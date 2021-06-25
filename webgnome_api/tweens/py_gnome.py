@@ -7,6 +7,7 @@
 import os
 import base64
 import hashlib
+import regex as re
 
 import ujson
 
@@ -90,6 +91,7 @@ class PyGnomeSchemaTweenFactory(object):
                 request.environ['CONTENT_TYPE'][:16] == 'application/json' and
                 request.body):
             json_request = ujson.loads(request.body)
+            json_request = self.sanitizeJSON(json_request)
 
             self.add_json_key(json_request)
             self.fix_filename_attrs(request, json_request)
@@ -110,6 +112,28 @@ class PyGnomeSchemaTweenFactory(object):
         # AFTER the actual application code
         # goes here
         pass
+
+    HTMLsanitize = re.compile(r'["\'<>&\\]')
+
+    def sanitize_string(self, s):
+        #basic HTML string sanitization
+        return re.sub(self.HTMLsanitize, '_', s)
+
+    def sanitizeJSON(self, json_):
+            #response should be a JSON structure
+            #Removes dangerous HTML from the body of the response
+            if isinstance(json_, str):
+                return self.sanitize_string(json_)
+            elif isinstance(json_, list):
+                #array case
+                for j, val in enumerate(json_):
+                    json_[j] = self.sanitizeJSON(val)
+            else:
+                #object case
+                if hasattr(json_, 'items'):
+                    for k, v in json_.items():
+                        json_[k] = self.sanitizeJSON(v)
+            return json_
 
     def __call__(self, request):
         self.before_the_handler(request)
