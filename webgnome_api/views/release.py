@@ -87,33 +87,6 @@ def update_release(request):
     '''Updates a Gnome Release object.'''
     return update_object(request, implemented_types)
 
-def get_start_positions(request):
-    '''
-        Outputs combined SpatialRelease start positions
-    '''
-
-    log_prefix = 'req({0}): get_start_positions():'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    session_lock = acquire_session_lock(request)
-    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
-             .format(log_prefix, id(session_lock), current_thread().ident))
-    try:
-        obj_id = request.matchdict.get('obj_id')[0]
-        obj = get_session_object(obj_id, request)
-
-        if obj is not None:
-            pos = obj.get_start_positions()
-            return zlib.compress(pos.astype(np.float32).tobytes())
-        else:
-            exc = cors_exception(request, HTTPNotFound)
-            raise exc
-    finally:
-        session_lock.release()
-        log.info('  {} session lock released (sess:{}, thr_id: {})'
-                 .format(log_prefix, id(session_lock), current_thread().ident))
-        log.info('<<' + log_prefix)
-
 def get_polygons(request):
     '''
         Outputs the SpatialRelease's Polygons in binary format

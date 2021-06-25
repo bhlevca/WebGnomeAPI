@@ -22,10 +22,12 @@ class WebgnomeSocketioServer(socketio.Server):
                  api_app=None,
                  **kwargs):
         self.app_settings = app_settings
+        import pdb
+        pdb.set_trace()
         self.app = api_app
         super(WebgnomeSocketioServer, self).__init__(
             engineio_logger=False,
-            cors_allowed_origins='*',
+            cors_allowed_origins=api_app.registry.settings['cors_policy.origins'],
             **kwargs
             )
 
