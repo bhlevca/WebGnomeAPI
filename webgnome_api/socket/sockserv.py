@@ -23,9 +23,10 @@ class WebgnomeSocketioServer(socketio.Server):
                  **kwargs):
         self.app_settings = app_settings
         self.app = api_app
+        cors_origins = api_app.registry.settings['cors_policy.origins'].split('\n')
         super(WebgnomeSocketioServer, self).__init__(
             engineio_logger=False,
-            cors_allowed_origins=api_app.registry.settings['cors_policy.origins'],
+            cors_allowed_origins=cors_origins,
             **kwargs
             )
 
