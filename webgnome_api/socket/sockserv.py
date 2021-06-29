@@ -24,9 +24,10 @@ class WebgnomeSocketioServer(socketio.Server):
         self.app_settings = app_settings
         self.app = api_app
         cors_origins = api_app.registry.settings['cors_policy.origins'].split('\n')
+        if '*' in cors_origins:
+            cors_origins = '*' #because ['*'] does not work...
         super(WebgnomeSocketioServer, self).__init__(
             engineio_logger=False,
-            #cors_allowed_origins='*',
             cors_allowed_origins=cors_origins,
             **kwargs
             )
