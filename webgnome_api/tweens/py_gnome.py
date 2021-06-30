@@ -113,7 +113,7 @@ class PyGnomeSchemaTweenFactory(object):
         # goes here
         pass
 
-    HTMLsanitize = re.compile(r'["\'<>&\\]')
+    HTMLsanitize = re.compile(r'["\'<>&]')
 
     def sanitize_string(self, s):
         #basic HTML string sanitization
