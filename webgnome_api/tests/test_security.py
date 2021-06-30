@@ -25,8 +25,8 @@ class HTMLSecurityTest(FunctionalTestBase):
                     'outputters': [],
                     'spills': [],
                     'weatherers': [],
-                    'name': '<script>alert(0)</script>',
-                    'id': '"<script></script>"'
+                    'name': '<script>alert(0)<script>',
+                    'id': '"<script><script>"'
                     }
-        resp = self.testapp.post_json('/model', req_data)
+        resp = self.testapp.post_json('/<script>model', req_data)
         assert '<' not in resp.json_body['name'] 
