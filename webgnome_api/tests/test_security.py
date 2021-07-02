@@ -29,4 +29,4 @@ class HTMLSecurityTest(FunctionalTestBase):
                     'id': '"<script><script>"'
                     }
         resp = self.testapp.post_json('/model', req_data)
-        assert '<' not in resp.json_body['name'] 
+        assert '&' not in resp.json_body['name'] 
