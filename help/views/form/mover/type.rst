@@ -1,9 +1,6 @@
 .. keywords
    currents, movers, roms, fvcom, cats, hyrodynamic model
 
-Create Current Movers
-^^^^^^^^^^^^^^^^^^^^^
-
 Choose **Load NetCDF Surface Currents** to load ocean current data or model output on a regular, curvilinear, or triangular grid in NetCDF format. 
 At present, only specific output formats are supported (eventually any CF-compliant file with the necessary variables should be compatible). Typical output from ROMS or any UGRID/SGRID compliant format should be supported. 
 
@@ -13,7 +10,7 @@ The **Load NOAA Emergency Response Model (CATS) output** is for loading the hydr
 
 Choose **Load Deprecated ASCII Formats** for files using the PtCur, GridCur, or GridCurTime formats.
 
-For more information on any of these formats, see the |file_formats_link| for more information.
+For more information on any of these formats, see the |file_formats_link|.
 
 .. |file_formats_link| raw:: html
 
