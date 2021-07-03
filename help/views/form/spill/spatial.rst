@@ -4,7 +4,7 @@
 
 **File Information**
 
-This section is automatically popluated based on the oil classification information in the uploaded shapefile. For example, NESDIS Marine Pollution Surveillance Reports typically have at most two classes: "potential oil" and "potential thicker oil". These are represented as "thin" and "thick" with specified defaults for **Thickness**. These should be reviewed and edited as appropriatd. Alternatively, the total **Volume** per oil class can be specified. The **Area** of the oil class is used to transform between the two. This is calculated from the geometry of the shapes in the file and can not be edited.
+This section is automatically popluated based on the oil classification information in the uploaded shapefile. For example, NESDIS Marine Pollution Surveillance Reports typically have at most two classes: "potential oil" and "potential thicker oil". These are represented as "thin" and "thick" with specified defaults for **Thickness**. These should be reviewed and edited as appropriate. Alternatively, the total **Volume** per oil class can be specified. The **Area** of the oil class is used to transform between the two. This is calculated from the geometry of the shapes in the file and can not be edited.
 
 **General Spill Properties**
 
