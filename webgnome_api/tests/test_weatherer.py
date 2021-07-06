@@ -4,14 +4,14 @@ These include (Wind, Tide, etc.)
 """
 from datetime import datetime, timedelta
 
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class BaseWeathererTests(FunctionalTestBase):
     '''
         Tests out the Gnome Wind object API
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Evaporation',
+    req_data = {'obj_type': 'gnome.weatherers.Evaporation',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 }
@@ -24,7 +24,7 @@ class BaseWeathererTests(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -82,7 +82,7 @@ class BaseWeathererTests(FunctionalTestBase):
         self.active_range = (self.now.isoformat(),
                              (self.now + timedelta(60 * 60 * 24)).isoformat())
 
-        print self.active_range
+        print(self.active_range)
 
         json_obj['active_range'] = self.active_range
         json_obj['on'] = False
@@ -102,7 +102,7 @@ class BurnTests(BaseWeathererTests):
     Burn ignores active_stop if it is given since burn will stop when thickness
     is 2mm
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Burn',
+    req_data = {'obj_type': 'gnome.weatherers.Burn',
                 'json_': 'webapi',
                 'active_range': ('2014-04-09T15:00:00', 'inf'),
                 'on': True,
@@ -123,7 +123,7 @@ class BurnTests(BaseWeathererTests):
 
 class ROCBurnTests(BaseWeathererTests):
 
-    req_data = {'obj_type': u'gnome.weatherers.roc.Burn',
+    req_data = {'obj_type': 'gnome.weatherers.roc.Burn',
                 'json_': 'webapi',
                 'on': True,
                 'offset': '50',
@@ -148,7 +148,7 @@ class SkimmerTests(BaseWeathererTests):
     cleanup operations must have a valid datetime - cannot use -inf and inf
     active_range is used to get the mass removal rate
     '''
-    req_data = {'obj_type': u'gnome.weatherers.Skimmer',
+    req_data = {'obj_type': 'gnome.weatherers.Skimmer',
                 'json_': 'webapi',
                 'active_range': ('2014-04-09T15:00:00', '2014-04-09T19:00:00'),
                 'on': True,
@@ -206,7 +206,7 @@ class ChemicalDispersionTests(BaseWeathererTests):
     '''
         Mock objects at present so just test that they get created
     '''
-    req_data = {'obj_type': u'gnome.weatherers.ChemicalDispersion',
+    req_data = {'obj_type': 'gnome.weatherers.ChemicalDispersion',
                 'json_': 'webapi',
                 'active_range': ('-inf', 'inf'),
                 'on': True,

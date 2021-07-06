@@ -2,7 +2,7 @@
  "obj_type": "gnome.model.Model", 
  "map": {
   "json_": "save", 
-  "obj_type": "gnome.map.MapFromBNA", 
+  "obj_type": "gnome.maps.map.MapFromBNA", 
   "filename": "GuamMap.bna",
   "refloat_halflife": 1.0 
  }, 

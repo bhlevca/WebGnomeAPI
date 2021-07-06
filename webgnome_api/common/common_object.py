@@ -3,7 +3,7 @@
 """
 import os
 import shutil
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import ujson
 
 import logging
@@ -208,7 +208,7 @@ def list_session_dir(request):
     if os.path.isdir(session_dir) is True:
         # our session folder exists, clean out any files
         for f in os.listdir(session_dir):
-            print '\t{}'.format(f)
+            print(('\t{}'.format(f)))
 
 
 def clean_session_dir(request):
@@ -255,7 +255,7 @@ def get_file_path(request, json_request=None):
 
     if (json_request['filename'].startswith('http') and
             json_request['filename'].find(goods_url) != -1):
-        resp = urllib2.urlopen(json_request['filename'])
+        resp = urllib.request.urlopen(json_request['filename'])
 
         (_remote_dir, fname) = os.path.split(json_request['filename'])
 

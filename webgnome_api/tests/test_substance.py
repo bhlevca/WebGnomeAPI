@@ -1,21 +1,21 @@
 """
 Functional tests for the Gnome Substance object Web API
 """
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class SubstanceBase(FunctionalTestBase):
     '''
         Tests out the Gnome Substance object API
     '''
-    init_data = {'obj_type': u'gnome.spill.initializers.InitWindages',
+    init_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
                  'windage_range': (0.01, 0.04),
                  'windage_persist': 900,
                  }
 
-    req_data = {'obj_type': u'gnome.spill.substance.GnomeOil',
+    req_data = {'obj_type': 'gnome.spill.substance.GnomeOil',
                 'initializers': None,
-                'name': u'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
+                'name': 'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
                 }
 
     fields_to_check = ('id', 'obj_type', 'initializers')
@@ -28,7 +28,7 @@ class SubstanceBase(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -109,7 +109,7 @@ class SubstanceWithRiseVelDistTest(SubstanceBase):
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    init_data = {'obj_type': u'gnome.spill.initializers.InitRiseVelFromDist',
+    init_data = {'obj_type': 'gnome.spill.initializers.InitRiseVelFromDist',
                  'distribution': None
                  }
     fields_to_check = ('id', 'obj_type', 'initializers')

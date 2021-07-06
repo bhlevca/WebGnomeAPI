@@ -4,7 +4,7 @@ Functional tests for the Mover Web API
 import time
 import pytest
 import os
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class BaseMoverTests(FunctionalTestBase):
@@ -24,7 +24,7 @@ class BaseMoverTests(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -108,7 +108,7 @@ class SimpleMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj[u'velocity'] == [10.0, 10.0, 10.0]
+        assert json_obj['velocity'] == [10.0, 10.0, 10.0]
         assert json_obj['on'] is False
 
 
@@ -117,24 +117,24 @@ class WindMoverTests(BaseMoverTests):
         Tests out the Gnome Wind Mover API
     '''
     wind_req_data = {'obj_type': 'gnome.environment.Wind',
-                     'description': u'Wind Object',
+                     'description': 'Wind Object',
                      'updated_at': '2014-03-26T14:52:45.385126',
-                     'source_type': u'undefined',
-                     'source_id': u'undefined',
+                     'source_type': 'undefined',
+                     'source_id': 'undefined',
                      'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0)),
                                     ('2012-11-06T20:11:30', (1.0, 45.0)),
                                     ('2012-11-06T20:12:30', (1.0, 90.0)),
                                     ('2012-11-06T20:13:30', (1.0, 120.0)),
                                     ('2012-11-06T20:14:30', (1.0, 180.0)),
                                     ('2012-11-06T20:15:30', (1.0, 270.0))],
-                     'units': u'meter per second'
+                     'units': 'meter per second'
                      }
 
     req_data = {'obj_type': 'gnome.movers.wind_movers.WindMover',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'uncertain_angle_scale': 0.4,
-                'uncertain_angle_units': u'rad',
+                'uncertain_angle_units': 'rad',
                 'uncertain_duration': 3.0,
                 'uncertain_speed_scale': 2.0,
                 'uncertain_time_delay': 0.0,
@@ -232,8 +232,8 @@ class RandomMoverTests(BaseMoverTests):
     '''
         Tests out the Gnome Random Mover API
     '''
-    req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover',
-                'name': u'RandomMover',
+    req_data = {'obj_type': 'gnome.movers.random_movers.RandomMover',
+                'name': 'RandomMover',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'diffusion_coef': 100000.0,
@@ -288,8 +288,8 @@ class RandomMover3DTests(BaseMoverTests):
     '''
         Tests out the Gnome Random Mover 3D API
     '''
-    req_data = {'obj_type': u'gnome.movers.random_movers.RandomMover3D',
-                'name': u'RandomMover3D',
+    req_data = {'obj_type': 'gnome.movers.random_movers.RandomMover3D',
+                'name': 'RandomMover3D',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'mixed_layer_depth': 10.0,
@@ -351,9 +351,9 @@ class CatsMoverTests(BaseMoverTests):
                  'filename': os.path.join('models','CLISShio.txt')
                  }
 
-    req_data = {'obj_type': u'gnome.movers.current_movers.CatsMover',
+    req_data = {'obj_type': 'gnome.movers.current_movers.CatsMover',
                 'filename': os.path.join('models', 'tidesWAC.CUR'),
-                'scale': True,
+                #'scale': True, Cannot use any longer due to pygnome changes
                 'scale_value': 1.0,
                 'scale_refpoint': (-72.705, 41.2275, 0.0),
                 }
@@ -396,7 +396,6 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        json_obj['scale'] = False
         json_obj['scale_value'] = 2.0
         json_obj['scale_refpoint'] = [-50.0, 50.0, 10.0]
 
@@ -415,7 +414,6 @@ class CatsMoverTests(BaseMoverTests):
             We can overload this function when subclassing our tests
             for new object types.
         '''
-        assert json_obj['scale'] is False
         assert json_obj['scale_value'] == 2.0
         assert json_obj['scale_refpoint'] == [-50.0, 50.0, 10.0]
 
@@ -434,7 +432,7 @@ class CurrentInfoTests(FunctionalTestBase):
         Tests out the API for getting the current info from the
         current movers in the model.
     '''
-    req_data = {'obj_type': u'gnome.model.Model',
+    req_data = {'obj_type': 'gnome.model.Model',
                 'cache_enabled': False,
                 'duration': 86400.0,
                 'start_time': '2014-04-09T15:00:00',
@@ -447,7 +445,7 @@ class CurrentInfoTests(FunctionalTestBase):
                 'outputters': [],
                 'spills': [],
                 }
-    req_data['movers'] = [{'obj_type': u'gnome.movers.CatsMover',
+    req_data['movers'] = [{'obj_type': 'gnome.movers.CatsMover',
                            'filename': os.path.join('models','tidesWAC.CUR'),
                            'scale': True,
                            'scale_value': 1.0,
@@ -459,15 +457,15 @@ class CurrentInfoTests(FunctionalTestBase):
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
-                           'uncertain_angle_units': u'rad',
+                           'uncertain_angle_units': 'rad',
                            'uncertain_duration': 3.0,
                            'uncertain_speed_scale': 2.0,
                            'uncertain_time_delay': 0.0,
                            'wind': {'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:11:30',
@@ -480,7 +478,7 @@ class CurrentInfoTests(FunctionalTestBase):
                                                     (1.0, 180.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }
                            }
                           ]
@@ -514,7 +512,7 @@ class CurrentInfoTests(FunctionalTestBase):
         # step 1: we create a model that contains a current mover.
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
-        print '\n\ngot our model at: ', time.time() - begin
+        print('\n\ngot our model at: ', time.time() - begin)
 
         assert model['movers'][0]['tide']['filename'] == 'CLISShio.txt'
 
@@ -522,7 +520,7 @@ class CurrentInfoTests(FunctionalTestBase):
         mover_id = model['movers'][0]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
         current_info = resp.json_body
-        print '\n\ngot our grid at: ', time.time() - begin
+        print('\n\ngot our grid at: ', time.time() - begin)
 
         for r in current_info:
             assert len(r) == 6  # each row contains 3 flattened coordinates
@@ -552,14 +550,14 @@ class IceInfoTests(FunctionalTestBase):
         Tests out the API for getting the ice info from the ice movers
         in the model.
     '''
-    movers_data = [{'obj_type': u'gnome.movers.simple_mover.SimpleMover',
-                    'name': u'SimpleMover',
+    movers_data = [{'obj_type': 'gnome.movers.simple_mover.SimpleMover',
+                    'name': 'SimpleMover',
                     'active_range': ('-inf', 'inf'),
                     'on': True,
                     'uncertainty_scale': 0.5,
                     'velocity': (1.0, -1.0, 0.0)},
-                   {'obj_type': u'gnome.movers.IceMover',
-                    'name': u'IceMover',
+                   {'obj_type': 'gnome.movers.IceMover',
+                    'name': 'IceMover',
                     'active_range': ('-inf', 'inf'),
                     'on': True,
                     'current_scale': 1.0,
@@ -570,22 +568,22 @@ class IceInfoTests(FunctionalTestBase):
                     'uncertain_duration': 24.0,
                     'uncertain_time_delay': 0.0}]
 
-    outputters_data = [{'obj_type': u'gnome.outputters.IceGeoJsonOutput',
-                        'name': u'IceGeoJsonOutput',
+    outputters_data = [{'obj_type': 'gnome.outputters.IceGeoJsonOutput',
+                        'name': 'IceGeoJsonOutput',
                         'on': True,
                         'output_last_step': True,
                         'output_zero_step': True,
                         'ice_movers': [],
                         }]
 
-    spills_data = [{'obj_type': u'gnome.spill.spill.Spill',
-                    'name': u'Point Line Release',
+    spills_data = [{'obj_type': 'gnome.spill.spill.Spill',
+                    'name': 'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
                     'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                  'name': u'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
-                                                    'name': u'windages',
+                                  'name': 'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                    'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
                                                                       0.04)
@@ -593,29 +591,29 @@ class IceInfoTests(FunctionalTestBase):
                                      },
                     'release': {'end_position': (-164.01696, 72.921024, 0.0),
                                 'end_release_time': None,
-                                'name': u'PointLineRelease',
+                                'name': 'PointLineRelease',
                                 'num_elements': 1,
                                 'obj_type': ('gnome.spill.release'
                                              '.PointLineRelease'),
                                 'release_time': '2015-05-14T00:00:00',
                                 'start_position': (-164.01696, 72.921024, 0.0)}
                     },
-                   {'obj_type': u'gnome.spill.spill.Spill',
-                    'name': u'Spill',
+                   {'obj_type': 'gnome.spill.spill.Spill',
+                    'name': 'Spill',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
                     'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                  'name': u'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': u'gnome.spill.initializers.InitWindages',
-                                                    'name': u'windages',
+                                  'name': 'NonWeatheringSubstance',
+                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                                    'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
                                                                       0.04)
                                                     }],
                                      },
                     'release': {'obj_type': ('gnome.spill.release'
-                                             '.SpatialRelease'),
-                                'name': u'SpatialRelease',
+                                             '.Release'),
+                                'name': 'Release',
                                 'release_time': '2015-05-14T00:00:00',
                                 'custom_positions': [(-127.1, 47.93, 0.0),
                                                    (-127.033, 47.948, 0.0),
@@ -631,8 +629,8 @@ class IceInfoTests(FunctionalTestBase):
                     }
                    ]
 
-    req_data = {'obj_type': u'gnome.model.Model',
-                'name': u'Model',
+    req_data = {'obj_type': 'gnome.model.Model',
+                'name': 'Model',
                 'start_time': '2015-05-14T00:00:00',
                 'duration': 3600.0,
                 'time_step': 900.0,
@@ -642,8 +640,8 @@ class IceInfoTests(FunctionalTestBase):
                 'make_default_refs': True,
                 'uncertain': True,
                 'valid': True,
-                'map': {'obj_type': u'gnome.maps.map.MapFromBNA',
-                        'name': u'MapBounds_Island.bna',
+                'map': {'obj_type': 'gnome.maps.map.MapFromBNA',
+                        'name': 'MapBounds_Island.bna',
                         'filename': os.path.join('models','MapBounds_Island.bna'),
                         'refloat_halflife': 6.0,
                         'map_bounds': [(-127.465333, 48.3294),
@@ -717,7 +715,7 @@ class IceInfoTests(FunctionalTestBase):
         # step 1: we create a model that contains a current mover.
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
-        print '\n\ngot our model at: ', time.time() - begin
+        print('\n\ngot our model at: ', time.time() - begin)
 
         assert model['movers'][1]['filename'] == 'acnfs_example.nc'
         assert model['movers'][1]['topology_file'] == 'acnfs_topo.dat'
@@ -725,7 +723,7 @@ class IceInfoTests(FunctionalTestBase):
         mover_id = model['movers'][1]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
         current_info = resp.json_body
-        print '\n\ngot our grid at: ', time.time() - begin
+        print('\n\ngot our grid at: ', time.time() - begin)
 
         for r in current_info:
             assert len(r) == 8  # each row contains 4 flattened coordinates
@@ -736,7 +734,7 @@ class CellInfoTests(FunctionalTestBase):
         Tests out the API for getting the current info from the
         current movers in the model.
     '''
-    req_data = {'obj_type': u'gnome.model.Model',
+    req_data = {'obj_type': 'gnome.model.Model',
                 'cache_enabled': False,
                 'duration': 86400.0,
                 'start_time': '2014-04-09T15:00:00',
@@ -765,15 +763,15 @@ class CellInfoTests(FunctionalTestBase):
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
-                           'uncertain_angle_units': u'rad',
+                           'uncertain_angle_units': 'rad',
                            'uncertain_duration': 3.0,
                            'uncertain_speed_scale': 2.0,
                            'uncertain_time_delay': 0.0,
                            'wind': {'obj_type': 'gnome.environment.Wind',
-                                    'description': u'Wind Object',
+                                    'description': 'Wind Object',
                                     'updated_at': '2014-03-26T14:52:45.385126',
-                                    'source_type': u'undefined',
-                                    'source_id': u'undefined',
+                                    'source_type': 'undefined',
+                                    'source_id': 'undefined',
                                     'timeseries': [('2012-11-06T20:10:30',
                                                     (1.0, 0.0)),
                                                    ('2012-11-06T20:11:30',
@@ -786,7 +784,7 @@ class CellInfoTests(FunctionalTestBase):
                                                     (1.0, 180.0)),
                                                    ('2012-11-06T20:15:30',
                                                     (1.0, 270.0))],
-                                    'units': u'meter per second'
+                                    'units': 'meter per second'
                                     }
                            }
                           ]
@@ -821,7 +819,7 @@ class CellInfoTests(FunctionalTestBase):
         # step 1: we create a model that contains a current mover.
         resp = self.testapp.post_json('/model', params=params)
         model = resp.json_body
-        print '\n\ngot our model at: ', time.time() - begin
+        print('\n\ngot our model at: ', time.time() - begin)
 
         assert model['movers'][0]['filename'] == 'ny_cg.nc'
         assert model['movers'][0]['topology_file'] == 'NYTopology.dat'
@@ -830,7 +828,7 @@ class CellInfoTests(FunctionalTestBase):
         mover_id = model['movers'][0]['id']
         resp = self.testapp.get('/mover/{0}/{1}'.format(mover_id, 'grid'))
         current_info = resp.json_body
-        print '\n\ngot our grid at: ', time.time() - begin
+        print('\n\ngot our grid at: ', time.time() - begin)
 
         for r in current_info:
             assert len(r) == 8  # each row contains 4 flattened coordinates

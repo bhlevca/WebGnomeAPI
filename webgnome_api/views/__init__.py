@@ -23,7 +23,7 @@ for m_name in __all__:
                 py_class = PyClassFromName(t)
                 implemented_types.append(py_class)
             except ImportError:
-                print ('Warning: could not import implemented_type: {}'
-                       .format(t))
+                print(('Warning: could not import implemented_type: {}'
+                       .format(t)))
 
 implemented_types = tuple(implemented_types)

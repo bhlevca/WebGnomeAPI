@@ -57,7 +57,6 @@ test_master:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
-    - pip install -r pip_requirements.txt
     - pip install -e .
     - pytest webgnome_api/tests
     - ps
@@ -74,7 +73,6 @@ test_production:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
-    - pip install -r pip_requirements.txt
     - pip install -e .
     - pytest webgnome_api/tests
     - ps
@@ -84,14 +82,13 @@ test_production:
   tags:
     - docker
 
-test:
+test_develop:
   stage: test
   image: registry.orr.noaa.gov/gnome/pygnome:develop
   script:
     - yum install redis -y
     - redis-server --daemonize yes
     - conda install --file conda_requirements.txt
-    - pip install -r pip_requirements.txt
     - pip install -e .
     - pytest webgnome_api/tests
     - ps

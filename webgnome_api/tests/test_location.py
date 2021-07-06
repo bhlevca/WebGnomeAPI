@@ -1,7 +1,7 @@
 """
 Functional tests for the Gnome Location object Web API
 """
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class LocationTest(FunctionalTestBase):
@@ -42,28 +42,28 @@ class LocationTest(FunctionalTestBase):
 
         # the location file we selected should have a registered map
         map_id = model1['map']['id']
-        print 'GET: /map/{0}'.format(map_id)
+        print('GET: /map/{0}'.format(map_id))
         resp = self.testapp.get('/map/{0}'.format(map_id))
         map1 = resp.json_body
         assert map1['id'] == model1['map']['id']
 
         # the location file we selected should have a registered Tide
         env_id = model1['environment'][0]['id']
-        print 'GET: /environment/{0}'.format(env_id)
+        print('GET: /environment/{0}'.format(env_id))
         resp = self.testapp.get('/environment/{0}'.format(env_id))
         env1 = resp.json_body
         assert env1['id'] == model1['environment'][0]['id']
 
         # the location file we selected should have a registered RandomMover
         mover1_id = model1['movers'][0]['id']
-        print 'GET: /mover/{0}'.format(mover1_id)
+        print('GET: /mover/{0}'.format(mover1_id))
         resp = self.testapp.get('/mover/{0}'.format(mover1_id))
         mover1 = resp.json_body
         assert mover1['id'] == model1['movers'][0]['id']
 
         # the location file we selected should have a registered CatsMover
         mover2_id = model1['movers'][1]['id']
-        print 'GET: /mover/{0}'.format(mover2_id)
+        print('GET: /mover/{0}'.format(mover2_id))
         resp = self.testapp.get('/mover/{0}'.format(mover2_id))
         mover2 = resp.json_body
         assert mover2['id'] == model1['movers'][1]['id']

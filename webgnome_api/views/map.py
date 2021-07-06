@@ -89,7 +89,7 @@ def create_map(request):
 def update_map(request):
     '''Updates a Gnome Map object.'''
     try:
-        json_request = ujson.loads(request.body)
+        json_request = ujson.loads(request.body.decode('utf-8'))
     except Exception:
         raise cors_exception(request, HTTPBadRequest)
 
@@ -135,7 +135,7 @@ def upload_map(request):
                                 'filename': file_name,
                                 'refloat_halflife': 6.0,
                                 'name': name
-                                })
+                                }).encode('utf-8')
 
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))
@@ -165,7 +165,7 @@ def activate_map(request):
                                 'filename': file_path,
                                 'refloat_halflife': 6.0,
                                 'name': name
-                                })
+                                }).encode('utf-8')
 
     map_obj = create_map(request)
     resp = Response(ujson.dumps(map_obj))

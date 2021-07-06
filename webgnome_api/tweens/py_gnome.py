@@ -7,6 +7,7 @@
 import os
 import base64
 import hashlib
+import regex as re
 
 import ujson
 
@@ -24,7 +25,7 @@ class PyGnomeSchemaTweenFactory(object):
         modified = False
 
         if isinstance(json_request, dict):
-            for v in json_request.values():
+            for v in list(json_request.values()):
                 if self.add_json_key(v):
                     modified = True
         elif isinstance(json_request, (list, tuple)):
@@ -63,7 +64,7 @@ class PyGnomeSchemaTweenFactory(object):
             folder.
         '''
         if ValueIsJsonObject(json_data):
-            for k, v in json_data.items():
+            for k, v in list(json_data.items()):
                 if k == 'filename':
                     json_data[k] = self.fix_filename(request,
                                                      json_data['obj_type'],
@@ -79,8 +80,8 @@ class PyGnomeSchemaTweenFactory(object):
 
     def generate_short_session_id(self, request):
         if hasattr(request, 'session'):
-            hasher = hashlib.sha1(request.session.session_id)
-            request.session_hash = base64.urlsafe_b64encode(hasher.digest())
+            hasher = hashlib.sha1(request.session.session_id.encode('utf-8'))
+            request.session_hash = base64.urlsafe_b64encode(hasher.digest()).decode()
 
     def before_the_handler(self, request):
         # code to be executed for each request
@@ -90,6 +91,7 @@ class PyGnomeSchemaTweenFactory(object):
                 request.environ['CONTENT_TYPE'][:16] == 'application/json' and
                 request.body):
             json_request = ujson.loads(request.body)
+            json_request = self.sanitizeJSON(json_request)
 
             self.add_json_key(json_request)
             self.fix_filename_attrs(request, json_request)
@@ -101,7 +103,7 @@ class PyGnomeSchemaTweenFactory(object):
             #       and then turn it back into a string.
             #       I tried just leaving it as a JSON object, but the
             #       request body doesn't accept anything but a string.
-            request.body = ujson.dumps(json_request)
+            request.body = ujson.dumps(json_request).encode('utf-8')
 
         self.generate_short_session_id(request)
 
@@ -110,6 +112,28 @@ class PyGnomeSchemaTweenFactory(object):
         # AFTER the actual application code
         # goes here
         pass
+
+    HTMLsanitize = re.compile(r'["\'&]')
+
+    def sanitize_string(self, s):
+        #basic HTML string sanitization
+        return re.sub(self.HTMLsanitize, '_', s)
+
+    def sanitizeJSON(self, json_):
+            #response should be a JSON structure
+            #Removes dangerous HTML from the body of the response
+            if isinstance(json_, str):
+                return self.sanitize_string(json_)
+            elif isinstance(json_, list):
+                #array case
+                for j, val in enumerate(json_):
+                    json_[j] = self.sanitizeJSON(val)
+            else:
+                #object case
+                if hasattr(json_, 'items'):
+                    for k, v in json_.items():
+                        json_[k] = self.sanitizeJSON(v)
+            return json_
 
     def __call__(self, request):
         self.before_the_handler(request)

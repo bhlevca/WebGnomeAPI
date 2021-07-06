@@ -1,7 +1,7 @@
 """
 Functional tests for the Gnome Distribution object Web API
 """
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 
 class DistributionBase(FunctionalTestBase):
@@ -22,7 +22,7 @@ class DistributionBase(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef

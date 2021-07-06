@@ -1,7 +1,7 @@
 """
 Functional tests for the Gnome Outputter object Web API
 """
-from base import FunctionalTestBase
+from .base import FunctionalTestBase
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -11,8 +11,8 @@ class OutputterTests(FunctionalTestBase):
     '''
         Tests out the Gnome Outputter object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.outputter.Outputter',
-                'name': u'Outputter',
+    req_data = {'obj_type': 'gnome.outputters.outputter.Outputter',
+                'name': 'Outputter',
                 'output_timestep': 1800.0,
                 'output_last_step': True,
                 'output_zero_step': True,
@@ -26,7 +26,7 @@ class OutputterTests(FunctionalTestBase):
 
         assert (obj_type, obj_type) in [(name, obj['obj_type'].split('.')[-1])
                                         for name, obj
-                                        in resp.json_body.iteritems()]
+                                        in resp.json_body.items()]
 
     def test_get_invalid_id(self):
         obj_id = 0xdeadbeef
@@ -63,15 +63,15 @@ class OutputterTests(FunctionalTestBase):
     def test_put_valid_id(self):
         resp = self.testapp.post_json('/outputter', params=self.req_data)
         outputter = resp.json_body
-        print 'Created outputter:'
+        print('Created outputter:')
         pp.pprint(outputter)
 
         self.perform_updates(outputter)
-        print '\nUpdated outputter before put:'
+        print('\nUpdated outputter before put:')
         pp.pprint(outputter)
 
         resp = self.testapp.put_json('/outputter', params=outputter)
-        print 'Response:'
+        print('Response:')
         pp.pprint(resp.json_body)
 
         self.check_updates(resp.json_body)
@@ -151,9 +151,9 @@ class NetCDFOutputterTests(OutputterTests):
     '''
         Tests out the Gnome NetCDFOutput object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.netcdf.NetCDFOutput',
-                'name': u'sample_model.nc',
-                'filename': u'sample_model.nc',
+    req_data = {'obj_type': 'gnome.outputters.netcdf.NetCDFOutput',
+                'name': 'sample_model.nc',
+                'filename': 'sample_model.nc',
                 'compress': True,
                 'output_last_step': True,
                 'output_zero_step': True}
@@ -178,8 +178,8 @@ class GeoJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.TrajectoryGeoJsonOutput',
-                'name': u'GeoJson',
+    req_data = {'obj_type': 'gnome.outputters.TrajectoryGeoJsonOutput',
+                'name': 'GeoJson',
                 'output_last_step': True,
                 'output_zero_step': True}
 
@@ -200,11 +200,11 @@ class CurrentOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.CurrentJsonOutput',
-                'name': u'CurrentGrid',
+    req_data = {'obj_type': 'gnome.outputters.CurrentJsonOutput',
+                'name': 'CurrentGrid',
                 'output_last_step': True,
                 'output_zero_step': True,
-                'current_movers': [{'obj_type': u'gnome.movers.CatsMover',
+                'current_movers': [{'obj_type': 'gnome.movers.CatsMover',
                                     'filename': 'models/tidesWAC.CUR',
                                     'scale': True,
                                     'scale_value': 1.0,
@@ -231,19 +231,19 @@ class IceJsonOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.IceJsonOutput',
-                'name': u'IceGeoJsonOutput',
+    req_data = {'obj_type': 'gnome.outputters.IceJsonOutput',
+                'name': 'IceGeoJsonOutput',
                 'on': True,
                 'output_last_step': True,
                 'output_zero_step': True,
-                'ice_movers': [{'obj_type': u'gnome.movers.IceMover',
-                                'name': u'IceMover',
+                'ice_movers': [{'obj_type': 'gnome.movers.IceMover',
+                                'name': 'IceMover',
                                 'active_start': '-inf',
                                 'active_stop': 'inf',
                                 'on': True,
                                 'current_scale': 1.0,
-                                'filename': u'models/acnfs_example.nc',
-                                'topology_file': u'models/acnfs_topo.dat',
+                                'filename': 'models/acnfs_example.nc',
+                                'topology_file': 'models/acnfs_topo.dat',
                                 'uncertain_along': 0.5,
                                 'uncertain_cross': 0.25,
                                 'uncertain_duration': 24.0,
@@ -270,7 +270,7 @@ class IceImageOutputterTests(IceJsonOutputterTests):
     '''
     def setUp(self):
         super(IceImageOutputterTests, self).setUp()
-        self.req_data['obj_type'] = u'gnome.outputters.IceImageOutput'
+        self.req_data['obj_type'] = 'gnome.outputters.IceImageOutput'
 
     def check_created_values(self, json_obj1, json_obj2):
         for k in ('name', 'output_last_step', 'output_zero_step'):
@@ -291,7 +291,7 @@ class IceRawJsonOutputterTests(IceJsonOutputterTests):
     '''
     def setUp(self):
         super(IceJsonOutputterTests, self).setUp()
-        self.req_data['obj_type'] = u'gnome.outputters.IceJsonOutput'
+        self.req_data['obj_type'] = 'gnome.outputters.IceJsonOutput'
 
     def check_created_values(self, json_obj1, json_obj2):
         for k in ('name', 'output_last_step', 'output_zero_step'):
@@ -310,8 +310,8 @@ class WeatheringOutputterTests(OutputterTests):
     '''
         Tests out the Gnome GeoJson object API
     '''
-    req_data = {'obj_type': u'gnome.outputters.weathering.WeatheringOutput',
-                'name': u'WeatheringOutput',
+    req_data = {'obj_type': 'gnome.outputters.weathering.WeatheringOutput',
+                'name': 'WeatheringOutput',
                 'output_last_step': True,
                 'output_zero_step': True}
 

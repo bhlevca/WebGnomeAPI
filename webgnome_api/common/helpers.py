@@ -45,8 +45,6 @@ def update_savefile(file_path, request):
 
         return substance
 
-    import pdb
-    #pdb.set_trace()
     try:
         with zipfile.ZipFile(file_path, 'r') as zf:
             if 'version.txt' in zf.namelist():
@@ -103,7 +101,7 @@ def update_savefile(file_path, request):
         return file_path + '.updated'
             
     except:
-        if ('develop_mode' in request.registry.settings.keys() and
+        if ('develop_mode' in list(request.registry.settings.keys()) and
                     request.registry.settings['develop_mode'].lower() == 'true'):
             import pdb
             pdb.post_mortem(sys.exc_info()[2])
@@ -158,7 +156,7 @@ class PyObjFromJson(object):
             json_obj.children[0].name
     '''
     def __init__(self, data):
-        for name, value in data.iteritems():
+        for name, value in data.items():
             setattr(self, name, self._wrap(value))
 
     def _wrap(self, value):
@@ -216,5 +214,5 @@ def JSONImplementedType(json_obj, obj_types):
 
 def PyClassFromName(fully_qualified_name):
     name, scope = FQNameToNameAndScope(fully_qualified_name)
-    my_module = __import__(scope, globals(), locals(), [str(name)], -1)
+    my_module = __import__(scope, globals(), locals(), [str(name)], 0)
     return getattr(my_module, name)

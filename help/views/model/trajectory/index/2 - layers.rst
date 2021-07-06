@@ -4,7 +4,7 @@
 Layers
 ^^^^^^^^^^
 
-The **Layers** tab on the right side of the window allows you to show or hide information on the trajectory map.
+The **Layers** tab on the right side of the window allows you to show or hide the layers panel. This panel allows you to select what layers are displayed as well as customize the information presented.
 
 Imagery
 *******
@@ -27,7 +27,7 @@ Toggle on or off the model *particles* or the *spill location* checkboxes or edi
 	* Toggle on or off the Particles or the Spill Location checkboxes 
 	* Particle size- adjust the model particle size
 	* Display- choose to display an oil parameter (e.g. mass, surface concentration, age, viscosity or depth)
-	* Preset Scale- choose to display a scale that is “Response Relevant” (i.e. light, medium or heavy degree of oiling) or “Biologically Relevant” (i.e. light, medium or high oil particle size)
+	* Preset Scale- choose to display a scale that is "Response Relevant" (i.e. light, medium or heavy degree of oiling) or "Biologically Relevant" (i.e. light, medium or high oil particle size)
 	* Color map: indicate the selected oil parameter function to be discrete or continuous
 	* Color scheme: select the color scheme of the oil parameter from a series of colors (e.g. greys, reds, blues)
 	* Add/remove buttons add/remove levels of the selected oil parameter

@@ -1,43 +1,38 @@
 # These are software packages necessary to run the WebGnomeAPI web server.
-# The format of this file should be compatible with either conda or pip,
+# This file is designed for use with conda:
+#
 # so these packages can be installed with the commands:
 #
 #     $ conda install --file conda_requirements.txt
-#       -- or --
+#
+# many of the requirements are also available via pip, but they may
+# have slightly different names, but you can give it a try:
+#
 #     $ pip install -r conda_requirements.txt
 #
-# However, we are mostly testing useing conda (and the conda-forge repo), so
-# all bets are off with pip.
+# All required packages should be available on the conda-forge channel
 
-# In addition to this list of packages, there is a file separate from
-# conda_requirements.txt called pip_requirements.txt.  This file contains
-# a list of packages that are not found in any of the main conda channel
-# repositories, so they are pip installable only.
-#
-# So after the previous step, one would normally do the following:
-#
-#     $ pip install --no-deps -r requirements.txt
+python=3.8*
 
-
-python=2.7.*
 # numpy is not strictly needed by the API, but is by gnome, etc,
 # and adding it helps keep conda from trying to up- or down-grade it.
-numpy=1.16.*
+numpy
 
-pyramid>=1.9
-repoze.lru  # required by Pyramid, but not brought in for some reason :-(
+pyramid>=1.10.1,<2
+# repoze.lru  # required by Pyramid, but not brought in for some reason :-(
 paste
 pastedeploy>=2.0
+pyramid_log
+pyramid_redis_sessions
 cornice>=3.4
 ujson
 docutils
-pytest
-webtest>=2.0
 htmlmin
 jsmin
 
 pycparser
 gevent
+python-socketio
 gevent-websocket
 
 redis-py
@@ -45,3 +40,6 @@ redis-py
 # uncomment is you want to use a conda installed version
 # redis
 
+# for testing:
+pytest
+webtest>=2.0

@@ -17,7 +17,7 @@ class LoggerNamespace(BaseNamespace):
         self.sess_hash = self.request.session_hash
 
     def recv_connect(self):
-        print "CONN LOGGER " + self.sess_hash
+        print("CONN LOGGER " + self.sess_hash)
         self.emit("connected")
 
         overall_logger = logging.root
@@ -74,5 +74,5 @@ class LoggerNamespace(BaseNamespace):
             existing_handler.filters[0].filter = gen_emit_msg(self.sess_hash)
 
     def on_start_logger(self):
-        print "Starting logger greenlet"
+        print("Starting logger greenlet")
         self.emit("logger_started")
