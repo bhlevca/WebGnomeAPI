@@ -69,7 +69,7 @@ In order to run webgnomeapi, you need a redis server running first. redis can be
 
 Once redis is running, you should be able to run the tests with::
 
-  py.test webgnome_api/tests
+  pytest webgnome_api/tests
 
 
 Running the Server

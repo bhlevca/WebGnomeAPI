@@ -25,3 +25,4 @@ node_modules/
 /webgnome_api.egg-info
 /webgnome_api/tests/models/session
 /save_files
+/location_files/*/*/version.txt
