@@ -100,7 +100,7 @@ class WebgnomeNamespace(socketio.Namespace):
 
     def on_model_halt(self, sid):
         with self.session(sid) as sock_session:
-            log.debug('halting {0}'.format(sock_session['sess_hash']))
+            log.debug('halting {0}'.format(sock_session['session_hash']))
             sock_session['lock'].clear()
 
     def on_model_kill(self, sid):  # kill signal from client
