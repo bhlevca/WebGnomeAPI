@@ -6,13 +6,11 @@ Layers
 
 The **Layers** tab on the right side of the window allows you to show or hide the layers panel. This panel allows you to select what layers are displayed as well as customize the information presented.
 
-Imagery
-*******
+**Imagery**
 
 Background maps or basemaps including NOAA Navigational Charts, Bing Maps Aerial (satellite imagery), Open Street Map or no imagery can be selected from this panel.
 
-Model Map
-**********
+**Model Map**
 
 Information on the *Model Map* can be toggled on and off using the following checkboxes in this panel:
   	* Coastlines- indicates the polygon of the coast in which a spill can impact
@@ -20,8 +18,7 @@ Information on the *Model Map* can be toggled on and off using the following che
    	* Map Bounds- once particles leave the map boundaries they are no longer tracked
    	* Graticule- displays the latitude and longitude grid on the map
 
-Spills
-*******
+**Spills**
 
 Toggle on or off the model *particles* or the *spill location* checkboxes or edit layer properties for the spill using the three dots button. The layer properties have more of the following options under Spill Appearance:
 	* Toggle on or off the Particles or the Spill Location checkboxes 
@@ -34,8 +31,8 @@ Toggle on or off the model *particles* or the *spill location* checkboxes or edi
 
 You can also reset your changes back to default settings with the Reset to Default button. 
 
-Environmental Data
-******************
+**Environmental Data**
+
 
 Toggle on or off the Tidal Currents or Offshore Currents and associated grids using the checkboxes. You can also edit the Tidal Currents or Offshore Currents Appearance by adjusting their arrow (e.g. color, alpha or scale) or grid (e.g. color or alpha) 
 

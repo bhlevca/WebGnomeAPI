@@ -91,7 +91,7 @@ class PyGnomeSchemaTweenFactory(object):
                 request.environ['CONTENT_TYPE'][:16] == 'application/json' and
                 request.body):
             json_request = ujson.loads(request.body)
-            json_request = self.sanitizeJSON(json_request)
+            #json_request = self.sanitizeJSON(json_request)
 
             self.add_json_key(json_request)
             self.fix_filename_attrs(request, json_request)
