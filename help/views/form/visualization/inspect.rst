@@ -1,1 +1,0 @@
-Coming soon - this is for spill visualization AND environmental data properties. We may want to separate them.

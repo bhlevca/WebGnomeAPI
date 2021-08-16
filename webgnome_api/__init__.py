@@ -130,7 +130,7 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
-        cleanup_dir = os.path.join(session_dir, msg['data'])
+        cleanup_dir = os.path.join(str(session_dir), str(msg['data']))
 
         try:
             shutil.rmtree(cleanup_dir)

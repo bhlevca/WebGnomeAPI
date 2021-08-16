@@ -612,8 +612,8 @@ class IceInfoTests(FunctionalTestBase):
                                                     }],
                                      },
                     'release': {'obj_type': ('gnome.spill.release'
-                                             '.SpatialRelease'),
-                                'name': 'SpatialRelease',
+                                             '.Release'),
+                                'name': 'Release',
                                 'release_time': '2015-05-14T00:00:00',
                                 'custom_positions': [(-127.1, 47.93, 0.0),
                                                    (-127.033, 47.948, 0.0),

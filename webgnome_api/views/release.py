@@ -43,13 +43,15 @@ from cornice import Service
 release = Service(name='release', path='/release*obj_id',
                   description="Release API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.release.PointLineRelease',
+implemented_types = ('gnome.spill.release.Release',
+                     'gnome.spill.release.PointLineRelease',
                      'gnome.spill.release.SpatialRelease',
+                     'gnome.spill.release.NESDISRelease',
                      'gnome.spill.release.VerticalPlumeRelease',
                      )
 
 log = logging.getLogger(__name__)
-geojson_types = ('gnome.spill.release.SpatialRelease',)
+geojson_types = ('gnome.spill.release.SpatialRelease', 'gnome.spill.release.NESDISRelease')
 
 @release.get()
 def get_release(request):
@@ -85,34 +87,6 @@ def update_release(request):
     '''Updates a Gnome Release object.'''
     return update_object(request, implemented_types)
 
-def get_start_positions(request):
-    '''
-        Outputs combined SpatialRelease start positions
-    '''
-
-    log_prefix = 'req({0}): get_start_positions():'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    session_lock = acquire_session_lock(request)
-    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
-             .format(log_prefix, id(session_lock), current_thread().ident))
-    try:
-        obj_id = request.matchdict.get('obj_id')[0]
-        obj = get_session_object(obj_id, request)
-
-        if obj is not None:
-            pos = obj.get_start_positions()
-            return zlib.compress(pos.astype(np.float32).tobytes())
-        else:
-            exc = cors_exception(request, HTTPNotFound)
-            raise exc
-    finally:
-        session_lock.release()
-        log.info('  {} session lock released (sess:{}, thr_id: {})'
-                 .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
-
 def get_polygons(request):
     '''
         Outputs the SpatialRelease's Polygons in binary format
@@ -127,7 +101,7 @@ def get_polygons(request):
         obj_id = request.matchdict.get('obj_id')[0]
         obj = get_session_object(obj_id, request)
 
-        if obj is not None and obj.obj_type == 'gnome.spill.release.SpatialRelease':
+        if obj is not None and obj.obj_type in geojson_types:
             lengths, lines = obj.get_polygons()
             lines_bytes = b''.join([l.tobytes() for l in lines])
 
@@ -139,8 +113,7 @@ def get_polygons(request):
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
                  .format(log_prefix, id(session_lock), current_thread().ident))
-
-    log.info('<<' + log_prefix)
+        log.info('<<' + log_prefix)
 
 def get_metadata(request):
     log_prefix = 'req({0}): get_metadata():'.format(id(request))

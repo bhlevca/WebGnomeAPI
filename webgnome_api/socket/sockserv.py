@@ -23,9 +23,12 @@ class WebgnomeSocketioServer(socketio.Server):
                  **kwargs):
         self.app_settings = app_settings
         self.app = api_app
+        cors_origins = api_app.registry.settings['cors_policy.origins'].split('\n')
+        if '*' in cors_origins:
+            cors_origins = '*' #because ['*'] does not work...
         super(WebgnomeSocketioServer, self).__init__(
             engineio_logger=False,
-            cors_allowed_origins='*',
+            cors_allowed_origins=cors_origins,
             **kwargs
             )
 
@@ -97,7 +100,7 @@ class WebgnomeNamespace(socketio.Namespace):
 
     def on_model_halt(self, sid):
         with self.session(sid) as sock_session:
-            log.debug('halting {0}'.format(sock_session['sess_hash']))
+            log.debug('halting {0}'.format(sock_session['session_hash']))
             sock_session['lock'].clear()
 
     def on_model_kill(self, sid):  # kill signal from client
