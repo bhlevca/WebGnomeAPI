@@ -64,7 +64,7 @@ def upload_substance(request):
     file_list = request.POST.pop('file_list')
     file_list = ujson.loads(file_list)
     name = request.POST.pop('name')
-    file_name = file_list
+    file_name = file_list[0]
 
     log.info('  {} file_name: {}, name: {}'
              .format(log_prefix, file_name, name))
