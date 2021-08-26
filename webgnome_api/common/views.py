@@ -183,6 +183,14 @@ def get_specifications(request, implemented_types):
     return specs
 
 
+def delete_object(request):
+    #INCOMPLETE DO NOT USE
+    '''Deletes a Gnome object from both the active model and object registry'''
+    log_prefix = 'req({0}): delete_object():'.format(id(request))
+    log.info('>>' + log_prefix)
+
+
+
 def create_object(request, implemented_types):
     '''Creates a Gnome object.'''
     log_prefix = 'req({0}): create_object():'.format(id(request))
