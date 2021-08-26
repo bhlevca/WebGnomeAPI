@@ -178,3 +178,18 @@ def update_model(request):
 
     log.info('<<' + log_prefix)
     return ret
+
+@model.delete()
+def delete_object(request):
+    #THIS IS INCOMPLETE DO NOT USE
+    #Deletes the object specified by the 'id' in the request.
+    #Removes all references to the object in the active model and all component objects, using recursive search
+    #Also removes object pool references, and sets the name to signify the object is deleted
+    log_prefix = 'req({0}): delete_object():'.format(id(request))
+    log.info('>>' + log_prefix)
+    session_lock = acquire_session_lock(request)
+    obj_id = obj_id_from_req_payload(json_request)
+    if obj_id:
+        active_model = get_session_object(obj_id, request)
+    else:
+        raise cors_exception(request, HTTPBadRequest, explanation='Deletion target not found: {}'.format(obj_id))
