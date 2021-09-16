@@ -97,6 +97,13 @@ def upload_mover(request):
     file_list = ujson.loads(file_list)
     name = request.POST['name']
     file_name = file_list
+    
+    
+    # This enables a time shift for gridded movers. This isn't super awesome here, 
+    # b/c this route is also used for loading point winds. In that case the client 
+    # just passes in a 0 value for tshift. More robust support at the environment level
+    # in pyGNOME would be better.
+    
     tshift = int(request.POST['tshift'])
     if tshift != 0:
         for f in file_list:
