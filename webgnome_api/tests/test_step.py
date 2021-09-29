@@ -737,7 +737,7 @@ class StepTest(FunctionalTestBase):
         # So what do we still need?
         # - we need a spill
         print('\n\ndefining our spill data')
-        substance = {"obj_type": 'gnome.spill.substance.GnomeOil',
+        substance = {"obj_type": 'gnome.spill.gnome_oil.GnomeOil',
                      "initializers": [{"windage_range": [0.01, 0.04],
                                        "obj_type": 'gnome.spill.initializers.InitWindages',
                                        "windage_persist": 900}]
@@ -940,7 +940,7 @@ class StepTest(FunctionalTestBase):
         # So what do we still need?
         # - we need a spill
         print('\n\ndefining our spill data')
-        substance = {"obj_type": "gnome.spill.substance.GnomeOil",
+        substance = {"obj_type": "gnome.spill.gnome_oil.GnomeOil",
                      "initializers": [{"windage_range": [0.01, 0.04],
                                        "obj_type": "gnome.spill.initializers.InitWindages",
                                        "windage_persist": 900}]

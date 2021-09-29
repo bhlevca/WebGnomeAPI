@@ -27,11 +27,6 @@ Install the requirements::
 
   conda install --file conda_requirements.txt
 
-Not quite everything is available as conda packages, so you need to install a few more with pip::
-
-    pip install -r pip_requirements.txt
-
-Should do it.
 
 To run the API, you also need a redis server. If you have one installed from a another source, that will work fine. If not, then you can use conda to get it::
 
@@ -43,7 +38,8 @@ pip
 
 In theory, you can install everything webgnomeapi needs with pip, except py_gnome and its dependencies. You can give that a try with::
 
-    pip install -r conda_requirements.txt -r pip_requirements.txt
+    pip install -r conda_requirements.txt
+
 
 Installing the server
 ---------------------

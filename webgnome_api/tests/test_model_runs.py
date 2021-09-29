@@ -25,7 +25,7 @@ class ModelRunTest(FunctionalTestBase):
                               'end_position': [-72.419992, 41.202120, 0.0],
                               'start_position': [-72.419992, 41.202120, 0.0]
                               },
-                  'substance': {'obj_type': ('gnome.spill.substance.GnomeOil'),
+                  'substance': {'obj_type': ('gnome.spill.gnome_oil.GnomeOil'),
                                 'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
                                                   'windage_range': [0.01,
                                                                     0.04],

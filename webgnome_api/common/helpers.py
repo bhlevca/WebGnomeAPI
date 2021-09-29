@@ -33,7 +33,7 @@ def update_savefile(file_path, request):
             }
         else:
             substance = {
-                "obj_type": "gnome.spill.substance.GnomeOil", 
+                "obj_type": "gnome.spill.gnome_oil.GnomeOil",
                 "name": et_json.get('substance', 'Unknown Oil'),  
                 "initializers": et_json.get('initializers', []),
                 "is_weatherable": True,

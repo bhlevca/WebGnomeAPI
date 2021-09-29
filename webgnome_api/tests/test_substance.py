@@ -13,7 +13,7 @@ class SubstanceBase(FunctionalTestBase):
                  'windage_persist': 900,
                  }
 
-    req_data = {'obj_type': 'gnome.spill.substance.GnomeOil',
+    req_data = {'obj_type': 'gnome.spill.gnome_oil.GnomeOil',
                 'initializers': None,
                 'name': 'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)'
                 }
