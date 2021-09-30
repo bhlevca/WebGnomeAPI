@@ -50,6 +50,7 @@ def update_substance(request):
     '''Updates a Gnome Substance object.'''
     return update_object(request, implemented_types)
 
+
 @view_config(route_name='substance_upload', request_method='OPTIONS')
 def substance_upload_options(request):
     return cors_response(request, request.response)
