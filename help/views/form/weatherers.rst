@@ -1,6 +1,8 @@
 .. keywords
    weathering, evaporation, dispersion, emulsification
    
-When setting up a model, WebGNOME will try to automatically determine if sufficient information has been added in order to compute weathering. If these conditions are met, weatherers will automatically be added and made active. To enable weathering, the model setup requires: a spill with an oil selected from the database, wind, and water properties.  
+If the substance is specified to be an oil in the spill form, WebGNOME will automatically turn on the weathering algorithms. In order to run with weathering algorithms, the model setup also requires wind data and water properties be specified. If the setup is not complete, a "weathering invalid" notification will appear in the Weathering panel.  
 
-If "Manual Mode" is selected for Weatherers, the model will no longer automatically turn weathering on/off as the setup changes.
+Individual weatherers can be toggled on/off. This is not a typical usage but may be informative for determining the net effects of individual processes. If individual weathering processes are toggled on/off the weathering will be in "manual" mode and will preserve the users on/off settings even if the oil is changed. A lock icon will appear on the panel. To revert from manual mode, click this icon.
+
+If multiple winds are added to a model, only one will be used for weathering. Typically, the first one  in the list. The name of the wind data being used for the weathering algorithms is displayed in the panel for reference.

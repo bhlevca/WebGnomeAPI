@@ -13,6 +13,8 @@ In idealized cases, for example,
 if you are only interested in the weathering of the oil (the oil budget), then you can choose an 
 **Infinite Ocean** or **Parameterized Shoreline**.
 
+To generate a map for a region of interest, choose the **Custom Shoreline** option.  This will access shoreline data from publicly available sources including the Global Self-consistent, Hierarchical, High-resolution Shoreline (GSHHS) database.
+
 .. |location_link| raw:: html
 
    <a href="http://gnome.orr.noaa.gov/goods" target="_blank">the GNOME Data Server (GOODS)</a>
