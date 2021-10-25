@@ -40,7 +40,7 @@ gevent-websocket
 redis-py
 # we need the redis server to manage sessions
 # uncomment is you want to use a conda installed version
-# redis
+redis
 
 # for testing:
 pytest
