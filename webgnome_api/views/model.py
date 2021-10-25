@@ -2,6 +2,10 @@
 Views for the Model object.
 """
 import logging
+import subprocess
+import os
+import shutil
+import gnome.scripting as gs
 from threading import current_thread
 
 import ujson
@@ -15,7 +19,10 @@ from cornice import Service
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
                                        get_object,
-                                       web_ser_opts)
+                                       web_ser_opts,
+                                       cors_response,
+                                       gen_unique_filename,
+                                       switch_to_existing_session)
 from webgnome_api.common.common_object import (CreateObject,
                                                UpdateObject,
                                                obj_id_from_url,
@@ -34,14 +41,217 @@ from webgnome_api.common.helpers import JSONImplementsOneOf
 
 from gnome.model import Model
 
+from ..common.system_resources import (write_to_file)
+from ..common.common_object import (get_session_dir,
+                                    get_persistent_dir)
+from pyramid.response import Response
+from webgnome_api.views.mover import (create_mover)
+
+
 
 log = logging.getLogger(__name__)
 
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
 
+mikehd = Service(name='mikehd', path='/mikehd', description="MIKE HD API",
+                cors_policy=cors_policy)
+
+mikehdnetcdf = Service(name='mikehdnetcdf', path='/mikehdnetcdf', description="MIKE HD API",
+                cors_policy=cors_policy)
+
 implemented_types = ('gnome.model.Model',
                      )
+
+def create_mike_hd_config(request):
+    """
+    Create MIKE HD Model Workflow Config file
+
+    Parameters
+    ----------
+    request: web request
+    
+    """
+    #get model
+    my_model = get_active_model(request)
+
+    #create the json file with three values
+    config = {}
+    config['SimulationStart'] = my_model.start_time.strftime("%Y-%m-%d %H:%M:%S")
+    config['SimulationEnd'] = (my_model.start_time + my_model.duration).strftime("%Y-%m-%d %H:%M:%S")
+    config['LakeName'] = my_model.lake 
+
+    config_path = r'C:\temp\jsonconfig'
+    if not os.path.exists(config_path):
+        os.makedirs(config_path)
+    with open(os.path.join(config_path, 'Config.json'), 'w') as f:
+        f.write(ujson.dumps(config)) 
+
+mike_hd_status_file = r'C:\temp\webgnome_mike_hd_status.txt'
+
+def update_hd_status_file(code):
+    """
+    Update MIKE HD model status with given code
+    
+    Parameters
+    ----------
+    code: the MIKE HD model status code
+    1 - model is running
+    0 - model runs successfully
+    -1 - model runs with error 
+    -2 - status file doesn't exist
+
+    """
+    with open(mike_hd_status_file, 'w') as f:
+        f.write(str(code))    
+
+def get_hd_status():
+    """
+    Read MIKE HD model status code
+
+    Returns
+    -------
+    code: the MIKE HD model status code
+    1 - model is running
+    0 - model runs successfully
+    -1 - model runs with error 
+    -2 - status file doesn't exist   
+    
+    """
+    if os.path.exists(mike_hd_status_file) and os.path.isfile(mike_hd_status_file):
+        with open(mike_hd_status_file, 'r') as f:
+            try:           
+                return int(f.read())
+            except Exception:
+                return -1
+    else:
+        return -2   
+
+def run_hd():
+    """
+    Trigger HD Model Run 
+
+    Returns
+    -------
+    0: Model Started
+    1: Model is running
+    2: Can't find WebGNOME_DIR in Environment Variables
+    3: Can't the WorkflowExecuter or Workflow JSON file
+    
+    """
+    if get_hd_status() == 1:
+        return 1, "One model is running. Please wait."
+
+    ev_webgnome_dir = 'WebGNOME_DIR'
+    if ev_webgnome_dir in os.environ:
+        webgnome_dir = os.environ[ev_webgnome_dir]
+
+        wf_designer = os.path.join(webgnome_dir, "designer", "DHI.WorkflowExecuter.exe")
+        wf = os.path.join(webgnome_dir, "workflows", "webgnome_workflows.json")
+        if os.path.exists(wf_designer) and os.path.exists(wf):
+            cmd = f'"{wf_designer}" -run local -filename "{wf}" -workflowid "Prepare and Run HD Model"'
+            update_hd_status_file(1)
+            subprocess.Popen(cmd)
+            return 0, "Model Started"
+        else:
+            return 3, "Can't the WorkflowExecuter or Workflow JSON file"
+    else:
+        return 2, "Can't find WebGNOME_DIR in Environment Variables"
+
+def copy_netcdf(request):
+    """
+    Copy the resulting NetCDF file to the session folder
+
+    Parameters
+    ----------
+    request: web request
+
+    Returns
+    -------
+    filename: the file name of the copied netcdf file
+    file_path: the file pat of the copied netcdf file
+    
+    
+    Remarks
+    -------
+    borrowed from upload_manager
+
+    """
+    netcdf_dir = r"C:\temp\HD Model Setup\Current\Results\netCDF"
+    if os.path.isdir(netcdf_dir) and os.path.exists(netcdf_dir):
+        nc_files = [x for x in os.listdir(netcdf_dir) if ".nc" in x]
+        if len(nc_files) > 0:
+            fn = nc_files[0]
+            input_file = os.path.join(netcdf_dir,fn)
+            upload_dir = os.path.relpath(get_session_dir(request))
+            file_name, unique_name = gen_unique_filename(fn, upload_dir)
+            file_path = os.path.join(upload_dir, unique_name)
+            write_to_file(input_file, file_path)
+
+            return unique_name, file_path
+        else:
+            return "", ""
+
+    return "",""
+   
+
+@mikehd.get()
+def run_mikehd(request):
+    '''
+        run mike hd model
+    '''   
+    create_mike_hd_config(request)
+    code, drescription = run_hd()
+    return cors_response(request, Response(ujson.dumps({'code':code, 'description': drescription}))) 
+
+@mikehdnetcdf.post()
+def get_mikehd_netcdf(request):   
+    """
+    Create a new mover with MIKE HD Model NetCDF file
+    
+    """
+    #this is important to allow change to existing session
+    switch_to_existing_session(request)
+
+    #check model status
+    status = get_hd_status()
+    if status == 1 or status == -1:
+        return cors_response(request, Response(ujson.dumps({'error_code':status})))
+
+    #copy netcdf to session folder
+    file_name, filepath = copy_netcdf(request)
+
+    #create the mover
+    #borrow from upload_mover
+    if len(file_name) > 0 and os.path.exists(filepath):
+        mover_type = 'gnome.movers.py_current_movers.PyCurrentMover'
+        name = 'MIKE HD'
+        basic_json = {'obj_type': mover_type,
+                    'filename': filepath,
+                    'name': name}
+
+        env_obj_base_json = {'obj_type': 'temp',
+                            'name': name,
+                            'data_file': filepath,
+                            'grid_file': filepath,
+                            'grid': {'obj_type': ('gnome.environment.'
+                                                'gridded_objects_base.PyGrid'),
+                                    'filename': filepath}
+                            }
+
+        if ('PyCurrentMover' in mover_type):
+            env_obj_base_json['obj_type'] = ('gnome.environment'
+                                            '.environment_objects.GridCurrent')
+            basic_json['current'] = env_obj_base_json
+        request.body = ujson.dumps(basic_json).encode('utf-8')
+
+        mover_obj = create_mover(request)
+        resp = Response(ujson.dumps(mover_obj))
+
+        return cors_response(request, resp)
+    else:
+        #netcdf file is not ready
+        return cors_response(request, Response(ujson.dumps({'error_code':0})))
 
 
 @model.get()
