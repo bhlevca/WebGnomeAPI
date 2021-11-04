@@ -18,6 +18,8 @@ python=3.8*
 # and adding it helps keep conda from trying to up- or down-grade it.
 numpy
 
+regex
+awesome-slugify
 pyramid>=1.10.1,<2
 # repoze.lru  # required by Pyramid, but not brought in for some reason :-(
 paste

@@ -3,8 +3,14 @@ Functional tests for the Gnome Location object Web API
 """
 import os
 import zipfile
+from pathlib import Path
 
 from .base import FunctionalTestBase
+
+
+TEST_DATA_DIR = Path("models")
+TEST_SAVEFILE = str(TEST_DATA_DIR / "long_island_sound.gnome")
+TEST_UPLOAD_SAVEFILE = str(TEST_DATA_DIR / "SaveModel.gnome")
 
 
 class LoadModelTest(FunctionalTestBase):
@@ -20,7 +26,7 @@ class LoadModelTest(FunctionalTestBase):
             assert model['Model'][c] is None
 
         field_name = 'new_model'
-        file_name = 'models/Model.zip'
+        file_name = TEST_SAVEFILE
 
         self.testapp.post('/upload', {'session': '1234'},
                           upload_files=[(field_name, file_name,)]
@@ -36,8 +42,8 @@ class LoadModelTest(FunctionalTestBase):
     def test_file_download(self):
         # first we load the model from our zipfile.
         field_name = 'new_model'
-        test_file = 'models/Model.zip'
-        save_file = 'SaveModel.zip'
+        test_file = TEST_SAVEFILE
+        save_file = TEST_UPLOAD_SAVEFILE
 
         resp = self.testapp.post_json('/session')
         req_session = resp.json_body['id']

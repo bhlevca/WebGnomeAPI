@@ -1,11 +1,15 @@
 """
 Functional tests for the Gnome Location object Web API
 """
+
+from gnome.spill.gnome_oil import GnomeOil
+
 import pytest
 
 from .base import FunctionalTestBase
 
 from pprint import PrettyPrinter
+
 pp = PrettyPrinter(indent=2, width=120)
 
 
@@ -13,78 +17,87 @@ class ModelRunTest(FunctionalTestBase):
     '''
         Tests out a Model run with the WebGnome API
     '''
-    spill_data = {'obj_type': 'gnome.spill.spill.Spill',
-                  'name': 'What a Name',
-                  'on': True,
-                  'release': {'obj_type': ('gnome.spill.release'
-                                           '.PointLineRelease'),
-                              'num_elements': 1000,
-                              'release_time': '2014-08-06T08:00:00',
-                              'end_release_time': '2014-08-06T08:00:00',
-                              'start_time_invalid': False,
-                              'end_position': [-72.419992, 41.202120, 0.0],
-                              'start_position': [-72.419992, 41.202120, 0.0]
-                              },
-                  'substance': {'obj_type': ('gnome.spill.substance.GnomeOil'),
-                                'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
-                                                  'windage_range': [0.01,
-                                                                    0.04],
-                                                  'windage_persist': 900,
-                                                  }
-                                                  ],
-                                'name': 'ALASKA NORTH SLOPE (MIDDLE PIPELINE, 1996)',
-                                'standard_density': 876.70384138785619,
-                                },
-                  'amount': 200,
-                  'units': 'tons'
-                  }
-    renderer_data = {'obj_type': 'gnome.outputters.renderer.Renderer',
-                     'name': 'Renderer',
-                     'output_last_step': True,
-                     'output_zero_step': True,
-                     'draw_ontop': 'forecast',
-                     'filename': 'models/Test.bna',
-                     'images_dir': 'models/images',
-                     'image_size': [800, 600],
-                     'viewport': [[-71.2242987892, 42.1846263908],
-                                  [-70.4146871963, 42.6329573908]]
-                     }
-    geojson_data = {'obj_type': 'gnome.outputters.TrajectoryGeoJsonOutput',
-                    'name': 'GeoJson',
-                    'output_last_step': True,
-                    'output_zero_step': True,
-                    }
+    oil_data = GnomeOil('oil_ans_mp').serialize()
 
-    weathering_out = {'obj_type': ('gnome.outputters.weathering'
-                                   '.WeatheringOutput'),
-                      'name': 'WeatheringOutput',
-                      'output_last_step': True,
-                      'output_zero_step': True
-                      }
+    spill_data = {
+        'obj_type': 'gnome.spill.spill.Spill',
+        'name': 'What a Name',
+        'on': True,
+        'release': {
+            'obj_type': ('gnome.spill.release'
+                         '.PointLineRelease'),
+            'num_elements': 1000,
+            'release_time': '2014-08-06T08:00:00',
+            'end_release_time': '2014-08-06T08:00:00',
+            'start_time_invalid': False,
+            'end_position': [-72.419992, 41.202120, 0.0],
+            'start_position': [-72.419992, 41.202120, 0.0]
+        },
+        'substance': oil_data,
+        'amount': 200,
+        'units': 'tons'
+    }
+    renderer_data = {
+        'obj_type':
+            'gnome.outputters.renderer.Renderer',
+        'name':
+            'Renderer',
+        'output_last_step':
+            True,
+        'output_zero_step':
+            True,
+        'draw_ontop':
+            'forecast',
+        'filename':
+            'models/Test.bna',
+        'images_dir':
+            'models/images',
+        'image_size': [800, 600],
+        'viewport': [[-71.2242987892, 42.1846263908],
+                     [-70.4146871963, 42.6329573908]]
+    }
+    geojson_data = {
+        'obj_type': 'gnome.outputters.TrajectoryGeoJsonOutput',
+        'name': 'GeoJson',
+        'output_last_step': True,
+        'output_zero_step': True,
+    }
 
-    evaporate_data = {'obj_type': 'gnome.weatherers.Evaporation',
-                      'name': 'Evaporation',
-                      'wind': {'obj_type': 'gnome.environment.Wind',
-                               'name': 'ConstantWind',
-                               'timeseries': [('2012-11-06T20:10:30',
-                                               (1.0, 0.0))],
-                               'units': 'meter per second'},
-                      'water': {'obj_type': 'gnome.environment.Water',
-                                'temperature': 46,
-                                'salinity': 32,
-                                'sediment': 5,
-                                'wave_height': 0,
-                                'fetch': 0,
-                                'units': {'temperature': 'F',
-                                          'salinity': 'psu',
-                                          'sediment': 'mg/l',
-                                          'wave_height': 'm',
-                                          'fetch': 'm',
-                                          'density': 'kg/m^3',
-                                          'kinematic_viscosity': 'm^2/s'
-                                          }
-                                }
-                      }
+    weathering_out = {
+        'obj_type': ('gnome.outputters.weathering'
+                     '.WeatheringOutput'),
+        'name': 'WeatheringOutput',
+        'output_last_step': True,
+        'output_zero_step': True
+    }
+
+    evaporate_data = {
+        'obj_type': 'gnome.weatherers.Evaporation',
+        'name': 'Evaporation',
+        'wind': {
+            'obj_type': 'gnome.environment.Wind',
+            'name': 'ConstantWind',
+            'timeseries': [('2012-11-06T20:10:30', (1.0, 0.0))],
+            'units': 'meter per second'
+        },
+        'water': {
+            'obj_type': 'gnome.environment.Water',
+            'temperature': 46,
+            'salinity': 32,
+            'sediment': 5,
+            'wave_height': 0,
+            'fetch': 0,
+            'units': {
+                'temperature': 'F',
+                'salinity': 'psu',
+                'sediment': 'mg/l',
+                'wave_height': 'm',
+                'fetch': 'm',
+                'density': 'kg/m^3',
+                'kinematic_viscosity': 'm^2/s'
+            }
+        }
+    }
 
     @pytest.mark.slow
     def test_full_run(self):
@@ -103,7 +116,7 @@ class ModelRunTest(FunctionalTestBase):
         model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
-        print ('model[weatherers]:')
+        print('model[weatherers]:')
         pp.pprint(model1['weatherers'])
 
         # The location file we selected should have:
@@ -134,13 +147,11 @@ class ModelRunTest(FunctionalTestBase):
         # - we need an outputter
         print('test_all_steps(): creating outputter...')
 
-        resp = self.testapp.post_json('/outputter',
-                                      params=self.geojson_data)
+        resp = self.testapp.post_json('/outputter', params=self.geojson_data)
         geojson_out = resp.json_body
         model1['outputters'] = [geojson_out]
 
-        resp1 = self.testapp.post_json('/outputter',
-                                       params=self.weathering_out)
+        resp1 = self.testapp.post_json('/outputter', params=self.weathering_out)
         weathering_out = resp1.json_body
 
         model1['outputters'].append(weathering_out)
@@ -172,7 +183,8 @@ class ModelRunTest(FunctionalTestBase):
                 print(list(step['TrajectoryGeoJsonOutput'][output_key].keys()))
 
                 assert 'features' in step['TrajectoryGeoJsonOutput'][output_key]
-                for f in step['TrajectoryGeoJsonOutput'][output_key]['features']:
+                for f in step['TrajectoryGeoJsonOutput'][output_key][
+                        'features']:
                     print(list(f.keys()))
 
                     assert 'geometry' in f

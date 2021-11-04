@@ -56,6 +56,9 @@ def write_fd_to_file(fd, out_path):
     # Set file to original position so we don't produce any side effects.
     fd.seek(curr_position)
 
+def write_bufread_to_file(bf, out_path):
+    with open(out_path, 'wb') as output_file:
+        output_file.writelines(bf.readlines())
 
 def mkdir(base_path, dir_name, mode=0o775):
     '''

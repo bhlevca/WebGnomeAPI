@@ -205,6 +205,7 @@ def main(global_config, **settings):
 
     config.add_route('mover_upload', '/mover/upload')
 
+    config.add_route('substance_upload', '/substance/upload')
     config.add_route('release_upload', '/release/upload')
 
     config.add_route('environment_upload', '/environment/upload')

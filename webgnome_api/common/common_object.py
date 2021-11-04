@@ -7,6 +7,7 @@ import urllib.request, urllib.error, urllib.parse
 import ujson
 
 import logging
+from collections.abc import Iterable
 
 from .helpers import FQNamesToDict, PyClassFromName
 
@@ -18,6 +19,33 @@ from gnome.gnomeobject import GnomeId
 
 log = logging.getLogger(__name__)
 
+def DeleteObject(id_, all_objects):
+    #THIS IS INCOMPLETE DO NOT USES
+    if id_ is None:
+        raise ValueError('Tried to delete object without an id')
+    if id_ in all_objects:
+        del all_objects[id_]
+
+def recursive_removal(model, id_):
+    sch = model._schema()
+    for c in sch.children:
+        child_obj = getattr(model, c.name)
+        if (hasattr(child_obj, 'id') and hasattr(child_obj, 'obj_type')):
+            #child object is a Gnome object
+            if child_obj.id == id_:
+                model.setattr(c.name, None)
+            else:
+                recursive_removal(child_obj, id_)
+        elif isinstance(child_obj, Iterable) and type(child_obj) is not str:
+            #child object is a list of some kind
+            for i, obj in enumerate(child_obj):
+                if (hasattr(obj, 'id') and hasattr(obj, 'obj_type')):
+                    if obj.id_ == id_:
+                        del child_obj[i] #del or set to None?? Risky??
+                    else:
+                        recursive_removal(obj, id_)
+            
+        
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
