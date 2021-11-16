@@ -30,6 +30,8 @@ from ..common.views import (get_object,
 
 from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
+from netCDF4 import Dataset, num2date, date2num
+import datetime as dt
 
 log = logging.getLogger(__name__)
 
@@ -95,7 +97,18 @@ def upload_mover(request):
     file_list = ujson.loads(file_list)
     name = request.POST['name']
     file_name = file_list
-
+    
+    
+    # This enables a time shift for gridded movers. This isn't super awesome here, 
+    # b/c this route is also used for loading point winds. In that case the client 
+    # just passes in a 0 value for tshift. More robust support at the environment level
+    # in pyGNOME would be better.
+    
+    tshift = int(request.POST['tshift'])
+    if tshift != 0:
+        for f in file_list:
+            shift_time(f, tshift)
+        
     log.info('  {} file_name: {}, name: {}'
              .format(log_prefix, file_name, name))
 
@@ -139,6 +152,47 @@ def upload_mover(request):
 
     log.info('<<{}'.format(log_prefix))
     return cors_response(request, resp)
+
+def shift_time(filename, tshift):
+    '''
+    Shift time by hours in tshift
+    for reference:
+          [[0,'GMT'],
+          [-10,'HST (-10)'],
+          [-9,'AKST (-9)'],
+          [-8,'AKDT (-8)'],
+          [-8,'PST (-8)'],
+          [-7,'PDT (-7)'],
+          [-7,'MST (-7)'],
+          [-6,'MDT (-6)'],       
+          [-6,'CST (-6)'],
+          [-5,'CDT (-5)'],
+          [-5,'EST (-5)'],
+          [-4,'EDT (-4)'],
+          [-3,'ADT (-3)']]
+    '''
+    
+    nc = Dataset(filename,'r+')
+    ncvars = nc.variables
+    tvar = None
+    
+    try:
+        ncvars['time']
+        tvar = 'time'
+    except KeyError:
+        for var in ncvars:
+            try:
+                if ncvars[var].standard_name == 'time':
+                    tvar = var
+            except AttributeError:
+                pass
+    if tvar is not None:
+        t = ncvars[tvar]        
+        offset = dt.timedelta(hours = tshift)
+        oldtime = num2date(t[:],t.units)
+        newtime = date2num(oldtime + offset, t.units)
+        t[:] = newtime
+        nc.close()
 
 
 def get_current_info(request):
