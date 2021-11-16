@@ -209,8 +209,8 @@ def get_version(pkg_name):
 
 setup(name='webgnome_api',
       version=get_version('webgnome_api'),
-      description=('webgnome_api\n'
-                   'Branch: {}\n'
+      description=('webgnome_api'
+                   'Branch: {}'
                    'LastUpdate: {}'
                    .format(branch_name, last_update)),
       long_description=README,
@@ -232,8 +232,8 @@ setup(name='webgnome_api',
       include_package_data=True,
       zip_safe=False,
       test_suite='webgnome_api',
-      entry_points=('[paste.app_factory]\n'
-                    '  main = webgnome_api:main\n'
-                    '[paste.server_factory]\n'
-                    '  srv = webgnome_api:server_factory\n'),
+      entry_points=('[paste.app_factory]'
+                    '  main = webgnome_api:main'
+                    '[paste.server_factory]'
+                    '  srv = webgnome_api:server_factory'),
       )
