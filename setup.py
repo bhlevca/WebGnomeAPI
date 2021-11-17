@@ -209,8 +209,8 @@ def get_version(pkg_name):
 
 setup(name='webgnome_api',
       version=get_version('webgnome_api'),
-      description=('webgnome_api\n'
-                   'Branch: {}\n'
+      description=('webgnome_api'
+                   'Branch: {}'
                    'LastUpdate: {}'
                    .format(branch_name, last_update)),
       long_description=README,
