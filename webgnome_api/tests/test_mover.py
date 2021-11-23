@@ -576,13 +576,13 @@ class IceInfoTests(FunctionalTestBase):
                         'ice_movers': [],
                         }]
 
-    spills_data = [{'obj_type': 'gnome.spill.spill.Spill',
+    spills_data = [{'obj_type': 'gnome.spills.spill.Spill',
                     'name': 'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                    'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                                   'name': 'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                  'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                     'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
@@ -593,25 +593,25 @@ class IceInfoTests(FunctionalTestBase):
                                 'end_release_time': None,
                                 'name': 'PointLineRelease',
                                 'num_elements': 1,
-                                'obj_type': ('gnome.spill.release'
+                                'obj_type': ('gnome.spills.release'
                                              '.PointLineRelease'),
                                 'release_time': '2015-05-14T00:00:00',
                                 'start_position': (-164.01696, 72.921024, 0.0)}
                     },
-                   {'obj_type': 'gnome.spill.spill.Spill',
+                   {'obj_type': 'gnome.spills.spill.Spill',
                     'name': 'Spill',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                    'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                                   'name': 'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                  'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                     'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
                                                                       0.04)
                                                     }],
                                      },
-                    'release': {'obj_type': ('gnome.spill.release'
+                    'release': {'obj_type': ('gnome.spills.release'
                                              '.Release'),
                                 'name': 'Release',
                                 'release_time': '2015-05-14T00:00:00',

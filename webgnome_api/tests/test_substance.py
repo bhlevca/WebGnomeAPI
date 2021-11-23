@@ -14,12 +14,12 @@ class SubstanceBase(FunctionalTestBase):
     '''
         Tests out the Gnome Substance object API
     '''
-    init_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
+    init_data = {'obj_type': 'gnome.spills.initializers.InitWindages',
                  'windage_range': (0.01, 0.04),
                  'windage_persist': 900,
                  }
 
-    req_data = {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+    req_data = {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                 'initializers': None,
                 'name': 'An Example Name',
                 }
@@ -118,7 +118,7 @@ class SubstanceWithRiseVelDistTest(SubstanceBase):
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    init_data = {'obj_type': 'gnome.spill.initializers.InitRiseVelFromDist',
+    init_data = {'obj_type': 'gnome.spills.initializers.InitRiseVelFromDist',
                  'distribution': None
                  }
     fields_to_check = ('id', 'obj_type', 'initializers')

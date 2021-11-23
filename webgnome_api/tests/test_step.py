@@ -6,7 +6,7 @@ import dateutil.parser
 
 import pytest
 
-from gnome.spill.gnome_oil import GnomeOil
+from gnome.spills.gnome_oil import GnomeOil
 
 from .base import FunctionalTestBase
 
@@ -21,12 +21,12 @@ class StepTest(FunctionalTestBase):
     substance_data = GnomeOil('oil_ans_mp').serialize()
 
 
-    spill_data = {'obj_type': 'gnome.spill.spill.Spill',
+    spill_data = {'obj_type': 'gnome.spills.spill.Spill',
                   'name': 'What a Name',
                   'on': True,
                   'amount': 1000,
                   'units': 'kg',
-                  'release': {'obj_type': ('gnome.spill.release'
+                  'release': {'obj_type': ('gnome.spills.release'
                                            '.PointLineRelease'),
                               'num_elements': 1000,
                               'num_released': 84,
@@ -36,8 +36,8 @@ class StepTest(FunctionalTestBase):
                               'end_position': [144.664166, 13.441944, 0.0],
                               'start_position': [144.664166, 13.441944, 0.0],
                               },
-                  'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                  'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                                'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                   'windage_range': [0.01,
                                                                     0.04],
                                                   'windage_persist': 900,
@@ -469,7 +469,7 @@ class StepTest(FunctionalTestBase):
         print('\n\ndefining our spill data')
 
         spill_data = {"release": {"json_": "webapi",
-                                  "obj_type": ("gnome.spill.release"
+                                  "obj_type": ("gnome.spills.release"
                                                ".PointLineRelease"),
                                   "end_position": [-73.83952178907545,
                                                    40.4626050585251, 0],
@@ -482,7 +482,7 @@ class StepTest(FunctionalTestBase):
                                   "num_per_timestep": None,
                                   "end_release_time": "2015-05-15T16:00:00"},
                       "on": True,
-                      "obj_type": "gnome.spill.spill.Spill",
+                      "obj_type": "gnome.spills.spill.Spill",
                       "substance": self.substance_data,
                       "name": "Spill #1",
                       "amount": 2000,
@@ -666,7 +666,7 @@ class StepTest(FunctionalTestBase):
         print('\n\ndefining our spill data')
 
         spill_data = {"release": {"json_": "webapi",
-                                  "obj_type": ("gnome.spill.release"
+                                  "obj_type": ("gnome.spills.release"
                                                ".PointLineRelease"),
                                   "end_position": [-74.0280406367412,
                                                    40.5376381774569, 0],
@@ -679,7 +679,7 @@ class StepTest(FunctionalTestBase):
                                   "num_per_timestep": None,
                                   "end_release_time": start_time.isoformat()},
                       "on": True,
-                      "obj_type": "gnome.spill.spill.Spill",
+                      "obj_type": "gnome.spills.spill.Spill",
                       "substance": self.substance_data,
                       "name": "Spill #1",
                       "amount": 2000,
