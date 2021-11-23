@@ -24,7 +24,7 @@ def update_savefile(file_path, request):
             the load process will use it later to establish references between objects
             '''
             substance = {
-                "obj_type": "gnome.spill.substance.NonWeatheringSubstance", 
+                "obj_type": "gnome.spills.substance.NonWeatheringSubstance", 
                 "name": "NonWeatheringSubstance", 
                 "standard_density": 1000.0, 
                 "initializers": et_json.get('initializers',[]),
@@ -33,7 +33,7 @@ def update_savefile(file_path, request):
             }
         else:
             substance = {
-                "obj_type": "gnome.spill.gnome_oil.GnomeOil",
+                "obj_type": "gnome.spills.gnome_oil.GnomeOil",
                 "name": et_json.get('substance', 'Unknown Oil'),  
                 "initializers": et_json.get('initializers', []),
                 "is_weatherable": True,
@@ -71,7 +71,7 @@ def update_savefile(file_path, request):
                                 if 'element_type' in json_['obj_type'] and element_type_json is None:
                                     element_type_json = (fname, json_)
                                     continue #to skip this file
-                                if 'gnome.spill.spill.Spill' in json_['obj_type']:
+                                if 'gnome.spills.spill.Spill' in json_['obj_type']:
                                     spills.append((fname, json_))
                                     continue
                                 if 'initializers' in json_['obj_type']:

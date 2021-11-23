@@ -43,15 +43,15 @@ from cornice import Service
 release = Service(name='release', path='/release*obj_id',
                   description="Release API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.release.Release',
-                     'gnome.spill.release.PointLineRelease',
-                     'gnome.spill.release.SpatialRelease',
-                     'gnome.spill.release.NESDISRelease',
-                     'gnome.spill.release.VerticalPlumeRelease',
+implemented_types = ('gnome.spills.release.Release',
+                     'gnome.spills.release.PointLineRelease',
+                     'gnome.spills.release.SpatialRelease',
+                     'gnome.spills.release.NESDISRelease',
+                     'gnome.spills.release.VerticalPlumeRelease',
                      )
 
 log = logging.getLogger(__name__)
-geojson_types = ('gnome.spill.release.SpatialRelease', 'gnome.spill.release.NESDISRelease')
+geojson_types = ('gnome.spills.release.SpatialRelease', 'gnome.spills.release.NESDISRelease')
 
 @release.get()
 def get_release(request):

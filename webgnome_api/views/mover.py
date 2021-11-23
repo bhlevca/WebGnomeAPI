@@ -17,7 +17,7 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from cornice import Service
 
-from gnome.movers.current_movers import CurrentMoversBase
+from gnome.movers.c_current_movers import CurrentMoversBase
 from gnome.movers import PyMover
 
 from ..common.views import (get_object,
@@ -42,13 +42,13 @@ implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.wind_movers.WindMover',
                      'gnome.movers.random_movers.RandomMover',
                      'gnome.movers.random_movers.RandomMover3D',
-                     'gnome.movers.current_movers.CatsMover',
-                     'gnome.movers.current_movers.ComponentMover',
-                     'gnome.movers.current_movers.CurrentCycleMover',
+                     'gnome.movers.c_current_movers.CatsMover',
+                     'gnome.movers.c_current_movers.ComponentMover',
+                     'gnome.movers.c_current_movers.CurrentCycleMover',
                      'gnome.movers.py_current_movers.PyCurrentMover',
                      'gnome.movers.py_wind_movers.PyWindMover',
-                     'gnome.movers.current_movers.GridCurrentMover',
-                     'gnome.movers.current_movers.IceMover',
+                     'gnome.movers.c_current_movers.c_GridCurrentMover',
+                     'gnome.movers.c_current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
                      )
 
