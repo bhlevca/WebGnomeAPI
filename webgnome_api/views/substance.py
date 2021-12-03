@@ -28,8 +28,8 @@ log = logging.getLogger(__name__)
 substance = Service(name='substance', path='/substance*obj_id',
                        description="Substance API", cors_policy=cors_policy)
 
-implemented_types = ('gnome.spill.substance.GnomeOil',
-                     'gnome.spill.substance.NonWeatheringSubstance'
+implemented_types = ('gnome.spills.substance.GnomeOil',
+                     'gnome.spills.substance.NonWeatheringSubstance'
                      )
 
 

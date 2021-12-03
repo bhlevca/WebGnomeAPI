@@ -11,7 +11,7 @@ class SpillTests(FunctionalTestBase):
     '''
         Tests out the Gnome Spill object API
     '''
-    rel_req_data = {'obj_type': 'gnome.spill.release.PointLineRelease',
+    rel_req_data = {'obj_type': 'gnome.spills.release.PointLineRelease',
                     'num_elements': 100,
                     'num_released': 0,
                     'release_time': '2014-04-15T13:22:20.930570',
@@ -21,15 +21,15 @@ class SpillTests(FunctionalTestBase):
                     'start_position': (28.0, -78.0, 0.0),
                     }
 
-    init_req_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
+    init_req_data = {'obj_type': 'gnome.spills.initializers.InitWindages',
                      'windage_range': (0.01, 0.04),
                      'windage_persist': 900,
                      }
-    substance_req_data = {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+    substance_req_data = {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                           'initializers': None,
                           }
 
-    req_data = {'obj_type': 'gnome.spill.spill.Spill',
+    req_data = {'obj_type': 'gnome.spills.spill.Spill',
                 'name': 'What a Name',
                 'release': None,
                 'substance': None
@@ -176,10 +176,10 @@ class SpillNestedTests(FunctionalTestBase):
     '''
         Tests out the nested object creation for the Gnome Spill object API
     '''
-    req_data = {'obj_type': 'gnome.spill.spill.Spill',
+    req_data = {'obj_type': 'gnome.spills.spill.Spill',
                 'name': 'What a Name',
                 'on': True,
-                'release': {'obj_type': 'gnome.spill.release.PointLineRelease',
+                'release': {'obj_type': 'gnome.spills.release.PointLineRelease',
                             'num_elements': 1000,
                             'num_released': 84,
                             'release_time': '2013-02-13T09:00:00',
@@ -188,8 +188,8 @@ class SpillNestedTests(FunctionalTestBase):
                             'end_position': [144.664166, 13.441944, 0.0],
                             'start_position': [144.664166, 13.441944, 0.0],
                             },
-                'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                              'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                              'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                 'windage_range': [0.01, 0.04],
                                                 'windage_persist': 900,
                                                 }]

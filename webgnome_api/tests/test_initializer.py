@@ -11,7 +11,7 @@ class InitializerBase(FunctionalTestBase):
     '''
         Tests out the Gnome Initializer object API
     '''
-    req_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
+    req_data = {'obj_type': 'gnome.spills.initializers.InitWindages',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
@@ -92,7 +92,7 @@ class InitializerBase(FunctionalTestBase):
 
 
 class InitWindagesTests(InitializerBase):
-    req_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
+    req_data = {'obj_type': 'gnome.spills.initializers.InitWindages',
                 'windage_range': (0.01, 0.04),
                 'windage_persist': 900,
                 }
@@ -112,7 +112,7 @@ class InitWindagesTests(InitializerBase):
 
 
 class InitMassFromPlumeTest(InitializerBase):
-    req_data = {'obj_type': 'gnome.spill.initializers.InitMassFromPlume',
+    req_data = {'obj_type': 'gnome.spills.initializers.InitMassFromPlume',
                 }
 
 
@@ -124,7 +124,7 @@ class InitRiseVelFromDistTest(InitializerBase):
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    req_data = {'obj_type': 'gnome.spill.initializers.InitRiseVelFromDist',
+    req_data = {'obj_type': 'gnome.spills.initializers.InitRiseVelFromDist',
                 'distribution': None
                 }
     fields_to_check = ('id', 'obj_type', 'distribution')
@@ -188,7 +188,7 @@ class InitRiseVelFromDropletSizeFromDistTest(InitRiseVelFromDistTest):
                  'min_': 0.1,
                  'max_': 0.5,
                  }
-    req_data = {'obj_type': ('gnome.spill.initializers'
+    req_data = {'obj_type': ('gnome.spills.initializers'
                              '.InitRiseVelFromDropletSizeFromDist'),
                 'distribution': None
                 }
