@@ -1,5 +1,5 @@
 {
- "obj_type": "gnome.movers.current_movers.CurrentCycleMover", 
+ "obj_type": "gnome.movers.c_current_movers.CurrentCycleMover", 
  "scale": true, 
  "scale_refpoint": [
   -66.995666, 
