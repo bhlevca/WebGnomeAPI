@@ -6,7 +6,7 @@ from gnome.spills.gnome_oil import GnomeOil
 
 import pytest
 
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
 
@@ -49,9 +49,9 @@ class ModelRunTest(FunctionalTestBase):
         'draw_ontop':
             'forecast',
         'filename':
-            'models/Test.bna',
+            str(MODELS_DIR / 'Test.bna'),
         'images_dir':
-            'models/images',
+            str(MODELS_DIR / 'images'),
         'image_size': [800, 600],
         'viewport': [[-71.2242987892, 42.1846263908],
                      [-70.4146871963, 42.6329573908]]
