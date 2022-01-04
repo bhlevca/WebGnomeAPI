@@ -2,7 +2,14 @@
 Functional tests for the Gnome Environment object Web API
 These include (Wind, Tide, etc.)
 """
+
+from pathlib import Path
+
 from .base import FunctionalTestBase
+
+HERE = Path(__file__).parent
+
+MODELS_DIR = HERE.parent.parent / "models"
 
 
 class WindTests(FunctionalTestBase):
@@ -107,7 +114,7 @@ class TideTests(WindTests):
         Tests out the Gnome Tide object API
     '''
     req_data = {'obj_type': 'gnome.environment.Tide',
-                'filename': 'models/CLISShio.txt',
+                'filename': str(MODELS_DIR / 'CLISShio.txt'),
                 }
 
     def perform_updates(self, json_obj):
