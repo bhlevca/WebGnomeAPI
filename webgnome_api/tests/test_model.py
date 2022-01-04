@@ -5,14 +5,10 @@ Functional tests for the Model Web API
 from pathlib import Path
 
 from gnome.multi_model_broadcast import ModelBroadcaster
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
-
-HERE = Path(__file__).parent
-
-MODELS_DIR = HERE.parent.parent / "models"
 
 
 class ModelTests(FunctionalTestBase):

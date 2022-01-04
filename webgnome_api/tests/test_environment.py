@@ -5,11 +5,7 @@ These include (Wind, Tide, etc.)
 
 from pathlib import Path
 
-from .base import FunctionalTestBase
-
-HERE = Path(__file__).parent
-
-MODELS_DIR = HERE.parent.parent / "models"
+from .base import FunctionalTestBase, MODELS_DIR
 
 
 class WindTests(FunctionalTestBase):

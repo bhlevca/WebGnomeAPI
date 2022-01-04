@@ -6,11 +6,7 @@ from os.path import basename
 import webtest
 import ujson
 
-from .base import FunctionalTestBase
-
-HERE = Path(__file__).parent
-
-MODELS_DIR = HERE.parent.parent / "models"
+from .base import FunctionalTestBase, MODELS_DIR
 
 
 class MapTestBase(FunctionalTestBase):

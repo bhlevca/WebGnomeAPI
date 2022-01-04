@@ -5,15 +5,13 @@ import os
 import zipfile
 from pathlib import Path
 
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 import pytest
 
-HERE = Path(__file__).parent
 
-TEST_DATA_DIR = HERE.parent.parent / "models"
-TEST_SAVEFILE = str(TEST_DATA_DIR / "long_island_sound.gnome")
-TEST_UPLOAD_SAVEFILE = str(TEST_DATA_DIR / "SaveModel.gnome")
+TEST_SAVEFILE = str(MODELS_DIR / "long_island_sound.gnome")
+TEST_UPLOAD_SAVEFILE = str(MODELS_DIR / "SaveModel.gnome")
 
 
 class LoadModelTest(FunctionalTestBase):
