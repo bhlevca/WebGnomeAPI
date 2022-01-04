@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .base import FunctionalTestBase
 
+import pytest
 
 TEST_DATA_DIR = Path("models")
 TEST_SAVEFILE = str(TEST_DATA_DIR / "long_island_sound.gnome")
