@@ -9,14 +9,16 @@ from .base import FunctionalTestBase
 
 import pytest
 
-TEST_DATA_DIR = Path("models")
+HERE = Path(__file__).parent
+
+TEST_DATA_DIR = HERE.parent.parent / "models"
 TEST_SAVEFILE = str(TEST_DATA_DIR / "long_island_sound.gnome")
 TEST_UPLOAD_SAVEFILE = str(TEST_DATA_DIR / "SaveModel.gnome")
 
 
 class LoadModelTest(FunctionalTestBase):
     '''
-        Tests out the Gnome Location object API
+    Tests out the Gnome Location object API
     '''
     def test_file_upload(self):
         resp = self.testapp.get('/model')

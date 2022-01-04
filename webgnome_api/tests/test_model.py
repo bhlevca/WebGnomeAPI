@@ -1,11 +1,18 @@
 """
 Functional tests for the Model Web API
 """
+
+from pathlib import Path
+
 from gnome.multi_model_broadcast import ModelBroadcaster
 from .base import FunctionalTestBase
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
+
+HERE = Path(__file__).parent
+
+MODELS_DIR = HERE.parent.parent / "models"
 
 
 class ModelTests(FunctionalTestBase):
@@ -169,7 +176,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
-                           'filename': 'models/Test.bna',
+                           'filename': str(MODELS_DIR / 'Test.bna'),
                            'refloat_halflife': 1.0
                            }
 
@@ -182,7 +189,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
-                           'filename': 'models/Test.bna',
+                           'filename': str(MODELS_DIR / 'Test.bna'),
                            'refloat_halflife': 1.0
                            }
 
@@ -500,11 +507,11 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_sparse_cats_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': 'gnome.movers.c_current_movers.CatsMover',
-                               'filename': 'models/tidesWAC.CUR',
+                               'filename': str(MODELS_DIR / 'tidesWAC.CUR'),
                                'scale': True,
                                'scale_value': 1.0,
                                'tide': {'obj_type': 'gnome.environment.Tide',
-                                        'filename': 'models/CLISShio.txt',
+                                        'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                         },
                                }]
 
@@ -672,8 +679,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'map_filename': ('models/Test.bna'),
-                                   'output_dir': ('models/images'),
+                                   'map_filename': str(MODELS_DIR / 'Test.bna'),
+                                   'output_dir': str(MODELS_DIR / 'images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
@@ -702,8 +709,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'map_filename': ('models/Test.bna'),
-                                   'output_dir': ('models/images'),
+                                   'map_filename': str(MODELS_DIR / 'Test.bna'),
+                                   'output_dir': str(MODELS_DIR / 'images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
