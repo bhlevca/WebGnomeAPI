@@ -4,21 +4,14 @@ Functional tests for the Gnome Distribution object Web API
 FIXME:
 Are we even using these anymore?
 
-In any case, we sholdn't need to test each one separately
+In any case, we shouldn't need to test each one separately
 -- the API shouldn't be doing anything special for each object type.
-
-These are now getting skipped:
-
-They were breaking other tests (test_mover.PyMoverTests.test_get_valid_id)
-
-Which means that the test are not properly decoupled, but for now this helped
 """
 
 from .base import FunctionalTestBase
 
 import pytest
 
-pytestmark = pytest.mark.skipif("True", "These seem to break other tests -- soemthign with the obj_id?")
 
 class DistributionBase(FunctionalTestBase):
     '''
