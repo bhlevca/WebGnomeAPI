@@ -5,6 +5,8 @@ import os
 import zipfile
 from pathlib import Path
 
+from gnome.model import Model
+
 from .base import FunctionalTestBase, MODELS_DIR
 
 import pytest
@@ -12,6 +14,26 @@ import pytest
 
 TEST_SAVEFILE = str(MODELS_DIR / "long_island_sound.gnome")
 TEST_UPLOAD_SAVEFILE = str(MODELS_DIR / "SaveModel.gnome")
+
+
+def compare_savefiles(sfile1, sfile2):
+    """
+    Compare two save files to see if they are the same
+
+    Used for the test of loading a save file
+
+    This is a bit tricky as the unique ids will NOT be the same
+
+    But the easist way to do it is to load them both into gnome,
+    and then check if the models are equal
+
+    Maybe something more complex in the future?
+    """
+    model1 = Model.load_savefile(sfile1)
+    model2 = Model.load_savefile(sfile2)
+
+    return model1 == model2
+
 
 
 class LoadModelTest(FunctionalTestBase):
@@ -39,8 +61,7 @@ class LoadModelTest(FunctionalTestBase):
         for c in ('environment', 'map',
                   'movers', 'outputters', 'spills', 'weatherers'):
             assert model[c] is not None
-            
-    @pytest.mark.xfail
+
     def test_file_download(self):
         # first we load the model from our zipfile.
         field_name = 'new_model'
@@ -57,8 +78,8 @@ class LoadModelTest(FunctionalTestBase):
         resp = self.testapp.get('/model')
         model = resp.json_body
 
-        for c in ('environment', 'map',
-                  'movers', 'outputters', 'spills', 'weatherers'):
+        for c in ('environment', 'map', 'movers', 'outputters',
+                  'spills', 'weatherers'):
             assert model[c] is not None
 
         # next, we download the model as a zipfile.
@@ -69,25 +90,4 @@ class LoadModelTest(FunctionalTestBase):
 
         assert zipfile.is_zipfile(save_file)
 
-        z_in = zipfile.ZipFile(test_file)
-        z_out = zipfile.ZipFile(save_file)
-
-        for info_in, info_out in zip(sorted(z_in.infolist(),
-                                            key=lambda x: x.filename),
-                                     sorted(z_out.infolist(),
-                                            key=lambda x: x.filename)):
-            print(((info_in.filename, info_out.filename),
-                   (info_in.file_size, info_out.file_size)
-                   ))
-
-            assert info_in.filename == info_out.filename
-            #assert info_in.file_size == info_out.file_size
-
-            # unique IDs inside our files prevent us from verifying the
-            # contents of our .json files
-            # assert info_in.CRC == info_out.CRC
-
-        z_in.close()
-        z_out.close()
-
-        os.remove(save_file)
+        assert compare_savefiles(test_file, save_file)
