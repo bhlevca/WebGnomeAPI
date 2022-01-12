@@ -57,22 +57,23 @@ def get_goods_map(request):
 
     # In the future, the webgnome API should be a closer match
     # to the libgoods api.
-    goods_resp = libgoods.get_map(north_lat=float(params['NorthLat']),
-                                  south_lat=float(params['SouthLat']),
-                                  west_lon=float(params['WestLon']),
-                                  east_lon=float(params['EastLon']),
-                                  resolution=params['resolution'],
-                                  cross_dateline=bool(int(params['xDateline'])),
-                                  )
-
-    fn = goods_resp.headers.get_filename()
-    size = goods_resp.length
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+    try:
+        fn, contents = libgoods.get_map(north_lat=float(params['NorthLat']),
+                                        south_lat=float(params['SouthLat']),
+                                        west_lon=float(params['WestLon']),
+                                        east_lon=float(params['EastLon']),
+                                        resolution=params['resolution'],
+                                        cross_dateline=bool(int(params['xDateline'])),
+                                        max_filesize=max_upload_size,
+                                        )
 
-    if size > max_upload_size:
+    except libgoods.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
+
+    size = len(contents)
 
     upload_dir = os.path.relpath(get_session_dir(request))
 
@@ -85,9 +86,8 @@ def get_goods_map(request):
 
     file_path = os.path.join(upload_dir, unique_name)
 
-    write_bufread_to_file(goods_resp.fp, file_path)
-
-    goods_resp.close()
+    with open(file_path, 'w') as fp:
+        fp.write(contents)
 
     log.info('Successfully uploaded file "{0}"'.format(file_path))
 
