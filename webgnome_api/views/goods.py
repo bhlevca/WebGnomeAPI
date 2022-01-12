@@ -16,6 +16,7 @@ from ..common.views import (switch_to_existing_session,
                             cors_exception,
                             cors_policy,
                             cors_response)
+from .. import libgoods
 
 import os
 import urllib.request
@@ -39,8 +40,30 @@ def get_goods_map(request):
     Uses the payload passed by the client to make a .bna download request from GOODS.
     This file is then used to create a map object, which is then returned to the client
     '''
+    # Example post:
+    # req_params = {'err_placeholder':'',
+    #               'NorthLat': 47.06693175688763,
+    #               'WestLon': -124.26942110656861,
+    #               'EastLon': -123.6972360021842,
+    #               'SouthLat': 46.78488364986247,
+    #               'xDateline': 0,
+    #               'resolution': 'i',
+    #               'submit': 'Get Map',
+    #               }
 
-    goods_resp = urllib.request.urlopen('https://gnome.orr.noaa.gov/goods/tools/GSHHS/coast_extract', request.body)
+    # goods_resp = urllib.request.urlopen('https://gnome.orr.noaa.gov/goods/tools/GSHHS/coast_extract', request.body)
+
+    params = request.POST
+
+    # In the future, the webgnome API should be a closer match
+    # to the libgoods api.
+    goods_resp = libgoods.get_map(north_lat=float(params['NorthLat']),
+                                  south_lat=float(params['SouthLat']),
+                                  west_lon=float(params['WestLon']),
+                                  east_lon=float(params['EastLon']),
+                                  resolution=params['resolution'],
+                                  cross_dateline=bool(int(params['xDateline'])),
+                                  )
 
     fn = goods_resp.headers.get_filename()
     size = goods_resp.length
