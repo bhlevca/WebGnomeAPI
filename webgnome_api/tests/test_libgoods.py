@@ -10,12 +10,12 @@ And to have a way to run the code and document the API
 uncomment the skip if it's causing issues
 """
 
-from webgnomeapi import libgoods
+#import libgoods
 
 import pytest
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_get_map():
     """
     A single map request
