@@ -10,8 +10,9 @@ And to have a way to run the code and document the API
 uncomment the skip if it's causing issues
 """
 
-#import libgoods
 
+
+import libgoods
 import pytest
 
 
