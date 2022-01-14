@@ -16,9 +16,10 @@ from ..common.views import (switch_to_existing_session,
                             cors_exception,
                             cors_policy,
                             cors_response)
-from .. import libgoods
+from libgoods import map, currents
 
 import os
+import shutil
 import urllib.request
 import socket
 from cornice import Service
@@ -59,7 +60,7 @@ def get_goods_map(request):
     # to the libgoods api.
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     try:
-        fn, contents = libgoods.get_map(north_lat=float(params['NorthLat']),
+        fn, contents = map.get_map(north_lat=float(params['NorthLat']),
                                         south_lat=float(params['SouthLat']),
                                         west_lon=float(params['WestLon']),
                                         east_lon=float(params['EastLon']),
@@ -68,7 +69,7 @@ def get_goods_map(request):
                                         max_filesize=max_upload_size,
                                         )
 
-    except libgoods.FileTooBigError:
+    except map.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
@@ -93,32 +94,31 @@ def get_goods_map(request):
 
     return file_path, file_name
 
-
 @goods_hycom.post()
-def get_goods_hycom(request):
+def get_currrents(request):
     '''
-    Uses the payload passed by the client to make a .nc download request from GOODS.
-    This file is then used to create a PyCurrentMover object, which is then returned
+    Uses the payload passed by the client to send information to libGOODS.
+    This file returned from libgoods is then used to create a PyCurrentMover object, which is then returned
     to the client
-    '''
+    ''' 
+    
     switch_to_existing_session(request)
     upload_dir = os.path.relpath(get_session_dir(request))
-
-    try:
-        goods_resp = urllib.request.urlopen('https://gnome.orr.noaa.gov/goods/currents/HYCOM/get_data?selected_file_url=Latest&dataset=&', request.body, timeout=20)
-        fn = goods_resp.headers.get_filename()
-        size = goods_resp.length
-        if size >= get_free_space(upload_dir):
-            raise cors_response(request,
-                            HTTPInsufficientStorage('Not enough space '
-                                                    'to save the file'))     
-        file_name, unique_name = gen_unique_filename(fn, upload_dir)
-        file_path = os.path.join(upload_dir, unique_name)
-        write_bufread_to_file(goods_resp.fp, file_path)
-        goods_resp.close()
-        log.info('Successfully uploaded file "{0}"'.format(file_path))
-    except socket.timeout:
-        log.info('Request too large -- forced timeout')
-        raise cors_response(request,HTTPRequestTimeout('Forced timeout'))
+    params = request.POST
+    fn, fp = currents.get_currents(model_name=params['model_name'],
+                            north_lat=float(params['NorthLat']),
+                            south_lat=float(params['SouthLat']),
+                            west_lon=float(params['WestLon']),
+                            east_lon=float(params['EastLon']),
+                            cross_dateline=bool(int(params['xDateline'])),
+                            )
+                            
+    file_name, unique_name = gen_unique_filename(fn, upload_dir)
+    
+    file_path = os.path.join(upload_dir, unique_name)
+    shutil.move(fp, file_path) # maybe I should pass session directory location to libgoods?
+        
+    log.info('Successfully uploaded file "{0}"'.format(file_path))
 
     return file_path
+
