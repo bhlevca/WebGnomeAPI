@@ -1,0 +1,4 @@
+[submodule "libgoods"]
+	path = libgoods
+	url = https://gitlab.orr.noaa.gov/gnome/libgoods
+	branch = develop

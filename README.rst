@@ -102,3 +102,86 @@ The current solution to this last bit is to always provide a port to the client'
 
 
 Until we upgrade gevent we're stuck with 0.9 and this issue.
+
+
+Development Notes
+=================
+
+libgoods
+--------
+
+The webgnomeapi depends on the libgoods pacakge, which is under active development at the same time.
+
+To make this a bit easier, we've added libgoods as a git "submodule".
+
+(https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+
+However, you still need to keep the libgood submodule up to date as you work.
+
+Initial Clone
+.............
+
+When you first clone the webgnomeapi repo, you get a dir for the libgood submodule, but not the actual code.
+
+NOTE: As with all things git -- there are multipel ways to ackomlish all this, but I think this is the most straightforward.
+
+To get the actual code, you must run two commands: ``git submodule init`` to initialize your local configuration file, and ``git submodule update`` to fetch all the data from that project and check out the appropriate commit listed in your superproject.
+
+::
+
+  $ git submodule init
+  Submodule 'libgoods' (https://gitlab.orr.noaa.gov/gnome/libgoods) registered for path 'libgoods'
+
+  $ git submodule update
+  Cloning into '/Users/chris.barker/Junk/webgnomeapi/libgoods'...
+  warning: redirecting to https://gitlab.orr.noaa.gov/gnome/libgoods.git/
+  Submodule path 'libgoods': checked out 'a11d8cb43a9ac6836855f2f1455c94b21d5d707b'
+
+You now should have the ``libgoods`` repo:
+
+::
+
+  $ ls libgoods/
+  CHANGES.txt            conda_requirements.txt setup.py
+  LICENSE.txt            libgoods
+  README.rst             setup.cfg
+
+You can go into that repo, and install the package in editable (develop) mode:
+
+::
+
+    $ pip install -e ./
+    Obtaining file:///Users/chris.barker/Junk/webgnomeapi/libgoods
+      Preparing metadata (setup.py) ... done
+    Installing collected packages: libgoods
+      Attempting uninstall: libgoods
+        Found existing installation: libgoods 0.0.1
+        Uninstalling libgoods-0.0.1:
+          Successfully uninstalled libgoods-0.0.1
+      Running setup.py develop for libgoods
+    Successfully installed libgoods-0.0.1
+
+And away we go!
+
+Updating the submodule
+......................
+
+This is key -- as libgoods is under active development, we will need to keep updating it. Whenever you think (or know) that libgoods has changed, you will want to update the submodule with:
+
+::
+
+  git submodule update --remote
+
+  warning: redirecting to https://gitlab.orr.noaa.gov/gnome/libgoods.git/
+  From https://gitlab.orr.noaa.gov/gnome/libgoods
+   * [new branch]      develop    -> origin/develop
+
+NOTE: we should have this repo configured so that you get the right branch of the libgoods submodule, but we'll need to make sure. e.g. if the webgnomeapi repo is on the develop branch, it should pull the develop branch from libgoods as well.
+
+NOTE2: It seems, at least by dewfault, that the submodule is checkout in in "detached HEAD" mode. So you do not want to make changes to libgoods directly in that module, but rather, make any changes in the libgoods repo itself, push them, and then run ``git submodule update --remote``.
+
+
+
+
+
+
