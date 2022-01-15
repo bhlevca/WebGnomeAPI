@@ -4,10 +4,12 @@ RUN yum update -y
 RUN yum install -y redis
 
 COPY ./ /webgnomeapi/
-RUN cd webgnomeapi && conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
-RUN cd webgnomeapi/libgoods && pip install -e .
-RUN cd webgnomeapi && pip install -e .
-RUN cd webgnomeapi && python setup.py compilejson
+RUN conda install --file webgnomeapi/conda_requirements.txt \
+                  --file webgnomeapi/libgoods/conda_requirements.txt
+
+RUN pip install -e webgnomeapi/libgoods \
+    pip install -e webgnomeapi/ \
+    cd webgnomeapi && python setup.py compilejson
 
 RUN mkdir /config
 RUN cp /webgnomeapi/config-example.ini /config/config.ini
