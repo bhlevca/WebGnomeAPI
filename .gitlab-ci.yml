@@ -1,3 +1,6 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
   - test
   - build
@@ -90,9 +93,7 @@ test:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
-    - git submodule update --remote
-    - ls
-    - ls libgoods
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
     - pip install -e libgoods/
     - pip install -e .
