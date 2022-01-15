@@ -1,6 +1,3 @@
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
 stages:
   - test
   - build
@@ -26,7 +23,7 @@ master:
 develop:
   stage: build
   script:
-    - git submodule update --remote
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
     - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
