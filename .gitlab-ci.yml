@@ -91,7 +91,8 @@ test:
     - yum install redis -y
     - redis-server --daemonize yes
     - git submodule update --remote
-    - echo `ls libgoods`
+    - ls
+    - ls libgoods
     - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
     - pip install -e libgoods/
     - pip install -e .
