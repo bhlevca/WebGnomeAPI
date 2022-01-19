@@ -14,17 +14,13 @@ class SubstanceBase(FunctionalTestBase):
     '''
         Tests out the Gnome Substance object API
     '''
-    init_data = {'obj_type': 'gnome.spills.initializers.InitWindages',
-                 'windage_range': (0.01, 0.04),
-                 'windage_persist': 900,
-                 }
-
     req_data = {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
-                'initializers': None,
+                'windage_range': (0.01, 0.04),
+                'windage_persist': 900,
                 'name': 'An Example Name',
                 }
 
-    fields_to_check = ('id', 'obj_type', 'initializers')
+    fields_to_check = ('id', 'obj_type')
 
     def test_get_no_id(self):
         resp = self.testapp.get('/substance')
@@ -45,8 +41,6 @@ class SubstanceBase(FunctionalTestBase):
         # 2. get the valid id from the response
         # 3. perform an additional get of the object with a valid id
         # 4. check that our new JSON response matches the one from the create
-        self.req_data['initializers'] = self.create_init_obj(self.init_data)
-
         resp1 = self.testapp.post_json('/substance', params=self.req_data)
 
         obj_id = resp1.json_body['id']
@@ -62,12 +56,10 @@ class SubstanceBase(FunctionalTestBase):
         self.testapp.put_json('/substance', status=400)
 
     def test_put_no_id(self):
-        self.req_data['initializers'] = self.create_init_obj(self.init_data)
         self.testapp.put_json('/substance', params=self.req_data,
                               status=404)
 
     def test_put_invalid_id(self):
-        self.req_data['initializers'] = self.create_init_obj(self.init_data)
         params = {}
         params.update(self.req_data)
         params['id'] = str(0xdeadbeef)
@@ -75,8 +67,6 @@ class SubstanceBase(FunctionalTestBase):
         self.testapp.put_json('/substance', params=params, status=404)
 
     def test_put_valid_id(self):
-        self.req_data['initializers'] = self.create_init_obj(self.init_data)
-
         resp = self.testapp.post_json('/substance', params=self.req_data)
 
         req_data = resp.json_body
@@ -85,9 +75,9 @@ class SubstanceBase(FunctionalTestBase):
         resp = self.testapp.put_json('/substance', params=req_data)
         self.check_updates(resp.json_body)
 
-    def create_init_obj(self, req_data):
-        resp = self.testapp.post_json('/initializer', params=req_data)
-        return [resp.json_body]
+#     def create_init_obj(self, req_data):
+#         resp = self.testapp.post_json('/initializer', params=req_data)
+#         return [resp.json_body]
 
     def perform_updates(self, json_obj):
         '''

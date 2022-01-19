@@ -834,12 +834,9 @@ class NestedModelTests(FunctionalTestBase):
                                                     0.0],
                                    },
                        'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
-                                     'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
-                                                       'windage_range': [0.01, 0.04],
-                                                       'windage_persist': 900,
-                                                       }
-                                                       ]
-                                        },
+                                     'windage_range': [0.01, 0.04],
+                                     'windage_persist': 900,
+                                    },
                        }]
         req_data['spills'] = spill_data
 
@@ -861,7 +858,7 @@ class NestedModelTests(FunctionalTestBase):
         assert 'start_position' in model1['spills'][0]['release']
         assert 'end_position' in model1['spills'][0]['release']
 
-        assert 'initializers' in model1['spills'][0]['substance']
+        assert 'windage_range' in model1['spills'][0]['substance']
 
     def test_put_with_nested_spill(self):
         req_data = self.req_data.copy()
