@@ -46,7 +46,7 @@ class GetMapTest(FunctionalTestBase):
                       'submit': 'Get Map',
                       }
 
-        resp = self.testapp.post('/goods', req_params)
+        resp = self.testapp.post('/goods/maps', req_params)
 
         resp = resp.json_body
 
