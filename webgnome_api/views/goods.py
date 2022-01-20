@@ -16,8 +16,8 @@ from ..common.views import (switch_to_existing_session,
                             cors_exception,
                             cors_policy,
                             cors_response)
-                            
-from libgoods import map, currents
+
+from libgoods import maps, currents
 
 import os
 import shutil
@@ -59,14 +59,15 @@ def get_goods_map(request):
     # to the libgoods api.
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     try:
-        fn, contents = map.get_map(north_lat=float(params['NorthLat']),
-                                        south_lat=float(params['SouthLat']),
-                                        west_lon=float(params['WestLon']),
-                                        east_lon=float(params['EastLon']),
-                                        resolution=params['resolution'],
-                                        cross_dateline=bool(int(params['xDateline'])),
-                                        max_filesize=max_upload_size,
-                                        )
+        fn, contents = maps.get_map(
+            north_lat=float(params['NorthLat']),
+            south_lat=float(params['SouthLat']),
+            west_lon=float(params['WestLon']),
+            east_lon=float(params['EastLon']),
+            resolution=params['resolution'],
+            cross_dateline=bool(int(params['xDateline'])),
+            max_filesize=max_upload_size,
+        )
 
     except map.FileTooBigError:
         raise cors_response(request,
@@ -93,39 +94,41 @@ def get_goods_map(request):
 
     return file_path, file_name
 
+
 @goods_currents.post()
 def get_currrents(request):
     '''
-    Uses the payload passed by the client to send information to libGOODS.
-    This file returned from libgoods is then used to create a PyCurrentMover object, which is then returned
-    to the client
-    ''' 
-    
+    Uses the payload passed by the client to send information to
+    libGOODS. This file returned from libgoods is then used to create a
+    PyCurrentMover object, which is then returned to the client
+    '''
+
     switch_to_existing_session(request)
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     try:
-        fn, fp = currents.get_currents(model_name=params['model_name'],
-                                north_lat=float(params['NorthLat']),
-                                south_lat=float(params['SouthLat']),
-                                west_lon=float(params['WestLon']),
-                                east_lon=float(params['EastLon']),
-                                cross_dateline=bool(int(params['xDateline'])),
-                                max_filesize=max_upload_size,
-                                )
-                       
+        fn, fp = currents.get_currents(
+            model_name=params['model_name'],
+            north_lat=float(params['NorthLat']),
+            south_lat=float(params['SouthLat']),
+            west_lon=float(params['WestLon']),
+            east_lon=float(params['EastLon']),
+            cross_dateline=bool(int(params['xDateline'])),
+            max_filesize=max_upload_size,
+        )
+
         file_name, unique_name = gen_unique_filename(fn, upload_dir)
-        
+
         file_path = os.path.join(upload_dir, unique_name)
-        shutil.move(fp, file_path) # maybe I should pass session directory location to libgoods?
-            
+        shutil.move(fp, file_path)  # maybe I should pass session directory location to libgoods?
+
         log.info('Successfully uploaded file "{0}"'.format(file_path))
-        
+
     except currents.FileTooBigError:
             raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {}'
-                                           .format(max_upload_size)))
+                                HTTPBadRequest('file is too big! '
+                                               f'Max size = {max_upload_size}'))
 
     return file_path
 
