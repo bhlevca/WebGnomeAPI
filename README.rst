@@ -112,6 +112,15 @@ libgoods
 
 The webgnomeapi depends on the libgoods pacakge, which is under active development at the same time.
 
+So you need to clone and install the libgoods package, and keep it up to date with the same branch.
+
+
+Ignore submodules for now!
+--------------------------
+
+If we do ever use a submodule, here's some info on that:
+
+
 To make this a bit easier, we've added libgoods as a git "submodule".
 
 (https://git-scm.com/book/en/v2/Git-Tools-Submodules)
