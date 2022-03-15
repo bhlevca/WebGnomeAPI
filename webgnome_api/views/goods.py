@@ -103,9 +103,6 @@ def get_currrents(request):
     PyCurrentMover object, which is then returned to the client
     '''
 
-    # fixme: this was crashing the tests
-    #        but maybe needed on the server?
-    # switch_to_existing_session(request)
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
@@ -128,7 +125,7 @@ def get_currrents(request):
 
         log.info('Successfully uploaded file "{0}"'.format(file_path))
 
-    except data_sources.FileTooBigError:
+    except api.FileTooBigError:
             raise cors_response(request,
                                 HTTPBadRequest('file is too big! '
                                                f'Max size = {max_upload_size}'))
