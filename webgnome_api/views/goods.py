@@ -17,7 +17,7 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from libgoods import maps, data_sources
+from libgoods import maps, api
 
 import os
 import shutil
@@ -103,16 +103,13 @@ def get_currrents(request):
     PyCurrentMover object, which is then returned to the client
     '''
 
-    # fixme: this was crashing the tests
-    #        but maybe needed on the server?
-    # switch_to_existing_session(request)
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     bounds = ((float(params['WestLon']), float(params['SouthLat'])),
               (float(params['EastLon']), float(params['NorthLat'])))
     try:
-        fp = data_sources.get_model_data(
+        fp = api.get_model_data(
             model_id=params['model_name'],
             bounds=bounds,
             time_interval=(None, None),
@@ -128,7 +125,7 @@ def get_currrents(request):
 
         log.info('Successfully uploaded file "{0}"'.format(file_path))
 
-    except data_sources.FileTooBigError:
+    except api.FileTooBigError:
             raise cors_response(request,
                                 HTTPBadRequest('file is too big! '
                                                f'Max size = {max_upload_size}'))
