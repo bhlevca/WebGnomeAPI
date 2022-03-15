@@ -17,7 +17,7 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from libgoods import maps, data_sources
+from libgoods import maps, api
 
 import os
 import shutil
@@ -112,8 +112,8 @@ def get_currrents(request):
     bounds = ((float(params['WestLon']), float(params['SouthLat'])),
               (float(params['EastLon']), float(params['NorthLat'])))
     try:
-        fp = data_sources.get_model_data(
-            model_id=params['model_name'],
+        fp = api.get_model_data(
+            model_id=params['model_name'].upper(),
             bounds=bounds,
             time_interval=(None, None),
             environmental_parameters=['surface currents'],
