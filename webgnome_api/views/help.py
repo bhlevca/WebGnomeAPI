@@ -29,6 +29,7 @@ def get_help(request):
     requested_dir = urllib.parse.unquote(sep.join(request.matchdict['dir']))
     requested_file = join(help_dir, requested_dir)
 
+    breakpoint()
     if isfile(requested_file + '.rst'):
         # a single help file was requested
         html = ''
@@ -51,7 +52,8 @@ def get_help(request):
                                           writer_name='html')['html_body']
 
             return {'path': requested_file, 'html': html}
-    elif isdir(requested_file) and requested_dir != '':
+    elif isdir(requested_file) and requested_dir == '':
+        # all helps requested
         aggregate = []
         for path, _dirnames, filenames in walk(requested_file):
             filenames.sort()
