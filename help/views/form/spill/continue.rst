@@ -1,5 +1,5 @@
 .. keywords
-   continuous release, Amount spilled, constant spill, emulsion, override, trajectory, map
+   continuous release, amount spilled, constant spill, emulsion, override, trajectory, map
 
 The Point or Line Release form contains multiple sections where you may enter information. If you are running the model using the Oil Fate Wizard (weathering only mode) you will not see 
 the sections titled **Position** nor **Windage**. These sections are only relevant to trajectory simulations.
@@ -14,7 +14,7 @@ the sections titled **Position** nor **Windage**. These sections are only releva
 
 **Substance/Oil Section**
 
-* The default substance is "Non-weathering". In this case, particle will move under the influence of wind and currents but their properties will not change over time. To model weathering processes, you must first specify an oil. Oils can be downloaded from the ADIOS oil database using the link in the form. Oil information is stored in a JSON (text) file format. Once an oil file is loaded, summary information on the oil is displayed, along with an option to edit the Emulsification defaults for the oil.
+* The default substance is "Non-weathering". In this case, particles will move under the influence of wind and currents but their properties will not change over time. To model weathering processes, you must first specify an oil. Oils can be downloaded from the ADIOS oil database using the link in the form. Oil information is stored in a JSON (text) file format. Once an oil file is loaded, summary information on the oil is displayed, along with an option to edit the Emulsification defaults for the oil.
 
 * Note on **Emulsification Onset After**: The emulsification algorithm assumes that emulsion begins when some percentage of the oil has evaporated. You have the option of overriding the default value and specifying when you want emulsion to begin. Click on the button next to the entry field. Choose hours from the drop-down menu and type in the number of hours that have elapsed before emulsion begins, or choose percent from the drop-down menu and type in the percent of the spill that has evaporated.
 

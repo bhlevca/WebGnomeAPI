@@ -17,7 +17,7 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from libgoods import maps, currents
+from libgoods import maps, api
 
 import os
 import shutil
@@ -58,18 +58,18 @@ def get_goods_map(request):
     # In the future, the webgnome API should be a closer match
     # to the libgoods api.
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+    bounds = ((float(params['WestLon']), float(params['SouthLat'])),
+              (float(params['EastLon']), float(params['NorthLat'])))
+
     try:
         fn, contents = maps.get_map(
-            north_lat=float(params['NorthLat']),
-            south_lat=float(params['SouthLat']),
-            west_lon=float(params['WestLon']),
-            east_lon=float(params['EastLon']),
-            resolution=params['resolution'],
+            bounds=bounds,
+            resolution='i',
             cross_dateline=bool(int(params['xDateline'])),
             max_filesize=max_upload_size,
         )
 
-    except map.FileTooBigError:
+    except maps.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
@@ -103,29 +103,29 @@ def get_currrents(request):
     PyCurrentMover object, which is then returned to the client
     '''
 
-    switch_to_existing_session(request)
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
+    bounds = ((float(params['WestLon']), float(params['SouthLat'])),
+              (float(params['EastLon']), float(params['NorthLat'])))
     try:
-        fn, fp = currents.get_currents(
-            model_name=params['model_name'],
-            north_lat=float(params['NorthLat']),
-            south_lat=float(params['SouthLat']),
-            west_lon=float(params['WestLon']),
-            east_lon=float(params['EastLon']),
+        fp = api.get_model_data(
+            model_id=params['model_name'].upper(),
+            bounds=bounds,
+            time_interval=(None, None),
+            environmental_parameters=['surface currents'],
             cross_dateline=bool(int(params['xDateline'])),
             max_filesize=max_upload_size,
         )
 
-        file_name, unique_name = gen_unique_filename(fn, upload_dir)
+        file_name, unique_name = gen_unique_filename(fp.name, upload_dir)
 
         file_path = os.path.join(upload_dir, unique_name)
         shutil.move(fp, file_path)  # maybe I should pass session directory location to libgoods?
 
         log.info('Successfully uploaded file "{0}"'.format(file_path))
 
-    except currents.FileTooBigError:
+    except api.FileTooBigError:
             raise cors_response(request,
                                 HTTPBadRequest('file is too big! '
                                                f'Max size = {max_upload_size}'))
