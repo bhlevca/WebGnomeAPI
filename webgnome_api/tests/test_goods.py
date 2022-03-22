@@ -2,6 +2,9 @@
 tests of the "GOODS" functionality
 
 that is, getting maps, currents, etc for the model runs
+
+We really need more tests!
+
 """
 
 import os
@@ -68,5 +71,54 @@ class GetMapTest(FunctionalTestBase):
 
         # maybe check creation time, or ???
 
+
+class GetCurrentsTest(FunctionalTestBase):
+    '''
+    Tests of getting a netcdf file of currents from the webgnomeAPI
+
+    via the libgoods system
+
+    There should probably be tests of various failing conditions.
+    '''
+
+    def test_get_current_netcdf(self):
+        """
+        a test of getting a netcdf file of currents
+
+        """
+        # This is what the current request looks like
+        # it's passing it on through to GOODS
+        # the request should be updated with our "new" API
+
+        req_params = {'err_placeholder':'',
+                      'model_name': 'dummy_cur',
+                      'NorthLat': 34.0,
+                      'WestLon': -119.0,
+                      'EastLon': -117.5,
+                      'SouthLat': 33.0,
+                      'xDateline': 0,
+                      'resolution': 'i',
+                      'submit': 'Get Map',
+                      }
+
+        resp = self.testapp.post('/goods/currents', req_params)
+
+        resp = resp.json_body
+
+        local_path = Path(resp)
+        filename = local_path.name
+
+        # This might be a bit fragile, but...
+        session_id = self.testapp.post('/session').json_body['id']
+        expected_path = MODELS_DIR / "session" / session_id / filename
+
+        # did it put it in the right place?
+        local_path = local_path.resolve()
+        expected_path = expected_path.resolve()
+        assert local_path == expected_path
+        # is there an actual file there?
+        assert expected_path.is_file()
+        # is it non-empty?
+        assert expected_path.stat().st_size > 0
 
 
