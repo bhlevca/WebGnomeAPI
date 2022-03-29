@@ -122,3 +122,37 @@ class GetCurrentsTest(FunctionalTestBase):
         assert expected_path.stat().st_size > 0
 
 
+class ListModels(FunctionalTestBase):
+    '''
+    Tests of getting a netcdf file of currents from the webgnomeAPI
+
+    via the libgoods system
+
+    There should probably be tests of various failing conditions.
+    '''
+
+    def test_list_models(self):
+        """
+        tests getting the metadata of the models
+        """
+        # This is what the current request looks like
+        # it's passing it on through to GOODS
+        # the request should be updated with our "new" API
+
+
+        # should there be some parameters to the request?
+        resp = self.testapp.get('/goods/list_models')
+
+        resp = resp.json_body
+
+        print(resp)
+        # should we hard-code what's expected
+        assert len(resp) > 0
+
+        # just checking that we got what looks like the right dicts.
+        for model in resp:
+            assert 'identifier' in model
+            assert 'name' in model
+            assert 'bounding_box' in model
+            assert 'bounding_poly' in model
+
