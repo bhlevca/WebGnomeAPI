@@ -64,7 +64,8 @@ def get_goods_map(request):
     try:
         fn, contents = maps.get_map(
             bounds=bounds,
-            resolution='i',
+            resolution=params['resolution'],
+            shoreline=params['shoreline'],
             cross_dateline=bool(int(params['xDateline'])),
             max_filesize=max_upload_size,
         )
