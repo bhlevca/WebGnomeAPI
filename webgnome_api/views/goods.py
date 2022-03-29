@@ -30,10 +30,23 @@ import logging
 log = logging.getLogger(__name__)
 
 goods_maps = Service(name='maps', path='/goods/maps*',
-                description="GOODS API", cors_policy=cors_policy)
+                description="GOODS MAP API", cors_policy=cors_policy)
 
 goods_currents = Service(name='currents', path='/goods/currents*',
-                      description="GOODS API", cors_policy=cors_policy)
+                      description="GOODS CURRENTS API", cors_policy=cors_policy)
+
+goods_list_models = Service(name='list_models', path='/goods/list_models',
+                            description="GOODS METADATA API", cors_policy=cors_policy)
+
+
+@goods_list_models.get()
+def get_model_metadata(request):
+    '''
+    gets set of metadata for all available models
+    '''
+    metadata = api.list_models()
+
+    return metadata
 
 
 @goods_maps.post()
