@@ -46,6 +46,7 @@ class GetMapTest(FunctionalTestBase):
                       'SouthLat': 46.78488364986247,
                       'xDateline': 0,
                       'resolution': 'i',
+                      'shoreline': 'GSHHS',
                       'submit': 'Get Map',
                       }
 
