@@ -4,12 +4,12 @@ Functional tests for the Mover Web API
 import time
 import pytest
 import os
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 
 class BaseMoverTests(FunctionalTestBase):
     '''
-        Tests out the Gnome Mover common APIs
+    Tests out the Gnome Mover common APIs
     '''
     req_data = {'obj_type': 'gnome.movers.simple_mover.SimpleMover',
                 'uncertainty_scale': 0.5,
@@ -344,15 +344,15 @@ class RandomMover3DTests(BaseMoverTests):
 
 class CatsMoverTests(BaseMoverTests):
     '''
-        Tests out the Gnome Cats Mover API
+    Tests out the Gnome Cats Mover API
         - Kinda needs a Tide object
     '''
     tide_data = {'obj_type': 'gnome.environment.Tide',
-                 'filename': os.path.join('models','CLISShio.txt')
+                 'filename': str(MODELS_DIR / 'CLISShio.txt')
                  }
 
-    req_data = {'obj_type': 'gnome.movers.current_movers.CatsMover',
-                'filename': os.path.join('models', 'tidesWAC.CUR'),
+    req_data = {'obj_type': 'gnome.movers.c_current_movers.CatsMover',
+                'filename': str(MODELS_DIR / 'tidesWAC.CUR'),
                 #'scale': True, Cannot use any longer due to pygnome changes
                 'scale_value': 1.0,
                 'scale_refpoint': (-72.705, 41.2275, 0.0),
@@ -446,11 +446,11 @@ class CurrentInfoTests(FunctionalTestBase):
                 'spills': [],
                 }
     req_data['movers'] = [{'obj_type': 'gnome.movers.CatsMover',
-                           'filename': os.path.join('models','tidesWAC.CUR'),
+                           'filename': str(MODELS_DIR / 'tidesWAC.CUR'),
                            'scale': True,
                            'scale_value': 1.0,
                            'tide': {'obj_type': 'gnome.environment.Tide',
-                                    'filename': os.path.join('models','CLISShio.txt'),
+                                    'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                     },
                            },
                           {'obj_type': 'gnome.movers.wind_movers.WindMover',
@@ -561,8 +561,8 @@ class IceInfoTests(FunctionalTestBase):
                     'active_range': ('-inf', 'inf'),
                     'on': True,
                     'current_scale': 1.0,
-                    'filename': os.path.join('models','acnfs_example.nc'),
-                    'topology_file': os.path.join('models','acnfs_topo.dat'),
+                    'filename': str(MODELS_DIR / 'acnfs_example.nc'),
+                    'topology_file': str(MODELS_DIR / 'acnfs_topo.dat'),
                     'uncertain_along': 0.5,
                     'uncertain_cross': 0.25,
                     'uncertain_duration': 24.0,
@@ -576,13 +576,13 @@ class IceInfoTests(FunctionalTestBase):
                         'ice_movers': [],
                         }]
 
-    spills_data = [{'obj_type': 'gnome.spill.spill.Spill',
+    spills_data = [{'obj_type': 'gnome.spills.spill.Spill',
                     'name': 'Point Line Release',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                    'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                                   'name': 'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                  'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                     'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
@@ -593,25 +593,25 @@ class IceInfoTests(FunctionalTestBase):
                                 'end_release_time': None,
                                 'name': 'PointLineRelease',
                                 'num_elements': 1,
-                                'obj_type': ('gnome.spill.release'
+                                'obj_type': ('gnome.spills.release'
                                              '.PointLineRelease'),
                                 'release_time': '2015-05-14T00:00:00',
                                 'start_position': (-164.01696, 72.921024, 0.0)}
                     },
-                   {'obj_type': 'gnome.spill.spill.Spill',
+                   {'obj_type': 'gnome.spills.spill.Spill',
                     'name': 'Spill',
                     'on': True,
                     'amount_uncertainty_scale': 0.0,
-                    'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
+                    'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
                                   'name': 'NonWeatheringSubstance',
-                                  'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                                  'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                     'name': 'windages',
                                                     'windage_persist': 900,
                                                     'windage_range': (0.01,
                                                                       0.04)
                                                     }],
                                      },
-                    'release': {'obj_type': ('gnome.spill.release'
+                    'release': {'obj_type': ('gnome.spills.release'
                                              '.Release'),
                                 'name': 'Release',
                                 'release_time': '2015-05-14T00:00:00',
@@ -642,7 +642,7 @@ class IceInfoTests(FunctionalTestBase):
                 'valid': True,
                 'map': {'obj_type': 'gnome.maps.map.MapFromBNA',
                         'name': 'MapBounds_Island.bna',
-                        'filename': os.path.join('models','MapBounds_Island.bna'),
+                        'filename': str(MODELS_DIR / 'MapBounds_Island.bna'),
                         'refloat_halflife': 6.0,
                         'map_bounds': [(-127.465333, 48.3294),
                                        (-126.108847, 48.3294),
@@ -747,12 +747,12 @@ class CellInfoTests(FunctionalTestBase):
                 'outputters': [],
                 'spills': [],
                 }
-    req_data['movers'] = [{"obj_type": "gnome.movers.GridCurrentMover",
-                           "name": "GridCurrentMover",
+    req_data['movers'] = [{"obj_type": "gnome.movers.c_GridCurrentMover",
+                           "name": "c_GridCurrentMover",
                            "active_range": ('-inf', 'inf'),
                            "on": True,
-                           "filename": os.path.join('models','ny_cg.nc'),
-                           "topology_file": os.path.join('models','NYTopology.dat'),
+                           "filename": str(MODELS_DIR / 'ny_cg.nc'),
+                           "topology_file": str(MODELS_DIR / 'NYTopology.dat'),
                            "current_scale": 1.0,
                            "uncertain_time_delay": 0.0,
                            "uncertain_duration": 24.0,
@@ -862,14 +862,14 @@ class PyMoverTests(FunctionalTestBase):
     '''
     req_data = {'obj_type': 'gnome.movers.py_wind_movers.PyWindMover',
                 'name': 'small_gfs_alaska.nc',
-                'filename': os.path.join('models','small_gfs_alaska.nc'),
-                'wind': {'data_file': os.path.join('models','small_gfs_alaska.nc'),
-                         'grid_file': os.path.join('models','small_gfs_alaska.nc'),
+                'filename': str(MODELS_DIR / 'small_gfs_alaska.nc'),
+                'wind': {'data_file': str(MODELS_DIR / 'small_gfs_alaska.nc'),
+                         'grid_file': str(MODELS_DIR / 'small_gfs_alaska.nc'),
                          'obj_type': ('gnome.environment'
                                       '.environment_objects.GridWind'),
                          'grid': {'obj_type': ('gnome.environment'
                                                '.gridded_objects_base.PyGrid'),
-                                  'filename': os.path.join('models','small_gfs_alaska.nc')
+                                  'filename': str(MODELS_DIR / 'small_gfs_alaska.nc')
                                   },
                          'extrapolation_is_allowed': True,
                          },

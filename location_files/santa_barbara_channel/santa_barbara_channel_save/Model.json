@@ -13,15 +13,15 @@
   }, 
   {
    "id": "CatsMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }, 
   {
    "id": "CatsMover_2.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }, 
   {
    "id": "CatsMover_3.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }
  ], 
  "time_step": 360.0, 

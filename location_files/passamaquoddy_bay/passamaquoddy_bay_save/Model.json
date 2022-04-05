@@ -13,7 +13,7 @@
   }, 
   {
    "id": "CurrentCycleMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CurrentCycleMover"
+   "obj_type": "gnome.movers.c_current_movers.CurrentCycleMover"
   }
  ], 
  "environment": [

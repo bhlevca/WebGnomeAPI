@@ -1,7 +1,12 @@
+# webgnome_api specific
+dump.rdb
+
+# general stuff:
 .DS_Store
 
 build/
 
+# python stuff:
 .pytest_cache/
 *.pyc
 *.swp

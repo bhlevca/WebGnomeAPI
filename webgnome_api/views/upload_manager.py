@@ -4,7 +4,7 @@ Views for the model load/save operations.
 import os
 import errno
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import ujson
 
 from pyramid.settings import asbool
@@ -52,7 +52,7 @@ def get_uploaded_files(request):
     '''
         Returns a listing of the persistently uploaded files.
     '''
-    sub_folders = [urllib.parse.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d)
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -71,6 +71,7 @@ def get_uploaded_files(request):
             raise cors_exception(request, HTTPUnauthorized)
         else:
             raise cors_exception(request, HTTPInternalServerError)
+
 
 """
 @upload_manager.post()
@@ -100,6 +101,7 @@ def modify_filesystem(request):
         return rename_file(request, base_path, sub_folders, file_model)
 """
 
+
 @upload_manager.post()
 def modify_filesystem(request):
     '''
@@ -110,7 +112,7 @@ def modify_filesystem(request):
         - move a file into a directory (similar to renaming)
     '''
     if (request.POST.get('action', None) == 'upload_files'):
-        paths, filename = process_upload(request)
+        paths, _filename = process_upload(request)
         resp = Response(ujson.dumps(paths))
         return resp
 
@@ -123,7 +125,7 @@ def modify_filesystem(request):
         resp = Response(ujson.dumps(paths))
         return resp
 
-    sub_folders = [urllib.parse.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d)
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -139,6 +141,7 @@ def modify_filesystem(request):
     else:
         return rename_file(request, base_path, sub_folders, file_model)
 
+
 def process_upload(request):
     '''
     New verion of process_upload that can handle multi-file uploads as well as
@@ -149,8 +152,8 @@ def process_upload(request):
     '''
     redis_session_id = request.POST['session']
 
-    if redis_session_id.encode('utf-8') in list(request.session.redis.keys()):
-        def get_specific_session_id(redis, timeout, serialize, generator,
+    if redis_session_id in list(request.session.redis.keys()):
+        def get_specific_session_id(_redis, _timeout, _serialize, _generator,
                                     session_id=redis_session_id):
             return session_id
 
@@ -180,7 +183,7 @@ def process_upload(request):
     log.info('persist_upload?: {}'.format(persist_upload))
     log.info('can_persist?: {}'.format(can_persist))
 
-    #for each file, process into server
+    # for each file, process into server
     input_file = request.POST['file'].file
     fn = request.POST['file'].filename
     file_name, unique_name = gen_unique_filename(fn, upload_dir)
@@ -218,6 +221,7 @@ def process_upload(request):
 
     return file_path, file_name
 
+
 @upload_manager.put()
 @can_persist
 def create_file_item(request):
@@ -233,7 +237,7 @@ def create_file_item(request):
         - Create a new folder
         - Rename a file that already exists
     '''
-    sub_folders = [urllib.parse.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d)
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 
@@ -271,7 +275,7 @@ def delete_uploaded_file(request):
     '''
         Performs a delete of a file in the uploads folder.
     '''
-    sub_folders = [urllib.parse.unquote(d).encode('utf8')
+    sub_folders = [urllib.parse.unquote(d)
                    for d in request.matchdict['sub_folders']
                    if d != '..']
 

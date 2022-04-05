@@ -1,8 +1,11 @@
 """
 Functional tests for the Model Web API
 """
+
+from pathlib import Path
+
 from gnome.multi_model_broadcast import ModelBroadcaster
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -169,7 +172,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
-                           'filename': 'models/Test.bna',
+                           'filename': str(MODELS_DIR / 'Test.bna'),
                            'refloat_halflife': 1.0
                            }
 
@@ -182,7 +185,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_map(self):
         req_data = self.req_data.copy()
         req_data['map'] = {'obj_type': 'gnome.maps.map.MapFromBNA',
-                           'filename': 'models/Test.bna',
+                           'filename': str(MODELS_DIR / 'Test.bna'),
                            'refloat_halflife': 1.0
                            }
 
@@ -499,12 +502,12 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_sparse_cats_mover(self):
         req_data = self.req_data.copy()
-        req_data['movers'] = [{'obj_type': 'gnome.movers.current_movers.CatsMover',
-                               'filename': 'models/tidesWAC.CUR',
+        req_data['movers'] = [{'obj_type': 'gnome.movers.c_current_movers.CatsMover',
+                               'filename': str(MODELS_DIR / 'tidesWAC.CUR'),
                                'scale': True,
                                'scale_value': 1.0,
                                'tide': {'obj_type': 'gnome.environment.Tide',
-                                        'filename': 'models/CLISShio.txt',
+                                        'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                         },
                                }]
 
@@ -672,8 +675,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'map_filename': ('models/Test.bna'),
-                                   'output_dir': ('models/images'),
+                                   'map_filename': str(MODELS_DIR / 'Test.bna'),
+                                   'output_dir': str(MODELS_DIR / 'images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
@@ -702,8 +705,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'output_last_step': True,
                                    'output_zero_step': True,
                                    'draw_ontop': 'forecast',
-                                   'map_filename': ('models/Test.bna'),
-                                   'output_dir': ('models/images'),
+                                   'map_filename': str(MODELS_DIR / 'Test.bna'),
+                                   'output_dir': str(MODELS_DIR / 'images'),
                                    'image_size': [800, 600],
                                    'viewport': [[-71.22429878, 42.18462639],
                                                 [-70.41468719, 42.63295739]]
@@ -816,10 +819,10 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_post_with_nested_spill(self):
         req_data = self.req_data.copy()
-        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+        spill_data = [{'obj_type': 'gnome.spills.spill.Spill',
                        'name': 'What a Name',
                        'on': True,
-                       'release': {'obj_type': ('gnome.spill.release'
+                       'release': {'obj_type': ('gnome.spills.release'
                                                 '.PointLineRelease'),
                                    'name': 'PointLineRelease',
                                    'num_elements': 1000,
@@ -830,13 +833,10 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
-                                                       'windage_range': [0.01, 0.04],
-                                                       'windage_persist': 900,
-                                                       }
-                                                       ]
-                                        },
+                       'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                                     'windage_range': [0.01, 0.04],
+                                     'windage_persist': 900,
+                                    },
                        }]
         req_data['spills'] = spill_data
 
@@ -844,7 +844,7 @@ class NestedModelTests(FunctionalTestBase):
         model1 = resp.json_body
 
         assert 'spills' in model1
-        assert model1['spills'][0]['obj_type'] == ('gnome.spill.spill.Spill')
+        assert model1['spills'][0]['obj_type'] == ('gnome.spills.spill.Spill')
 
         assert 'name' in model1['spills'][0]
         assert 'on' in model1['spills'][0]
@@ -858,14 +858,14 @@ class NestedModelTests(FunctionalTestBase):
         assert 'start_position' in model1['spills'][0]['release']
         assert 'end_position' in model1['spills'][0]['release']
 
-        assert 'initializers' in model1['spills'][0]['substance']
+        assert 'windage_range' in model1['spills'][0]['substance']
 
     def test_put_with_nested_spill(self):
         req_data = self.req_data.copy()
-        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+        spill_data = [{'obj_type': 'gnome.spills.spill.Spill',
                        'name': 'What a Name',
                        'on': True,
-                       'release': {'obj_type': ('gnome.spill.release'
+                       'release': {'obj_type': ('gnome.spills.release'
                                                 '.PointLineRelease'),
                                    'name': 'PointLineRelease',
                                    'num_elements': 1000,
@@ -876,8 +876,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                       'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                                     'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                        'windage_range': [0.01, 0.04],
                                                        'windage_persist': 900,
                                                        }
@@ -906,10 +906,10 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_nested_sparse_spill(self):
         req_data = self.req_data.copy()
-        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+        spill_data = [{'obj_type': 'gnome.spills.spill.Spill',
                        'name': 'What a Name',
                        'on': True,
-                       'release': {'obj_type': ('gnome.spill.release'
+                       'release': {'obj_type': ('gnome.spills.release'
                                                 '.PointLineRelease'),
                                    'name': 'PointLineRelease',
                                    'num_elements': 1000,
@@ -920,8 +920,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                     'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                       'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                                     'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                        'windage_range': [0.01, 0.04],
                                                        'windage_persist': 900,
                                                        }]
@@ -946,10 +946,10 @@ class NestedModelTests(FunctionalTestBase):
 
     def test_put_with_remove_spill(self):
         req_data = self.req_data.copy()
-        spill_data = [{'obj_type': 'gnome.spill.spill.Spill',
+        spill_data = [{'obj_type': 'gnome.spills.spill.Spill',
                        'name': 'What a Name',
                        'on': True,
-                       'release': {'obj_type': ('gnome.spill.release'
+                       'release': {'obj_type': ('gnome.spills.release'
                                                 '.PointLineRelease'),
                                    'name': 'PointLineRelease',
                                    'num_elements': 1000,
@@ -960,8 +960,8 @@ class NestedModelTests(FunctionalTestBase):
                                    'end_position': [144.664166, 13.441944,
                                                     0.0],
                                    },
-                       'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                                        'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
+                       'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                                        'initializers': [{'obj_type': 'gnome.spills.initializers.InitWindages',
                                                           'windage_range': [0.01, 0.04],
                                                           'windage_persist': 900,
                                                           }]

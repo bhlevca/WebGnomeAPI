@@ -51,7 +51,8 @@ def get_help(request):
                                           writer_name='html')['html_body']
 
             return {'path': requested_file, 'html': html}
-    elif isdir(requested_file) and requested_dir != '':
+    elif isdir(requested_file) and requested_dir == '':
+        # all helps requested
         aggregate = []
         for path, _dirnames, filenames in walk(requested_file):
             filenames.sort()

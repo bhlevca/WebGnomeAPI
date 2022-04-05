@@ -13,23 +13,23 @@
   }, 
   {
    "id": "CatsMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_2.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "ComponentMover_3.json", 
-   "obj_type": "gnome.movers.current_movers.ComponentMover"
+   "obj_type": "gnome.movers.c_current_movers.ComponentMover"
   },
   {
    "id": "CatsMover_4.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_5.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }
  ], 
  "environment": [

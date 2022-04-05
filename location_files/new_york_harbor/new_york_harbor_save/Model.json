@@ -13,55 +13,55 @@
   }, 
   {
    "id": "CatsMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_2.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_3.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_4.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_5.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_6.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_7.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_8.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_9.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_10.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_11.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_12.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   },
   {
    "id": "CatsMover_13.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }
  ], 
  "environment": [

@@ -11,7 +11,7 @@ class SpillTests(FunctionalTestBase):
     '''
         Tests out the Gnome Spill object API
     '''
-    rel_req_data = {'obj_type': 'gnome.spill.release.PointLineRelease',
+    rel_req_data = {'obj_type': 'gnome.spills.release.PointLineRelease',
                     'num_elements': 100,
                     'num_released': 0,
                     'release_time': '2014-04-15T13:22:20.930570',
@@ -21,15 +21,12 @@ class SpillTests(FunctionalTestBase):
                     'start_position': (28.0, -78.0, 0.0),
                     }
 
-    init_req_data = {'obj_type': 'gnome.spill.initializers.InitWindages',
-                     'windage_range': (0.01, 0.04),
-                     'windage_persist': 900,
-                     }
-    substance_req_data = {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                          'initializers': None,
+    substance_req_data = {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                          'windage_range': (0.01, 0.04),
+                          'windage_persist': 900,
                           }
 
-    req_data = {'obj_type': 'gnome.spill.spill.Spill',
+    req_data = {'obj_type': 'gnome.spills.spill.Spill',
                 'name': 'What a Name',
                 'release': None,
                 'substance': None
@@ -40,12 +37,7 @@ class SpillTests(FunctionalTestBase):
         resp = self.testapp.post_json('/release', params=req_data)
         return resp.json_body
 
-    def create_init_obj(self, req_data):
-        resp = self.testapp.post_json('/initializer', params=req_data)
-        return [resp.json_body]
-
-    def create_substance_obj(self, req_data, init_obj):
-        req_data['initializers'] = init_obj
+    def create_substance_obj(self, req_data):
         resp = self.testapp.post_json('/substance', params=req_data)
         return resp.json_body
 
@@ -72,9 +64,8 @@ class SpillTests(FunctionalTestBase):
         # 6. check that our new JSON response matches the one from the create
         rel_obj = self.create_release_obj(self.rel_req_data)
 
-        init_obj = self.create_init_obj(self.init_req_data)
-        substance_obj = self.create_substance_obj(self.substance_req_data,
-                                                  init_obj)
+        substance_obj = self.create_substance_obj(self.substance_req_data)
+
         self.req_data['release'] = rel_obj
         self.req_data['substance'] = substance_obj
 
@@ -94,9 +85,8 @@ class SpillTests(FunctionalTestBase):
 
     def test_put_no_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
-        init_obj = self.create_init_obj(self.init_req_data)
-        substance_obj = self.create_substance_obj(self.substance_req_data,
-                                                  init_obj)
+        substance_obj = self.create_substance_obj(self.substance_req_data)
+
         self.req_data['release'] = rel_obj
         self.req_data['substance'] = substance_obj
 
@@ -105,9 +95,8 @@ class SpillTests(FunctionalTestBase):
     def test_put_invalid_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
 
-        init_obj = self.create_init_obj(self.init_req_data)
-        substance_obj = self.create_substance_obj(self.substance_req_data,
-                                                  init_obj)
+        substance_obj = self.create_substance_obj(self.substance_req_data)
+
         self.req_data['release'] = rel_obj
         self.req_data['substance'] = substance_obj
 
@@ -119,9 +108,8 @@ class SpillTests(FunctionalTestBase):
     def test_put_valid_id(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
 
-        init_obj = self.create_init_obj(self.init_req_data)
-        substance_obj = self.create_substance_obj(self.substance_req_data,
-                                                  init_obj)
+        substance_obj = self.create_substance_obj(self.substance_req_data)
+
         self.req_data['release'] = rel_obj
         self.req_data['substance'] = substance_obj
 
@@ -136,9 +124,8 @@ class SpillTests(FunctionalTestBase):
     def test_put_sparse_substance(self):
         rel_obj = self.create_release_obj(self.rel_req_data)
 
-        init_obj = self.create_init_obj(self.init_req_data)
-        substance_obj = self.create_substance_obj(self.substance_req_data,
-                                                  init_obj)
+        substance_obj = self.create_substance_obj(self.substance_req_data)
+
         self.req_data['release'] = rel_obj
         self.req_data['substance'] = substance_obj
 
@@ -176,10 +163,10 @@ class SpillNestedTests(FunctionalTestBase):
     '''
         Tests out the nested object creation for the Gnome Spill object API
     '''
-    req_data = {'obj_type': 'gnome.spill.spill.Spill',
+    req_data = {'obj_type': 'gnome.spills.spill.Spill',
                 'name': 'What a Name',
                 'on': True,
-                'release': {'obj_type': 'gnome.spill.release.PointLineRelease',
+                'release': {'obj_type': 'gnome.spills.release.PointLineRelease',
                             'num_elements': 1000,
                             'num_released': 84,
                             'release_time': '2013-02-13T09:00:00',
@@ -188,11 +175,9 @@ class SpillNestedTests(FunctionalTestBase):
                             'end_position': [144.664166, 13.441944, 0.0],
                             'start_position': [144.664166, 13.441944, 0.0],
                             },
-                'substance': {'obj_type': 'gnome.spill.substance.NonWeatheringSubstance',
-                              'initializers': [{'obj_type': 'gnome.spill.initializers.InitWindages',
-                                                'windage_range': [0.01, 0.04],
-                                                'windage_persist': 900,
-                                                }]
+                'substance': {'obj_type': 'gnome.spills.substance.NonWeatheringSubstance',
+                              'windage_range': [0.01, 0.04],
+                              'windage_persist': 900,
                               },
                 }
 
@@ -209,7 +194,6 @@ class SpillNestedTests(FunctionalTestBase):
         assert 'id' in spill_body
         assert 'id' in spill_body['release']
         assert 'id' in spill_body['substance']
-        assert 'id' in spill_body['substance']['initializers'][0]
 
         obj_id = spill_body['release']['id']
         resp2 = self.testapp.get('/release/{0}'.format(obj_id))
@@ -219,9 +203,6 @@ class SpillNestedTests(FunctionalTestBase):
         resp2 = self.testapp.get('/substance/{0}'.format(obj_id))
         assert 'id' in resp2.json_body
 
-        obj_id = spill_body['substance']['initializers'][0]['id']
-        resp2 = self.testapp.get('/initializer/{0}'.format(obj_id))
-        assert 'id' in resp2.json_body
 
     def test_put_valid_id(self):
         resp1 = self.testapp.post_json('/spill', params=self.req_data)
@@ -232,10 +213,10 @@ class SpillNestedTests(FunctionalTestBase):
         req2 = resp2.json_body
         req2['on'] = False
         req2['release']['num_elements'] = 200
-        req2['substance']['initializers'][0]['windage_range'] = [0.1, 0.2]
+        req2['substance']['windage_range'] = [0.1, 0.2]
 
         resp3 = self.testapp.put_json('/spill', params=req2)
         upd_body = resp3.json_body
         assert upd_body['on'] == False
         assert upd_body['release']['num_elements'] == 200
-        assert upd_body['substance']['initializers'][0]['windage_range'] == [0.1, 0.2]
+        assert upd_body['substance']['windage_range'] == [0.1, 0.2]

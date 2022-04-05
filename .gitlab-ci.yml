@@ -8,6 +8,7 @@ services:
 master:
   stage: build
   script:
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull registry.orr.noaa.gov/gnome/pygnome:master
     - docker tag registry.orr.noaa.gov/gnome/pygnome:master pygnome
@@ -23,6 +24,7 @@ master:
 develop:
   stage: build
   script:
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
     - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
@@ -56,7 +58,9 @@ test_master:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
+    - pip install -e libgoods/
     - pip install -e .
     - pytest webgnome_api/tests
     - ps
@@ -88,8 +92,11 @@ test_develop:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
-    - conda install --file conda_requirements.txt
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
+    - pip install -e libgoods/
     - pip install -e .
+    - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
     - jobs
