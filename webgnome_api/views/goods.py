@@ -23,6 +23,7 @@ import os
 import shutil
 import urllib.request
 import socket
+import ujson
 from cornice import Service
 
 import logging
@@ -44,7 +45,9 @@ def get_model_metadata(request):
     '''
     gets set of metadata for all available models
     '''
-    metadata = api.list_models()
+    
+    bounds = ujson.loads(request.GET['map_bounds'])
+    metadata = api.filter_models(bounds)
 
     return metadata
 
@@ -108,9 +111,16 @@ def get_goods_map(request):
 
     return file_path, file_name
 
+@goods_currents.get()
+def get_currents_data(request):
+    #stub function multi-endpoint GET request (similar to grid)
+    params = request.GET
+    option = params['option']
+    if option == 'bounding_poly':
+        return 
 
 @goods_currents.post()
-def get_currrents(request):
+def get_currents(request):
     '''
     Uses the payload passed by the client to send information to
     libGOODS. This file returned from libgoods is then used to create a
