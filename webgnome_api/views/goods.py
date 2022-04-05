@@ -45,9 +45,13 @@ def get_model_metadata(request):
     '''
     gets set of metadata for all available models
     '''
-    
-    bounds = ujson.loads(request.GET['map_bounds'])
-    metadata = api.filter_models(bounds)
+    bounds = request.GET.get('map_bounds', None)
+    metadata = None
+    if bounds:
+        bounds = ujson.loads(bounds)
+        metadata = api.filter_models(bounds)
+    else:
+        metadata = api.list_models()
 
     return metadata
 
