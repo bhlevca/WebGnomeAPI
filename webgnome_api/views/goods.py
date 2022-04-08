@@ -50,18 +50,18 @@ goods_list_models = Service(name='list_models', path='/goods/list_models',
 def get_model_metadata(request):
     '''
     gets set of metadata for all available models
+
+    If map_bounds is set, only models that intersect those
+    bounds will be returned.
+
+    map_bounds is a polygon as a list of lon, lat pairs
     '''
     bounds = request.GET.get('map_bounds', None)
-    model_list = None
+    model_list = supported_env_models
     if bounds:
         bounds = ujson.loads(bounds)
-        model_list = api.filter_models2(bounds, supported_env_models)
-        metadata = api.extract_API_metadata(model_list)
 
-    else:
-        metadata = api.list_models2()
-
-    breakpoint()
+    metadata = api.list_models(name_list=model_list, map_bounds=bounds)
 
     return metadata
 
@@ -131,7 +131,7 @@ def get_currents_data(request):
     params = request.GET
     option = params['option']
     if option == 'bounding_poly':
-        return 
+        return
 
 @goods_currents.post()
 def get_currents(request):
