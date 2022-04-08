@@ -18,13 +18,19 @@ from ..common.views import (switch_to_existing_session,
                             cors_response)
 
 from libgoods import maps, api
+import numpy as np
+
+from .. import supported_env_models
 
 import os
 import shutil
+import copy
 import urllib.request
 import socket
 import ujson
 from cornice import Service
+from shapely.geometry import Polygon
+import shapely.wkt as wkt
 
 import logging
 
@@ -46,12 +52,16 @@ def get_model_metadata(request):
     gets set of metadata for all available models
     '''
     bounds = request.GET.get('map_bounds', None)
-    metadata = None
+    model_list = None
     if bounds:
         bounds = ujson.loads(bounds)
-        metadata = api.filter_models(bounds)
+        model_list = api.filter_models2(bounds, supported_env_models)
+        metadata = api.extract_API_metadata(model_list)
+
     else:
-        metadata = api.list_models()
+        metadata = api.list_models2()
+
+    breakpoint()
 
     return metadata
 

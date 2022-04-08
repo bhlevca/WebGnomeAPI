@@ -9,7 +9,7 @@ import ujson
 
 from pyramid.settings import asbool
 from pyramid.interfaces import ISessionFactory
-from pyramid.response import Response
+from pyramid.response import Response, FileResponse
 
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPBadRequest,
@@ -45,6 +45,37 @@ upload_manager = Service(name='uploads', path='/uploads*sub_folders',
                          description="Uploaded File Manager",
                          cors_policy=cors_policy)
 
+user_files = Service(name='user_files', path='/user_files',
+                     description="User file download service",
+                     cors_policy=cors_policy)
+
+@user_files.get()
+def get_file(request):
+    '''
+    Allows a user to retrieve the files in their session folder by name.
+    (TODO) Multiple names creates a zipped response.
+    '''
+    log_prefix = 'req({0}): user_files.get_file():'.format(id(request))
+    log.info('>>{}'.format(log_prefix))
+
+
+    breakpoint()
+    file_list = request.GET.get('file_list',None)
+    if file_list is None or len(file_list) == 0:
+        return cors_exception(request, HTTPNotFound)
+    file_list = ujson.loads(file_list)
+
+    
+    response = FileResponse(file_list[0],
+                            request=request,
+                            content_type='application/octet-stream',
+                            )
+    response.headers['Content-Disposition'] = ("attachment; filename={0}"
+                                                    .format(file_list[1]))
+    log.info('<<' + log_prefix)
+
+    return response
+    
 
 @upload_manager.get()
 @can_persist
