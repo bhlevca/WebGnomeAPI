@@ -59,13 +59,12 @@ def get_file(request):
     log.info('>>{}'.format(log_prefix))
 
 
-    breakpoint()
     file_list = request.GET.get('file_list',None)
     if file_list is None or len(file_list) == 0:
         return cors_exception(request, HTTPNotFound)
     file_list = ujson.loads(file_list)
 
-    
+
     response = FileResponse(file_list[0],
                             request=request,
                             content_type='application/octet-stream',
@@ -75,7 +74,7 @@ def get_file(request):
     log.info('<<' + log_prefix)
 
     return response
-    
+
 
 @upload_manager.get()
 @can_persist
