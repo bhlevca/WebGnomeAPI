@@ -95,6 +95,7 @@ test:
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
     - conda env update -f libgoods/model_catalogs/environment.yml
+    - pip install -e libgoods/model_catalogs/
     - pip install -e libgoods/
     - pip install -e .
     - python setup.py compilejson
