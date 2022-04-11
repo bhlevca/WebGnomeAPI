@@ -155,7 +155,6 @@ class ModelRunTest(FunctionalTestBase):
 
         model1['outputters'].append(weathering_out)
 
-        breakpoint()
         resp = self.testapp.put_json('/model', params=model1)
         model1 = resp.json_body
 
