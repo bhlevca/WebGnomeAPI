@@ -24,7 +24,6 @@ from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespa
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
-import model_catalogs as mc
 from libgoods.api import filter_models2
 
 __version__ = "0.9"
@@ -54,8 +53,6 @@ supported_env_models =['GFS-1_4DEG',
                 'SFBOFS',
                 'TBOFS',
                 'NYOFS']
-
-env_models = filter_models2(None, name_list=supported_env_models)
 
 class WebgnomeFormatter(Formatter):
     def format(self, record):
