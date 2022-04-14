@@ -24,8 +24,6 @@ from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespa
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
-from libgoods.api import filter_models2
-
 __version__ = "0.9"
 
 logging.basicConfig()
