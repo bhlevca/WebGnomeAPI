@@ -58,7 +58,7 @@ test_master:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
     - pip install -e libgoods/
     - pip install -e .
@@ -76,7 +76,9 @@ test_production:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
+    - pip install -e libgoods/
     - pip install -e .
     - pytest webgnome_api/tests
     - ps
@@ -86,7 +88,7 @@ test_production:
   tags:
     - docker
 
-test_develop:
+test:
   stage: test
   image: registry.orr.noaa.gov/gnome/pygnome:develop
   script:
@@ -94,6 +96,8 @@ test_develop:
     - redis-server --daemonize yes
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
+    - conda env update -f libgoods/model_catalogs/environment.yml
+    - pip install -e libgoods/model_catalogs/
     - pip install -e libgoods/
     - pip install -e .
     - python setup.py compilejson
