@@ -6,7 +6,7 @@ RUN yum install -y redis
 COPY ./ /webgnomeapi/
 RUN conda install --file webgnomeapi/conda_requirements.txt \
                   --file webgnomeapi/libgoods/conda_requirements.txt
-RUN conda env update -f webgnomeapi/libgoods/model_catalogs/environment.yml
+RUN cd webgnomeapi/libgoods/model_catalogs && pip install -r pip_requirements.txt
 
 RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
 RUN cd webgnomeapi/libgoods && pip install -e .
