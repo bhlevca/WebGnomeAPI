@@ -72,7 +72,7 @@ class GetMapTest(FunctionalTestBase):
 
         # maybe check creation time, or ???
 
-
+@pytest.mark.skip("not functional right now")
 class GetCurrentsTest(FunctionalTestBase):
     '''
     Tests of getting a netcdf file of currents from the webgnomeAPI
@@ -122,7 +122,7 @@ class GetCurrentsTest(FunctionalTestBase):
         # is it non-empty?
         assert expected_path.stat().st_size > 0
 
-
+@pytest.mark.skip("not functional right now")
 class ListModels(FunctionalTestBase):
     '''
     Tests of getting a netcdf file of currents from the webgnomeAPI
