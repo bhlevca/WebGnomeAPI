@@ -8,7 +8,7 @@ RUN conda install --file webgnomeapi/conda_requirements.txt \
                   --file webgnomeapi/libgoods/conda_requirements.txt
 RUN conda env update -f webgnomeapi/libgoods/model_catalogs/environment.yml
 
-RUN cd wegnome/api/libgoods/model_catalogs && pip install -e .
+RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
 RUN cd webgnomeapi/libgoods && pip install -e .
 
 RUN cd webgnomeapi && pip install -e .
