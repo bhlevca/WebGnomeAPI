@@ -1,0 +1,47 @@
+# These are software packages necessary to run the WebGnomeAPI web server.
+# This file is designed for use with conda:
+#
+# so these packages can be installed with the commands:
+#
+#     $ conda install --file conda_requirements.txt
+#
+# many of the requirements are also available via pip, but they may
+# have slightly different names, but you can give it a try:
+#
+#     $ pip install -r conda_requirements.txt
+#
+# All required packages should be available on the conda-forge channel
+
+python_version >= "3.8"
+
+# numpy is not strictly needed by the API, but is by gnome, etc,
+# and adding it helps keep conda from trying to up- or down-grade it.
+numpy
+
+regex
+awesome-slugify
+pyramid >= 1.10.1,<2
+# repoze.lru  # required by Pyramid, but not brought in for some reason :-(
+paste
+pastedeploy >= "2.0"
+pyramid_log
+pyramid_redis_sessions
+cornice >= "3.4"
+ujson
+docutils
+htmlmin
+jsmin
+
+pycparser
+gevent
+python-socketio
+gevent-websocket
+
+#redis-py this one may not be necessary for PIP
+# we need the redis server to manage sessions
+# uncomment is you want to use a conda installed version
+redis
+
+# for testing:
+pytest
+webtest >= "2.0"
