@@ -62,7 +62,6 @@ def get_model_metadata(request):
 
     if bounds:
         bounds = ujson.loads(bounds)
-    breakpoint()
     if name:
         mdl = api.all_metas[name].as_pyson()
         return mdl
