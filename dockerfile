@@ -3,6 +3,8 @@ RUN yum update -y
 
 RUN yum install -y redis
 
+RUN conda list
+
 COPY ./ /webgnomeapi/
 RUN conda install --file webgnomeapi/conda_requirements.txt \
                   --file webgnomeapi/libgoods/conda_requirements.txt
