@@ -1,6 +1,5 @@
-(function (form){
-    var selector = form.selector;
-    var reversal = parseFloat($(selector + " #condition").val());
+(function(form) {
+    var reversal = parseFloat(form.find("#condition").val());
     webgnome.model.get('movers').findWhere({'filename': 'WACReverse2.cur'}).set('scale_value', reversal);
     webgnome.model.save();
 }(form));

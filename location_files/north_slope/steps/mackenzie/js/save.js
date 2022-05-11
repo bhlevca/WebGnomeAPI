@@ -1,12 +1,12 @@
-(function(form){
-	var selector = form.selector;
-	var macFlow = $(selector + ' #flow-rate').val();
+(function(form) {
+	var macFlow = form.find('#flow-rate').val();
+
 	var EAST_SCALE = 0.266 / 108500;
 	var MIDDLE_SCALE = 0.371 / 376250;
 	var NAP_SCALE = 0.363 / 408750;
 
 	if (macFlow === 'other') {
-		macFlow = parseFloat($(selector + ' #flow-rate-manual').val());
+		macFlow = parseFloat(form.find('#flow-rate-manual').val());
 
 		if (!macFlow || isNaN(macFlow)) {
 			return "Please enter a number for Mackenzie flow!";
