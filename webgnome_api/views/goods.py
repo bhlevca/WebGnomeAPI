@@ -42,9 +42,8 @@ goods_maps = Service(name='maps', path='/goods/maps*',
 goods_currents = Service(name='currents', path='/goods/currents*',
                       description="GOODS CURRENTS API", cors_policy=cors_policy)
 
-goods_list_models = Service(name='list_models', path='/goods/list_models',
+goods_list_models = Service(name='list_models', path='/goods/list_models*',
                             description="GOODS METADATA API", cors_policy=cors_policy)
-
 
 @goods_list_models.get()
 def get_model_metadata(request):
@@ -57,13 +56,20 @@ def get_model_metadata(request):
     map_bounds is a polygon as a list of lon, lat pairs
     '''
     bounds = request.GET.get('map_bounds', None)
+    name = request.GET.get('name', None)
+    retval = None
     model_list = supported_env_models
+
     if bounds:
         bounds = ujson.loads(bounds)
+    if name:
+        mdl = api.all_metas[name].as_pyson()
+        return mdl
 
-    metadata = api.list_models(name_list=model_list, map_bounds=bounds)
+    else:
+        retval = api.list_models(name_list=model_list, map_bounds=bounds, as_pyson=True)
 
-    return metadata
+    return retval
 
 
 @goods_maps.post()
