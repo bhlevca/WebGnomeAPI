@@ -1,13 +1,12 @@
 (function(form){
-    var selector = form.selector;
-    var datatype = $(selector + ' #datatype').val();
+    var datatype = form.find('#datatype').val();
+    var stageHeight = form.find('#stageheight').val();
+    var speed = parseFloat(form.find('#currentspeed').val());
     var missRiverMover = webgnome.model.get('movers').findWhere({'filename': 'MissRiver.cur'});
-    var stageHeight = $(selector + ' #stageheight').val();
-    var speed = parseFloat($(selector + ' #currentspeed').val());
     var speedms, errMsg;
 
 	if (datatype === 'height'){
-        var heightUnits = $(selector + ' #stageheight-units').val();
+        var heightUnits = form.find('#stageheight-units').val();
 
         if (!stageHeight) {
             return "Please enter a value for stage height!";
@@ -36,7 +35,7 @@
         }
     } else {
 
-        var speedUnits = $(selector + ' #currentspeed-units').val();
+        var speedUnits = form.find('#currentspeed-units').val();
 
         if (isNaN(speed)) {
             return "Please enter a valid input for speed!";

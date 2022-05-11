@@ -83,8 +83,8 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     if json_exc is not None:
         http_exc.json_body = json_exc
     if ('develop_mode' in list(request.registry.settings.keys()) and
-                asbool(request.registry.settings['develop_mode'])):
-        if with_stacktrace: #remove false to use
+            asbool(request.registry.settings['develop_mode'])):
+        if with_stacktrace:  # remove false to use
             pass
             import pdb
             pdb.post_mortem(sys.exc_info()[2])
@@ -184,11 +184,10 @@ def get_specifications(request, implemented_types):
 
 
 def delete_object(request):
-    #INCOMPLETE DO NOT USE
+    # INCOMPLETE DO NOT USE
     '''Deletes a Gnome object from both the active model and object registry'''
     log_prefix = 'req({0}): delete_object():'.format(id(request))
     log.info('>>' + log_prefix)
-
 
 
 def create_object(request, implemented_types):
@@ -364,6 +363,7 @@ def process_upload(request, field_name):
 
     return file_path, file_name
 
+
 def activate_uploaded(request):
     '''
         This view is intended to activate a file that has already been
@@ -413,13 +413,15 @@ def gen_unique_filename(filename_in, upload_dir=None):
         file_name, extension = get_file_name_ext(filename_in)
         fmtstring = file_name + '{0}' + extension
         new_fn = fmtstring.format('')
-        i = 1;
+        i = 1
+
         while i < 255:
             if new_fn not in existing_files:
                 return (file_name + extension, new_fn)
             else:
-                new_fn = fmtstring.format(' ('+ str(i) + ')')
-                i+=1
+                new_fn = fmtstring.format(' (' + str(i) + ')')
+                i += 1
+
         raise ValueError('File uploaded too many times')
     else:
         file_name, extension = get_file_name_ext(filename_in)
