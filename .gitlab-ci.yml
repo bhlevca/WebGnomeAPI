@@ -99,7 +99,7 @@ test:
     - redis-server --daemonize yes
     - conda list
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install -y --file libgoods/model_catalogs/conda_requirements.txt
+    - conda install -y --file libgoods/model_catalogs/conda_requirements.txt -vv
     - pip install -r libgoods/model_catalogs/pip_requirements.txt
     - pip install -e libgoods/model_catalogs/
     - pip install -e libgoods/
