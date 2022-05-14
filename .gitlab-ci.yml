@@ -97,10 +97,9 @@ test:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install --file conda_requirements.txt --file libgoods/conda_requirements.txt
     - conda list
-    - conda install -y --file libgoods/model_catalogs/conda_requirements.txt
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - conda install -y -c conda-forge -vv --file libgoods/model_catalogs/conda_requirements.txt
     - pip install -r libgoods/model_catalogs/pip_requirements.txt
     - pip install -e libgoods/model_catalogs/
     - pip install -e libgoods/
