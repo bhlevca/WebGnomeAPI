@@ -3,6 +3,9 @@ RUN yum update -y
 
 RUN yum install -y redis
 
+RUN echo conda env name $CONDA_DEFAULT_ENV
+RUN echo conda env path $CONDA_PREFIX
+
 RUN conda list
 
 COPY ./ /webgnomeapi/

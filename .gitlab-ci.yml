@@ -31,8 +31,6 @@ develop:
     - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
-    - echo conda env name $CONDA_DEFAULT_ENV
-    - echo conda env path $CONDA_PREFIX
   only:
     - develop
   tags:
@@ -99,6 +97,8 @@ test:
   script:
     - yum install redis -y
     - redis-server --daemonize yes
+    - echo conda env name $CONDA_DEFAULT_ENV
+    - echo conda env path $CONDA_PREFIX
     - conda list
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install -y -c conda-forge -vv --file libgoods/model_catalogs/conda_requirements.txt
