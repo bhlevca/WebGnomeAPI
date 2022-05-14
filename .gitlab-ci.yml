@@ -31,8 +31,8 @@ develop:
     - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
-    - echo "conda env name: $CONDA_DEFAULT_ENV"
-    - echo "conda env path: $CONDA_PREFIX"
+    - echo conda env name $CONDA_DEFAULT_ENV
+    - echo conda env path $CONDA_PREFIX
   only:
     - develop
   tags:
