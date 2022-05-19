@@ -100,6 +100,7 @@ test:
     - echo conda env name $CONDA_DEFAULT_ENV
     - echo conda env path $CONDA_PREFIX
     - conda install --file conda_requirements.txt
+    - conda install --file conda_requirements_test.txt
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
 #    - conda install -y -c conda-forge -vv --file libgoods/model_catalogs/conda_requirements.txt
     - conda install -y --file libgoods/model_catalogs/conda_requirements.txt
