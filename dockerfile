@@ -1,17 +1,14 @@
 FROM pygnome
-RUN yum update -y
 
-RUN yum install -y redis
+RUN yum update -y \
+    && yum install -y redis
 
-RUN echo conda env name $CONDA_DEFAULT_ENV
-RUN echo conda env path $CONDA_PREFIX
-
-RUN conda list
 
 COPY ./ /webgnomeapi/
+
 RUN conda install \
     --file webgnomeapi/conda_requirements.txt \
-    --file webgnomeapi/libgoods/conda_requirements.txt
+    --file webgnomeapi/libgoods/conda_requirements.txt \
     --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
 
 RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
