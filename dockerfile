@@ -11,6 +11,7 @@ RUN conda list
 COPY ./ /webgnomeapi/
 RUN conda install \
     --file webgnomeapi/conda_requirements.txt \
+    --file webgnomeapi/libgoods/conda_requirements.txt
     --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
 
 RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt

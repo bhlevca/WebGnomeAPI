@@ -46,5 +46,5 @@ redis-py
 # redis
 
 # for testing:
-pytest
-webtest>=2.0
+# pytest
+# webtest>=2.0
