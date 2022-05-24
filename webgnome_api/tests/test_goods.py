@@ -6,13 +6,7 @@ that is, getting maps, currents, etc for the model runs
 We really need more tests!
 
 """
-
-import os
-import zipfile
 from pathlib import Path
-import json
-
-from gnome.model import Model
 
 from .base import FunctionalTestBase, MODELS_DIR
 
@@ -39,7 +33,7 @@ class GetMapTest(FunctionalTestBase):
         # it's passing it on through to GOODS
         # the request should be updated with our "new" API
 
-        req_params = {'err_placeholder':'',
+        req_params = {'err_placeholder': '',
                       'NorthLat': 47.06693175688763,
                       'WestLon': -124.26942110656861,
                       'EastLon': -123.6972360021842,
@@ -72,6 +66,7 @@ class GetMapTest(FunctionalTestBase):
 
         # maybe check creation time, or ???
 
+
 @pytest.mark.skip("not functional right now")
 class GetCurrentsTest(FunctionalTestBase):
     '''
@@ -91,7 +86,7 @@ class GetCurrentsTest(FunctionalTestBase):
         # it's passing it on through to GOODS
         # the request should be updated with our "new" API
 
-        req_params = {'err_placeholder':'',
+        req_params = {'err_placeholder': '',
                       'model_name': 'dummy_cur',
                       'NorthLat': 34.0,
                       'WestLon': -119.0,
@@ -141,7 +136,6 @@ class ListModels(FunctionalTestBase):
         # it's passing it on through to GOODS
         # the request should be updated with our "new" API
 
-
         # should there be some parameters to the request?
         resp = self.testapp.get('/goods/list_models')
 
@@ -157,4 +151,3 @@ class ListModels(FunctionalTestBase):
             assert 'name' in model
             assert 'bounding_box' in model
             assert 'bounding_poly' in model
-

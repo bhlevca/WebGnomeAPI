@@ -1,6 +1,19 @@
 """
 Views for the GOODS interface.
 """
+import os
+import socket
+import copy
+import shutil
+import urllib.request
+
+import ujson
+import numpy as np
+
+import shapely.wkt as wkt
+from shapely.geometry import Polygon
+
+from cornice import Service
 
 from pyramid.httpexceptions import (HTTPRequestTimeout,
                                     HTTPInsufficientStorage,
@@ -18,32 +31,24 @@ from ..common.views import (switch_to_existing_session,
                             cors_response)
 
 from libgoods import maps, api
-import numpy as np
 
 from .. import supported_env_models
-
-import os
-import shutil
-import copy
-import urllib.request
-import socket
-import ujson
-from cornice import Service
-from shapely.geometry import Polygon
-import shapely.wkt as wkt
 
 import logging
 
 log = logging.getLogger(__name__)
 
 goods_maps = Service(name='maps', path='/goods/maps*',
-                description="GOODS MAP API", cors_policy=cors_policy)
+                     description="GOODS MAP API", cors_policy=cors_policy)
 
 goods_currents = Service(name='currents', path='/goods/currents*',
-                      description="GOODS CURRENTS API", cors_policy=cors_policy)
+                         description="GOODS CURRENTS API",
+                         cors_policy=cors_policy)
 
 goods_list_models = Service(name='list_models', path='/goods/list_models*',
-                            description="GOODS METADATA API", cors_policy=cors_policy)
+                            description="GOODS METADATA API",
+                            cors_policy=cors_policy)
+
 
 @goods_list_models.get()
 def get_model_metadata(request):
@@ -67,7 +72,8 @@ def get_model_metadata(request):
         return mdl
 
     else:
-        retval = api.list_models(name_list=model_list, map_bounds=bounds, as_pyson=True)
+        retval = api.list_models(name_list=model_list, map_bounds=bounds,
+                                 as_pyson=True)
 
     return retval
 
@@ -75,19 +81,22 @@ def get_model_metadata(request):
 @goods_maps.post()
 def get_goods_map(request):
     '''
-    Uses the payload passed by the client to make a .bna download request from GOODS.
-    This file is then used to create a map object, which is then returned to the client
+    Uses the payload passed by the client to make a .bna download request
+    from GOODS.
+    This file is then used to create a map object, which is then returned
+    to the client
+
+    Example post:
+    req_params = {'err_placeholder':'',
+                  'NorthLat': 47.06693175688763,
+                  'WestLon': -124.26942110656861,
+                  'EastLon': -123.6972360021842,
+                  'SouthLat': 46.78488364986247,
+                  'xDateline': 0,
+                  'resolution': 'i',
+                  'submit': 'Get Map',
+                  }
     '''
-    # Example post:
-    # req_params = {'err_placeholder':'',
-    #               'NorthLat': 47.06693175688763,
-    #               'WestLon': -124.26942110656861,
-    #               'EastLon': -123.6972360021842,
-    #               'SouthLat': 46.78488364986247,
-    #               'xDateline': 0,
-    #               'resolution': 'i',
-    #               'submit': 'Get Map',
-    #               }
 
     params = request.POST
 
@@ -131,13 +140,16 @@ def get_goods_map(request):
 
     return file_path, file_name
 
+
 @goods_currents.get()
 def get_currents_data(request):
-    #stub function multi-endpoint GET request (similar to grid)
+    # stub function multi-endpoint GET request (similar to grid)
     params = request.GET
     option = params['option']
+
     if option == 'bounding_poly':
         return
+
 
 @goods_currents.post()
 def get_currents(request):
@@ -146,12 +158,12 @@ def get_currents(request):
     libGOODS. This file returned from libgoods is then used to create a
     PyCurrentMover object, which is then returned to the client
     '''
-
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     bounds = ((float(params['WestLon']), float(params['SouthLat'])),
               (float(params['EastLon']), float(params['NorthLat'])))
+
     try:
         fp = api.get_model_data(
             model_id=params['model_name'].upper(),
@@ -162,17 +174,18 @@ def get_currents(request):
             max_filesize=max_upload_size,
         )
 
-        file_name, unique_name = gen_unique_filename(fp.name, upload_dir)
+        _file_name, unique_name = gen_unique_filename(fp.name, upload_dir)
 
         file_path = os.path.join(upload_dir, unique_name)
-        shutil.move(fp, file_path)  # maybe I should pass session directory location to libgoods?
+
+        # maybe I should pass session directory location to libgoods?
+        shutil.move(fp, file_path)
 
         log.info('Successfully uploaded file "{0}"'.format(file_path))
 
     except api.FileTooBigError:
-            raise cors_response(request,
-                                HTTPBadRequest('file is too big! '
-                                               f'Max size = {max_upload_size}'))
+            raise cors_response(request, HTTPBadRequest(
+                f'file is too big! Max size = {max_upload_size}'
+            ))
 
     return file_path
-
