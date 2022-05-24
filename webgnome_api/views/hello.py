@@ -53,9 +53,9 @@ def to_table(header_items, row_items):
 
 def to_table_row(items, header=False):
     if header is True:
-        return '<tr>{}</tr>'.format(''.join([to_table_header(i) for i in items]))
+        return f'<tr>{"".join([to_table_header(i) for i in items])}</tr>'
     else:
-        return '<tr>{}</tr>'.format(''.join([to_table_data(i) for i in items]))
+        return f'<tr>{"".join([to_table_data(i) for i in items])}</tr>'
 
 
 def to_table_header(item):
