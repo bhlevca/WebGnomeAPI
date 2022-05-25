@@ -1,11 +1,11 @@
-import socketio
+import os
+import re
+import pathlib
 import logging
+import socketio
 import base64
 import hashlib
-import re
-import os
 import gevent
-import pathlib
 
 log = logging.getLogger(__name__)
 
@@ -85,6 +85,7 @@ class WebgnomeNamespace(socketio.Namespace):
 
         with self.session(sid) as sock_session:
             self.setup_logger(sock_session)
+
         return True
 
     def on_disconnect(self, sid):
@@ -129,13 +130,13 @@ class WebgnomeNamespace(socketio.Namespace):
         with self.session(sid) as sock_session:
             if ack == sock_session['num_sent']:
                 sock_session['lock'].set()
+
             log.debug('ack {0}'.format(ack))
 
     # helper and setup functions below here
 
     def get_sockid_from_sessid(self, sessionid):
-        sockid = self.sio_sessionid_map.get(sessionid)
-        return sockid
+        return self.sio_sessionid_map.get(sessionid)
 
     def setup_logger(self, sock_session):
         sess_hash = sock_session['session_hash']
@@ -168,7 +169,7 @@ class WebgnomeNamespace(socketio.Namespace):
             if (hasattr(handler, 'session_id') and
                     handler.session_id == sess_id):
                 overall_logger.info('existing handler for the session '
-                                    '{0} found'.format(sess_id))
+                                    f'{sess_id} found')
                 existing_handler = overall_logger.handlers[i]
 
         def gen_emit_msg(sess_hash):
@@ -180,6 +181,7 @@ class WebgnomeNamespace(socketio.Namespace):
                                .groupdict())
                     del msg_obj['session_hash']
                     self.emit('log', msg_obj, sid)
+
                     return True
                 else:
                     return False

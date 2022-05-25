@@ -5,13 +5,14 @@
     This will make it so the Web Client doesn't have to work quite as hard.
 '''
 import os
+import regex as re
 import base64
 import hashlib
-import regex as re
 
 import ujson
 
-from ..common.common_object import ValueIsJsonObject, get_session_dir
+from webgnome_api.common.common_object import (ValueIsJsonObject,
+                                               get_session_dir)
 
 
 class PyGnomeSchemaTweenFactory(object):
@@ -25,7 +26,7 @@ class PyGnomeSchemaTweenFactory(object):
         modified = False
 
         if isinstance(json_request, dict):
-            for v in list(json_request.values()):
+            for v in json_request.values():
                 if self.add_json_key(v):
                     modified = True
         elif isinstance(json_request, (list, tuple)):
@@ -81,7 +82,8 @@ class PyGnomeSchemaTweenFactory(object):
     def generate_short_session_id(self, request):
         if hasattr(request, 'session'):
             hasher = hashlib.sha1(request.session.session_id.encode('utf-8'))
-            request.session_hash = base64.urlsafe_b64encode(hasher.digest()).decode()
+            request.session_hash = (base64.urlsafe_b64encode(hasher.digest())
+                                    .decode())
 
     def before_the_handler(self, request):
         # code to be executed for each request
@@ -91,7 +93,7 @@ class PyGnomeSchemaTweenFactory(object):
                 request.environ['CONTENT_TYPE'][:16] == 'application/json' and
                 request.body):
             json_request = ujson.loads(request.body)
-            #json_request = self.sanitizeJSON(json_request)
+            # json_request = self.sanitizeJSON(json_request)
 
             self.add_json_key(json_request)
             self.fix_filename_attrs(request, json_request)
@@ -116,23 +118,24 @@ class PyGnomeSchemaTweenFactory(object):
     HTMLsanitize = re.compile(r'["\'&]')
 
     def sanitize_string(self, s):
-        #basic HTML string sanitization
+        # basic HTML string sanitization
         return re.sub(self.HTMLsanitize, '_', s)
 
     def sanitizeJSON(self, json_):
-            #response should be a JSON structure
-            #Removes dangerous HTML from the body of the response
+            # response should be a JSON structure
+            # Removes dangerous HTML from the body of the response
             if isinstance(json_, str):
                 return self.sanitize_string(json_)
             elif isinstance(json_, list):
-                #array case
+                # array case
                 for j, val in enumerate(json_):
                     json_[j] = self.sanitizeJSON(val)
             else:
-                #object case
+                # object case
                 if hasattr(json_, 'items'):
                     for k, v in json_.items():
                         json_[k] = self.sanitizeJSON(v)
+
             return json_
 
     def __call__(self, request):
