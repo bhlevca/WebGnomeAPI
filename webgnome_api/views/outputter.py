@@ -7,12 +7,12 @@ import ujson
 from pyramid.httpexceptions import HTTPBadRequest
 from cornice import Service
 
-from ..common.common_object import get_session_dir
-from ..common.views import (get_object,
-                            create_object,
-                            update_object,
-                            cors_policy,
-                            cors_exception)
+from webgnome_api.common.common_object import get_session_dir
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy,
+                                       cors_exception)
 
 outputter = Service(name='outputter', path='/outputter*obj_id',
                     description="Outputter API", cors_policy=cors_policy)
