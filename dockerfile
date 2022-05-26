@@ -13,10 +13,10 @@ RUN conda install \
 
 RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
 
-RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
-RUN cd webgnomeapi/libgoods && pip install -e .
+RUN cd webgnomeapi/libgoods/model_catalogs && pip install .
+RUN cd webgnomeapi/libgoods && pip install .
 
-RUN cd webgnomeapi && pip install -e .
+RUN cd webgnomeapi && pip install .
 
 RUN cd webgnomeapi && python setup.py compilejson
 
