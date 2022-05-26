@@ -6,24 +6,17 @@ RUN yum update -y \
 
 COPY ./ /webgnomeapi/
 
-RUN echo "this dir:" && \
-    ls && \
-    echo "the webgnomeapi dir:" && \
-    ls webgnomeapi && \
-    conda install \
-    --file conda_requirements.txt \
-    --file libgoods/conda_requirements.txt \
-    --file libgoods/model_catalogs/conda_requirements.txt
-#    --file webgnomeapi/conda_requirements.txt \
-#    --file webgnomeapi/libgoods/conda_requirements.txt \
-#    --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
+RUN conda install \
+       --file webgnomeapi/conda_requirements.txt \
+#       --file webgnomeapi/libgoods/conda_requirements.txt \
+#       --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
 
-RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
+# RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
 
-RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
-RUN cd webgnomeapi/libgoods && pip install -e .
+# RUN cd webgnomeapi/libgoods/model_catalogs && pip install .
+RUN cd webgnomeapi/libgoods && pip install .
 
-RUN cd webgnomeapi && pip install -e .
+RUN cd webgnomeapi && pip install .
 
 RUN cd webgnomeapi && python setup.py compilejson
 
