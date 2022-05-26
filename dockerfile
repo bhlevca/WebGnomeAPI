@@ -8,13 +8,13 @@ COPY ./ /webgnomeapi/
 
 RUN conda install \
     --file webgnomeapi/conda_requirements.txt \
-    --file webgnomeapi/libgoods/conda_requirements.txt \
+    --file webgnomeapi/libgoods/libgoods/conda_requirements.txt \
     --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
 
 RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
 
-RUN cd webgnomeapi/libgoods/model_catalogs && pip install .
-RUN cd webgnomeapi/libgoods && pip install .
+RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
+RUN cd webgnomeapi/libgoods/libgoods && pip install .
 
 RUN cd webgnomeapi && pip install .
 
