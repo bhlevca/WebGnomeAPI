@@ -60,8 +60,10 @@ test_main:
     - redis-server --daemonize yes
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
-    - pip install -e libgoods/
-    - pip install -e .
+                    --file conda_requirements_test.txt
+                    --file libgoods/conda_requirements.txt
+    - pip install libgoods/
+    - pip install .
     - pytest webgnome_api/tests
     - ps
     - jobs
