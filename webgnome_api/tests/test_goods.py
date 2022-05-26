@@ -66,10 +66,7 @@ class GetMapTest(FunctionalTestBase):
 
         # maybe check creation time, or ???
 
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
 @pytest.mark.skip("not functional right now")
 class GetCurrentsTest(FunctionalTestBase):
     '''
@@ -120,10 +117,7 @@ class GetCurrentsTest(FunctionalTestBase):
         # is it non-empty?
         assert expected_path.stat().st_size > 0
 
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
 @pytest.mark.skip("not functional right now")
 class ListModels(FunctionalTestBase):
     '''
