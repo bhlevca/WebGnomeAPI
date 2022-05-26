@@ -3,7 +3,9 @@
 """
 import os
 import shutil
-import urllib.request, urllib.error, urllib.parse
+
+import urllib.request
+
 import ujson
 
 import logging
@@ -14,38 +16,41 @@ from .helpers import FQNamesToDict, PyClassFromName
 from gnome.utilities.orderedcollection import OrderedCollection
 from gnome.spill_container import SpillContainerPair
 
-from webgnome_api.common.session_management import set_session_object, get_session_object
+from webgnome_api.common.session_management import (set_session_object,
+                                                    get_session_object)
 from gnome.gnomeobject import GnomeId
 
 log = logging.getLogger(__name__)
 
+
 def DeleteObject(id_, all_objects):
-    #THIS IS INCOMPLETE DO NOT USES
+    # THIS IS INCOMPLETE DO NOT USES
     if id_ is None:
         raise ValueError('Tried to delete object without an id')
+
     if id_ in all_objects:
         del all_objects[id_]
+
 
 def recursive_removal(model, id_):
     sch = model._schema()
     for c in sch.children:
         child_obj = getattr(model, c.name)
         if (hasattr(child_obj, 'id') and hasattr(child_obj, 'obj_type')):
-            #child object is a Gnome object
+            # child object is a Gnome object
             if child_obj.id == id_:
                 model.setattr(c.name, None)
             else:
                 recursive_removal(child_obj, id_)
         elif isinstance(child_obj, Iterable) and type(child_obj) is not str:
-            #child object is a list of some kind
+            # child object is a list of some kind
             for i, obj in enumerate(child_obj):
                 if (hasattr(obj, 'id') and hasattr(obj, 'obj_type')):
                     if obj.id_ == id_:
-                        del child_obj[i] #del or set to None?? Risky??
+                        del child_obj[i]  # del or set to None?? Risky??
                     else:
                         recursive_removal(obj, id_)
-            
-        
+
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
@@ -123,8 +128,7 @@ def UpdateObject(obj, json_obj, all_objects, deserialize_obj=True):
 
 
 def ValueIsJsonObject(value):
-    return (isinstance(value, dict) and
-            'obj_type' in value)
+    return (isinstance(value, dict) and 'obj_type' in value)
 
 
 def ObjectId(obj):
@@ -169,7 +173,8 @@ def RegisterObject(obj, request):
 
     if (isinstance(obj, GnomeId)):
         set_session_object(obj, request)
-        log.info('registering {0} on session {1}'.format(obj.name, request.session.session_id))
+        log.info(f'registering {obj.name} '
+                 f'on session {request.session.session_id}')
 
     if isinstance(obj, sequence_types):
         for i in obj:
@@ -182,8 +187,9 @@ def RegisterObject(obj, request):
                 attr = getattr(obj, k)
             except Exception as e:
                 log.warning(str(e))
+
             if ((isinstance(attr, GnomeId) and get_session_object(attr.id, request) is None)
-                or isinstance(attr, sequence_types)):
+                    or isinstance(attr, sequence_types)):
                 RegisterObject(attr, request)
 
 
@@ -202,6 +208,7 @@ def obj_id_from_url(request):
 
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
+
 
 def get_session_base_dir(request):
     return os.path.normpath(request.registry.settings['session_dir'])
@@ -236,7 +243,7 @@ def list_session_dir(request):
     if os.path.isdir(session_dir) is True:
         # our session folder exists, clean out any files
         for f in os.listdir(session_dir):
-            print(('\t{}'.format(f)))
+            print(f'\t{f}')
 
 
 def clean_session_dir(request):

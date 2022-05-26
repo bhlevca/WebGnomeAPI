@@ -1,19 +1,7 @@
 """
 Views for the Substance objects.
 """
-from webgnome_api.common.views import (get_object,
-                                       create_object,
-                                       update_object,
-                                       cors_exception,
-                                       cors_response,
-                                       get_object,
-                                       create_object,
-                                       cors_policy,
-                                       process_upload,
-                                       can_persist,
-                                       switch_to_existing_session,
-                                       activate_uploaded)
-
+import logging
 import ujson
 
 from pyramid.response import Response
@@ -21,12 +9,17 @@ from pyramid.view import view_config
 
 from cornice import Service
 
+from webgnome_api.common.views import (cors_response,
+                                       get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy,
+                                       switch_to_existing_session)
 
-import logging
 log = logging.getLogger(__name__)
 
 substance = Service(name='substance', path='/substance*obj_id',
-                       description="Substance API", cors_policy=cors_policy)
+                    description="Substance API", cors_policy=cors_policy)
 
 implemented_types = ('gnome.spills.substance.GnomeOil',
                      'gnome.spills.substance.NonWeatheringSubstance'
@@ -72,9 +65,10 @@ def upload_substance(request):
 
     substance_type = request.POST.pop('obj_type', [])
 
-    substance_json = {'obj_type': substance_type,
-                    'filename': file_name,
-                    'name': name
+    substance_json = {
+        'obj_type': substance_type,
+        'filename': file_name,
+        'name': name
     }
 
     request.body = ujson.dumps(substance_json).encode('utf-8')

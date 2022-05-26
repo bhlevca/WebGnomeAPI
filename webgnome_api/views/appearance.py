@@ -9,7 +9,7 @@ from webgnome_api.common.views import (get_object,
 from cornice import Service
 
 appearance = Service(name='appearance', path='/appearance*obj_id',
-                description="appearance API", cors_policy=cors_policy)
+                     description="appearance API", cors_policy=cors_policy)
 
 implemented_types = (
     'gnome.utilities.appearance.Colormap',

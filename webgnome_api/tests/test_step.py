@@ -20,7 +20,6 @@ class StepTest(FunctionalTestBase):
     '''
     substance_data = GnomeOil('oil_ans_mp').serialize()
 
-
     spill_data = {'obj_type': 'gnome.spills.spill.Spill',
                   'name': 'What a Name',
                   'on': True,
@@ -42,7 +41,7 @@ class StepTest(FunctionalTestBase):
                                                                     0.04],
                                                   'windage_persist': 900,
                                                   }]
-                               },
+                                },
                   }
 
     wind_data = {'obj_type': 'gnome.environment.Wind',
@@ -261,8 +260,10 @@ class StepTest(FunctionalTestBase):
         # - we need a spill
         print('test_weathering_step(): creating spill...')
         model1['spills'] = [self.spill_data]
+
         # amount uncertainty no longer functional on Windows
-        #model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+        # model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+
         model1['spills'][0]['release']['release_time'] = model_start_time
         model1['spills'][0]['release']['end_release_time'] = model_start_time
 
@@ -310,7 +311,8 @@ class StepTest(FunctionalTestBase):
 
         assert first_step['step_num'] == 0
 
-        weathering_out = [v for v in list(first_step['WeatheringOutput'].values())
+        weathering_out = [v for v
+                          in list(first_step['WeatheringOutput'].values())
                           if isinstance(v, dict)][0]
         assert len(weathering_out) == 11
 
@@ -319,7 +321,8 @@ class StepTest(FunctionalTestBase):
 
         assert second_step['step_num'] == 1
 
-        weathering_out = [v for v in list(second_step['WeatheringOutput'].values())
+        weathering_out = [v for v
+                          in list(second_step['WeatheringOutput'].values())
                           if isinstance(v, dict)][0]
         assert len(weathering_out) == 11
 
@@ -332,7 +335,8 @@ class StepTest(FunctionalTestBase):
 
         assert rewound_step['step_num'] == 0
 
-        weathering_out = [v for v in list(rewound_step['WeatheringOutput'].values())
+        weathering_out = [v for v
+                          in list(rewound_step['WeatheringOutput'].values())
                           if isinstance(v, dict)][0]
         assert len(weathering_out) == 11
 
@@ -357,8 +361,10 @@ class StepTest(FunctionalTestBase):
         # - we need a spill
         print('test_weathering_step(): creating spill...')
         model1['spills'] = [self.spill_data]
+
         # amount uncertainty no longer functional on Windows
-        #model1['spills'][0]['amount_uncertainty_scale'] = 0.5 
+        # model1['spills'][0]['amount_uncertainty_scale'] = 0.5
+
         model1['spills'][0]['release']['release_time'] = model_start_time
         model1['spills'][0]['release']['end_release_time'] = model_start_time
 

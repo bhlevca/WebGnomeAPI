@@ -1,4 +1,13 @@
 (function(form){
+    var sagVal = parseFloat(form.find('#sag-speed').val());
+    var shaVal = parseFloat(form.find('#sha-speed').val());
+    var canWestVal = parseFloat(form.find('#can-west-speed').val());
+    var canEastVal = parseFloat(form.find('#can-tam-speed').val());
+
+    var sagUnits = form.find('#sag-speed-units').val();
+    var shaUnits = form.find('#sha-speed-units').val();
+    var canWestUnits = form.find('#can-west-speed-units').val();
+    var canEastUnits = form.find('#can-tam-speed-units').val();
 
     var convertToM_S = function(speed, units) {
         if (units !== 'm/s') {
@@ -33,21 +42,10 @@
         return str;
     };
 
-    var selector = form.selector;
     var sagMover = webgnome.model.get('movers').findWhere({'filename': 'SagRiver.cur'});
     var shaMover = webgnome.model.get('movers').findWhere({'filename': 'ShaviovikRiver.cur'});
     var canWestMover = webgnome.model.get('movers').findWhere({'filename': 'CanningWestRiver.cur'});
     var canEastMover = webgnome.model.get('movers').findWhere({'filename': 'CanningEastTamaRiver.cur'});
-
-    var sagVal = parseFloat($(selector + ' #sag-speed').val());
-    var shaVal = parseFloat($(selector + ' #sha-speed').val());
-    var canWestVal = parseFloat($(selector + ' #can-west-speed').val());
-    var canEastVal = parseFloat($(selector + ' #can-tam-speed').val());
-
-    var sagUnits = $(selector + ' #sag-speed-units').val();
-    var shaUnits = $(selector + ' #sha-speed-units').val();
-    var canWestUnits = $(selector + ' #can-west-speed-units').val();
-    var canEastUnits = $(selector + ' #can-tam-speed-units').val();
 
     if (!sagVal || isNaN(sagVal)) {
         return "Please enter a number for Sag flow rate!";

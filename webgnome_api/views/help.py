@@ -3,10 +3,10 @@ Views for help documentation
 """
 from os import walk
 from os.path import sep, join, isfile, isdir
-
 import time
+import urllib.parse
+
 import ujson
-import urllib.request, urllib.parse, urllib.error
 import redis
 
 from docutils.core import publish_parts

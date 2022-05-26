@@ -15,7 +15,7 @@ pp = PrettyPrinter(indent=2, width=120)
 
 class ModelRunTest(FunctionalTestBase):
     '''
-        Tests out a Model run with the WebGnome API
+    Tests out a Model run with the WebGnome API
     '''
     oil_data = GnomeOil('oil_ans_mp').serialize()
 
@@ -116,7 +116,6 @@ class ModelRunTest(FunctionalTestBase):
         model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
-        print('model[weatherers]:')
         pp.pprint(model1['weatherers'])
 
         # The location file we selected should have:

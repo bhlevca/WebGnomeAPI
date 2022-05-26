@@ -1,14 +1,23 @@
 FROM pygnome
-RUN yum update -y
 
-RUN yum install -y redis
+RUN yum update -y \
+    && yum install -y redis
+
 
 COPY ./ /webgnomeapi/
-RUN conda install --file webgnomeapi/conda_requirements.txt \
-                  --file webgnomeapi/libgoods/conda_requirements.txt
 
+RUN conda install \
+    --file webgnomeapi/conda_requirements.txt \
+    --file webgnomeapi/libgoods/conda_requirements.txt \
+    --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
+
+RUN pip install -r webgnomeapi/libgoods/model_catalogs/pip_requirements.txt
+
+RUN cd webgnomeapi/libgoods/model_catalogs && pip install -e .
 RUN cd webgnomeapi/libgoods && pip install -e .
+
 RUN cd webgnomeapi && pip install -e .
+
 RUN cd webgnomeapi && python setup.py compilejson
 
 RUN mkdir /config

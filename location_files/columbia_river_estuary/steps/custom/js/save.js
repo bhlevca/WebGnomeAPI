@@ -1,6 +1,5 @@
-(function (form){
-    var selector = form.selector;
-    var flow = $(selector + ' #flow-rate').val();
+(function(form) {
+    var flow = form.find('#flow-rate').val();
     var riverMover = webgnome.model.get('movers').findWhere({'name': 'River Currents'});
     var scale = 0.2725 / 223.027;
     var v_scale, tongue_point;
@@ -16,8 +15,8 @@
     };
 
     if (flow === 'input') {
-        var bonneFlow = parseFloat($(selector + ' #bonne-flow').val());
-        var willFlow = parseFloat($(selector + ' #willam-flow').val());
+        var bonneFlow = parseFloat(form.find('#bonne-flow').val());
+        var willFlow = parseFloat(form.find('#willam-flow').val());
 
         if (!bonneFlow || isNaN(bonneFlow)) {
             return "Please enter a number for Bonneville flow rate!";
@@ -28,8 +27,8 @@
         }
 
         var units = {};
-        units['bonne'] = $(selector + ' #bonne-flow-units').val();
-        units['will'] = $(selector + ' #willam-flow-units').val();
+        units['bonne'] = form.find('#bonne-flow-units').val();
+        units['will'] = form.find('#willam-flow-units').val();
         var transport, errMsg;
 
         bonneFlow = convertToKCFS(bonneFlow, units.bonne);

@@ -19,7 +19,8 @@ from pyramid_log import Formatter, _WrapDict, _DottedLookup
 from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
-from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespace
+from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
+                                          WebgnomeNamespace)
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
@@ -27,6 +28,30 @@ from geventwebsocket.handler import WebSocketHandler
 __version__ = "0.9"
 
 logging.basicConfig()
+
+supported_env_models = ['GFS-1_4DEG',
+                        'RTOFS-GLOBAL',
+                        'RTOFS-GLOBAL_2D',
+                        'GFS-1_2DEG',
+                        'GFS-1DEG',
+                        'HYCOM',
+                        'RTOFS-ALASKA',
+                        'RTOFS-WEST',
+                        'RTOFS-EAST',
+                        'WCOFS_2DS',
+                        'NGOFS2_2DS',
+                        'GOMOFS_2DS',
+                        'CREOFS',
+                        'LMHOFS',
+                        'CIOFS',
+                        'LSOFS',
+                        'CBOFS',
+                        'LEOFS',
+                        'DBOFS',
+                        'LOOFS',
+                        'SFBOFS',
+                        'TBOFS',
+                        'NYOFS']
 
 
 class WebgnomeFormatter(Formatter):
@@ -59,6 +84,7 @@ class WebgnomeFormatter(Formatter):
             return logging.Formatter.format(self, magic_record)
         finally:
             logging.disable(save_disable)
+
 
 class DummySession(object):
     session_id = 'DummySession'
@@ -137,35 +163,42 @@ def start_session_cleaner(settings):
         except OSError as err:
             if err.errno == 2:  # not-found error.  Print message & continue.
                 print('Session Cleaner: Folder {} does not exist!'
-                       .format(cleanup_dir))
+                      .format(cleanup_dir))
             else:
                 raise
 
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=True)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0,
+                                                           daemon=True)
+
 
 def server_factory(global_config, host, port):
     port = int(port)
+
     def serve(app):
-        #app is gzip middlware; app.application == webgnome_api
+        # app is gzip middlware; app.application == webgnome_api
         sio = WebgnomeSocketioServer(
             app_settings=global_config,
             api_app=app.application,
             async_mode='gevent',
-            #logger=True,
-            #ping_interval=2,
-            #ping_timeout=10
+            # logger=True,
+            # ping_interval=2,
+            # ping_timeout=10
             )
         ns = WebgnomeNamespace('/')
         sio.register_namespace(ns)
-        app.application.registry['sio_ns'] = ns #to allow access to socketio side from pyramid side
-        #sio.register_namespace(LoggerNamespace('/logger'))
+
+        # to allow access to socketio side from pyramid side
+        app.application.registry['sio_ns'] = ns
+
+        # sio.register_namespace(LoggerNamespace('/logger'))
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
     return serve
+
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
@@ -215,10 +248,10 @@ def main(global_config, **settings):
     config.add_route('logger', '/logger')
 
     config.scan('webgnome_api.views', ignore=[
-        #'webgnome_api.views.socket',
-        #'webgnome_api.views.socket_logger',
-        #'webgnome_api.views.socket_step'
+        # 'webgnome_api.views.socket',
+        # 'webgnome_api.views.socket_logger',
+        # 'webgnome_api.views.socket_step'
     ])
 
-    wapi =  config.make_wsgi_app()
+    wapi = config.make_wsgi_app()
     return wapi

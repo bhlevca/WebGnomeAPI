@@ -9,7 +9,7 @@ import ujson
 
 from pyramid.settings import asbool
 from pyramid.interfaces import ISessionFactory
-from pyramid.response import Response
+from pyramid.response import Response, FileResponse
 
 from pyramid.httpexceptions import (HTTPNotFound,
                                     HTTPBadRequest,
@@ -19,24 +19,23 @@ from pyramid.httpexceptions import (HTTPNotFound,
 
 from cornice import Service
 
-from ..common.helpers import PyObjFromJson
-from ..common.system_resources import (list_files,
-                                       file_info,
-                                       mkdir,
-                                       rename_or_move,
-                                       remove_file_or_dir,
-                                       get_free_space,
-                                       get_size_of_open_file,
-                                       write_to_file)
-from ..common.common_object import (get_session_dir,
-                                    get_persistent_dir)
-from ..common.views import (can_persist,
-                            get_size_of_open_file,
-                            gen_unique_filename,
-                            cors_exception,
-                            cors_policy,
-                            cors_response,
-                            cors_file_response)
+from webgnome_api.common.helpers import PyObjFromJson
+from webgnome_api.common.system_resources import (list_files,
+                                                  file_info,
+                                                  mkdir,
+                                                  rename_or_move,
+                                                  remove_file_or_dir,
+                                                  get_free_space,
+                                                  get_size_of_open_file,
+                                                  write_to_file)
+from webgnome_api.common.common_object import (get_session_dir,
+                                               get_persistent_dir)
+from webgnome_api.common.views import (can_persist,
+                                       gen_unique_filename,
+                                       cors_exception,
+                                       cors_policy,
+                                       cors_response,
+                                       cors_file_response)
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +43,34 @@ log = logging.getLogger(__name__)
 upload_manager = Service(name='uploads', path='/uploads*sub_folders',
                          description="Uploaded File Manager",
                          cors_policy=cors_policy)
+
+user_files = Service(name='user_files', path='/user_files',
+                     description="User file download service",
+                     cors_policy=cors_policy)
+
+
+@user_files.get()
+def get_file(request):
+    '''
+    Allows a user to retrieve the files in their session folder by name.
+    (TODO) Multiple names creates a zipped response.
+    '''
+    log_prefix = f'req({id(request)}): user_files.get_file():'
+    log.info(f'>>{log_prefix}')
+
+    file_list = request.GET.get('file_list', None)
+    if file_list is None or len(file_list) == 0:
+        return cors_exception(request, HTTPNotFound)
+
+    file_list = ujson.loads(file_list)
+
+    response = FileResponse(file_list[0], request=request,
+                            content_type='application/octet-stream')
+    response.headers['Content-Disposition'] = ("attachment; filename={0}"
+                                               .format(file_list[1]))
+    log.info(f'<<{log_prefix}')
+
+    return response
 
 
 @upload_manager.get()
@@ -73,35 +100,6 @@ def get_uploaded_files(request):
             raise cors_exception(request, HTTPInternalServerError)
 
 
-"""
-@upload_manager.post()
-@can_persist
-def modify_filesystem(request):
-    '''
-        Make a file system modification within the uploads folder.
-        Currently, we support the following actions:
-        - create a new directory
-        - rename a file
-        - move a file into a directory (similar to renaming)
-    '''
-    sub_folders = [urllib.unquote(d).encode('utf8')
-                   for d in request.matchdict['sub_folders']
-                   if d != '..']
-
-    base_path = get_persistent_dir(request)
-
-    try:
-        file_model = PyObjFromJson(ujson.loads(request.body))
-    except Exception:
-        raise cors_exception(request, HTTPBadRequest)
-
-    if (file_model.type == 'd'):
-        return create_new_folder(request, base_path, sub_folders, file_model)
-    else:
-        return rename_file(request, base_path, sub_folders, file_model)
-"""
-
-
 @upload_manager.post()
 def modify_filesystem(request):
     '''
@@ -120,8 +118,10 @@ def modify_filesystem(request):
         filelist = ujson.loads(request.POST.get('filelist'))
         upload_dir = os.path.relpath(get_persistent_dir(request))
         paths = []
+
         for f in filelist:
             paths.append(os.path.join(upload_dir, f))
+
         resp = Response(ujson.dumps(paths))
         return resp
 
@@ -162,26 +162,26 @@ def process_upload(request):
                                   new_session_id=get_specific_session_id)
 
         if request.session.session_id != redis_session_id:
-            raise cors_response(request,
-                                HTTPBadRequest('multipart form request '
-                                               'could not re-establish session'
-                                               ))
+            raise cors_response(request, HTTPBadRequest(
+                'multipart form request '
+                'could not re-establish session'
+            ))
 
     upload_dir = os.path.relpath(get_session_dir(request))
     max_upload_size = eval(request.registry.settings['max_upload_size'])
 
     persist_upload = asbool(request.POST.get('persist_upload', False))
 
-    if 'can_persist_uploads' in list(request.registry.settings.keys()):
+    if 'can_persist_uploads' in request.registry.settings:
         can_persist = asbool(request.registry.settings['can_persist_uploads'])
     else:
         can_persist = False
 
-    log.info('save_file_dir: {}'.format(upload_dir))
-    log.info('max_upload_size: {}'.format(max_upload_size))
+    log.info(f'save_file_dir: {upload_dir}')
+    log.info(f'max_upload_size: {max_upload_size}')
 
-    log.info('persist_upload?: {}'.format(persist_upload))
-    log.info('can_persist?: {}'.format(can_persist))
+    log.info(f'persist_upload?: {persist_upload}')
+    log.info(f'can_persist?: {can_persist}')
 
     # for each file, process into server
     input_file = request.POST['file'].file
@@ -190,30 +190,31 @@ def process_upload(request):
     file_path = os.path.join(upload_dir, unique_name)
 
     size = get_size_of_open_file(input_file)
-    log.info('Incoming file size: {}'.format(size))
+    log.info(f'Incoming file size: {size}')
 
     if size > max_upload_size:
-        raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {}'
-                                           .format(max_upload_size)))
+        raise cors_response(request, HTTPBadRequest(
+            f'file is too big!  Max size = {max_upload_size}'
+        ))
 
     if size >= get_free_space(upload_dir):
-        raise cors_response(request,
-                            HTTPInsufficientStorage('Not enough space '
-                                                    'to save the file'))
+        raise cors_response(request, HTTPInsufficientStorage(
+            'Not enough space to save the file'
+        ))
 
     write_to_file(input_file, file_path)
 
-    log.info('Successfully uploaded file "{0}"'.format(file_path))
+    log.info(f'Successfully uploaded file "{file_path}"')
 
     if persist_upload and can_persist:
-        log.info('Persisting file "{0}"'.format(file_path))
+        log.info(f'Persisting file "{file_path}"')
 
         upload_dir = get_persistent_dir(request)
+
         if size >= get_free_space(upload_dir):
-            raise cors_response(request,
-                                HTTPInsufficientStorage('Not enough space '
-                                                        'to persist the file'))
+            raise cors_response(request, HTTPInsufficientStorage(
+                'Not enough space to persist the file'
+            ))
 
         persistent_path = os.path.join(upload_dir, file_name)
 
@@ -258,14 +259,13 @@ def create_file_item(request):
         raise cors_exception(request, HTTPBadRequest)
 
     if hasattr(file_model, 'prev_name'):
-        log.info('create_file_item(): prev_name: {}'
-                 .format(file_model.prev_name))
+        log.info(f'create_file_item(): prev_name: {file_model.prev_name}')
         return rename_file(request, base_path, sub_folders[:-1], file_model)
     elif (file_model.type == 'd'):
         return create_new_folder(request, base_path, sub_folders[:-1],
                                  file_model)
     else:
-        print(('unknown file type: {}'.format(file_model)))
+        print(f'unknown file type: {file_model}')
         raise cors_exception(request, HTTPBadRequest)
 
 
@@ -280,7 +280,7 @@ def delete_uploaded_file(request):
                    if d != '..']
 
     requested_path = os.path.join(get_persistent_dir(request), *sub_folders)
-    log.info('requesting delete of file: {}'.format(requested_path))
+    log.info(f'requesting delete of file: {requested_path}')
 
     try:
         remove_file_or_dir(requested_path)
@@ -295,7 +295,7 @@ def create_new_folder(request, base_path, sub_folders, file_model):
         Create a new folder within the uploads folder.
     '''
     requested_path = os.path.join(base_path, *sub_folders)
-    log.info('creating a new folder: {}'.format(file_model.name))
+    log.info(f'creating a new folder: {file_model.name}')
 
     try:
         mkdir(requested_path, file_model.name)
@@ -310,7 +310,7 @@ def rename_file(request, base_path, sub_folders, file_model):
         Rename a file within the uploads folder.
     '''
     if not validate_new_filename(file_model.name):
-        log.info('new name failed validation: {}'.format(file_model.name))
+        log.info(f'new name failed validation: {file_model.name}')
         raise cors_exception(request, HTTPBadRequest)
 
     try:
@@ -320,11 +320,11 @@ def rename_file(request, base_path, sub_folders, file_model):
         new_path = generate_new_path(base_path, sub_folders,
                                      file_model.name)
 
-        log.info('renaming file from {} to {}'.format(old_path, new_path))
+        log.info(f'renaming file from {old_path} to {new_path}')
 
         rename_or_move(old_path, new_path)
     except Exception as e:
-        log.info('Exception: {}'.format(e))
+        log.info(f'Exception: {e}')
         raise cors_exception(request, HTTPInternalServerError)
 
     # Backbone.js likes to sync its models with the REST services it
@@ -367,9 +367,7 @@ def generate_new_path(base_path, sub_folders, name):
         - '../../filename':            shouldn't encounter this
 
     '''
-    log.info('generate new path: {}, {}, {}'.format(base_path,
-                                                    sub_folders,
-                                                    name))
+    log.info(f'generate new path: {base_path}, {sub_folders}, {name}')
 
     if name.startswith(os.path.sep):
         # Absolute path
@@ -382,6 +380,6 @@ def generate_new_path(base_path, sub_folders, name):
         base_path = os.path.join(base_path, *sub_folders)
 
     new_path = os.path.join(base_path, name)
-    log.info('new path = {}'.format(new_path))
+    log.info(f'new path = {new_path}')
 
     return new_path
