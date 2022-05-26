@@ -21,7 +21,10 @@ echo "echo $CONDA_DEFAULT_ENV is activated"
 
 # or, all in one command:
 
-# conda install -y python=3.9.* --file ../pygnome/conda_requirements.txt --file ../oil_database/adios_db/conda_requirements.txt --file ../libgoods/conda_requirements.txt --file ../libgoods/model_catalogs/conda_requirements.txt --file conda_requirements.txt
-# conda install -y python=3.9.* --file ../pygnome/conda_requirements.txt --file ../oil_database/adios_db/conda_requirements.txt --file ../libgoods/conda_requirements.txt --file ../libgoods/model_catalogs/conda_requirements.txt --file conda_requirements.txt
-# conda install -y python=3.9.* --file ../pygnome/conda_requirements.txt --file ../oil_database/adios_db/conda_requirements.txt --file ../libgoods/conda_requirements.txt --file ../libgoods/model_catalogs/conda_requirements.txt --file conda_requirements.txt
-# conda install -y python=3.9.* --file ../pygnome/conda_requirements.txt --file ../oil_database/adios_db/conda_requirements.txt --file ../libgoods/conda_requirements.txt --file ../libgoods/model_catalogs/conda_requirements.txt --file conda_requirements.txt
+conda install -y python=3.9.* \
+      --file ../pygnome/conda_requirements.txt \
+      --file ../oil_database/adios_db/conda_requirements.txt \
+      --file ../libgoods/conda_requirements.txt \
+#      --file ../libgoods/model_catalogs/conda_requirements.txt \
+      --file conda_requirements.txt \
+      --file conda_requirements_test.txt
