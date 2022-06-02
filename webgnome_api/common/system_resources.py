@@ -8,6 +8,7 @@ import platform
 import ctypes
 import shutil
 import errno
+import gevent
 
 
 def get_free_space(path):
@@ -40,18 +41,21 @@ def get_size_of_open_file(fd):
 
 def write_to_file(file_in, out_path):
     if isinstance(file_in, str):
-        with open(file_in, 'rb') as openfile:
-            write_fd_to_file(openfile, out_path)
-    else:
-        write_fd_to_file(file_in, out_path)
+        file_in = open(file_in, 'rb')
+
+    gl = gevent.spawn(write_fd_to_file, file_in, out_path)
+    gl.join()
 
 
-def write_fd_to_file(fd, out_path):
+def write_fd_to_file(fd, out_path, chunk_size=1024*1024*10):
     curr_position = fd.tell()
-
     fd.seek(0)
+
     with open(out_path, 'wb') as output_file:
-        shutil.copyfileobj(fd, output_file)
+        written = 1  # any positive number will do initially
+        while written > 0:
+            written = output_file.write(fd.read(chunk_size))
+            gevent.sleep(0.001)
 
     # Set file to original position so we don't produce any side effects.
     fd.seek(curr_position)

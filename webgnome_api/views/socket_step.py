@@ -98,7 +98,6 @@ def run_export_model(request):
     log_prefix = 'req{0}: run_export_model()'.format(id(request))
     log.info('>>' + log_prefix)
 
-    sess_id = request.session.session_id
     ns = request.registry.get('sio_ns')
 
     if ns is None:
@@ -222,7 +221,6 @@ def run_model(request):
     log_prefix = 'req{0}: run_model()'.format(id(request))
     log.info('>>' + log_prefix)
 
-    sess_id = request.session.session_id
     ns = request.registry.get('sio_ns')
 
     if ns is None:

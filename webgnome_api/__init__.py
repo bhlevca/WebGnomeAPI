@@ -179,32 +179,29 @@ def server_factory(global_config, host, port):
 
     def serve(app):
         # app is gzip middlware; app.application == webgnome_api
-        sio = WebgnomeSocketioServer(
-            app_settings=global_config,
-            api_app=app.application,
-            async_mode='gevent',
-            # logger=True,
-            # ping_interval=2,
-            # ping_timeout=10
-            )
+        sio = WebgnomeSocketioServer(app_settings=global_config,
+                                     api_app=app.application,
+                                     async_mode='gevent')
+
+        # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
         sio.register_namespace(ns)
 
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
 
-        # sio.register_namespace(LoggerNamespace('/logger'))
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
+
     return serve
 
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['objects'] = {}
-
     settings['uncertain_models'] = {}
+
     try:
         os.mkdir('ipc_files')
     except OSError as e:

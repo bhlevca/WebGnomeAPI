@@ -16,12 +16,11 @@ def generate_short_session_id(sessid):
 
 
 class WebgnomeSocketioServer(socketio.Server):
-    def __init__(self,
-                 app_settings=None,
-                 api_app=None,
+    def __init__(self, app_settings=None, api_app=None,
                  **kwargs):
         self.app_settings = app_settings
         self.app = api_app
+
         cors_origins = (api_app.registry.settings['cors_policy.origins']
                         .split('\n'))
 
