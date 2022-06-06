@@ -156,14 +156,17 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
-        cleanup_dir = os.path.join(str(session_dir), str(msg['data']))
+        session_id = msg['data']
+        if isinstance(session_id, bytes):
+            session_id = session_id.decode('utf-8')
+
+        cleanup_dir = (Path(session_dir) / session_id).resolve()
 
         try:
             shutil.rmtree(cleanup_dir)
         except OSError as err:
             if err.errno == 2:  # not-found error.  Print message & continue.
-                print('Session Cleaner: Folder {} does not exist!'
-                      .format(cleanup_dir))
+                print(f'Session Cleaner: Folder {cleanup_dir} does not exist!')
             else:
                 raise
 
