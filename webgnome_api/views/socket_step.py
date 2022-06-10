@@ -62,6 +62,11 @@ def get_greenlet_logger(request):
     return adpt
 
 
+def is_develop_mode(settings):
+    return ('develop_mode' in settings and
+            settings['develop_mode'].lower() == 'true')
+
+
 @export_api.get()
 def get_output_file(request):
     log_prefix = f'req{id(request)}: get_output_file()'
@@ -181,8 +186,7 @@ def run_export_model(request):
                     ns.emit('export_finished', end_filename, room=sid)
 
             except Exception:
-                if ('develop_mode' in request.registry.settings and
-                        request.registry.settings['develop_mode'].lower() == 'true'):
+                if is_develop_mode(request.registry.settings):
                     pdb.post_mortem(sys.exc_info()[2])
                 raise
 
@@ -349,8 +353,7 @@ def execute_async_model(active_model=None,
                 exc_type, exc_value, _exc_traceback = sys.exc_info()
                 traceback.print_exc()
 
-                if ('develop_mode' in request.registry.settings and
-                        request.registry.settings['develop_mode'].lower() == 'true'):
+                if is_develop_mode(request.registry.settings):
                     pdb.post_mortem(sys.exc_info()[2])
 
                 traceback.format_exception_only(exc_type, exc_value)
