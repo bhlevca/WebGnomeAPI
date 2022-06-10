@@ -39,7 +39,8 @@ from .session_management import (get_session_objects,
                                  get_session_object,
                                  acquire_session_lock)
 
-cors_policy = {'credentials': True
+cors_policy = {'credentials': True,
+               'headers': ('Content-Disposition'),
                }
 
 log = logging.getLogger(__name__)
