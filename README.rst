@@ -36,9 +36,9 @@ To run the API, you also need a redis server. If you have one installed from a a
 pip
 ...
 
-In theory, you can install everything webgnomeapi needs with pip, except py_gnome and its dependencies. You can give that a try with::
+I modified the original NOAA requirements.txt file to work with PIP. Aldo the library pd_gf also found in my repositopries:
 
-    pip install -r conda_requirements.txt
+    pip install -r requirements.txt
 
 
 Installing the server
