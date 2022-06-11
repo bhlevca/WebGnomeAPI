@@ -1,41 +1,31 @@
-import sys
-import time
 import logging
-import ujson
-import tempfile
 import os
-import zipfile
-import shutil
 import pdb
-
+import shutil
+import sys
+import tempfile
+import time
 import traceback
+import zipfile
 from collections import defaultdict
 from threading import current_thread
 
 import gevent
-
-from pyramid.response import FileResponse
-
-from pyramid.httpexceptions import (HTTPPreconditionFailed,
-                                    HTTPUnprocessableEntity,
-                                    HTTPNotFound)
+import ujson
 from cornice import Service
 from greenlet import GreenletExit
-
-from webgnome_api.common.common_object import (CreateObject,
-                                               get_session_dir)
-
-from webgnome_api.common.session_management import (get_active_model,
-                                                    get_uncertain_models,
+from pyramid.httpexceptions import (HTTPNotFound, HTTPPreconditionFailed,
+                                    HTTPUnprocessableEntity)
+from pyramid.response import FileResponse
+from webgnome_api.common.common_object import CreateObject, get_session_dir
+from webgnome_api.common.session_management import (acquire_session_lock,
                                                     drop_uncertain_models,
-                                                    set_uncertain_models,
-                                                    acquire_session_lock,
-                                                    get_session_objects)
-
-from webgnome_api.common.views import (cors_exception,
-                                       cors_policy,
-                                       cors_response,
-                                       json_exception)
+                                                    get_active_model,
+                                                    get_session_objects,
+                                                    get_uncertain_models,
+                                                    set_uncertain_models)
+from webgnome_api.common.views import (cors_exception, cors_policy,
+                                       cors_response, json_exception)
 
 async_step_api = Service(name='async_step', path='/async_step',
                          description="Async Step API", cors_policy=cors_policy)
@@ -411,7 +401,7 @@ def get_rewind(request):
     ns = request.registry.get('sio_ns')
     if active_model:
         session_lock = acquire_session_lock(request)
-        log.info('  session lock acquired (sess:{}, thr_id: {})'
+        log.info('  session lock accouired (sess:{}, thr_id: {})'
                  .format(id(session_lock), current_thread().ident))
 
         try:

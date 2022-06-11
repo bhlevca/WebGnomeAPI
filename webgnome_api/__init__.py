@@ -1,28 +1,26 @@
 """
     Main entry point
 """
+import logging
 import os
 import shutil
-import logging
 from pathlib import Path
-import ujson
+
 import gevent
 import socketio
-
-from redis import StrictRedis
-
+import ujson
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 from pyramid.config import Configurator
 from pyramid.renderers import JSON as JSONRenderer
 from pyramid.threadlocal import get_current_request
-from pyramid_log import Formatter, _WrapDict, _DottedLookup
-
+from pyramid_log import Formatter, _DottedLookup, _WrapDict
 from pyramid_redis_sessions import session_factory_from_settings
+from redis import StrictRedis
 
 from webgnome_api.common.views import cors_policy
-from webgnome_api.socket.sockserv import WebgnomeSocketioServer, WebgnomeNamespace
-
-from gevent import pywsgi
-from geventwebsocket.handler import WebSocketHandler
+from webgnome_api.socket.sockserv import (WebgnomeNamespace,
+                                          WebgnomeSocketioServer)
 
 __version__ = "0.9"
 
@@ -59,6 +57,7 @@ class WebgnomeFormatter(Formatter):
             return logging.Formatter.format(self, magic_record)
         finally:
             logging.disable(save_disable)
+
 
 class DummySession(object):
     session_id = 'DummySession'
@@ -135,40 +134,47 @@ def start_session_cleaner(settings):
         try:
             shutil.rmtree(cleanup_dir)
         except OSError as err:
-            if err.errno == 2:  # not-found error.  Print message & continue.
+            # not-found error.  Print message & continue.
+            if err.errno == 2:
                 print('Session Cleaner: Folder {} does not exist!'
-                       .format(cleanup_dir))
+                      .format(cleanup_dir))
             else:
                 raise
 
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0, daemon=True)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(
+        sleep_time=60.0, daemon=True)
+
 
 def server_factory(global_config, host, port):
     port = int(port)
+
     def serve(app):
-        #app is gzip middlware; app.application == webgnome_api
+        # app is gzip middlware; app.application == webgnome_api
         sio = WebgnomeSocketioServer(
             app_settings=global_config,
             api_app=app.application,
             async_mode='gevent',
-            #logger=True,
-            #ping_interval=2,
-            #ping_timeout=10
-            )
+            # logger=True,
+            # ping_interval=2,
+            # ping_timeout=10
+        )
         ns = WebgnomeNamespace('/')
         sio.register_namespace(ns)
-        app.application.registry['sio_ns'] = ns #to allow access to socketio side from pyramid side
-        #sio.register_namespace(LoggerNamespace('/logger'))
+        # to allow access to socketio side from pyramid side
+        app.application.registry['sio_ns'] = ns
+        # sio.register_namespace(LoggerNamespace('/logger'))
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
     return serve
 
+
 def main(global_config, **settings):
-    settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
+    settings['package_root'] = os.path.abspath(
+        os.path.dirname(__file__))
     settings['objects'] = {}
 
     settings['uncertain_models'] = {}
@@ -215,10 +221,10 @@ def main(global_config, **settings):
     config.add_route('logger', '/logger')
 
     config.scan('webgnome_api.views', ignore=[
-        #'webgnome_api.views.socket',
-        #'webgnome_api.views.socket_logger',
-        #'webgnome_api.views.socket_step'
+        # 'webgnome_api.views.socket',
+        # 'webgnome_api.views.socket_logger',
+        # 'webgnome_api.views.socket_step'
     ])
 
-    wapi =  config.make_wsgi_app()
+    wapi = config.make_wsgi_app()  # pyramid object creates a wsgi app
     return wapi

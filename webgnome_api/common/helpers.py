@@ -2,12 +2,15 @@
 Helper functions to be used by views.
 '''
 
-import zipfile
-import ujson
 import logging
 import sys
+import zipfile
+
+import ujson
 
 log = logging.getLogger(__name__)
+
+
 def update_savefile(file_path, request):
     '''
     Takes a zipfile containing no version.txt and up-converts it to 'version 1'.
@@ -24,17 +27,17 @@ def update_savefile(file_path, request):
             the load process will use it later to establish references between objects
             '''
             substance = {
-                "obj_type": "gnome.spill.substance.NonWeatheringSubstance", 
-                "name": "NonWeatheringSubstance", 
-                "standard_density": 1000.0, 
-                "initializers": et_json.get('initializers',[]),
-                "is_weatherable": False, 
+                "obj_type": "gnome.spill.substance.NonWeatheringSubstance",
+                "name": "NonWeatheringSubstance",
+                "standard_density": 1000.0,
+                "initializers": et_json.get('initializers', []),
+                "is_weatherable": False,
                 "id": "v0-v1-update-id-0"
             }
         else:
             substance = {
                 "obj_type": "gnome.spill.gnome_oil.GnomeOil",
-                "name": et_json.get('substance', 'Unknown Oil'),  
+                "name": et_json.get('substance', 'Unknown Oil'),
                 "initializers": et_json.get('initializers', []),
                 "is_weatherable": True,
                 "water": water,
@@ -55,7 +58,8 @@ def update_savefile(file_path, request):
                         log.debug('version is not 0')
                         return file_path
 
-            log.debug('updating save file from v0 to v1 (Spill Refactor)')
+            log.debug(
+                'updating save file from v0 to v1 (Spill Refactor)')
             water_json = element_type_json = None
             spills = []
             inits = []
@@ -66,29 +70,38 @@ def update_savefile(file_path, request):
                         try:
                             json_ = ujson.load(json_file)
                             if 'obj_type' in json_:
-                                if 'Water' in json_['obj_type'] and 'environment' in json_['obj_type'] and water_json is None:
+                                if 'Water' in json_['obj_type'] and 'environment' in json_[
+                                        'obj_type'] and water_json is None:
                                     water_json = (fname, json_)
-                                if 'element_type' in json_['obj_type'] and element_type_json is None:
+                                if 'element_type' in json_[
+                                        'obj_type'] and element_type_json is None:
                                     element_type_json = (fname, json_)
-                                    continue #to skip this file
-                                if 'gnome.spill.spill.Spill' in json_['obj_type']:
+                                    continue  # to skip this file
+                                if 'gnome.spill.spill.Spill' in json_[
+                                        'obj_type']:
                                     spills.append((fname, json_))
                                     continue
-                                if 'initializers' in json_['obj_type']:
+                                if 'initializers' in json_[
+                                        'obj_type']:
                                     inits.append((fname, json_))
                                     continue
                             new_zf.writestr(fname, buffer)
-                        except:
+                        except BaseException:
                             new_zf.writestr(fname, buffer)
 
                 # Generate new substance object
                 if water_json is None:
                     water_json = (None, None)
-                substance = Substance_from_ElementType(element_type_json[1], water_json[1])
+                substance = Substance_from_ElementType(
+                    element_type_json[1], water_json[1])
                 substance_fn = substance['name'] + '.json'
-            
+
                 # Write modified and new files to zip
-                new_zf.writestr(substance['name'] + '.json', ujson.dumps(substance, indent=True))
+                new_zf.writestr(
+                    substance['name'] + '.json',
+                    ujson.dumps(
+                        substance,
+                        indent=True))
                 for spill in spills:
                     fn, sp = spill
                     del sp['element_type']
@@ -96,19 +109,21 @@ def update_savefile(file_path, request):
                     new_zf.writestr(fn, ujson.dumps(sp, indent=True))
                 for init in inits:
                     fn, init = init
-                    init['obj_type'] = init['obj_type'].replace('.elements.', '.')
-                    new_zf.writestr(fn, ujson.dumps(init, indent=True))
+                    init['obj_type'] = init['obj_type'].replace(
+                        '.elements.', '.')
+                    new_zf.writestr(
+                        fn, ujson.dumps(
+                            init, indent=True))
         return file_path + '.updated'
-            
-    except:
+
+    except BaseException:
         if ('develop_mode' in list(request.registry.settings.keys()) and
-                    request.registry.settings['develop_mode'].lower() == 'true'):
+                request.registry.settings['develop_mode'].lower() == 'true'):
             import pdb
             pdb.post_mortem(sys.exc_info()[2])
-        raise TypeError('This savefile format is deprecated and can not be loaded by WebGNOME')
-        #pdb.post_mortem()
-
-
+        raise TypeError(
+            'This savefile format is deprecated and can not be loaded by WebGNOME')
+        # pdb.post_mortem()
 
 
 def FQNameToNameAndScope(fully_qualified_name):
@@ -155,6 +170,7 @@ class PyObjFromJson(object):
         we can do this instead:
             json_obj.children[0].name
     '''
+
     def __init__(self, data):
         for name, value in data.items():
             setattr(self, name, self._wrap(value))
@@ -199,7 +215,7 @@ def JSONImplementedType(json_obj, obj_types):
         :param json_obj: JSON payload
         :param obj_types: list of fully qualified object names.
     '''
-    if not type(json_obj) == dict:
+    if not isinstance(json_obj, dict):
         raise ValueError('JSON needs to be a dict')
 
     if 'obj_type' not in json_obj:

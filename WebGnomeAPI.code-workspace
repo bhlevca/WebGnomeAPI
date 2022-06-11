@@ -2,7 +2,13 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "..\\PyGnome"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"scm.alwaysShowActions": true,
+		"scm.alwaysShowRepositories": true
+	}
 }

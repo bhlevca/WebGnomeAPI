@@ -1,51 +1,56 @@
 """
     Common Gnome object request handlers.
 """
+import logging
 import os
 import shutil
-import urllib.request, urllib.error, urllib.parse
-import ujson
-
-import logging
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections.abc import Iterable
+
+import ujson
+# this is the entry point in PyGnome
+from gnome.gnomeobject import GnomeId
+from gnome.spill_container import SpillContainerPair
+# this is the entry point in PyGnome Data structures
+from gnome.utilities.orderedcollection import OrderedCollection
+from webgnome_api.common.session_management import (get_session_object,
+                                                    set_session_object)
 
 from .helpers import FQNamesToDict, PyClassFromName
 
-from gnome.utilities.orderedcollection import OrderedCollection
-from gnome.spill_container import SpillContainerPair
-
-from webgnome_api.common.session_management import set_session_object, get_session_object
-from gnome.gnomeobject import GnomeId
-
 log = logging.getLogger(__name__)
 
+
 def DeleteObject(id_, all_objects):
-    #THIS IS INCOMPLETE DO NOT USES
+    # THIS IS INCOMPLETE DO NOT USES
     if id_ is None:
         raise ValueError('Tried to delete object without an id')
     if id_ in all_objects:
         del all_objects[id_]
+
 
 def recursive_removal(model, id_):
     sch = model._schema()
     for c in sch.children:
         child_obj = getattr(model, c.name)
         if (hasattr(child_obj, 'id') and hasattr(child_obj, 'obj_type')):
-            #child object is a Gnome object
+            # child object is a Gnome object
             if child_obj.id == id_:
                 model.setattr(c.name, None)
             else:
                 recursive_removal(child_obj, id_)
-        elif isinstance(child_obj, Iterable) and type(child_obj) is not str:
-            #child object is a list of some kind
+        elif isinstance(child_obj, Iterable) and not isinstance(child_obj, str):
+            # child object is a list of some kind
             for i, obj in enumerate(child_obj):
                 if (hasattr(obj, 'id') and hasattr(obj, 'obj_type')):
                     if obj.id_ == id_:
-                        del child_obj[i] #del or set to None?? Risky??
+                        # del or set to None?? Risky??
+                        del child_obj[i]
                     else:
                         recursive_removal(obj, id_)
-            
-        
+
 
 def CreateObject(json_obj, all_objects, deserialize_obj=True):
     '''
@@ -165,11 +170,18 @@ def RegisterObject(obj, request):
         We would mainly like to register PyGnome objects.  Others
         we probably don't care about.
     '''
-    sequence_types = (list, tuple, OrderedCollection, SpillContainerPair)
+    sequence_types = (
+        list,
+        tuple,
+        OrderedCollection,
+        SpillContainerPair)
 
     if (isinstance(obj, GnomeId)):
         set_session_object(obj, request)
-        log.info('registering {0} on session {1}'.format(obj.name, request.session.session_id))
+        log.info(
+            'registering {0} on session {1}'.format(
+                obj.name,
+                request.session.session_id))
 
     if isinstance(obj, sequence_types):
         for i in obj:
@@ -183,7 +195,7 @@ def RegisterObject(obj, request):
             except Exception as e:
                 log.warning(str(e))
             if ((isinstance(attr, GnomeId) and get_session_object(attr.id, request) is None)
-                or isinstance(attr, sequence_types)):
+                    or isinstance(attr, sequence_types)):
                 RegisterObject(attr, request)
 
 
@@ -203,6 +215,7 @@ def obj_id_from_url(request):
 def obj_id_from_req_payload(json_request):
     return json_request.get('id')
 
+
 def get_session_base_dir(request):
     return os.path.normpath(request.registry.settings['session_dir'])
 
@@ -218,7 +231,8 @@ def get_session_dir(request):
 
 
 def get_persistent_dir(request):
-    persistent_dir = os.path.normpath(request.registry.settings['persistent_dir'])
+    persistent_dir = os.path.normpath(
+        request.registry.settings['persistent_dir'])
 
     if os.path.isdir(persistent_dir) is False:
         os.makedirs(persistent_dir)
@@ -298,9 +312,12 @@ def get_file_path(request, json_request=None):
 
         json_request['filename'] = fname
 
-    if json_request['filename'].startswith('goods:') and goods_dir != '':
-        full_path = os.path.join(goods_dir, json_request['filename'][6:])
+    if json_request['filename'].startswith(
+            'goods:') and goods_dir != '':
+        full_path = os.path.join(
+            goods_dir, json_request['filename'][6:])
     else:
-        full_path = os.path.join(session_dir, json_request['filename'])
+        full_path = os.path.join(
+            session_dir, json_request['filename'])
 
     return full_path

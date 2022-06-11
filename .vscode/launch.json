@@ -13,7 +13,10 @@
                 "${workspaceFolder}\\config-dev.ini"
             ],
             "pyramid": true,
-            "jinja": true
+            "jinja": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+            }
         }
     ]
 }
