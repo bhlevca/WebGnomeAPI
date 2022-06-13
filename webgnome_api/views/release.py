@@ -29,13 +29,13 @@ release = Service(name='release', path='/release*obj_id',
 
 implemented_types = ('gnome.spills.release.Release',
                      'gnome.spills.release.PointLineRelease',
-                     'gnome.spills.release.SpatialRelease',
+                     'gnome.spills.release.PolygonRelease',
                      'gnome.spills.release.NESDISRelease',
                      'gnome.spills.release.VerticalPlumeRelease',
                      )
 
 log = logging.getLogger(__name__)
-geojson_types = ('gnome.spills.release.SpatialRelease',
+geojson_types = ('gnome.spills.release.PolygonRelease',
                  'gnome.spills.release.NESDISRelease')
 
 
@@ -79,7 +79,7 @@ def update_release(request):
 
 def get_polygons(request):
     '''
-        Outputs the SpatialRelease's Polygons in binary format
+        Outputs the PolygonsRelease's Polygons in binary format
     '''
     log_prefix = 'req({0}): get_polygons():'.format(id(request))
     log.info('>>' + log_prefix)

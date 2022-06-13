@@ -38,7 +38,7 @@ mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
                 cors_policy=cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
-                     'gnome.movers.wind_movers.WindMover',
+                     'gnome.movers.c_wind_movers.WindMover',
                      'gnome.movers.random_movers.RandomMover',
                      'gnome.movers.random_movers.RandomMover3D',
                      'gnome.movers.c_current_movers.CatsMover',
@@ -140,7 +140,7 @@ def upload_mover(request):
                                          '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
 
-    if ('wind_movers.WindMover' in mover_type):
+    if ('c_wind_movers.WindMover' in mover_type):
         basic_json['wind'] = wind_json
 
     request.body = ujson.dumps(basic_json).encode('utf-8')

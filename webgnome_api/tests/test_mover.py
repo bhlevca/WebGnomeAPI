@@ -130,7 +130,7 @@ class WindMoverTests(BaseMoverTests):
                      'units': 'meter per second'
                      }
 
-    req_data = {'obj_type': 'gnome.movers.wind_movers.WindMover',
+    req_data = {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'uncertain_angle_scale': 0.4,
@@ -453,7 +453,7 @@ class CurrentInfoTests(FunctionalTestBase):
                                     'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                     },
                            },
-                          {'obj_type': 'gnome.movers.wind_movers.WindMover',
+                          {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
@@ -759,7 +759,7 @@ class CellInfoTests(FunctionalTestBase):
                            "uncertain_cross": 0.25,
                            "uncertain_along": 0.5,
                            },
-                          {'obj_type': 'gnome.movers.wind_movers.WindMover',
+                          {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
