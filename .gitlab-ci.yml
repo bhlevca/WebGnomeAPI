@@ -148,7 +148,7 @@ deploy_api_dev:
     - docker ps
     - docker logs $CONTAINER_NAME
   tags:
-    - webgnome-dev
+    - gnome-dev
     - deploy
 
 stop_api_dev:
@@ -164,5 +164,5 @@ stop_api_dev:
   script:
     - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
   tags:
-    - webgnome-dev
+    - gnome-dev
     - deploy
