@@ -6,9 +6,17 @@ stages:
 services:
   - redis:latest
 
-test:
-  stage: test
-  except:
+main:
+  stage: build
+  script:
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
+    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
+  only:
     - main
     - production
   image: registry.orr.noaa.gov/gnome/pygnome:develop
@@ -44,8 +52,10 @@ test_main:
     - redis-server --daemonize yes
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
-    - pip install -e libgoods/
-    - pip install -e .
+                    --file conda_requirements_test.txt
+                    --file libgoods/conda_requirements.txt
+    - pip install libgoods/
+    - pip install .
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -62,6 +72,8 @@ test_production:
     - redis-server --daemonize yes
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - conda install --file conda_requirements.txt
+                    --file conda_requirements_test.txt
+                    --file libgoods/conda_requirements.txt
     - pip install libgoods/
     - pip install .
     - pytest webgnome_api/tests
@@ -72,33 +84,10 @@ test_production:
   tags:
     - docker
 
-develop:
-  stage: build
-  script:
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
-  only:
-    - develop
-  tags:
-    - shell
-    - build
 
-main:
-  stage: build
-  script:
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
-  only:
+test:
+  stage: test
+  except:
     - main
   tags:
     - shell
@@ -135,34 +124,24 @@ deploy_api_dev:
     APP_NETWORK: webgnome_net
     PORT_MAPPING: 8084:9898
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - >
-      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
-      docker network create -d bridge $APP_NETWORK
-    - docker pull $IMAGE_TAG
-    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
-    - >
-      docker run -d -p $PORT_MAPPING --name $CONTAINER_NAME
-      --network $APP_NETWORK
-      --restart unless-stopped $IMAGE_TAG
-    - docker ps
-    - docker logs $CONTAINER_NAME
-  tags:
-    - gnome-dev
-    - deploy
+    - yum install redis -y
+    - redis-server --daemonize yes
+    - echo conda env name $CONDA_DEFAULT_ENV
+    - echo conda env path $CONDA_PREFIX
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - conda install -y --file conda_requirements.txt
+                       --file conda_requirements_test.txt
+                       --file libgoods/conda_requirements.txt
+                       --file libgoods/model_catalogs/conda_requirements.txt
+    - pip install -r libgoods/model_catalogs/pip_requirements.txt
 
-stop_api_dev:
-  stage: deploy
-  only:
-    - develop
-  when: manual
-  environment:
-    name: gnome-dev
-    action: stop
-  variables:
-    CONTAINER_NAME: webgnome_web_api
-  script:
-    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - pip install -e libgoods/model_catalogs/
+    - pip install libgoods/
+    - pip install .
+    - python setup.py compilejson
+    - pytest webgnome_api/tests
+    - ps
+    - jobs
   tags:
     - gnome-dev
     - deploy
