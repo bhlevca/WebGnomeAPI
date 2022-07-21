@@ -156,14 +156,17 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
-        cleanup_dir = os.path.join(str(session_dir), str(msg['data']))
+        session_id = msg['data']
+        if isinstance(session_id, bytes):
+            session_id = session_id.decode('utf-8')
+
+        cleanup_dir = (Path(session_dir) / session_id).resolve()
 
         try:
             shutil.rmtree(cleanup_dir)
         except OSError as err:
             if err.errno == 2:  # not-found error.  Print message & continue.
-                print('Session Cleaner: Folder {} does not exist!'
-                      .format(cleanup_dir))
+                print(f'Session Cleaner: Folder {cleanup_dir} does not exist!')
             else:
                 raise
 
@@ -179,32 +182,29 @@ def server_factory(global_config, host, port):
 
     def serve(app):
         # app is gzip middlware; app.application == webgnome_api
-        sio = WebgnomeSocketioServer(
-            app_settings=global_config,
-            api_app=app.application,
-            async_mode='gevent',
-            # logger=True,
-            # ping_interval=2,
-            # ping_timeout=10
-            )
+        sio = WebgnomeSocketioServer(app_settings=global_config,
+                                     api_app=app.application,
+                                     async_mode='gevent')
+
+        # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
         sio.register_namespace(ns)
 
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
 
-        # sio.register_namespace(LoggerNamespace('/logger'))
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
+
     return serve
 
 
 def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(os.path.dirname(__file__))
     settings['objects'] = {}
-
     settings['uncertain_models'] = {}
+
     try:
         os.mkdir('ipc_files')
     except OSError as e:
@@ -230,7 +230,6 @@ def main(global_config, **settings):
 
     config.add_route('upload', '/upload')
     config.add_route('activate', '/activate')
-    config.add_route('download', '/download')
     config.add_route('persist', '/persist')
 
     config.add_route('map_upload', '/map/upload')

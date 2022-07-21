@@ -30,11 +30,16 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from libgoods import maps, api
-
 from .. import supported_env_models
 
 import logging
+
+#all WebGNOME API to work without libgoods dependency
+try:
+    from libgoods import maps, api
+except ImportError:
+    pass
+    
 
 log = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ import tempfile
 from threading import current_thread
 
 from pyramid.view import view_config
-from pyramid.response import Response, FileIter
+from pyramid.response import Response, FileIter, FileResponse
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound)
 
@@ -156,8 +156,10 @@ def activate_uploaded_model(request):
 
     return cors_response(request, Response('OK'))
 
+download = Service(name='download', path='/download',
+                   cors_policy=cors_policy)
 
-@view_config(route_name='download')
+@download.get()
 def download_model(request):
     '''
         Here is where we save the active model as a zipfile and
@@ -172,12 +174,10 @@ def download_model(request):
 
         _json, saveloc, _refs = my_model.save(saveloc=filename)
         response_filename = ('{0}.gnome'.format(my_model.name))
-        tf = open(saveloc, 'r+b')
-        response = request.response
-        response.content_type = 'application/zip'
-        response.content_disposition = ('attachment; filename={0}'
-                                        .format(response_filename))
-        response.app_iter = FileIter(tf)
+        response = FileResponse(saveloc, request=request,
+                            content_type='application/zip')
+        response.content_disposition = ("attachment; filename={0}"
+                                               .format(response_filename))
         return response
     else:
         raise cors_response(request, HTTPNotFound('No Active Model!'))
