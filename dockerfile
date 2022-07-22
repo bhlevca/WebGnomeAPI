@@ -8,7 +8,7 @@ COPY ./ /webgnomeapi/
 
 RUN conda install mamba
 RUN mamba install \
-       --file webgnomeapi/conda_requirements.txt
+       --file webgnomeapi/conda_requirements.txt \
        --file webgnomeapi/libgoods/libgoods/conda_requirements.txt \
        --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
 
