@@ -5,18 +5,18 @@ stages:
 services:
   - redis:latest
 
-master:
+main:
   stage: build
   script:
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:master
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:master pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:master
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
+    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:master
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
   only:
-    - master
+    - main
   tags:
     - shell
     - build
@@ -52,9 +52,9 @@ production:
     - shell
     - build
 
-test_master:
+test_main:
   stage: test
-  image: registry.orr.noaa.gov/gnome/pygnome:master
+  image: registry.orr.noaa.gov/gnome/pygnome:main
   script:
     - yum install redis -y
     - redis-server --daemonize yes
@@ -69,7 +69,7 @@ test_master:
     - ps
     - jobs
   only:
-    - master
+    - main
   tags:
     - docker
 
@@ -111,7 +111,7 @@ test:
     - ps
     - jobs
   except:
-    - master
+    - main
     - production
   tags:
     - docker
