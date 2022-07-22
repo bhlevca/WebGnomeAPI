@@ -49,6 +49,8 @@ develop:
     - pytest webgnome_api/tests
     - ps
     - jobs
+  only:
+    - develop
   tags:
     - docker
 
