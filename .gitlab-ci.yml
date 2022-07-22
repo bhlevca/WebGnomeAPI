@@ -1,18 +1,9 @@
 stages:
-  - test
   - build
   - deploy
 
 services:
   - redis:latest
-
-test:
-  stage: test
-  except:
-    - main
-  tags:
-    - shell
-    - build
 
 main:
   stage: build
