@@ -127,7 +127,6 @@ deploy_api_dev:
   environment:
     name: gnome-dev
     url: https://gnome-dev.orr.noaa.gov
-    on_stop: stop_api_dev
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     CONTAINER_NAME: webgnome_web_api
