@@ -7,7 +7,7 @@ RUN yum update -y \
 COPY ./ /webgnomeapi/
 
 RUN conda install mamba
-RUN mamba install \
+RUN mamba install -y \
        --file webgnomeapi/conda_requirements.txt \
        --file webgnomeapi/libgoods/libgoods/conda_requirements.txt \
        --file webgnomeapi/libgoods/model_catalogs/conda_requirements.txt
