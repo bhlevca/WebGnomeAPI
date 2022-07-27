@@ -19,15 +19,21 @@ main:
   only:
     - main
     - production
-  image: registry.orr.noaa.gov/gnome/pygnome:develop
+  image: registry.orr.noaa.gov/gnome/pygnome:main
+  tags:
+    - shell
+    - build
+
+develop:
+  stage: build
   script:
     - yum install redis -y
     - redis-server --daemonize yes
     - echo conda env name $CONDA_DEFAULT_ENV
     - echo conda env path $CONDA_PREFIX
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-
-    - conda install -y --file conda_requirements.txt
+    - conda install mamba
+    - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/libgoods/conda_requirements.txt
                        --file libgoods/model_catalogs/conda_requirements.txt
@@ -37,10 +43,14 @@ main:
     - pip install -e libgoods/model_catalogs/
     - pip install libgoods/libgoods
     - pip install .
+    - mkdir -p ${HOME}/catalogs/complete
+    - cp libgoods/model_catalogs/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
     - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
     - jobs
+  only:
+    - develop
   tags:
     - docker
 
@@ -51,11 +61,18 @@ test_main:
     - yum install redis -y
     - redis-server --daemonize yes
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install --file conda_requirements.txt
-                    --file conda_requirements_test.txt
-                    --file libgoods/conda_requirements.txt
-    - pip install libgoods/
+    - conda install mamba
+    - mamba install -y --file conda_requirements.txt
+                       --file conda_requirements_test.txt
+                       --file libgoods/libgoods/conda_requirements.txt
+                       --file libgoods/model_catalogs/conda_requirements.txt
+    - pip install -r libgoods/model_catalogs/pip_requirements.txt
+    - pip install -e libgoods/model_catalogs/
+    - pip install libgoods/libgoods
     - pip install .
+    - mkdir -p ${HOME}/catalogs/complete
+    - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
+    - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -71,11 +88,19 @@ test_production:
     - yum install redis -y
     - redis-server --daemonize yes
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install --file conda_requirements.txt
-                    --file conda_requirements_test.txt
-                    --file libgoods/conda_requirements.txt
-    - pip install libgoods/
+    - conda install mamba
+    - mamba install -y --file conda_requirements.txt
+                       --file conda_requirements_test.txt
+                       --file libgoods/conda_requirements.txt
+                       --file libgoods/model_catalogs/conda_requirements.txt
+    - pip install -r libgoods/model_catalogs/pip_requirements.txt
+
+    - pip install -e libgoods/model_catalogs/
+    - pip install libgoods/libgoods
     - pip install .
+    - mkdir -p ${HOME}/catalogs/complete
+    - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
+    - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
     - jobs
@@ -83,15 +108,6 @@ test_production:
     - production
   tags:
     - docker
-
-
-test:
-  stage: test
-  except:
-    - main
-  tags:
-    - shell
-    - build
 
 production:
   stage: build
@@ -117,7 +133,6 @@ deploy_api_dev:
   environment:
     name: gnome-dev
     url: https://gnome-dev.orr.noaa.gov
-    on_stop: stop_api_dev
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     CONTAINER_NAME: webgnome_web_api
@@ -129,15 +144,18 @@ deploy_api_dev:
     - echo conda env name $CONDA_DEFAULT_ENV
     - echo conda env path $CONDA_PREFIX
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install -y --file conda_requirements.txt
+    - conda install mamba
+    - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/conda_requirements.txt
                        --file libgoods/model_catalogs/conda_requirements.txt
     - pip install -r libgoods/model_catalogs/pip_requirements.txt
 
     - pip install -e libgoods/model_catalogs/
-    - pip install libgoods/
+    - pip install libgoods/libgoods
     - pip install .
+    - mkdir -p ${HOME}/catalogs/complete
+    - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
     - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
