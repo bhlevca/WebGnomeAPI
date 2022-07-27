@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - deploy
 
 services:
   - redis:latest
