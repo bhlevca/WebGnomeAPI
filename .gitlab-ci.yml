@@ -60,7 +60,7 @@ develop:
     - pip install libgoods/libgoods
     - pip install .
     - mkdir -p ${HOME}/catalogs/complete
-    - cp libgoods/model_catalogs/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
+    - cp libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
     - python setup.py compilejson
     - pytest webgnome_api/tests
     - ps
