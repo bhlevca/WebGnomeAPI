@@ -1,7 +1,6 @@
 stages:
   - test
   - build
-  - deploy
 
 services:
   - redis:latest
@@ -39,7 +38,7 @@ develop:
     - shell
     - build
   
-develop:
+test_develop:
   stage: test
   image: registry.orr.noaa.gov/gnome/pygnome:develop
   script:
