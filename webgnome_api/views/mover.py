@@ -34,8 +34,12 @@ from webgnome_api.common.session_management import (get_session_object,
 
 log = logging.getLogger(__name__)
 
+
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape',)
+
 mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
-                cors_policy=cors_policy)
+                cors_policy=edited_cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
                      'gnome.movers.c_wind_movers.WindMover',
