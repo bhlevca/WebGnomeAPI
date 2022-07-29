@@ -39,8 +39,11 @@ from webgnome_api.common.session_management import (get_session_objects,
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape', 'bbox')
+
 map_api = Service(name='map', path='/map*obj_id',
-                  description="Map API", cors_policy=cors_policy)
+                  description="Map API", cors_policy=edited_cors_policy)
 
 implemented_types = ('gnome.maps.map.GnomeMap',
                      'gnome.maps.map.MapFromBNA',

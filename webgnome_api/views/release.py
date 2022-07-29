@@ -24,8 +24,11 @@ from webgnome_api.common.session_management import (get_session_object,
                                                     acquire_session_lock)
 
 
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('num_lengths',)
+
 release = Service(name='release', path='/release*obj_id',
-                  description="Release API", cors_policy=cors_policy)
+                  description="Release API", cors_policy=editedcors_policy)
 
 implemented_types = ('gnome.spills.release.Release',
                      'gnome.spills.release.PointLineRelease',

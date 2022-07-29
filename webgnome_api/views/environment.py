@@ -33,9 +33,12 @@ from webgnome_api.common.session_management import (get_session_object,
 
 log = logging.getLogger(__name__)
 
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape',)
+
 env = Service(name='environment', path='/environment*obj_id',
               description="Environment API",
-              cors_policy=cors_policy,
+              cors_policy=edited_cors_policy,
               # accept='application/json+octet-stream',
               content_type=['application/json', 'binary'])
 

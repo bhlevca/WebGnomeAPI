@@ -31,9 +31,12 @@ from ..common.session_management import (get_session_object,
                                          acquire_session_lock)
 log = logging.getLogger(__name__)
 
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('num_lengths',)
+
 grid = Service(name='environment/grid', path='/grid*obj_id',
                description="Grid API",
-               cors_policy=cors_policy,
+               cors_policy=edited_cors_policy,
                content_type=['application/json', 'binary'])
 
 implemented_types = ('gnome.environment.gridded_objects_base.Grid_U',
