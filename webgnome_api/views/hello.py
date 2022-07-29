@@ -32,7 +32,18 @@ def get_package_info_response(request):
 
 
 def get_pkg_info_table(package):
-    pkg_info = get_distribution(package).get_metadata('PKG-INFO')
+    """
+    Looks like pip changed the format of its package data at some point.
+    We now expect a METADATA file, but provide a fallback to PKG-INFO
+    """
+    try:
+        pkg_info = get_distribution(package).get_metadata('METADATA')
+    except FileNotFoundError:
+        try:
+            pkg_info = get_distribution(package).get_metadata('PKG-INFO')
+        except FileNotFoundError:
+            raise
+
     msg_dict = dict(message_from_string(pkg_info))
 
     header_fields = [package]
