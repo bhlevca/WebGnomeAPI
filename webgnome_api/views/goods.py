@@ -6,6 +6,7 @@ import socket
 import copy
 import shutil
 import urllib.request
+import logging
 
 import ujson
 import numpy as np
@@ -30,13 +31,15 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from libgoods import maps, api
+log = logging.getLogger(__name__)
+
+try:
+    from libgoods import maps, api
+except ImportError:
+    log.warning('libgoods pacakge not found: access to external models will not be supported')
 
 from .. import supported_env_models
 
-import logging
-
-log = logging.getLogger(__name__)
 
 goods_maps = Service(name='maps', path='/goods/maps*',
                      description="GOODS MAP API", cors_policy=cors_policy)
