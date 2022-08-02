@@ -1,21 +1,21 @@
 {
- "obj_type": "gnome.movers.c_current_movers.ComponentMover", 
- "name": "Wind Driven Currents", 
- "filename1": "LinWind20ktN.cur", 
- "filename2": "LinWind20ktE.cur", 
- "scale_refpoint": [
-  -71.4, 
-  41.55, 
-  0.0
- ], 
- "pat1_angle": 0.0, 
- "pat1_speed": 20.0, 
- "pat1_speed_units": 1.0, 
- "pat1_scale_to_value": 0.2, 
- "pat2_angle": 90.0, 
- "pat2_speed": 20.0, 
- "pat2_speed_units": 1.0,
- "pat2_scale_to_value": 0.05, 
- "scale_by":2, 
- "json_": "save" 
+    "obj_type": "gnome.movers.c_current_movers.ComponentMover",
+    "name": "Wind Driven Currents",
+    "filename1": "LinWind20ktN.cur",
+    "filename2": "LinWind20ktE.cur",
+    "scale_refpoint": [
+        -71.4,
+        41.55,
+        0.0
+    ],
+    "pat1_angle": 0.0,
+    "pat1_speed": 20.0,
+    "pat1_speed_units": 1.0,
+    "pat1_scale_to_value": 0.2,
+    "pat2_angle": 90.0,
+    "pat2_speed": 20.0,
+    "pat2_speed_units": 1.0,
+    "pat2_scale_to_value": 0.05,
+    "scale_by": 2,
+    "json_": "save"
 }

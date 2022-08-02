@@ -1,16 +1,16 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -70.65, 
-  42.58333, 
-  0.0
- ], 
- "name": "Coastal Current", 
- "filename": "MerrimackMassCoast.cur", 
- "up_cur_uncertain": 0.5, 
- "down_cur_uncertain": -0.5, 
- "tide": "Tide_1.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -70.65,
+        42.58333,
+        0.0
+    ],
+    "name": "Coastal Current",
+    "filename": "MerrimackMassCoast.cur",
+    "up_cur_uncertain": 0.5,
+    "down_cur_uncertain": -0.5,
+    "tide": "Tide_1.json",
+    "json_": "save",
+    "scale_value": 1.0
 }

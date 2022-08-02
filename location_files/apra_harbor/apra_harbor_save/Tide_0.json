@@ -1,6 +1,6 @@
 {
- "json_": "save", 
- "obj_type": "gnome.environment.tide.Tide", 
- "filename": "WACFTideShioHts.txt",
- "scale_factor": 1.1864
+    "json_": "save",
+    "obj_type": "gnome.environment.tide.Tide",
+    "filename": "WACFTideShioHts.txt",
+    "scale_factor": 1.1864
 }

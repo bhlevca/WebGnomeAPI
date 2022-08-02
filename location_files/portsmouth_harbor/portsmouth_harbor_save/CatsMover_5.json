@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -70.416666, 
-  43.183333, 
-  0.0
- ], 
- "filename": "GulfMaineDAC.cur", 
- "name": "Coastal Current", 
- "json_": "save", 
- "uncertain_duration": 6.0,
- "scale_value": 0.2
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -70.416666,
+        43.183333,
+        0.0
+    ],
+    "filename": "GulfMaineDAC.cur",
+    "name": "Coastal Current",
+    "json_": "save",
+    "uncertain_duration": 6.0,
+    "scale_value": 0.2
 }

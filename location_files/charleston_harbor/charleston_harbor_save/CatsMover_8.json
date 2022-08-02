@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -79.8655, 
-  32.872, 
-  0.0
- ], 
- "name": "Wando River (middle)", 
- "filename": "WandoRiver_Middle.cur", 
- "tide": "Tide_7.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -79.8655,
+        32.872,
+        0.0
+    ],
+    "name": "Wando River (middle)",
+    "filename": "WandoRiver_Middle.cur",
+    "tide": "Tide_7.json",
+    "json_": "save",
+    "scale_value": 1.0
 }

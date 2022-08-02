@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -70.861333, 
-  43.091166, 
-  0.0
- ], 
- "filename": "FurberStrait.cur", 
- "name": "Furber Strait", 
- "tide": "Tide_2.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -70.861333,
+        43.091166,
+        0.0
+    ],
+    "filename": "FurberStrait.cur",
+    "name": "Furber Strait",
+    "tide": "Tide_2.json",
+    "json_": "save",
+    "scale_value": 1.0
 }

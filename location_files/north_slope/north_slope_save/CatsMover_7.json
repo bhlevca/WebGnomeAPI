@@ -1,13 +1,13 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -133.526938, 
-  69.435932, 
-  0.0
- ], 
- "name": "Mackenzie River (east)", 
- "filename": "MackenzieRiver_EastChannel.cur", 
- "json_": "save", 
- "scale_value": 0.02
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -133.526938,
+        69.435932,
+        0.0
+    ],
+    "name": "Mackenzie River (east)",
+    "filename": "MackenzieRiver_EastChannel.cur",
+    "json_": "save",
+    "scale_value": 0.02
 }
