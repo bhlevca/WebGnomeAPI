@@ -1,11 +1,17 @@
 #!/usr/bin/env python
-import os
 
+'''
+Very simple script to test if location files load
+
+NOTE: this will also run all location save files through the savefile
+updater -- so after running it, you can decide if the updated save
+files should be committed to git.
+'''
+
+
+import os
 from gnome.persist import load
 
-'''
-very simple script to test if location files load
-'''
 
 loc_files = os.path.dirname(os.path.abspath(__file__))
 dirs = os.listdir(loc_files)

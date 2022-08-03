@@ -6,6 +6,7 @@ import socket
 import copy
 import shutil
 import urllib.request
+import logging
 
 import ujson
 import numpy as np
@@ -30,18 +31,15 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
-from .. import supported_env_models
+log = logging.getLogger(__name__)
 
-import logging
-
-#all WebGNOME API to work without libgoods dependency
 try:
     from libgoods import maps, api
 except ImportError:
-    pass
-    
+    log.warning('libgoods package not found: access to external models will not be supported')
 
-log = logging.getLogger(__name__)
+from .. import supported_env_models
+
 
 goods_maps = Service(name='maps', path='/goods/maps*',
                      description="GOODS MAP API", cors_policy=cors_policy)

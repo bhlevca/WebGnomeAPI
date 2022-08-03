@@ -1,14 +1,13 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover",
- "scale": true,
- "scale_refpoint": [
-  -80.085,
-  26.079833,
-  0.0
-
- ],
- "filename": "Outside.cur",
- "name": "Coastal Current",
- "json_": "save",
- "scale_value": -0.125
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -80.085,
+        26.079833,
+        0.0
+    ],
+    "filename": "Outside.cur",
+    "name": "Coastal Current",
+    "json_": "save",
+    "scale_value": -0.125
 }

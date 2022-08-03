@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -123.307368, 
-  48.392572, 
-  0.0
- ], 
- "name": "Ebb Tide Eddies", 
- "filename": "Eddy_ETS.cur", 
- "tide": "Tide_1.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -123.307368,
+        48.392572,
+        0.0
+    ],
+    "name": "Ebb Tide Eddies",
+    "filename": "Eddy_ETS.cur",
+    "tide": "Tide_1.json",
+    "json_": "save",
+    "scale_value": 1.0
 }
