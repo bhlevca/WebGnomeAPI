@@ -1,13 +1,13 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -121.0, 
-  34.5, 
-  0.0
- ], 
- "filename": "Convergent.cur", 
- "name": "Convergent", 
- "json_": "save", 
- "scale_value": 0.133
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -121.0,
+        34.5,
+        0.0
+    ],
+    "filename": "Convergent.cur",
+    "name": "Convergent",
+    "json_": "save",
+    "scale_value": 0.133
 }

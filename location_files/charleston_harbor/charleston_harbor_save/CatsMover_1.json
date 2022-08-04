@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -80.05, 
-  32.846666, 
-  0.0
- ], 
- "name": "Ashley River (upper)", 
- "filename": "AshleyRiver_Upper.cur", 
- "tide": "Tide_0.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -80.05,
+        32.846666,
+        0.0
+    ],
+    "name": "Ashley River (upper)",
+    "filename": "AshleyRiver_Upper.cur",
+    "tide": "Tide_0.json",
+    "json_": "save",
+    "scale_value": 1.0
 }
