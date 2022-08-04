@@ -12,8 +12,15 @@ from .base import FunctionalTestBase, MODELS_DIR
 
 import pytest
 
+try:
+    import libgoods
+    LIBGOODS = True
+    del libgoods
+except ModuleNotFoundError:
+    LIBGOODS = False
 
-# @pytest.mark.skip
+
+@pytest.mark.skipif(not LIBGOODS, reason="libgoods not there, not testing map access")
 class GetMapTest(FunctionalTestBase):
     '''
     Tests of getting a map from the GOODS API

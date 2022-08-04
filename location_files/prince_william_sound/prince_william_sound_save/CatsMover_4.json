@@ -1,15 +1,15 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -148.14000 , 
-  60.772833, 
-  0.0
- ], 
- "filename": "PortWells.cur", 
- "name": "Port Wells", 
- "tide": "Tide_3.json", 
- "json_": "save", 
- "uncertain_eddy_diffusion": 1000000.0, 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -148.14,
+        60.772833,
+        0.0
+    ],
+    "filename": "PortWells.cur",
+    "name": "Port Wells",
+    "tide": "Tide_3.json",
+    "json_": "save",
+    "uncertain_eddy_diffusion": 1000000.0,
+    "scale_value": 1.0
 }

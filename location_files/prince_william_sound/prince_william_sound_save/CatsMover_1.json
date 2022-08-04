@@ -1,15 +1,15 @@
 {
- "obj_type": "gnome.movers.c_current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -146.74833, 
-  60.18667, 
-  0.0
- ], 
- "filename": "HinchinbrookTide.cur", 
- "name": "Hinchinbrook", 
- "tide": "Tide_0.json", 
- "json_": "save", 
- "uncertain_eddy_diffusion": 1000000.0, 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -146.74833,
+        60.18667,
+        0.0
+    ],
+    "filename": "HinchinbrookTide.cur",
+    "name": "Hinchinbrook",
+    "tide": "Tide_0.json",
+    "json_": "save",
+    "uncertain_eddy_diffusion": 1000000.0,
+    "scale_value": 1.0
 }
