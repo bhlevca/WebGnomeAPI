@@ -2,11 +2,11 @@
 Functional tests for the Gnome Location object Web API
 """
 
-from gnome.spill.gnome_oil import GnomeOil
+from gnome.spills.gnome_oil import GnomeOil
 
 import pytest
 
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
 
@@ -15,16 +15,16 @@ pp = PrettyPrinter(indent=2, width=120)
 
 class ModelRunTest(FunctionalTestBase):
     '''
-        Tests out a Model run with the WebGnome API
+    Tests out a Model run with the WebGnome API
     '''
     oil_data = GnomeOil('oil_ans_mp').serialize()
 
     spill_data = {
-        'obj_type': 'gnome.spill.spill.Spill',
+        'obj_type': 'gnome.spills.spill.Spill',
         'name': 'What a Name',
         'on': True,
         'release': {
-            'obj_type': ('gnome.spill.release'
+            'obj_type': ('gnome.spills.release'
                          '.PointLineRelease'),
             'num_elements': 1000,
             'release_time': '2014-08-06T08:00:00',
@@ -49,9 +49,9 @@ class ModelRunTest(FunctionalTestBase):
         'draw_ontop':
             'forecast',
         'filename':
-            'models/Test.bna',
+            str(MODELS_DIR / 'Test.bna'),
         'images_dir':
-            'models/images',
+            str(MODELS_DIR / 'images'),
         'image_size': [800, 600],
         'viewport': [[-71.2242987892, 42.1846263908],
                      [-70.4146871963, 42.6329573908]]
@@ -116,7 +116,6 @@ class ModelRunTest(FunctionalTestBase):
         model1['start_time'] = self.spill_data['release']['release_time']
         num_time_steps = model1['num_time_steps']
 
-        print('model[weatherers]:')
         pp.pprint(model1['weatherers'])
 
         # The location file we selected should have:

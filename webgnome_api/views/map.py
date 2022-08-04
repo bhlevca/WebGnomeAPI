@@ -1,12 +1,13 @@
 """
 Views for the Map objects.
 """
-import ujson
-import logging
 import os
-import zlib
-import numpy as np
+import logging
 from threading import current_thread
+import zlib
+
+import ujson
+import numpy as np
 
 from cornice import Service
 
@@ -23,27 +24,26 @@ from webgnome_api.common.views import (can_persist,
                                        get_object,
                                        create_object,
                                        cors_policy,
-                                       process_upload,
                                        activate_uploaded,
                                        web_ser_opts)
 
-from webgnome_api.common.common_object import (CreateObject,
-                                               UpdateObject,
+from webgnome_api.common.common_object import (UpdateObject,
                                                ObjectImplementsOneOf,
                                                obj_id_from_url,
-                                               obj_id_from_req_payload,
-                                               get_file_path)
+                                               obj_id_from_req_payload)
 
-from webgnome_api.common.session_management import (init_session_objects,
-                                                    get_session_objects,
+from webgnome_api.common.session_management import (get_session_objects,
                                                     get_session_object,
                                                     set_session_object,
                                                     acquire_session_lock)
 
 from webgnome_api.common.helpers import JSONImplementsOneOf
 
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape', 'bbox')
+
 map_api = Service(name='map', path='/map*obj_id',
-                  description="Map API", cors_policy=cors_policy)
+                  description="Map API", cors_policy=edited_cors_policy)
 
 implemented_types = ('gnome.maps.map.GnomeMap',
                      'gnome.maps.map.MapFromBNA',
@@ -70,8 +70,9 @@ def get_map(request):
             resp.headers.add('shape', str(shape))
             resp.headers.add('bbox', str(bbox))
             return cors_response(request, resp)
+
         if route == 'geojson':
-          return get_geojson(request, implemented_types)
+            return get_geojson(request, implemented_types)
     else:
         return get_object(request, implemented_types)
 
@@ -121,10 +122,9 @@ def upload_map(request):
     log_prefix = 'req({0}): upload_map():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-
+    name = request.POST['name']
     file_list = request.POST['file_list']
     file_list = ujson.loads(file_list)
-    name = request.POST['name']
     file_name = file_list[0]
 
     log.info('  {} file_name: {}, name: {}'
@@ -203,9 +203,11 @@ def get_raster(request):
 
         if obj is not None:
             raster = obj.raster.copy()
-            #transpose for client
+            # transpose for client
             bbox = obj.land_polys.bounding_box.AsPoly().reshape(-1).tolist()
-            return zlib.compress(np.ascontiguousarray(raster.T).tobytes()), raster.T.shape, bbox
+
+            return (zlib.compress(np.ascontiguousarray(raster.T).tobytes()),
+                    raster.T.shape, bbox)
         else:
             exc = cors_exception(request, HTTPNotFound)
             raise exc

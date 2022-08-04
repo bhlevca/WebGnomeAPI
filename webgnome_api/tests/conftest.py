@@ -6,24 +6,24 @@ test module
 import pytest
 
 
+# adding a skip slow tests option
+# copied from:
+# https://docs.pytest.org/en/6.2.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option
 def pytest_addoption(parser):
-    '''
-        Place configuration options that apply to all tests here:
-        --skipslow
-          tests that have the @pytest.mark.slow decorator will be skipped
-
-    '''
-    parser.addoption('--skipslow', action='store_true', help='skip slow tests')
+    parser.addoption(
+        "--skipslow", action="store_true", default=False, help="skip the slow tests"
+    )
 
 
-def pytest_runtest_setup(item):
-    '''
-    pytest builtin hook
+def pytest_configure(config):
+    config.addinivalue_line("markers", "slow: mark test as slow to run")
 
-    This is executed before pytest_runtest_call.
-    pytest_runtest_call is invoked to execute the test item.
-    So the code in here is executed before each test.
-    '''
-    if ('slow' in item.keywords and
-            item.config.getoption('--skipslow')):
-        pytest.skip('--skipslow option skipped this test')
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--skipslow"):
+        # --skipslow given in cli: skip slow tests
+        skip_slow = pytest.mark.skip(reason="need --skipslow option to skip")
+        for item in items:
+            if "slow" in item.keywords:
+                item.add_marker(skip_slow)
+

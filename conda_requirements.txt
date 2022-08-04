@@ -12,7 +12,9 @@
 #
 # All required packages should be available on the conda-forge channel
 
-python=3.8*
+# this is intended to be installed with py_gnome
+#  -- python version should already be pinned
+python>=3.8,<3.11
 
 # numpy is not strictly needed by the API, but is by gnome, etc,
 # and adding it helps keep conda from trying to up- or down-grade it.
@@ -31,6 +33,7 @@ ujson
 docutils
 htmlmin
 jsmin
+gitpython
 
 pycparser
 gevent
@@ -41,7 +44,3 @@ redis-py
 # we need the redis server to manage sessions
 # uncomment is you want to use a conda installed version
 # redis
-
-# for testing:
-pytest
-webtest>=2.0

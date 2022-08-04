@@ -1,15 +1,15 @@
-(function(form){
-    var selector = form.selector;
+(function(form) {
+    var riverflow = form.find('#riverflow').val();
+
     var mobileRiver = webgnome.model.get('movers').findWhere({'filename': 'MobileRiver.cur'});
     var scale = 7.6 / 1157;
     var scale_value, transport;
 
-    if ($(selector + ' #riverflow').val() !== 'other') {
-        var flow = parseFloat($(selector + ' #riverflow').val());
-        scale_value = scale * flow;
+    if (riverflow !== 'other') {
+        scale_value = scale * parseFloat(riverflow);
     } else {
-        var stage_height = parseFloat($(selector + ' #stageheight').val());
-        var stage_height_units = $(selector + ' #stageheight-units').val();
+        var stage_height = parseFloat(form.find('#stageheight').val());
+        var stage_height_units = form.find('#stageheight-units').val();
         var errMsg;
 
         if (!stage_height || isNaN(stage_height)) {

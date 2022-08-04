@@ -1,14 +1,18 @@
-(function(form){
-    var selector = form.selector;
+(function(form) {
+    var sabine_flowrate = form.find('#sabine-flowrate').val();
+    var sabine_flowrate_manual = form.find('#sabine-flowrate-manual').val();
+    var neches_flowrate = form.find('#neches-flowrate').val();
+    var neches_flowrate_manual = form.find('#neches-flowrate-manual').val();
+
     var sabineRiver = webgnome.model.get('movers').findWhere({'filename': 'SabineRiver.cur'});
     var nechesRiver = webgnome.model.get('movers').findWhere({'filename': 'NechesRiver.cur'});
     var sab_flow, nec_flow, sab_scale, nec_scale, sab_units, nec_units, errMsg;
 
-    if ($(selector + ' #sabine-flowrate').val() !== 'other') {
-        sab_flow = parseFloat($(selector + ' #sabine-flowrate').val());
+    if (sabine_flowrate !== 'other') {
+        sab_flow = parseFloat(sabine_flowrate);
     } else {
-        sab_flow = parseFloat($(selector + ' #sabine-flowrate-manual').val());
-        sab_units = $(selector + ' #sabine-flowrate-units').val();
+        sab_flow = parseFloat(sabine_flowrate_manual);
+        sab_units = form.find('#sabine-flowrate-units').val();
 
         if (isNaN(sab_flow)) {
             return "Please enter a number for Sabine flow rate!";
@@ -31,11 +35,11 @@
         }
     }
 
-    if ($(selector + ' #neches-flowrate').val() !== 'other') {
-        nec_flow = parseFloat($(selector + ' #neches-flowrate').val());
+    if (neches_flowrate !== 'other') {
+        nec_flow = parseFloat(neches_flowrate);
     } else {
-        nec_flow = parseFloat($(selector + ' #neches-flowrate-manual').val());
-        nec_units = $(selector + ' #neches-flowrate-units').val();
+        nec_flow = parseFloat(neches_flowrate_manual);
+        nec_units = form.find('#neches-flowrate-units').val();
 
         if (isNaN(nec_flow)) {
             return "Please enter a number for Neches flow rate!";

@@ -7,7 +7,7 @@ import tempfile
 from threading import current_thread
 
 from pyramid.view import view_config
-from pyramid.response import Response, FileIter
+from pyramid.response import Response, FileIter, FileResponse
 from pyramid.httpexceptions import (HTTPBadRequest,
                                     HTTPNotFound)
 
@@ -16,20 +16,20 @@ from cornice import Service
 from gnome.persist import is_savezip_valid
 from gnome.model import Model
 
-from ..common.system_resources import list_files
-from ..common.common_object import (RegisterObject,
-                                    clean_session_dir,
-                                    get_persistent_dir)
-from ..common.session_management import (init_session_objects,
-                                         set_active_model,
-                                         get_active_model,
-                                         acquire_session_lock)
-from ..common.views import (can_persist,
-                            cors_response,
-                            cors_exception,
-                            cors_policy,
-                            process_upload,
-                            activate_uploaded)
+from webgnome_api.common.system_resources import list_files
+from webgnome_api.common.common_object import (RegisterObject,
+                                               clean_session_dir,
+                                               get_persistent_dir)
+from webgnome_api.common.session_management import (init_session_objects,
+                                                    set_active_model,
+                                                    get_active_model,
+                                                    acquire_session_lock)
+from webgnome_api.common.views import (can_persist,
+                                       cors_response,
+                                       cors_exception,
+                                       cors_policy,
+                                       process_upload,
+                                       activate_uploaded)
 from webgnome_api.common.session_management import get_session_objects
 
 log = logging.getLogger(__name__)
@@ -138,9 +138,9 @@ def activate_uploaded_model(request):
         new_model._cache.enabled = False
 
         new_model._schema.register_refs(new_model._schema(), new_model, refs)
-#         from ..views import implemented_types
 
-#         RegisterObject(new_model, request, implemented_types)
+        # from ..views import implemented_types
+        # RegisterObject(new_model, request, implemented_types)
 
         log.info('setting active model...')
         set_active_model(request, new_model.id)
@@ -156,8 +156,10 @@ def activate_uploaded_model(request):
 
     return cors_response(request, Response('OK'))
 
+download = Service(name='download', path='/download',
+                   cors_policy=cors_policy)
 
-@view_config(route_name='download')
+@download.get()
 def download_model(request):
     '''
         Here is where we save the active model as a zipfile and
@@ -170,14 +172,12 @@ def download_model(request):
         filename = tf.name
         tf.close()
 
-        json_, saveloc, refs = my_model.save(saveloc=filename)
+        _json, saveloc, _refs = my_model.save(saveloc=filename)
         response_filename = ('{0}.gnome'.format(my_model.name))
-        tf = open(saveloc, 'r+b')
-        response = request.response
-        response.content_type = 'application/zip'
-        response.content_disposition = ('attachment; filename={0}'
-                                        .format(response_filename))
-        response.app_iter = FileIter(tf)
+        response = FileResponse(saveloc, request=request,
+                            content_type='application/zip')
+        response.content_disposition = ("attachment; filename={0}"
+                                               .format(response_filename))
         return response
     else:
         raise cors_response(request, HTTPNotFound('No Active Model!'))

@@ -1,4 +1,6 @@
-(function(form){
+(function(form) {
+    var datatype = form.find('#data-type').val();
+
     var convertHeight = function(height, units) {
         if (units !== 'm') {
             height *= 0.3048;
@@ -6,16 +8,14 @@
         return height;
     };
 
-    var selector = form.selector;
-    var datatype = $(selector + ' #data-type').val();
     var erieMover = webgnome.model.get('movers').findWhere({'filename': 'Erie.cur'});
     var scale_value;
 
     if (datatype === 'height') {
-        var windmillHeight = $(selector + ' #windmill').val();
-        var windmillHeightUnits = $(selector + ' #windmill-units').val();
-        var gibraltarHeight = $(selector + ' #gibraltar').val();
-        var gibraltarHeightUnits = $(selector + ' #gibraltar-units').val();
+        var windmillHeight = form.find('#windmill').val();
+        var windmillHeightUnits = form.find('#windmill-units').val();
+        var gibraltarHeight = form.find('#gibraltar').val();
+        var gibraltarHeightUnits = form.find('#gibraltar-units').val();
 
         if (!windmillHeight) {
             return "Please enter a value for Windmill stage height!";
@@ -51,7 +51,7 @@
 
         scale_value = windmillHeight - gibraltarHeight;
     } else {
-        scale_value = parseFloat($(selector + ' #surfacespeed').val());
+        scale_value = parseFloat(form.find('#surfacespeed').val());
     }
 
     erieMover.set('scale_value', scale_value);

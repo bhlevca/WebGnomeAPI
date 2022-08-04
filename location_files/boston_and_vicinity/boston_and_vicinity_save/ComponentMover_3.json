@@ -1,5 +1,5 @@
 {
- "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "obj_type": "gnome.movers.c_current_movers.ComponentMover", 
  "name": "Wind Driven Currents", 
  "filename1": "WAC10msNW.cur", 
  "filename2": "WAC10msSW.cur", 

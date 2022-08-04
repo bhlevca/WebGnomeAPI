@@ -3,10 +3,10 @@ Views for help documentation
 """
 from os import walk
 from os.path import sep, join, isfile, isdir
-
 import time
+import urllib.parse
+
 import ujson
-import urllib.request, urllib.parse, urllib.error
 import redis
 
 from docutils.core import publish_parts
@@ -51,7 +51,8 @@ def get_help(request):
                                           writer_name='html')['html_body']
 
             return {'path': requested_file, 'html': html}
-    elif isdir(requested_file) and requested_dir != '':
+    elif isdir(requested_file) and requested_dir == '':
+        # all helps requested
         aggregate = []
         for path, _dirnames, filenames in walk(requested_file):
             filenames.sort()

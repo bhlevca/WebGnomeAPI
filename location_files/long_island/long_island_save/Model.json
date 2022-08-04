@@ -13,7 +13,7 @@
   }, 
   {
    "id": "CatsMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
+   "obj_type": "gnome.movers.c_current_movers.CatsMover"
   }
  ], 
  "environment": [

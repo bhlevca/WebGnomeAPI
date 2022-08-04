@@ -1,12 +1,21 @@
 """
 Functional tests for the Gnome Distribution object Web API
+
+FIXME:
+Are we even using these anymore?
+
+In any case, we shouldn't need to test each one separately
+-- the API shouldn't be doing anything special for each object type.
 """
+
 from .base import FunctionalTestBase
+
+import pytest
 
 
 class DistributionBase(FunctionalTestBase):
     '''
-        Tests out the Gnome Distribution object API
+    Tests out the Gnome Distribution object API
     '''
     req_data = {'obj_type': 'gnome.utilities.distributions.NormalDistribution',
                 'mean': 0.0,
@@ -75,15 +84,15 @@ class DistributionBase(FunctionalTestBase):
 
     def perform_updates(self, json_obj):
         '''
-            We can overload this function when subclassing our tests
-            for new object types.
+        We can overload this function when subclassing our tests
+        for new object types.
         '''
         pass
 
     def check_updates(self, json_obj):
         '''
-            We can overload this function when subclassing our tests
-            for new object types.
+        We can overload this function when subclassing our tests
+        for new object types.
         '''
         pass
 

@@ -1,7 +1,7 @@
 """
 Functional tests for the Gnome Outputter object Web API
 """
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2)
@@ -113,8 +113,8 @@ class RendererTests(OutputterTests):
                 'output_last_step': True,
                 'output_zero_step': True,
                 'draw_ontop': 'forecast',
-                'map_filename': 'models/Test.bna',
-                'output_dir': 'models/images',
+                'map_filename': str(MODELS_DIR / 'Test.bna'),
+                'output_dir': str(MODELS_DIR / 'images'),
                 'image_size': [800, 600],
                 'viewport': [[-71.2242987892, 42.1846263908],
                              [-70.4146871963, 42.6329573908]]
@@ -205,11 +205,11 @@ class CurrentOutputterTests(OutputterTests):
                 'output_last_step': True,
                 'output_zero_step': True,
                 'current_movers': [{'obj_type': 'gnome.movers.CatsMover',
-                                    'filename': 'models/tidesWAC.CUR',
+                                    'filename': str(MODELS_DIR / 'tidesWAC.CUR'),
                                     'scale': True,
                                     'scale_value': 1.0,
                                     'tide': {'obj_type': 'gnome.environment.Tide',
-                                             'filename': 'models/CLISShio.txt',
+                                             'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                              },
                                     }]
                 }
@@ -242,8 +242,8 @@ class IceJsonOutputterTests(OutputterTests):
                                 'active_stop': 'inf',
                                 'on': True,
                                 'current_scale': 1.0,
-                                'filename': 'models/acnfs_example.nc',
-                                'topology_file': 'models/acnfs_topo.dat',
+                                'filename': str(MODELS_DIR / 'acnfs_example.nc'),
+                                'topology_file': str(MODELS_DIR / 'acnfs_topo.dat'),
                                 'uncertain_along': 0.5,
                                 'uncertain_cross': 0.25,
                                 'uncertain_duration': 24.0,

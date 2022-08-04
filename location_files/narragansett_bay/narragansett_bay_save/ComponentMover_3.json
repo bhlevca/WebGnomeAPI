@@ -1,5 +1,5 @@
 {
- "obj_type": "gnome.movers.current_movers.ComponentMover", 
+ "obj_type": "gnome.movers.c_current_movers.ComponentMover", 
  "name": "Wind Driven Currents", 
  "filename1": "LinWind20ktN.cur", 
  "filename2": "LinWind20ktE.cur", 

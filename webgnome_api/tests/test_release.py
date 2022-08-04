@@ -8,7 +8,7 @@ class ReleaseTests(FunctionalTestBase):
     '''
         Tests out the Gnome Release object API
     '''
-    req_data = {'obj_type': 'gnome.spill.release.PointLineRelease',
+    req_data = {'obj_type': 'gnome.spills.release.PointLineRelease',
                 }
 
     options_headers = {'Origin': 'http://0.0.0.0:8080',
@@ -75,7 +75,7 @@ class PointLineReleaseTests(ReleaseTests):
         Tests out the Gnome Release object API
     '''
     req_data = {
-                'obj_type': 'gnome.spill.release.PointLineRelease',
+                'obj_type': 'gnome.spills.release.PointLineRelease',
                 'num_elements': 100,
                 'num_released': 0,
                 'release_time': '2014-04-15T13:22:20.930570',
@@ -134,7 +134,7 @@ class BasicReleaseTests(ReleaseTests):
     '''
         Tests out the Gnome Spatial Release object API
     '''
-    req_data = {'obj_type': 'gnome.spill.release.Release',
+    req_data = {'obj_type': 'gnome.spills.release.Release',
                 'name': 'Release',
                 'release_time': '2014-08-02T21:20:50',
                 'custom_positions': [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]

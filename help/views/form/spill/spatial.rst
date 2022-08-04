@@ -15,7 +15,8 @@ This section is automatically popluated based on the oil classification informat
 
 **Substance/Oil Section**
 
-* Unless you want to leave the substance as "non-weathering", click **Select Oil**. This will open the oil database. If you want to change the substance spilled, click **Change Oil** to relaunch the database.
+* The default substance is "Non-weathering". In this case, particles will move under the influence of wind and currents but their properties will not change over time. To model weathering processes, you must first specify an oil. Oils can be downloaded from the ADIOS oil database using the link in the form. Oil information is stored in a JSON (text) file format. Once an oil file is loaded, summary information on the oil is displayed, along with an option to edit the Emulsification defaults for the oil.
+
 * Note on **Emulsification Onset After**: The emulsification algorithm assumes that emulsion begins when some percentage of the oil has evaporated. You have the option of overriding the default value and specifying when you want emulsion to begin. Click on the button next to the entry field. Choose hours from the drop-down menu and type in the number of hours that have elapsed before emulsion begins, or choose percent from the drop-down menu and type in the percent of the spill that has evaporated.
 
 
