@@ -107,12 +107,12 @@ test_production:
     - conda install mamba
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
-                       --file libgoods/conda_requirements.txt
+                       --file libgoods/libgoods/conda_requirements.txt
                        --file libgoods/model_catalogs/conda_requirements.txt
     - pip install -r libgoods/model_catalogs/pip_requirements.txt
 
     - pip install -e libgoods/model_catalogs/
-    - pip install libgoods/libgoods
+    - pip install libgoods/libgoods/
     - pip install .
     - mkdir -p ${HOME}/catalogs/complete
     - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
