@@ -5,40 +5,6 @@ stages:
 services:
   - redis:latest
 
-main:
-  stage: build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
-  only:
-    - main
-    - production
-  image: registry.orr.noaa.gov/gnome/pygnome:main
-  tags:
-    - shell
-    - build
-
-develop:
-  stage: build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
-  only:
-    - develop
-  tags:
-    - shell
-    - build
-
 test_develop:
   stage: test
   image: registry.orr.noaa.gov/gnome/pygnome:develop
@@ -124,6 +90,40 @@ test_production:
     - production
   tags:
     - docker
+
+main:
+  stage: build
+  script:
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
+    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
+  only:
+    - main
+    - production
+  image: registry.orr.noaa.gov/gnome/pygnome:main
+  tags:
+    - shell
+    - build
+
+develop:
+  stage: build
+  script:
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
+    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
+  only:
+    - develop
+  tags:
+    - shell
+    - build
 
 production:
   stage: build
