@@ -7,6 +7,8 @@ services:
 
 main:
   stage: build
+  only:
+    - main
   script:
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -14,9 +16,7 @@ main:
     - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
     - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
-  only:
-    - main
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main0
   image: registry.orr.noaa.gov/gnome/pygnome:main
   tags:
     - shell
@@ -24,6 +24,8 @@ main:
 
 develop:
   stage: build
+  only:
+    - develop
   script:
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
