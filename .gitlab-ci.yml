@@ -32,14 +32,13 @@ develop:
     - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
-  only:
-    - develop
-  tags:
-    - shell
-    - build
 
 test_develop:
   stage: test
+  only:
+    - develop
+  tags:
+    - docker
   image: registry.orr.noaa.gov/gnome/pygnome:develop
   script:
     - yum install redis -y
@@ -64,13 +63,13 @@ test_develop:
     - pytest webgnome_api/tests
     - ps
     - jobs
-  only:
-    - develop
-  tags:
-    - docker
 
 test_main:
   stage: test
+  only:
+    - main
+  tags:
+    - docker
   image: registry.orr.noaa.gov/gnome/pygnome:main
   script:
     - yum install redis -y
@@ -91,13 +90,13 @@ test_main:
     - pytest webgnome_api/tests
     - ps
     - jobs
-  only:
-    - main
-  tags:
-    - docker
 
 test_production:
   stage: test
+  only:
+    - production
+  tags:
+    - docker
   image: registry.orr.noaa.gov/gnome/pygnome:production
   script:
     - yum install redis -y
@@ -119,13 +118,14 @@ test_production:
     - pytest webgnome_api/tests
     - ps
     - jobs
-  only:
-    - production
-  tags:
-    - docker
 
 production:
   stage: build
+  only:
+    - production
+  tags:
+    - shell
+    - build
   script:
     - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -134,9 +134,4 @@ production:
     - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:production
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push registry.orr.noaa.gov/gnome/webgnomeapi:production
-  only:
-    - production
-  tags:
-    - shell
-    - build
 
