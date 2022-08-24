@@ -45,6 +45,7 @@ test_develop:
     - develop
   tags:
     - docker
+    - linux
   image: registry.orr.noaa.gov/gnome/pygnome:develop
   script:
     - yum install redis -y
@@ -76,6 +77,7 @@ test_main:
     - main
   tags:
     - docker
+    - linux
   image: registry.orr.noaa.gov/gnome/pygnome:main
   script:
     - yum install redis -y
@@ -103,6 +105,7 @@ test_production:
     - production
   tags:
     - docker
+    - linux
   image: registry.orr.noaa.gov/gnome/pygnome:production
   script:
     - yum install redis -y
