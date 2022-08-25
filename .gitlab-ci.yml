@@ -55,10 +55,9 @@ test_develop:
     - conda install mamba
     - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
     - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git
-
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
-                       --file libgoods/conda_requirements.txt
+                       --file LibGOODS/conda_requirements.txt
                        --file model_catalogs/conda_requirements.txt
 
     - pip install -r model_catalogs/pip_requirements.txt
