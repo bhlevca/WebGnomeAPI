@@ -34,6 +34,7 @@ from ..common.views import (switch_to_existing_session,
 
 log = logging.getLogger(__name__)
 
+import pandas as pds
 try:
     from libgoods import maps, api, model_fetch
 except ImportError:
@@ -177,7 +178,6 @@ def get_currents(request):
     '''
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
-    breakpoint()
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     bounds = (float(params['WestLon']), float(params['SouthLat']),
               float(params['EastLon']), float(params['NorthLat']))
@@ -186,9 +186,9 @@ def get_currents(request):
 
     fc = model_fetch.FetchConfig(
                 model_name=params['model_name'].upper(),
-                output_pth=upload_dir,
-                start=params['start_time'],
-                end=params['end_time'],
+                output_pth=os.path.join(upload_dir,'libgoods'),
+                start=pds.Timestamp(params['start_time']),
+                end=pds.Timestamp(params['end_time']),
                 bbox=bounds,
                 timing='forecast',
                 #standard_names=None,
@@ -198,7 +198,9 @@ def get_currents(request):
     print(fc)
 
     try:
-        fp = model_fetch.fetch(fc)
+        fp = model_fetch.fetch(fc) 
+        
+        #!!! We need to figure out the name of the file. The path is specified above. "fp" (filename) is not returned by fetch (that was old stuff). So this next part won't work (yet)
 
         file_path = os.path.join(upload_dir, fp)
         # maybe I should pass session directory location to libgoods?
