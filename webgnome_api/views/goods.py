@@ -7,6 +7,7 @@ import copy
 import shutil
 import urllib.request
 import logging
+import datetime
 
 import ujson
 import numpy as np
@@ -34,7 +35,7 @@ from ..common.views import (switch_to_existing_session,
 log = logging.getLogger(__name__)
 
 try:
-    from libgoods import maps, api
+    from libgoods import maps, api, model_fetch
 except ImportError:
     log.warning('libgoods package not found: access to external models will not be supported')
 
@@ -161,26 +162,43 @@ def get_currents(request):
     libGOODS. This file returned from libgoods is then used to create a
     PyCurrentMover object, which is then returned to the client
     '''
+    '''
+    class FetchConfig:
+        """Configuration data class for fetching."""
+
+        model_name: str
+        output_pth: Path
+        start: pd.Timestamp
+        end: pd.Timestamp
+        bbox: Tuple[float, float, float, float]
+        timing: str
+        standard_names: List[str] = field(default_factory=lambda: STANDARD_NAMES)
+        surface_only: bool = False
+    '''
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
+    breakpoint()
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     bounds = ((float(params['WestLon']), float(params['SouthLat'])),
               (float(params['EastLon']), float(params['NorthLat'])))
+    surface_only = params['surface_only'] not in ('false', 'False', None)
+    cross_dateline = params['cross_dateline'] in ('Yes',)
 
     try:
-        fp = api.get_model_data(
-            model_id=params['model_name'].upper(),
-            bounds=bounds,
-            time_interval=(None, None),
-            environmental_parameters=['surface currents'],
-            cross_dateline=bool(int(params['xDateline'])),
-            max_filesize=max_upload_size,
+        fp = model_fetch.fetch(model_fetch.FetchConfig(
+                model_name=params['model_name'].upper(),
+                output_pth=upload_dir,
+                start=params['start_time'],
+                end=params['end_time'],
+                bbox=bounds,
+                timing='forecast',
+                #standard_names=None,
+                surface_only=surface_only,
+                #cross_dateline=cross_dateline
+            )
         )
 
-        _file_name, unique_name = gen_unique_filename(fp.name, upload_dir)
-
-        file_path = os.path.join(upload_dir, unique_name)
-
+        file_path = os.path.join(upload_dir, fp)
         # maybe I should pass session directory location to libgoods?
         shutil.move(fp, file_path)
 
