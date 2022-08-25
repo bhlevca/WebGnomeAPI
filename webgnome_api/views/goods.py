@@ -184,8 +184,7 @@ def get_currents(request):
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
 
-    try:
-        fp = model_fetch.fetch(model_fetch.FetchConfig(
+    fc = model_fetch.FetchConfig(
                 model_name=params['model_name'].upper(),
                 output_pth=upload_dir,
                 start=params['start_time'],
@@ -196,7 +195,10 @@ def get_currents(request):
                 surface_only=surface_only,
                 #cross_dateline=cross_dateline
             )
-        )
+    print(fc)
+
+    try:
+        fp = model_fetch.fetch(fc)
 
         file_path = os.path.join(upload_dir, fp)
         # maybe I should pass session directory location to libgoods?
