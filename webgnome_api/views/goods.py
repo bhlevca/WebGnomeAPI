@@ -179,8 +179,8 @@ def get_currents(request):
     params = request.POST
     breakpoint()
     max_upload_size = eval(request.registry.settings['max_upload_size'])
-    bounds = ((float(params['WestLon']), float(params['SouthLat'])),
-              (float(params['EastLon']), float(params['NorthLat'])))
+    bounds = (float(params['WestLon']), float(params['SouthLat']),
+              float(params['EastLon']), float(params['NorthLat']))
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
 
