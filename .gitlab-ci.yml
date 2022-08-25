@@ -58,9 +58,9 @@ test_develop:
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file LibGOODS/conda_requirements.txt
-                       --file model_catalogs/conda_requirements.txt
+                       --file model_catalogs/conda-requirements.txt
 
-    - pip install -r model_catalogs/pip_requirements.txt
+    - pip install -r model_catalogs/pip-requirements.txt
 
     - pip install -e model_catalogs
     - pip install libgoods
