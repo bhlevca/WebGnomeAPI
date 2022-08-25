@@ -34,6 +34,7 @@ from ..common.views import (switch_to_existing_session,
 
 log = logging.getLogger(__name__)
 
+import pandas as pds
 try:
     from libgoods import maps, api, model_fetch
 except ImportError:
@@ -177,18 +178,26 @@ def get_currents(request):
     '''
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
-    breakpoint()
     max_upload_size = eval(request.registry.settings['max_upload_size'])
-    bounds = (float(params['WestLon']), float(params['SouthLat']),
-              float(params['EastLon']), float(params['NorthLat']))
+    bounds = [float(params['WestLon']), float(params['SouthLat']),
+              float(params['EastLon']), float(params['NorthLat'])]
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
 
+
+    #Amy comment -- I think we need to push some of this to the API in LibGOODS (e.g. creating the fetch config object. We can do any needed manipulations in formats their. Also for getting the subset bounds right for the global models. But for now...
+    if params['model_name'].upper() == 'HYCOM': #this is really temp just to test something faster
+        bounds[0] = bounds[0]+360
+        bounds[2] = bounds[2]+360
+        
+    fname = params['model_name'] + '.nc'
+    
+    output_path = os.path.join(upload_dir,fname)
     fc = model_fetch.FetchConfig(
                 model_name=params['model_name'].upper(),
-                output_pth=upload_dir,
-                start=params['start_time'],
-                end=params['end_time'],
+                output_pth=output_path,
+                start=pds.Timestamp(params['start_time']),
+                end=pds.Timestamp(params['end_time']),
                 bbox=bounds,
                 timing='forecast',
                 #standard_names=None,
@@ -198,17 +207,17 @@ def get_currents(request):
     print(fc)
 
     try:
-        fp = model_fetch.fetch(fc)
-
-        file_path = os.path.join(upload_dir, fp)
+        model_fetch.fetch(fc) 
+        
+        # file_path = os.path.join(upload_dir, fp)
         # maybe I should pass session directory location to libgoods?
-        shutil.move(fp, file_path)
+        # shutil.move(fp, file_path)
 
-        log.info('Successfully uploaded file "{0}"'.format(file_path))
+        log.info('Successfully uploaded file "{0}"'.format(output_path))
 
     except api.FileTooBigError:
             raise cors_response(request, HTTPBadRequest(
                 f'file is too big! Max size = {max_upload_size}'
             ))
 
-    return file_path
+    return output_path
