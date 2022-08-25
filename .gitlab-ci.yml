@@ -61,9 +61,9 @@ test_develop:
                        --file model_catalogs/conda-requirements.txt
 
     - pip install -r model_catalogs/pip-requirements.txt
-
-    - pip install -e model_catalogs
-    - pip install libgoods
+    
+    - pushd model_catalogs && pip install . && popd
+    - pushd LibGOODS && pip install . && popd
     - pip install .
     # - mkdir -p ${HOME}/catalogs/complete
     # - cp libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
