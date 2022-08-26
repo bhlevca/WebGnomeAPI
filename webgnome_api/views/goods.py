@@ -192,7 +192,9 @@ def get_currents(request):
         
     fname = params['model_name'] + '.nc'
     
-    output_path = os.path.join(upload_dir,fname)
+    file_name, unique_name = gen_unique_filename(fname, upload_dir)
+    
+    output_path = os.path.join(upload_dir, unique_name)
     fc = model_fetch.FetchConfig(
                 model_name=params['model_name'].upper(),
                 output_pth=output_path,
