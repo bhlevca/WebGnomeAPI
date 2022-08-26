@@ -210,6 +210,10 @@ def get_currents(request):
         model_fetch.fetch(fc) 
         
         # file_path = os.path.join(upload_dir, fp)
+
+
+
+
         # maybe I should pass session directory location to libgoods?
         # shutil.move(fp, file_path)
 
