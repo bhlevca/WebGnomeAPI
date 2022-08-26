@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 import pandas as pds
 try:
-    from libgoods import maps, api, model_fetch
+    from libgoods import maps, api
 except ImportError:
     log.warning('libgoods package not found: access to external models will not be supported')
 
@@ -183,45 +183,34 @@ def get_currents(request):
               float(params['EastLon']), float(params['NorthLat'])]
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
-
-
-    #Amy comment -- I think we need to push some of this to the API in LibGOODS (e.g. creating the fetch config object. We can do any needed manipulations in formats their. Also for getting the subset bounds right for the global models. But for now...
-    if params['model_name'].upper() == 'HYCOM': #this is really temp just to test something faster
-        bounds[0] = bounds[0]+360
-        bounds[2] = bounds[2]+360
-        
-    fname = params['model_name'] + '.nc'
     
-    file_name, unique_name = gen_unique_filename(fname, upload_dir)
-    
+    #generate a unique model output name
+    start = params['start_time']
+    end = params['end_time']
+    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'    
+    file_name, unique_name = gen_unique_filename(fname, upload_dir)   
     output_path = os.path.join(upload_dir, unique_name)
-    fc = model_fetch.FetchConfig(
-                model_name=params['model_name'].upper(),
-                output_pth=output_path,
-                start=pds.Timestamp(params['start_time']),
-                end=pds.Timestamp(params['end_time']),
-                bbox=bounds,
-                timing='forecast',
-                #standard_names=None,
-                surface_only=surface_only,
-                #cross_dateline=cross_dateline
-            )
-    print(fc)
 
     try:
-        model_fetch.fetch(fc) 
-        
-        # file_path = os.path.join(upload_dir, fp)
-
-
-
-
-        # maybe I should pass session directory location to libgoods?
-        # shutil.move(fp, file_path)
+    
+        fc = api.get_model_data(
+                            params['model_name'].upper(),
+                            "forecast", #hard-coded to forecast for now (will revisit once renamed)
+                            start,  
+                            end,
+                            bounds,
+                            surface_only = True,
+                            #environmental_parameters, #not implemented (uses standard varnames)
+                            #cross_dateline=False,
+                            #max_filesize=None,
+                            target_pth=output_path,
+                        )
+    
+        print(fc)
 
         log.info('Successfully uploaded file "{0}"'.format(output_path))
 
-    except api.FileTooBigError:
+    except: #api.FileTooBigError:
             raise cors_response(request, HTTPBadRequest(
                 f'file is too big! Max size = {max_upload_size}'
             ))
