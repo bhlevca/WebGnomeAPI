@@ -29,18 +29,19 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = ['GFS-1_4DEG',
-                        'RTOFS-GLOBAL',
-                        'RTOFS-GLOBAL_2D',
-                        'GFS-1_2DEG',
-                        'GFS-1DEG',
+supported_env_models = [#'GFS-1_4DEG',
+                        #'RTOFS-GLOBAL',
+                        #'RTOFS-GLOBAL_2D',
+                        #'GFS-1_2DEG',
+                        #'GFS-1DEG',
                         'HYCOM',
-                        'RTOFS-ALASKA',
-                        'RTOFS-WEST',
-                        'RTOFS-EAST',
-                        'WCOFS_2DS',
-                        'NGOFS2_2DS',
-                        'GOMOFS_2DS',
+                        #'RTOFS-ALASKA',
+                        #'RTOFS-WEST',
+                        #'RTOFS-EAST',
+                        'WCOFS',
+                        #'WCOFS_2DS',
+                        #'NGOFS2_2DS',
+                        #'GOMOFS_2DS',
                         'CREOFS',
                         'LMHOFS',
                         'CIOFS',
@@ -51,7 +52,8 @@ supported_env_models = ['GFS-1_4DEG',
                         'LOOFS',
                         'SFBOFS',
                         'TBOFS',
-                        'NYOFS']
+                        'NYOFS',
+                        'GOMOFS']
 
 
 class WebgnomeFormatter(Formatter):
