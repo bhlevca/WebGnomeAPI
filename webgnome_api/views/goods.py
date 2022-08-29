@@ -190,7 +190,7 @@ def get_currents(request):
     fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'    
     file_name, unique_name = gen_unique_filename(fname, upload_dir)   
     output_path = os.path.join(upload_dir, unique_name)
-
+    
     try:
     
         fc = api.get_model_data(
@@ -204,13 +204,11 @@ def get_currents(request):
                             #cross_dateline=False,
                             #max_filesize=None,
                             target_pth=output_path,
-                        )
-    
-        print(fc)
+                        )    
 
         log.info('Successfully uploaded file "{0}"'.format(output_path))
 
-    except: #api.FileTooBigError:
+    except api.FileTooBigError:
             raise cors_response(request, HTTPBadRequest(
                 f'file is too big! Max size = {max_upload_size}'
             ))
