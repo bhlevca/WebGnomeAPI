@@ -16,7 +16,7 @@ RUN mamba install -y \
 RUN pip install -r webgnomeapi/model_catalogs/pip-requirements.txt
 
 RUN cd webgnomeapi/model_catalogs && pip install .
-RUN cd webgnomeapi/LibGOODS && pip install .
+RUN cd webgnomeapi/libgoods && pip install .
 
 
 RUN cd webgnomeapi && pip install .
