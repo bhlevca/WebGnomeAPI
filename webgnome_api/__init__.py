@@ -22,6 +22,8 @@ from webgnome_api.common.views import cors_policy
 from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
                                           WebgnomeNamespace)
 
+from waitress import serve as waitress_serve
+
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -186,7 +188,7 @@ def server_factory(global_config, host, port):
         # app is gzip middlware; app.application == webgnome_api
         sio = WebgnomeSocketioServer(app_settings=global_config,
                                      api_app=app.application,
-                                     async_mode='gevent')
+                                     async_mode='threading')
 
         # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
@@ -196,8 +198,8 @@ def server_factory(global_config, host, port):
         app.application.registry['sio_ns'] = ns
 
         app = socketio.WSGIApp(sio, app)
-        pywsgi.WSGIServer((host, port), app,
-                          handler_class=WebSocketHandler).serve_forever()
+
+        waitress_serve(app, host=host, port=port, expose_tracebacks=True)
 
     return serve
 

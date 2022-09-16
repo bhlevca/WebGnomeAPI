@@ -1,3 +1,4 @@
+from distutils.util import execute
 import sys
 import time
 import logging
@@ -199,16 +200,21 @@ def run_export_model(request):
         sock_session['num_sent'] = 0
 
         if active_model and not ns.active_greenlets.get(sid):
-            gl = ns.active_greenlets[sid] = gevent.spawn(
-                execute_async_model,
-                active_model,
-                ns,
-                sid,
-                request
-            )
+            args = (execute_async_model, active_model, ns, sid, request)
+            with gevent.Greenlet.spawn(*args) as gl:
+                ns.active_greenlets[sid] = gl
+                gl.session_hash = request.session_hash
+                gl.link(get_export_cleanup())
+            # gl = ns.active_greenlets[sid] = gevent.spawn(
+            #     execute_async_model,
+            #     active_model,
+            #     ns,
+            #     sid,
+            #     request
+            # )
 
-            gl.session_hash = request.session_hash
-            gl.link(get_export_cleanup())
+            # gl.session_hash = request.session_hash
+            # gl.link(get_export_cleanup())
 
             return None
         else:
@@ -235,18 +241,23 @@ def run_model(request):
     sid = ns.get_sockid_from_sessid(request.session.session_id)
     if sid is None:
         raise ValueError('no sock_session associated with pyramid_session')
-
     with ns.session(sid) as sock_session:
         sock_session['num_sent'] = 0
+        sock_session['lock'].set() #important to avoid thread access violations when using Waitress
 
         if active_model and not ns.active_greenlets.get(sid):
-            gl = ns.active_greenlets[sid] = gevent.spawn(
-                execute_async_model,
-                active_model,
-                ns,
-                sid,
-                request)
-            gl.session_hash = request.session_hash
+            args = (execute_async_model, active_model, ns, sid, request)
+            with gevent.Greenlet.spawn(*args) as gl:
+                ns.active_greenlets[sid] = gl
+                gl.session_hash = request.session_hash
+            # gl = ns.active_greenlets[sid] = gevent.spawn(
+            #     execute_async_model,
+            #     active_model,
+            #     ns,
+            #     sid,
+            #     request)
+            # gl.session_hash = request.session_hash
+            # gl.join()
             return None
         else:
             return None
@@ -392,7 +403,7 @@ def execute_async_model(active_model=None,
                                           .format(wait_time), room=sockid)
                     socket_namespace.on_model_kill(sockid)
 
-            gevent.sleep(0.001)
+            #gevent.sleep(0.001)
     except GreenletExit:
         log.info('Greenlet exiting early')
         socket_namespace.emit('killed', 'Model run terminated early',
@@ -457,6 +468,7 @@ def get_rewind(request):
                     with ns.session(sio) as sock_session:
                         ns.active_greenlets.get(sio).kill(block=False)
                         sock_session['num_sent'] = 0
+                        sock_session['lock'].clear()
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
