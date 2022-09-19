@@ -220,6 +220,28 @@ def run_export_model(request):
         else:
             return None
 
+def run_model2(request):
+    '''
+    Runs a model and writes output to the web socket. Depends on threading
+    '''
+    log_prefix = 'req{0}: run_model()'.format(id(request))
+    log.info('>>' + log_prefix)
+
+    ns = request.registry.get('sio_ns')
+
+    if ns is None:
+        raise ValueError('no namespace associated with session')
+
+    active_model = get_active_model(request)
+
+    sid = ns.get_sockid_from_sessid(request.session.session_id)
+    if sid is None:
+        raise ValueError('no sock_session associated with pyramid_session')
+    with ns.session(sid) as sock_session:
+        sock_session['num_sent'] = 0
+        sock_session['lock'].set() #important to avoid thread access violations when using Waitress
+
+
 
 @async_step_api.get()
 def run_model(request):
