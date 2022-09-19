@@ -265,7 +265,6 @@ def run_model(request):
         raise ValueError('no sock_session associated with pyramid_session')
     with ns.session(sid) as sock_session:
         sock_session['num_sent'] = 0
-        sock_session['lock'].set() #important to avoid thread access violations when using Waitress
 
         if active_model and not ns.active_greenlets.get(sid):
             args = (execute_async_model, active_model, ns, sid, request)
