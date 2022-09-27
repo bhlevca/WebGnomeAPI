@@ -196,10 +196,11 @@ def server_factory(global_config, host, port):
 
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
+        threads = int(app.application.registry.settings.get('waitress.threads', '1'))
 
         app = socketio.WSGIApp(sio, app)
 
-        waitress_serve(app, host=host, port=port, expose_tracebacks=True)
+        waitress_serve(app, host=host, port=port, expose_tracebacks=True, threads=threads)
 
     return serve
 
