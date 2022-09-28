@@ -73,7 +73,7 @@ def get_model_metadata(request):
     if bounds:
         bounds = ujson.loads(bounds)
     if name:
-        mdl = api.all_metas[name].as_pyson()
+        mdl = api.all_metas[name].as_pyson() ##there is a function for this in api?
         return mdl
 
     else:
@@ -179,8 +179,8 @@ def get_currents(request):
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
-    bounds = [float(params['WestLon']), float(params['SouthLat']),
-              float(params['EastLon']), float(params['NorthLat'])]
+    bounds = ((float(params['WestLon']), float(params['SouthLat'])),
+              (float(params['EastLon']), float(params['NorthLat'])))
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
     
@@ -193,14 +193,14 @@ def get_currents(request):
     
     try:
     
-        fc = api.get_model_data(
+        fc = api.get_model_file(
                             params['model_name'].upper(),
                             "forecast", #hard-coded to forecast for now (will revisit once renamed)
                             start,  
                             end,
                             bounds,
                             surface_only = True,
-                            #environmental_parameters, #not implemented (uses standard varnames)
+                            environmental_parameters="surace currents", 
                             #cross_dateline=False,
                             #max_filesize=None,
                             target_pth=output_path,
