@@ -115,7 +115,7 @@ class WebgnomeNamespace(socketio.Namespace):
             gl = self.active_greenlets.get(sid)
             if gl:
                 log.debug('killing greenlet {0}'.format(gl))
-                gl.kill(block=True, timeout=5)
+                gl.kill(block=False, timeout=5)
                 self.emit('killed', 'Model run terminated', room=sid)
                 log.debug('killed greenlet {0}'.format(gl))
                 sock_session['num_sent'] = 0
