@@ -35,10 +35,7 @@ from ..common.views import (switch_to_existing_session,
 log = logging.getLogger(__name__)
 
 import pandas as pds
-try:
-    from libgoods import maps, api
-except ImportError:
-    log.warning('libgoods package not found: access to external models will not be supported')
+from libgoods import maps, api
 
 from .. import supported_env_models
 
