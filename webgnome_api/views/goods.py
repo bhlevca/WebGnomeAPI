@@ -120,7 +120,7 @@ def get_goods_map(request):
             max_filesize=max_upload_size,
         )
 
-    except maps.FileTooBigError:
+    except api.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
