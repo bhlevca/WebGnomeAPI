@@ -20,7 +20,8 @@ from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
 from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
-                                          WebgnomeNamespace)
+                                          WebgnomeNamespace,
+                                          GoodsFileNamespace)
 
 from waitress import serve as waitress_serve
 
@@ -186,19 +187,23 @@ def server_factory(global_config, host, port):
         # app is gzip middlware; app.application == webgnome_api
         sio = WebgnomeSocketioServer(app_settings=global_config,
                                      api_app=app.application,
-                                     async_mode='threading')
+                                     async_mode='gevent')
 
         # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
+        goods_ns = GoodsFileNamespace('/goods')
         sio.register_namespace(ns)
+        sio.register_namespace(goods_ns)
 
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
-        threads = int(app.application.registry.settings.get('waitress.threads', '4'))
+        app.application.registry['goods_ns'] = goods_ns
+        #threads = int(app.application.registry.settings.get('waitress.threads', '4'))
 
         app = socketio.WSGIApp(sio, app)
-
-        waitress_serve(app, host=host, port=port, expose_tracebacks=True, threads=threads)
+        pywsgi.WSGIServer((host, port), app,
+                          handler_class=WebSocketHandler).serve_forever()
+        #waitress_serve(app, host=host, port=port, expose_tracebacks=True, threads=threads)
 
     return serve
 

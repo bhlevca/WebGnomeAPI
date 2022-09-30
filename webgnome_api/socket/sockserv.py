@@ -55,8 +55,9 @@ class WebgnomeNamespace(socketio.Namespace):
         # Case for this situation needs to be added.
         # old environ contains old, invalid session_id, this is the problem
         # websocket connection is actually still successful?
-        ctx = self.server.app.request_context(environ)
-        session_id = ctx.request.session.session_id
+        breakpoint()
+        session_id = [s for s in environ['QUERY_STRING'].split('&') if 'session_id' in s][0]
+        session_id = session_id.split('=')[1]
 
         if session_id not in self.server.app.registry.settings['objects']:
             # connection has come in either before the session has been
@@ -88,6 +89,9 @@ class WebgnomeNamespace(socketio.Namespace):
         return True
 
     def on_disconnect(self, sid):
+        '''
+        triggers automatically on webpage closure and refresh
+        '''
         with self.session(sid) as sock_session:
             if not sock_session:
                 return "session_not_found"
@@ -217,3 +221,82 @@ class WebgnomeNamespace(socketio.Namespace):
             overall_logger.addHandler(session_handler)
         else:
             existing_handler.filters[0].filter = gen_emit_msg(sess_hash)
+
+
+class GoodsFileNamespace(socketio.Namespace):
+    '''
+    Separate namespace for GOODS file requests
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sio_sessionid_map = {}
+        self.active_requests = {}
+
+    def get_sockid_from_sessid(self, sessionid):
+        return self.sio_sessionid_map.get(sessionid)
+
+    def on_connect(self, sid, environ):
+        # get request context from the webgnome_api app
+        # NOTE: next line will fail if server is restarted and an 'old'
+        #       client tries to connect
+        # Case for this situation needs to be added.
+        # old environ contains old, invalid session_id, this is the problem
+        # websocket connection is actually still successful?
+        breakpoint()
+        session_id = [s for s in environ['QUERY_STRING'].split('&') if 'session_id' in s][0]
+        session_id = session_id.split('=')[1]
+
+        if session_id not in self.server.app.registry.settings['objects']:
+            # connection has come in either before the session has been
+            # properly established, or an old client socket is attempting to
+            # reconnect to a new API
+            self.disconnect(sid)
+            return False
+
+        sess_hash = generate_short_session_id(session_id)
+
+        self.save_session(sid, {
+            'session_id': session_id,
+            'socket_id': sid,
+            'session_hash': sess_hash,
+            'objects': self.server.app.registry.settings['objects'][session_id]
+        })
+
+        # Need to map the request session id with the socket id so the
+        # Pyramid handler code can get the socket id.
+        self.sio_sessionid_map[session_id] = sid
+        if not self.active_requests.get('session_id'):
+            #if this is a reconnection, we don't want to clobber active requests if
+            #they exist for this session_id
+            self.active_requests[session_id] = []
+        
+
+        return True
+
+    def on_disconnect(self, sid):
+        '''
+        triggers automatically on webpage closure and refresh
+        '''
+        breakpoint()
+        with self.session(sid) as sock_session:
+            if not sock_session:
+                return "session_not_found"
+
+            session_id = sock_session['session_id']
+            del self.sio_sessionid_map[session_id]
+    
+    def on_start_request(self, sid, request_params):
+        breakpoint()
+        with self.session(sid) as sock_session:
+            sock_session.
+        #construct request object
+        #put into session objects dict
+        #fire request
+        self.emit('started', room=sid)
+
+    def on_terminate_request(self, sid, request_id):
+        breakpoint()
+        #trigger kill on request object
+        self.emit('terminated_request', request_id)
+    
