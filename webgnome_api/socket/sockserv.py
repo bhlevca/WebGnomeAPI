@@ -55,7 +55,6 @@ class WebgnomeNamespace(socketio.Namespace):
         # Case for this situation needs to be added.
         # old environ contains old, invalid session_id, this is the problem
         # websocket connection is actually still successful?
-        breakpoint()
         session_id = [s for s in environ['QUERY_STRING'].split('&') if 'session_id' in s][0]
         session_id = session_id.split('=')[1]
 
@@ -289,7 +288,7 @@ class GoodsFileNamespace(socketio.Namespace):
     def on_start_request(self, sid, request_params):
         breakpoint()
         with self.session(sid) as sock_session:
-            sock_session.
+            pass
         #construct request object
         #put into session objects dict
         #fire request
