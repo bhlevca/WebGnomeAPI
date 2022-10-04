@@ -35,10 +35,7 @@ from ..common.views import (switch_to_existing_session,
 log = logging.getLogger(__name__)
 
 import pandas as pds
-try:
-    from libgoods import maps, api
-except ImportError:
-    log.warning('libgoods package not found: access to external models will not be supported')
+from libgoods import maps, api
 
 from .. import supported_env_models
 
@@ -120,7 +117,7 @@ def get_goods_map(request):
             max_filesize=max_upload_size,
         )
 
-    except maps.FileTooBigError:
+    except api.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))

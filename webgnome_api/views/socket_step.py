@@ -424,7 +424,7 @@ def execute_async_model(active_model=None,
                                           .format(wait_time), room=sockid)
                     socket_namespace.on_model_kill(sockid)
 
-            #gevent.sleep(0.001)
+            gevent.sleep(0.001)
     except GreenletExit:
         log.info('Greenlet exiting early')
         socket_namespace.emit('killed', 'Model run terminated early',
