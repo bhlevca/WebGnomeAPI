@@ -1,0 +1,13 @@
+{
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -79.743681,
+        9.120808,
+        0.0
+    ],
+    "name": "Lake Flow",
+    "filename": "GatunLakeHead.cur",
+    "json_": "save",
+    "scale_value": 0.02142
+}

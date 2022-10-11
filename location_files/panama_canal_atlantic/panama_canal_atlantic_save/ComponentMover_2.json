@@ -1,0 +1,21 @@
+{
+    "obj_type": "gnome.movers.c_current_movers.ComponentMover",
+    "name": "Wind Driven Currents",
+    "filename1": "AtlanCompWAC14NW.CUR",
+    "filename2": "AtlanCompWAC14NE.CUR",
+    "scale_refpoint": [
+        -79.835833,
+        9.386333,
+        0.0
+    ],
+    "pat1_angle": 315.0,
+    "pat1_speed": 14.0,
+    "pat1_speed_units": 1.0,
+    "pat1_scale_to_value": 0.08,
+    "pat2_angle": 45.0,
+    "pat2_speed": 14.0,
+    "pat2_speed_units": 1.0,
+    "pat2_scale_to_value": 0.02,
+    "scale_by": 2,
+    "json_": "save"
+}
