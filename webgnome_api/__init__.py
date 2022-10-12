@@ -32,29 +32,29 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = [#'GFS-1_4DEG',
+supported_env_models = {#'GFS-1_4DEG',
                         #'RTOFS-GLOBAL',
                         #'RTOFS-GLOBAL_2D',
                         #'GFS-1_2DEG',
                         #'GFS-1DEG',
-                        'HYCOM',
+                        'GOFS':'hycom-forecast-agg',
                         #'RTOFS-ALASKA',
                         #'RTOFS-WEST',
                         #'RTOFS-EAST',
-                        'WCOFS',
-                        'NGOFS2',
-                        'CREOFS',
-                        'LMHOFS',
-                        'CIOFS',
-                        'LSOFS',
-                        'CBOFS',
-                        'LEOFS',
-                        'DBOFS',
-                        'LOOFS',
-                        'SFBOFS',
-                        'TBOFS',
-                        'NYOFS',
-                        'GOMOFS']
+                        'WCOFS':'coops-forecast-noagg',
+                        'NGOFS2':'coops-forecast-noagg',
+                        'CREOFS':'coops-forecast-noagg',
+                        'LMHOFS':'coops-forecast-noagg',
+                        'CIOFS':'coops-forecast-agg',
+                        'LSOFS':'coops-forecast-agg',
+                        'CBOFS':'coops-forecast-agg',
+                        'LEOFS':'coops-forecast-noagg',
+                        'DBOFS':'coops-forecast-agg',
+                        'LOOFS':'coops-forecast-agg',
+                        'SFBOFS':'coops-forecast-noagg',
+                        'TBOFS':'coops-forecast-agg',
+                        'NYOFS':'coops-forecast-agg',
+                        'GOMOFS':'coops-forecast-agg'}
 
 
 class WebgnomeFormatter(Formatter):

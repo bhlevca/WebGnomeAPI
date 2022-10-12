@@ -65,12 +65,11 @@ def get_model_metadata(request):
     bounds = request.GET.get('map_bounds', None)
     name = request.GET.get('name', None)
     retval = None
-    model_list = supported_env_models
-
+    model_list = list(supported_env_models.keys())
     if bounds:
         bounds = ujson.loads(bounds)
     if name:
-        mdl = api.all_metas[name].as_pyson() ##there is a function for this in api?
+        mdl = api.all_metas[name].as_pyson() 
         return mdl
 
     else:
@@ -192,7 +191,7 @@ def get_currents(request):
     
         fc = api.get_model_file(
                             params['model_name'].upper(),
-                            "forecast", #hard-coded to forecast for now (will revisit once renamed)
+                            supported_env_models[params['model_name'].upper()], 
                             start,  
                             end,
                             bounds,
