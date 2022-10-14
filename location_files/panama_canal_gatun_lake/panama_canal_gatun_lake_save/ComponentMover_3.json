@@ -11,11 +11,11 @@
     "pat1_angle": 315.0,
     "pat1_speed": 10.0,
     "pat1_speed_units": 1.0,
-    "pat1_scale_to_value": 0.136358,
+    "pat1_scale_to_value": 0.13636,
     "pat2_angle": 45.0,
     "pat2_speed": 10.0,
     "pat2_speed_units": 1.0,
-    "pat2_scale_to_value": 0.201044,
+    "pat2_scale_to_value": 0.201051,
     "scale_by": 2,
     "json_": "save"
 }
