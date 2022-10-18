@@ -6,6 +6,7 @@ RUN set
 RUN yum update -y \
     && yum install -y redis
 
+RUN ls .
 COPY ./ /webgnomeapi/
 
 RUN conda install mamba
