@@ -4,18 +4,18 @@
     "filename1": "AtlanticWAC_NW10.CUR",
     "filename2": "AtlanticWAC_NE10.CUR",
     "scale_refpoint": [
-        -79.835833,
-        9.386333,
+        -79.911728,
+        9.378144,
         0.0
     ],
     "pat1_angle": 315.0,
-    "pat1_speed": 14.0,
+    "pat1_speed": 10.0,
     "pat1_speed_units": 1.0,
-    "pat1_scale_to_value": 0.08,
+    "pat1_scale_to_value": 0.154387,
     "pat2_angle": 45.0,
-    "pat2_speed": 14.0,
+    "pat2_speed": 10.0,
     "pat2_speed_units": 1.0,
-    "pat2_scale_to_value": 0.02,
+    "pat2_scale_to_value": 0.145893,
     "scale_by": 2,
     "json_": "save"
 }
