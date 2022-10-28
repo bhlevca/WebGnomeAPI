@@ -1,6 +1,7 @@
 """
     Main entry point
 """
+
 import os
 import shutil
 import logging
@@ -24,7 +25,6 @@ from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
                                           GoodsFileNamespace)
 
 from waitress import serve as waitress_serve
-
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
