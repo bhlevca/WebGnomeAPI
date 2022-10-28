@@ -1,21 +1,21 @@
 {
     "obj_type": "gnome.movers.c_current_movers.ComponentMover",
     "name": "Wind Driven Currents",
-    "filename1": "AtlanticWAC_NW10.CUR",
-    "filename2": "AtlanticWAC_NE10.CUR",
+    "filename1": "AtlanticWAC_NW10.cur",
+    "filename2": "AtlanticWAC_NE10.cur",
     "scale_refpoint": [
-        -79.911728,
-        9.378144,
+        -79.912,
+        9.373,
         0.0
     ],
     "pat1_angle": 315.0,
     "pat1_speed": 10.0,
     "pat1_speed_units": 1.0,
-    "pat1_scale_to_value": 0.154387,
+    "pat1_scale_to_value": 0.116565,
     "pat2_angle": 45.0,
     "pat2_speed": 10.0,
     "pat2_speed_units": 1.0,
-    "pat2_scale_to_value": 0.145893,
+    "pat2_scale_to_value": 0.10116,
     "scale_by": 2,
     "json_": "save"
 }
