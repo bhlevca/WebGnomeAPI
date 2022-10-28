@@ -46,7 +46,7 @@ test_src:
     - redis-server --daemonize yes
 
     - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
-    - git clone --depth 1 -b develop https://gitlab.orr.noaa.gov/gnome/libgoods.git libgoods
+    - git clone --depth 1 -b develop https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
     - conda install mamba
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
