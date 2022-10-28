@@ -1,8 +1,8 @@
 {
     "obj_type": "gnome.movers.c_current_movers.ComponentMover",
     "name": "Wind Driven Currents",
-    "filename1": "AtlanticWAC_NW10.cur",
-    "filename2": "AtlanticWAC_NE10.cur",
+    "filename1": "AtlanticWAC_NW10.CUR",
+    "filename2": "AtlanticWAC_NE10.CUR",
     "scale_refpoint": [
         -79.912,
         9.373,
