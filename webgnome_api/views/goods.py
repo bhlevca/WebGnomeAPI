@@ -265,7 +265,6 @@ def create_goods_request(request):
                                   _debug = True)
     
     session_objs[request_id] = goods_req
-    breakpoint()
     goods_req.start()
 
     return goods_req
