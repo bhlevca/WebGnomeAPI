@@ -73,6 +73,7 @@ def get_model_metadata(request):
     '''
     bounds = request.GET.get('map_bounds', None)
     name = request.GET.get('name', None)
+    request_type = request.GET.get('request_type')
     retval = None
     model_list = list(supported_env_models.keys())
     if bounds:
@@ -82,8 +83,12 @@ def get_model_metadata(request):
         return mdl
 
     else:
-        retval = api.list_models(name_list=model_list, map_bounds=bounds,
-                                 as_pyson=True)
+        retval = api.list_models(
+            name_list=model_list,
+            map_bounds=bounds,
+            env_params=request_type,
+            as_pyson=True,
+            )
 
     return retval
 
@@ -151,57 +156,6 @@ def get_goods_map(request):
     return file_path, file_name
 
 
-@goods_currents.post()
-def get_currents(request):
-
-    upload_dir = os.path.relpath(get_session_dir(request))
-    params = request.POST
-    max_upload_size = eval(request.registry.settings['max_upload_size'])
-    bounds = ((float(params['WestLon']), float(params['SouthLat'])),
-              (float(params['EastLon']), float(params['NorthLat'])))
-    surface_only = params.get('surface_only', True) not in ('false', 'False', None)
-    cross_dateline = params['cross_dateline'] in ('Yes',)
-    
-    #generate a unique model output name
-    start = params['start_time']
-    end = params['end_time']
-    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'    
-    file_name, unique_name = gen_unique_filename(fname, upload_dir)   
-    output_path = os.path.join(upload_dir, unique_name)
-    fn = open(output_path,'w')
-    fn.close()
-    source=params.get('source')
-
-    goods_ns = request.registry.get('goods_ns')
-
-    if goods_ns is None:
-        raise ValueError('no namespace associated with session')
-
-    sid = goods_ns.get_sockid_from_sessid(request.session.session_id)
-    session_objs = get_session_objects(request)
-    request_id = str(uuid1())
-
-    goods_req = GOODSRequest(start_time=datetime.datetime.now(),
-                                  request_id=request_id,
-                                  filename=unique_name,
-                                  outpath=output_path,
-                                  session_id=request.session.session_id,
-                                  request_type='currents',
-                                  request_args={
-                                      'identifier':params['model_name'],
-                                      'model_source':source,
-                                      'start':start,
-                                      'end':end,
-                                      'bounds':bounds,
-                                      'surface_only':surface_only,
-                                      'cross_dateline':cross_dateline,
-                                  })
-    
-    session_objs[request_id] = goods_req
-    goods_req.start()
-
-    return request_id
-
 def create_goods_request(request):
     '''
     Uses the payload passed by the client to send information to
@@ -233,6 +187,9 @@ def create_goods_request(request):
     surface_only = params.get('surface_only', True) not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
     request_type = params['request_type']
+    include_winds = params.get('include_winds', True) not in ('false', 'False', None)
+    if include_winds:
+        request_type = [request_type, 'surface winds']
     
     #generate a unique model output name
     start = params['start_time']
@@ -389,7 +346,6 @@ class GOODSRequest(object):
             start_time = datetime.datetime.now()
         self.start_time = start_time
         self.request_id = request_id
-        assert request_type == 'currents' or request_type == 'winds' or request_type == 'currents+winds'
         self.request_type = request_type #'currents' or 'winds'
         self.request_args = request_args
         self.state = 'preparing'

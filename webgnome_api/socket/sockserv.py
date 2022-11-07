@@ -290,7 +290,6 @@ class GoodsFileNamespace(socketio.Namespace):
             self.emit('request_started', req_obj.start_time.isoformat(), room=sid)
 
     def on_terminate_request(self, sid, request_id):
-        breakpoint()
         request_object = self.get_request_object(sid, request_id)
         request_object.terminate_with_error('Client requested kill')
         #trigger kill on request object
