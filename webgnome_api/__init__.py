@@ -164,6 +164,7 @@ def start_session_cleaner(settings):
             session_id = session_id.decode('utf-8')
 
         cleanup_dir = (Path(session_dir) / session_id).resolve()
+        print(f'Session Cleaner: Cleaning up folder {cleanup_dir}')
 
         try:
             shutil.rmtree(cleanup_dir)
