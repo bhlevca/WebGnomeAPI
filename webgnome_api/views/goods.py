@@ -43,7 +43,7 @@ import pandas as pds
 from dask.distributed import Client
 from libgoods import maps, api
 
-from .. import supported_env_models
+from .. import supported_ocean_models, supported_met_models
 
 goods_maps = Service(name='maps', path='/goods/maps*',
                      description="GOODS MAP API", cors_policy=cors_policy)
@@ -75,6 +75,15 @@ def get_model_metadata(request):
     model_id = request.GET.get('model_id', None)
     model_source = request.GET.get('model_source', None)
     request_type = request.GET.get('request_type')
+    try:
+        if any(cur in request_type for cur in ('surface currents', '3D currents')):
+            supported_env_models = supported_ocean_models
+        elif 'surface winds' in request_type:
+            supported_env_models = supported_met_models
+        else:
+            supported_env_models = {}
+    except TypeError:
+        supported_env_models = {**supported_ocean_models, **supported_met_models}  
     retval = None
     #model_list = list(supported_env_models.keys())
     if bounds:
@@ -86,7 +95,7 @@ def get_model_metadata(request):
         retval = api.list_models(
             model_ids_sources=supported_env_models,
             map_bounds=bounds,
-            env_params=request_type,
+            env_params=ujson.loads(request_type),
             as_pyson=True,
             )
     return retval

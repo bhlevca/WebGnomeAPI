@@ -32,10 +32,7 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = {#'GFS-1_4DEG':['ucar-forecast-agg',],
-                        #'GFS-1_2DEG':['ucar-forecast-agg',],
-                        #'GFS-1DEG':['ucar-forecast-agg',],
-                        'GOFS':['hycom-forecast-agg',],
+supported_ocean_models = {'GOFS':['hycom-forecast-agg',],
                         'WCOFS':['ioos-forecast-agg',],
                         'NGOFS2':['coops-forecast-noagg',],
                         'CREOFS':['coops-forecast-noagg',],
@@ -50,7 +47,10 @@ supported_env_models = {#'GFS-1_4DEG':['ucar-forecast-agg',],
                         'TBOFS':['coops-forecast-agg',],
                         'NYOFS':['coops-forecast-agg',],
                         'GOMOFS':['coops-forecast-agg',]}
-
+                        
+supported_met_models = {'GFS-1-4DEG':['ucar-forecast-agg',],
+                        'GFS-1-2DEG':['ucar-forecast-agg',],
+                        'GFS-1DEG':['ucar-forecast-agg',]}
 
 class WebgnomeFormatter(Formatter):
     def format(self, record):
