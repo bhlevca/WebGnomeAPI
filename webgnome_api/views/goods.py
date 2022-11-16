@@ -366,7 +366,8 @@ class GOODSRequest(object):
 
     def to_response(self):
         return {'start_time': self.start_time.isoformat(),
-               'request_id': self.request_id,
+               'request_id': self.request_id, #GOODSRequest do not have an 'id' as a distinction from GnomeId
+               'id': self.request_id, #'id' specifically needed by Backbone.Collection so merging works right
                'request_type': self.request_type,
                'filename': self.filename,
                'state': self.state,
