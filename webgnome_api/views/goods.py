@@ -72,24 +72,23 @@ def get_model_metadata(request):
     map_bounds is a polygon as a list of lon, lat pairs
     '''
     bounds = request.GET.get('map_bounds', None)
-    name = request.GET.get('name', None)
+    model_id = request.GET.get('model_id', None)
+    model_source = request.GET.get('model_source', None)
     request_type = request.GET.get('request_type')
     retval = None
-    model_list = list(supported_env_models.keys())
+    #model_list = list(supported_env_models.keys())
     if bounds:
         bounds = ujson.loads(bounds)
-    if name:
-        mdl = api.all_metas[name].as_pyson() 
+    if model_id:
+        mdl = api.get_model_info(model_id,model_source)
         return mdl
-
     else:
         retval = api.list_models(
-            name_list=model_list,
+            model_ids_sources=supported_env_models,
             map_bounds=bounds,
             env_params=request_type,
             as_pyson=True,
             )
-
     return retval
 
 

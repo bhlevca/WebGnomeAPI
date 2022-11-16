@@ -1,5 +1,5 @@
 .. keywords
-   currents, movers, roms, fvcom, cats, hyrodynamic model
+   winds, movers
 
 Choose **Load NetCDF Surface Currents** to load ocean current data or model output on a regular, curvilinear, or triangular grid in NetCDF format. 
 At present, only specific output formats are supported (eventually any CF-compliant file with the necessary variables should be compatible). Typical output from ROMS or any UGRID/SGRID compliant format should be supported. 
