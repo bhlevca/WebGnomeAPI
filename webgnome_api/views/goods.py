@@ -442,9 +442,9 @@ class GOODSRequest(object):
 
             #outpath = api.request_subset(self._subset_xr, self.outpath)
         except Exception as e:
-            if self._debug:
-                import pdb
-                pdb.post_mortem(sys.exc_info()[2])
+            # if self._debug:
+            #     import pdb
+            #     pdb.post_mortem(sys.exc_info()[2])
             self.error(str(e), e)
             return None
         logger.info('REQUEST COMPLETE')
@@ -558,6 +558,5 @@ class Tracker(Callback):
         pct = int(ndone / ntasks if ntasks else 0)
 
         if ndone < ntasks:
-            breakpoint()
             self.model.percent = pct
             self.model.elapsed = elapsed
