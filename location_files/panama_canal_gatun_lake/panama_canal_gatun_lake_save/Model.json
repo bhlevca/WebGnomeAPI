@@ -20,7 +20,11 @@
             "obj_type": "gnome.movers.c_current_movers.CatsMover"
         },
         {
-            "id": "ComponentMover_3.json",
+            "id": "CatsMover_3.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "ComponentMover_4.json",
             "obj_type": "gnome.movers.c_current_movers.ComponentMover"
         }
     ],
