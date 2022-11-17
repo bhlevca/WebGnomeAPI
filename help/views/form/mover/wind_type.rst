@@ -1,16 +1,13 @@
 .. keywords
    winds, movers
 
-Choose **Load NetCDF Surface Currents** to load ocean current data or model output on a regular, curvilinear, or triangular grid in NetCDF format. 
-At present, only specific output formats are supported (eventually any CF-compliant file with the necessary variables should be compatible). Typical output from ROMS or any UGRID/SGRID compliant format should be supported. 
+Choose **Load NetCDF Winds** to load wind data or model output on a regular, curvilinear, or triangular grid in NetCDF format. 
+At present, only specific output formats are supported (eventually any CF-compliant file with the necessary variables should be compatible; see |file_formats_link| for more details.). 
 
-"WebGNOME-ready" files for some publicly available models can also be downloaded from |goods_link|.
+The **Point Wind** option is used to load a single point wind (e.g. a time series of winds from a buoy or a NOAA/NWS point forecast. The wind is then applied uniformly over the entire region being modeled.
 
-The **Load NOAA Emergency Response Model (CATS) output** is for loading the hydrodynamic model used by the NOAA Emergency Response Division. 
+Choose the **Select Wind for Specified Region** option to download wind information from a list of available operational models run by NOAA or other agencies. Note, this feature is under active development and may be unreliable.
 
-Choose **Load Deprecated ASCII Formats** for files using the PtCur, GridCur, or GridCurTime formats.
-
-For more information on any of these formats, see the |file_formats_link|.
 
 .. |file_formats_link| raw:: html
 
