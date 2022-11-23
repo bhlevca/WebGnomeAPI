@@ -639,3 +639,20 @@ prune_session_folders_dev:
   script:
     - docker exec $CONTAINER_NAME /bin/bash $SCRIPT_NAME
 
+prune_session_folders_stage:
+  stage: maintenance
+  image: registry.orr.noaa.gov/erd/centos-conda/centos7-python$PYTHON_VER
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  environment:
+    name: stage-deployment
+    url: https://gnome-stage.orr.noaa.gov
+  tags:
+    - gnome-stage
+    - deploy
+  variables:
+    CONTAINER_NAME: webgnome_api
+    SCRIPT_NAME: ./prune_old_session_folders.sh
+  script:
+    - docker exec $CONTAINER_NAME /bin/bash $SCRIPT_NAME
+
