@@ -26,6 +26,7 @@ stages:
   - rename_temp_img
   #- remove_temp_img
   - deploy
+  - maintenance
 
 services:
   - redis:latest
@@ -37,6 +38,7 @@ test_src:
     - main
   except:
     - pipelines
+    - schedules
   tags:
     - docker
     - linux
@@ -68,6 +70,7 @@ test_src_production:
     - production
   except:
     - pipelines
+    - schedules
   tags:
     - docker
     - linux
@@ -102,6 +105,7 @@ build_temp_img:
     - develop
   except:
     - pipelines
+    - schedules
   tags:
     - shell
     - build
@@ -128,6 +132,7 @@ build_temp_img_production:
     - production
   except:
     - pipelines
+    - schedules
   tags:
     - shell
     - build
@@ -156,6 +161,7 @@ test_img:
     - production
   except:
     - pipelines
+    - schedules
   tags:
     - docker
     - linux
@@ -176,6 +182,7 @@ rename_temp_img:
     - production
   except:
     - pipelines
+    - schedules
   tags:
     - shell
     - build
@@ -237,6 +244,7 @@ deploy_redis_dev:
     - develop
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-dev
     - deploy
@@ -270,6 +278,7 @@ stop_redis_dev:
     - develop
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-dev
@@ -288,6 +297,7 @@ deploy_proxy_dev:
     - develop
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-dev
     - deploy
@@ -335,6 +345,7 @@ stop_proxy_dev:
     - develop
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-dev
@@ -353,6 +364,7 @@ deploy_api_dev:
     - develop
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-dev
     - deploy
@@ -390,6 +402,7 @@ stop_api_dev:
     - develop
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-dev
@@ -418,6 +431,7 @@ deploy_redis_stage:
     - main
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-stage
     - deploy
@@ -450,6 +464,7 @@ stop_redis_stage:
     - main
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-stage
@@ -468,6 +483,7 @@ deploy_proxy_stage:
     - main
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-stage
     - deploy
@@ -515,6 +531,7 @@ stop_proxy_stage:
     - main
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-stage
@@ -533,6 +550,7 @@ deploy_api_stage:
     - main
   except:
     - pipelines
+    - schedules
   tags:
     - gnome-stage
     - deploy
@@ -570,6 +588,7 @@ stop_api_stage:
     - main
   except:
     - pipelines
+    - schedules
   when: manual
   tags:
     - gnome-stage
@@ -597,14 +616,26 @@ stop_api_stage:
 
 
 
+###
+###
+### Maintenance tasks
+###
+###
 
-
-
-
-
-
-
-
-
-
+prune_session_folders_dev:
+  stage: maintenance
+  image: registry.orr.noaa.gov/erd/centos-conda/centos7-python$PYTHON_VER
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  environment:
+    name: dev-deployment
+    url: https://gnome-dev.orr.noaa.gov
+  tags:
+    - gnome-dev
+    - deploy
+  variables:
+    CONTAINER_NAME: webgnome_api
+    SCRIPT_NAME: ./prune_old_session_folders.sh
+  script:
+    - docker exec $CONTAINER_NAME /bin/bash $SCRIPT_NAME
 
