@@ -2,12 +2,12 @@
     "obj_type": "gnome.movers.c_current_movers.CatsMover",
     "scale": true,
     "scale_refpoint": [
-        -79.474166,
-        8.911944,
+        -79.4,
+        8.925,
         0.0
     ],
     "name": "Coastal Flow",
     "filename": "pDACtriangvel.cur",
     "json_": "save",
-    "scale_value": 0.22
+    "scale_value": 0.15
 }
