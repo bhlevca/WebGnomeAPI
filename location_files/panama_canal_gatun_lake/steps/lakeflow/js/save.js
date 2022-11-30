@@ -1,7 +1,7 @@
 (function(form) {
     function headRiver() {
         var headFlow = form.find('#head-flow').val();
-        var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
+        //var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
         var HEAD_SCALE = 1.0 / 3480;
 
         if (headFlow === 'other') {
@@ -32,13 +32,14 @@
         }
 
         var headScaled = headFlow * HEAD_SCALE;
+        return headScaled;
 
-        headMover.set('scale_value', headScaled);
+        //headMover.set('scale_value', headScaled);
     }
 
     function tailRiver() {
         var tailFlow = form.find('#tail-flow').val();
-        var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
+        //var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
         var TAIL_SCALE = 1.0 / 6430;
 
         if (tailFlow === 'other') {
@@ -69,13 +70,14 @@
         }
 
         var tailScaled = tailFlow * TAIL_SCALE;
+        return tailScaled;
 
-        tailMover.set('scale_value', tailScaled);
+        //tailMover.set('scale_value', tailScaled);
     }
 
     function inletsRiver() {
         var inletsFlow = form.find('#inlets-flow').val();
-        var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
+        //var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
         var INLETS_SCALE = 1.0 / 42400;
 
         if (inletsFlow === 'other') {
@@ -106,26 +108,36 @@
         }
 
         var inletsScaled = inletsFlow * INLETS_SCALE;
+        return inletsScaled;
 
-        inletsMover.set('scale_value', inletsScaled);
+        //inletsMover.set('scale_value', inletsScaled);
     }
 
     var headMessage = headRiver();
 
     if (headMessage && typeof headMessage==='string') {
       return headMessage;
+    } else {
+        var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
+        headMover.set('scale_value', headMessage);
     }
-    
+
     var tailMessage = tailRiver();
 
-    if (tailMessage) {
+    if (tailMessage && typeof tailMessage==='string') {
       return tailMessage;
+    } else {
+        var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
+        tailMover.set('scale_value', tailMessage);
     }
 
     var inletsMessage = inletsRiver();
 
-    if (inletsMessage) {
+    if (inletsMessage && typeof inletsMessage==='string') {
       return inletsMessage;
+    } else {
+        var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
+        inletsMover.set('scale_value', inletsMessage);
     }
 
     webgnome.model.save();
