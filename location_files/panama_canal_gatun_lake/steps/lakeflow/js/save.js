@@ -2,7 +2,7 @@
     function headRiver() {
         var headFlow = form.find('#head-flow').val();
         //var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
-        var HEAD_SCALE = 1.0 / 3480;
+        //var HEAD_SCALE = 1.0 / 3480;
 
         if (headFlow === 'other') {
            var headVal = parseFloat(form.find('#head-flow-manual').val());
@@ -31,8 +31,8 @@
            headFlow = parseFloat(headFlow);
         }
 
-        var headScaled = headFlow * HEAD_SCALE;
-        return headScaled;
+        //var headScaled = headFlow * HEAD_SCALE;
+        return headFlow;
 
         //headMover.set('scale_value', headScaled);
     }
@@ -40,7 +40,7 @@
     function tailRiver() {
         var tailFlow = form.find('#tail-flow').val();
         //var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
-        var TAIL_SCALE = 1.0 / 6430;
+        //var TAIL_SCALE = 1.0 / 6430;
 
         if (tailFlow === 'other') {
            var tailVal = parseFloat(form.find('#tail-flow-manual').val());
@@ -69,8 +69,8 @@
            tailFlow = parseFloat(tailFlow);
         }
 
-        var tailScaled = tailFlow * TAIL_SCALE;
-        return tailScaled;
+        //var tailScaled = tailFlow * TAIL_SCALE;
+        return tailFlow;
 
         //tailMover.set('scale_value', tailScaled);
     }
@@ -78,7 +78,7 @@
     function inletsRiver() {
         var inletsFlow = form.find('#inlets-flow').val();
         //var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
-        var INLETS_SCALE = 1.0 / 42400;
+        //var INLETS_SCALE = 1.0 / 42400;
 
         if (inletsFlow === 'other') {
            var inletsVal = parseFloat(form.find('#inlets-flow-manual').val());
@@ -107,38 +107,54 @@
            inletsFlow = parseFloat(inletsFlow);
         }
 
-        var inletsScaled = inletsFlow * INLETS_SCALE;
-        return inletsScaled;
+        //var inletsScaled = inletsFlow * INLETS_SCALE;
+        return inletsFlow;
 
         //inletsMover.set('scale_value', inletsScaled);
     }
 
-    var headMessage = headRiver();
+    var headFlowOrMessage = headRiver();
 
-    if (headMessage && typeof headMessage==='string') {
-      return headMessage;
-    } else {
-        var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
-        headMover.set('scale_value', headMessage);
+    if (headFlowOrMessage && typeof headFlowOrMessage==='string') {
+      return headFlowOrMessage;
     }
 
-    var tailMessage = tailRiver();
+    var tailFlowOrMessage = tailRiver();
 
-    if (tailMessage && typeof tailMessage==='string') {
-      return tailMessage;
-    } else {
-        var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
-        tailMover.set('scale_value', tailMessage);
+    if (tailFlowOrMessage && typeof tailFlowOrMessage==='string') {
+      return tailFlowOrMessage;
     }
 
-    var inletsMessage = inletsRiver();
+    var inletsFlowOrMessage = inletsRiver();
 
-    if (inletsMessage && typeof inletsMessage==='string') {
-      return inletsMessage;
-    } else {
-        var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
-        inletsMover.set('scale_value', inletsMessage);
+    if (inletsFlowOrMessage && typeof inletsFlowOrMessage==='string') {
+      return inletsFlowOrMessage;
     }
+
+    var HEAD_SCALE = 1.0 / 3480;
+    var TAIL_SCALE = 1.0 / 6430;
+    var INLETS_SCALE = 1.0 / 42400;
+
+    var headMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeHead.cur'});
+    var tailMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeTail.cur'});
+    var inletsMover = webgnome.model.get('movers').findWhere({'filename': 'GatunLakeInlets.cur'});
+
+    var headScale = (inletsFlowOrMessage - tailFlowOrMessage) * HEAD_SCALE;
+    var tailScale = tailFlowOrMessage * TAIL_SCALE;
+    var inletsScale = (headFlowOrMessage - (inletsFlowOrMessage - tailFlowOrMessage)) * INLETS_SCALE;
+
+    if (headScale < 0) {
+      headScale = 0;
+    }
+    if (tailScale < 0) {
+      tailScale = 0;
+    }
+    if (inletsScale < 0) {
+      inletsScale = 0;
+    }
+    headMover.set('scale_value', headScale);
+    tailMover.set('scale_value', tailScale);
+    inletsMover.set('scale_value', inletsScale);
 
     webgnome.model.save();
 }(form));
