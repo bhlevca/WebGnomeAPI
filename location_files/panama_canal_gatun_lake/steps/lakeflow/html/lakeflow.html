@@ -78,6 +78,43 @@
     </div>
 
     <div class="form-group">
+        <label class="control-label col-sm-5" for="inlets-flow">Inlets flow rate:</label>
+        <div class="col-sm-5">
+            <select class="form-control" id="inlets-flow">
+                <option value="55">
+                    High (62 m3/s)
+                </option>
+                <option value="45">
+                    Medium (52 m3/s)
+                </option>
+                <option value="35">
+                    Low (42 m3/s)
+                </option>
+                <option value="other">
+                    Other flow rate
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group inlets hide">
+        <label class="control-label col-sm-5" for="inlets-flow-manual">Inlets flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="inlets-flow-manual">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="inlets-flow-manual-units">
+                <option value="m3/s">
+                    m3/s
+                </option>
+                <option value="km3/s">
+                    km3/s
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-sm-7 col-sm-offset-5">
             <a href="http://waterdata.usgs.gov/ak/nwis/uv?cb_00060=on&format=gif_default&site_no=15896000" target="_blank">
                 Gatun Lake Flow Information

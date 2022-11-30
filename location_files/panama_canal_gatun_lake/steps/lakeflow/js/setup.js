@@ -22,4 +22,16 @@
    $('#tail-flow', modal).on('change', tailListener);
 
    tailListener();
+
+   var inletsListener = function() {
+      if ($('#inlets-flow', modal).val() === 'other') {
+        $('.inlets', modal).removeClass('hide');
+      } else {
+        $('.inlets', modal).addClass('hide');
+      }
+   };
+
+   $('#inlets-flow', modal).on('change', inletsListener);
+
+   inletsListener();
 }(modal));
