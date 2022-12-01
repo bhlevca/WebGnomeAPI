@@ -1,12 +1,12 @@
     {
-        "name": "Panama Canal, Pacific",
+        "name": "Panama Canal Pacific",
         "geometry": {
             "coordinates": [-79.477704, 8.775512]
         },
         "steps": [
             {
                 "type": "welcome",
-                "name": "Welcome to Panama Canal, Pacific",
+                "name": "Welcome to Panama Canal Pacific",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
                 "body": "<p>You will need to do the following in order to set up WebGNOME for Panama Canal, Pacific :</p><ol><li>Set the model run parameters.</li><li>Set the flow speed for the coastal pattern.</li><li>Input the wind conditions.</li></ol>"
             },

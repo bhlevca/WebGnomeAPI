@@ -1,12 +1,12 @@
     {
-        "name": "Panama Canal, Gatun Lake",
+        "name": "Panama Canal Gatun Lake",
         "geometry": {
             "coordinates": [-79.879992, 9.198722]
         },
         "steps": [
             {
                 "type": "welcome",
-                "name": "Welcome to Panama Canal, Gatun Lake",
+                "name": "Welcome to Panama Canal Gatun Lake",
                 "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
                 "body": "<p>You will need to do the following in order to set up WebGNOME for Panama Canal, Gatun Lake:</p><ol><li>Set the model run parameters.</li><li>Set the flow rates for Atlantic and Pacific outflow and the Madden Dam.</li><li>Input the wind conditions.</li></ol>"
             },
