@@ -1,20 +1,20 @@
 <p>
-    Controlled releases from the Madden dam split between northwest flow toward Gatun Lake and southwest flow through the Canal into the Pacific. You can choose a climatological estimate for each flow or enter your own value. The flow rate must be between 10 and 100 m3/s.
+    Controlled releases from the Madden Dam split between northwest flow toward Gatun Lake and southwest flow through the Canal into the Pacific. You can choose a climatological estimate for each flow or enter your own value.
 </p>
 
 <form class="form-horizontal" role="form">
     <div class="form-group">
-        <label class="control-label col-sm-5" for="head-flow">Lake flow rate:</label>
+        <label class="control-label col-sm-5" for="head-flow">Atlantic flow rate:</label>
         <div class="col-sm-5">
             <select class="form-control" id="head-flow">
-                <option value="85">
-                    High (85 m3/s)
+                <option value="68">
+                    High (68 m3/s)
                 </option>
-                <option value="75">
-                    Medium (75 m3/s)
+                <option value="53">
+                    Medium (53 m3/s)
                 </option>
-                <option value="65">
-                    Low (65 m3/s)
+                <option value="43">
+                    Low (45 m3/s)
                 </option>
                 <option value="other">
                     Other flow rate
@@ -24,7 +24,7 @@
     </div>
 
     <div class="form-group head hide">
-        <label class="control-label col-sm-5" for="head-flow-manual">Lake flow rate:</label>
+        <label class="control-label col-sm-5" for="head-flow-manual">Atlantic flow rate:</label>
         <div class="col-sm-4">
             <input type="number" class="form-control" id="head-flow-manual">
         </div>
@@ -33,25 +33,25 @@
                 <option value="m3/s">
                     m3/s
                 </option>
-                <option value="km3/s">
-                    km3/s
+                <option value="cfs">
+                    cfs
                 </option>
             </select>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-sm-5" for="tail-flow">Canal flow rate:</label>
+        <label class="control-label col-sm-5" for="tail-flow">Pacific flow rate:</label>
         <div class="col-sm-5">
             <select class="form-control" id="tail-flow">
-                <option value="55">
-                    High (55 m3/s)
+                <option value="51">
+                    High (51 m3/s)
                 </option>
-                <option value="45">
-                    Medium (45 m3/s)
+                <option value="44">
+                    Medium (44 m3/s)
                 </option>
-                <option value="35">
-                    Low (35 m3/s)
+                <option value="38">
+                    Low (38 m3/s)
                 </option>
                 <option value="other">
                     Other flow rate
@@ -61,7 +61,7 @@
     </div>
 
     <div class="form-group tail hide">
-        <label class="control-label col-sm-5" for="tail-flow-manual">Canal flow rate:</label>
+        <label class="control-label col-sm-5" for="tail-flow-manual">Pacific flow rate:</label>
         <div class="col-sm-4">
             <input type="number" class="form-control" id="tail-flow-manual">
         </div>
@@ -70,25 +70,25 @@
                 <option value="m3/s">
                     m3/s
                 </option>
-                <option value="km3/s">
-                    km3/s
+                <option value="cfs">
+                    cfs
                 </option>
             </select>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-sm-5" for="inlets-flow">Inlets flow rate:</label>
+        <label class="control-label col-sm-5" for="inlets-flow">Madden Dam flow rate:</label>
         <div class="col-sm-5">
             <select class="form-control" id="inlets-flow">
-                <option value="62">
-                    High (62 m3/s)
+                <option value="82">
+                    High (82 m3/s)
                 </option>
-                <option value="52">
-                    Medium (52 m3/s)
+                <option value="54">
+                    Medium (54 m3/s)
                 </option>
-                <option value="42">
-                    Low (42 m3/s)
+                <option value="27">
+                    Low (27 m3/s)
                 </option>
                 <option value="other">
                     Other flow rate
@@ -98,7 +98,7 @@
     </div>
 
     <div class="form-group inlets hide">
-        <label class="control-label col-sm-5" for="inlets-flow-manual">Inlets flow rate:</label>
+        <label class="control-label col-sm-5" for="inlets-flow-manual">Madden Dam flow rate:</label>
         <div class="col-sm-4">
             <input type="number" class="form-control" id="inlets-flow-manual">
         </div>
@@ -107,8 +107,8 @@
                 <option value="m3/s">
                     m3/s
                 </option>
-                <option value="km3/s">
-                    km3/s
+                <option value="cfs">
+                    cfs
                 </option>
             </select>
         </div>
@@ -116,7 +116,7 @@
 
     <div class="form-group">
         <div class="col-sm-7 col-sm-offset-5">
-            <a href="http://waterdata.usgs.gov/ak/nwis/uv?cb_00060=on&format=gif_default&site_no=15896000" target="_blank">
+            <a href="https://panama.aquaticinformatics.net/AQWebPortal/Data/Dashboard/11" target="_blank">
                 Gatun Lake Flow Information
             </a>
         </div>

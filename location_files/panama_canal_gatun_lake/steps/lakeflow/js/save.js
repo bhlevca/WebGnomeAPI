@@ -9,19 +9,19 @@
            var headUnits = form.find('#head-flow-manual-units').val();
 
            if (!headVal || isNaN(headVal)) {
-              return "Please enter a number for lake flow rate!";
+              return "Please enter a number for Atlantic flow rate!";
            }
 
-           if (headUnits === 'km3/s') {
-                headVal *= 1000;
+           if (headUnits === 'cfs') {
+                headVal /= 35.3416;
            }
 
-           if (headVal < 10 || headVal > 10000) {
-              var str = 'Lake flow rate is outside the acceptable range of ';
-              if (headUnits === 'km3/s') {
-                str += '0.05 and 0.10 km3/s!';
+           if (headVal < 0 || headVal > 4000) {
+              var str = 'Atlantic flow rate is outside the acceptable range of ';
+              if (headUnits === 'cfs') {
+                str += '0. and 141259 cfs!';
               } else {
-                str += '50 and 100 m3/s!';
+                str += '0 and 4000 m3/s!';
               }
               return str;
            }
@@ -47,19 +47,19 @@
            var tailUnits = form.find('#tail-flow-manual-units').val();
 
            if (!tailVal || isNaN(tailVal)) {
-              return "Please enter a number for canal flow rate!";
+              return "Please enter a number for Pacific flow rate!";
            }
 
-           if (tailUnits === 'km3/s') {
-                tailVal *= 1000;
+           if (tailUnits === 'cfs') {
+                tailVal /= 35.3146;
            }
 
-           if (tailVal < 10 || tailVal > 10000) {
-              var str = 'Canal flow rate is outside the acceptable range of ';
-              if (tailUnits === 'km3/s') {
-                str += '0.02 and .008 km3/s!';
+           if (tailVal < 0 || tailVal > 500) {
+              var str = 'Pacific flow rate is outside the acceptable range of ';
+              if (tailUnits === 'cfs') {
+                str += '0 and 17657 cfs!';
               } else {
-                str += '20 and 80 m3/s!';
+                str += '0 and 500 m3/s!';
               }
               return str;
            }
@@ -85,19 +85,19 @@
            var inletsUnits = form.find('#inlets-flow-manual-units').val();
 
            if (!inletsVal || isNaN(inletsVal)) {
-              return "Please enter a number for canal flow rate!";
+              return "Please enter a number for Madden Dam flow rate!";
            }
 
-           if (inletsUnits === 'km3/s') {
-                inletsVal *= 1000;
+           if (inletsUnits === 'cfs') {
+                inletsVal /= 35.3146;
            }
 
-           if (inletsVal < 10 || inletsVal > 10000) {
-              var str = 'Inlets flow rate is outside the acceptable range of ';
-              if (inletsUnits === 'km3/s') {
-                str += '0.02 and .008 km3/s!';
+           if (inletsVal < 0 || inletsVal > 1000) {
+              var str = 'Madden Dam flow rate is outside the acceptable range of ';
+              if (inletsUnits === 'cfs') {
+                str += '0 and 35315 cfs!';
               } else {
-                str += '20 and 80 m3/s!';
+                str += '0 and 1000 m3/s!';
               }
               return str;
            }
