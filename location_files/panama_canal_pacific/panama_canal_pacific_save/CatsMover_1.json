@@ -2,8 +2,8 @@
     "obj_type": "gnome.movers.c_current_movers.CatsMover",
     "scale": true,
     "scale_refpoint": [
-        -79.4,
-        8.925,
+        -79.6358,
+        8.7534,
         0.0
     ],
     "name": "Coastal Flow",
