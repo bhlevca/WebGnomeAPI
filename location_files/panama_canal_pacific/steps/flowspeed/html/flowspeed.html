@@ -1,14 +1,28 @@
 <p>
     The coastal flow is scaled to match current conditions.
 <p>
-    Please set a surface current speed. The current speed must be between -1 and 1 m/s.
+    Please set a surface current speed or use the default. The current speed must be between -1 and 1 m/s.
 </p>
 
 <form class="form-horizontal" role="form">
     <div class="form-group">
-        <label class="col-sm-5 control-label" for="flow-speed">Surface Current Speed:</label>
+        <label class="control-label col-sm-5" for="flow-speed">Surface current speed:</label>
         <div class="col-sm-4">
-            <input type="number" class="form-control" id="flow-speed">
+            <select class="form-control" id="flow-speed">
+                <option value=".15">
+                    Default ( .15 m / s )
+                </option>
+                <option value="other">
+                    Input speed value
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group flowspeed hide">
+        <label class="control-label col-sm-5" for="flow-speed-manual">Surface current speed:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="flow-speed-manual">
         </div>
         <div class="col-sm-3">
             <select class="form-control" id="flow-speed-units">

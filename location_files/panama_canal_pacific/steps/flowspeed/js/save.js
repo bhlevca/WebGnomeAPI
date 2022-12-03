@@ -1,7 +1,21 @@
 (function(form){
-    var flowVal = parseFloat(form.find('#flow-speed').val());
+    //var flowVal = parseFloat(form.find('#flow-speed').val());
+    var flowVal = form.find('#flow-speed').val();
 
-    var flowUnits = form.find('#flow-speed-units').val();
+    //var flowUnits = form.find('#flow-speed-units').val();
+    var flowUnits = 'm/s';
+
+	if (flowVal === 'other') {
+		flowVal = parseFloat(form.find('#flow-speed-manual').val());
+
+		if (!flowVal || isNaN(flowVal)) {
+			return "Please enter a number for coastal flow rate!";
+		}
+
+		flowUnits = form.find('#flow-speed-units').val();
+	} else {
+		flowVal = parseFloat(flowVal);
+	}
 
     var convertToM_S = function(speed, units) {
         if (units !== 'm/s') {
@@ -32,10 +46,6 @@
     };
 
     var coastalMover = webgnome.model.get('movers').findWhere({'filename': 'pDACtriangvel.cur'});
-
-    if (!flowVal || isNaN(flowVal)) {
-        return "Please enter a number for coastal flow rate!";
-    }
 
     var flowSpeed = convertToM_S(flowVal, flowUnits);
 
