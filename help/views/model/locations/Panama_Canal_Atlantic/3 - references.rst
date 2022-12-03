@@ -13,7 +13,7 @@ Panama Canal Meteorology and Hydrology.
 
 |accu_weather_link|
 
-Weather products for the Gatun, Colon, Panama.
+Weather products for Colon, Panama.
 
 
 **Oil Spill Response**
@@ -24,7 +24,7 @@ Tools and information for emergency responders and planners, and others concerne
 
 .. |accu_weather_link| raw:: html
 
-   <a href="https://www.accuweather.com/en/pa/gatun/1541703/weather-forecast/1541703" target="_blank">AccuWeather - Gatun, Colon</a>
+   <a href="https://www.accuweather.com/en/pa/panama-canal/93868_poi/weather-forecast/93868_poi" target="_blank">AccuWeather - Colon, Panama</a>
 
 .. |panama_canal_link| raw:: html
 
