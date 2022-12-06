@@ -4,6 +4,8 @@ References
 
 **Oceanography**
 
+Información sobre Estudios de Corrientes en las Entradas del Canal, AUTORIDAD DEL CANAL DE PANAMÁ, Reporte HID-2013-06, 2013
+
 |panama_canal_link|
 
 Panama Canal Meteorology and Hydrology.

@@ -1,8 +1,9 @@
 References
 ==========================================
 
-
 **Oceanography**
+
+Información sobre Estudios de Corrientes en las Entradas del Canal, AUTORIDAD DEL CANAL DE PANAMÁ, Reporte HID-2013-06, 2013
 
 |panama_canal_link|
 
@@ -13,7 +14,7 @@ Panama Canal Meteorology and Hydrology.
 
 |accu_weather_link|
 
-Weather products for Gatun, Colón, Panama.
+Weather products for Colón, Panama.
 
 
 **Oil Spill Response**
@@ -24,7 +25,7 @@ Tools and information for emergency responders and planners, and others concerne
 
 .. |accu_weather_link| raw:: html
 
-   <a href="https://www.accuweather.com/en/pa/gatun/1541703/weather-forecast/1541703" target="_blank">AccuWeather - Gatun, Colón, Panama</a>
+   <a href="https://www.accuweather.com/en/pa/panama-canal/93868_poi/weather-forecast/93868_poi" target="_blank">AccuWeather - Colón, Panama</a>
 
 .. |panama_canal_link| raw:: html
 
