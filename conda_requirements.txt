@@ -23,7 +23,6 @@ numpy
 regex
 awesome-slugify
 pyramid>=1.10.1,<2
-# repoze.lru  # required by Pyramid, but not brought in for some reason :-(
 paste
 pastedeploy>=2.0
 pyramid_log
