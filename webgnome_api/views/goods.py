@@ -195,6 +195,8 @@ def create_goods_request(request):
     surface_only = params.get('surface_only', True) not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
     request_type = params['request_type']
+    tshift = params['tshift']
+
     include_winds = params.get('include_winds', True) not in ('false', 'False', None)
     if include_winds:
         request_type = [request_type, 'surface winds']
@@ -226,6 +228,7 @@ def create_goods_request(request):
                                       'request_type':request_type,
                                       'surface_only':surface_only,
                                       'cross_dateline':cross_dateline,
+                                      'tshift': tshift,
                                   },
                                   _debug = True)
     
