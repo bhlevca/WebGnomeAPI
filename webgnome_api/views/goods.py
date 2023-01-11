@@ -343,6 +343,7 @@ class GOODSRequest(object):
                  request_args=None,
                  filename=None,
                  outpath=None,
+                 tshift=0,
                  _debug=False,
                  _max_size=100000000, #100 MB
                  _reconfirm_timeout=300,
@@ -361,6 +362,7 @@ class GOODSRequest(object):
         self.subset_size = None
         self.filename = filename
         self.outpath = outpath
+        self.tshift = int(tshift)
         self._debug = _debug
         self._max_size = _max_size
         self._reconfirm_timeout = _reconfirm_timeout
@@ -383,7 +385,8 @@ class GOODSRequest(object):
                'size': self.subset_size,
                'percent': self.percent,
                'message': self.message,
-               'outpath': self.outpath}
+               'outpath': self.outpath,
+               'tshift': self.tshift}
     
     @property
     def subset_xr(self):
