@@ -34,7 +34,6 @@ from ..common.views import (switch_to_existing_session,
 
 log = logging.getLogger(__name__)
 
-import pandas as pds
 from libgoods import maps, api
 
 from .. import supported_env_models
@@ -69,7 +68,7 @@ def get_model_metadata(request):
     if bounds:
         bounds = ujson.loads(bounds)
     if name:
-        mdl = api.all_metas[name].as_pyson() 
+        mdl = api.all_metas[name].as_pyson()
         return mdl
 
     else:
@@ -179,28 +178,28 @@ def get_currents(request):
               (float(params['EastLon']), float(params['NorthLat'])))
     surface_only = params['surface_only'] not in ('false', 'False', None)
     cross_dateline = params['cross_dateline'] in ('Yes',)
-    
+
     #generate a unique model output name
     start = params['start_time']
     end = params['end_time']
-    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'    
-    file_name, unique_name = gen_unique_filename(fname, upload_dir)   
+    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'
+    file_name, unique_name = gen_unique_filename(fname, upload_dir)
     output_path = os.path.join(upload_dir, unique_name)
-    
+
     try:
-    
+
         fc = api.get_model_file(
                             params['model_name'].upper(),
-                            supported_env_models[params['model_name'].upper()], 
-                            start,  
+                            supported_env_models[params['model_name'].upper()],
+                            start,
                             end,
                             bounds,
                             surface_only = True,
-                            environmental_parameters="surace currents", 
+                            environmental_parameters="surface currents",
                             #cross_dateline=False,
                             #max_filesize=None,
                             target_pth=output_path,
-                        )    
+                        )
 
         log.info('Successfully uploaded file "{0}"'.format(output_path))
 
