@@ -1,142 +1,658 @@
+variables:
+  PYTHON_VER: "3.9"
+  APP_NETWORK: webgnome_net
+
+# Ok, here is the strategy I believe we want for our pipeline.
+# - First, we test our sources.
+#
+# - Next, we build a temporarily named docker image.  We don't want to have
+#   an officially named image that isn't passing the tests.
+#
+# - Next, we test the docker image that was built.
+#
+# - Next, we rename the docker image to its official name in the registry.
+#
+# - Next, we deploy the docker image
+#
+# Note: we would like to cleanup the temporary docker tag from the container
+#       registry, but the solution provided by the GitLab docs cleans everything
+#       up, including the tag we want to keep.
+
+
 stages:
-  - test
-  - build
+  - test_src
+  - build_temp_img
+  - test_img
+  - rename_temp_img
+  #- remove_temp_img
+  - deploy
+  - maintenance
 
 services:
   - redis:latest
 
-main:
-  stage: build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:main
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:main pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:main
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:main
-  only:
-    - main
-  image: registry.orr.noaa.gov/gnome/pygnome:main
-  tags:
-    - shell
-    - build
-
-develop:
-  stage: build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:develop
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:develop pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:develop
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:develop
+test_src:
+  stage: test_src
   only:
     - develop
-  tags:
-    - shell
-    - build
-
-test_develop:
-  stage: test
-  image: registry.orr.noaa.gov/gnome/pygnome:develop
-  script:
-    - yum install redis -y
-    - redis-server --daemonize yes
-    - echo conda env name $CONDA_DEFAULT_ENV
-    - echo conda env path $CONDA_PREFIX
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install mamba
-    - mamba install -y --file conda_requirements.txt
-                       --file conda_requirements_test.txt
-                       --file libgoods/libgoods/conda_requirements.txt
-                       --file libgoods/model_catalogs/conda_requirements.txt
-
-    - pip install -r libgoods/model_catalogs/pip_requirements.txt
-
-    - pip install -e libgoods/model_catalogs/
-    - pip install libgoods/libgoods
-    - pip install .
-    - mkdir -p ${HOME}/catalogs/complete
-    - cp libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
-    - python setup.py compilejson
-    - pytest webgnome_api/tests
-    - ps
-    - jobs
-  only:
-    - develop
-  tags:
-    - docker
-
-test_main:
-  stage: test
-  image: registry.orr.noaa.gov/gnome/pygnome:main
-  script:
-    - yum install redis -y
-    - redis-server --daemonize yes
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - conda install mamba
-    - mamba install -y --file conda_requirements.txt
-                       --file conda_requirements_test.txt
-                       --file libgoods/libgoods/conda_requirements.txt
-                       --file libgoods/model_catalogs/conda_requirements.txt
-    - pip install -r libgoods/model_catalogs/pip_requirements.txt
-    - pip install -e libgoods/model_catalogs/
-    - pip install libgoods/libgoods
-    - pip install .
-    - mkdir -p ${HOME}/catalogs/complete
-    - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
-    - python setup.py compilejson
-    - pytest webgnome_api/tests
-    - ps
-    - jobs
-  only:
     - main
+  except:
+    - pipelines
+    - schedules
   tags:
     - docker
-
-test_production:
-  stage: test
-  image: registry.orr.noaa.gov/gnome/pygnome:production
+    - linux
+  image: registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
   script:
+    - conda install mamba
     - yum install redis -y
     - redis-server --daemonize yes
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+
+    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
+    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
+    - mamba install -y --file conda_requirements.txt
+                       --file conda_requirements_test.txt
+                       --file libgoods/conda_requirements.txt
+                       --file model_catalogs/conda-requirements.txt
+
+    - pip install -r model_catalogs/pip-requirements.txt
+
+    - pushd model_catalogs && pip install . && popd
+    - pushd libgoods && pip install . && popd
+    - pip install .
+
+    - python setup.py compilejson
+    - pytest webgnome_api/tests
+
+test_src_production:
+  stage: test_src
+  only:
+    - production
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - docker
+    - linux
+  image: registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
+  script:
     - conda install mamba
+    - yum install redis -y
+    - redis-server --daemonize yes
+
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/libgoods/conda_requirements.txt
                        --file libgoods/model_catalogs/conda_requirements.txt
+
     - pip install -r libgoods/model_catalogs/pip_requirements.txt
 
     - pip install -e libgoods/model_catalogs/
     - pip install libgoods/libgoods/
     - pip install .
+
     - mkdir -p ${HOME}/catalogs/complete
     - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
+
     - python setup.py compilejson
     - pytest webgnome_api/tests
-    - ps
-    - jobs
-  only:
-    - production
-  tags:
-    - docker
 
-production:
-  stage: build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:production
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:production pygnome
-    - docker build -f dockerfile . -t registry.orr.noaa.gov/gnome/webgnomeapi:production
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:production
+build_temp_img:
+  stage: build_temp_img
   only:
-    - production
+    - main
+    - develop
+  except:
+    - pipelines
+    - schedules
   tags:
     - shell
     - build
+  script:
+    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
+    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
+    - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git
+
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH pygnome
+    - >
+      docker build -f dockerfile
+      --build-arg CI_COMMIT_BRANCH
+      -t registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+      .
+
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+
+build_temp_img_production:
+  stage: build_temp_img
+  only:
+    - production
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - shell
+    - build
+  script:
+    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git
+
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
+    - docker tag registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH pygnome
+
+    - >
+      docker build -f dockerfile
+      --build-arg CI_COMMIT_BRANCH
+      -t registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+      .
+
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+
+test_img:
+  stage: test_img
+  only:
+    - develop
+    - main
+    - production
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - docker
+    - linux
+  image:
+    name: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+    entrypoint: ["/bin/bash", "-c"]
+  script:
+    - cd /webgnomeapi
+    - mamba install -y --file conda_requirements_test.txt
+    - redis-server --daemonize yes
+    - pytest webgnome_api/tests
+
+rename_temp_img:
+  stage: rename_temp_img
+  only:
+    - develop
+    - main
+    - production
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - shell
+    - build
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+    - >
+      docker image tag
+      registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+      registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
+    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
+    - docker image rm registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+
+# Ok, this almost works, but there is a problem, in that /bin/reg will remove
+# the image and all tags associated with it, including the one we wanted to keep.
+# It looks like there will be a new tagging API soon, but not yet.
+# So we will hold off on running this task for now.
+#remove_temp_img:
+#  stage: remove_temp_img
+#  only:
+#    - develop
+#    - main
+#    - production
+#  image: docker:stable
+#  tags:
+#    - docker
+#  services:
+#    - docker:stable-dind
+#  variables:
+#    REG_SHA256: 97ca5b3105ef32fcc124c362d87721af549da444f2bb4550f7a2ecd4c9206ebe
+#    REG_VERSION: 0.16.1
+#  before_script:
+#    - apk add --no-cache curl
+#    - >
+#      curl --fail --show-error
+#      --location "https://github.com/genuinetools/reg/releases/download/v$REG_VERSION/reg-linux-386"
+#      --output /usr/local/bin/reg
+#    - echo "$REG_SHA256  /usr/local/bin/reg" | sha256sum -c -
+#    - chmod a+x /usr/local/bin/reg
+#  script:
+#    - >
+#      /usr/local/bin/reg rm -d --auth-url $CI_REGISTRY
+#      -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+#      registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
+
+
+###
+###
+### Deployment tasks on gnome-dev.orr.noaa.gov
+###
+### - The deployment for gnome-dev.orr.noaa.gov will be such that any change
+###   in the develop branch will be automatically deployed to this host.
+###
+###
+
+deploy_redis_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    url: https://gnome-dev.orr.noaa.gov
+    on_stop: stop_redis_dev
+  variables:
+    IMAGE_TAG: redis:latest
+    CONTAINER_NAME: redis
+    DB_VOLUME: redisdata
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - >
+      docker volume inspect $DB_VOLUME >/dev/null 2>&1 ||
+      docker volume create $DB_VOLUME
+
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - >
+      docker run -d --name $CONTAINER_NAME --network $APP_NETWORK
+      -v $DB_VOLUME:/data
+      --restart unless-stopped $IMAGE_TAG
+
+stop_redis_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: redis
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+deploy_proxy_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    url: https://gnome-dev.orr.noaa.gov
+    on_stop: stop_proxy_dev
+  variables:
+    IMAGE_TAG: nginx:latest
+    CONTAINER_NAME: webgnome_proxy
+    APP_NETWORK: webgnome_net
+    PORT_MAPPING1: 443:443
+    PORT_MAPPING2: 80:80
+    GNOME_DEPLOY_FOLDER: /data/webgnome/gnome-deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+    - if [ -d $GNOME_DEPLOY_FOLDER ]; then rm -rf $GNOME_DEPLOY_FOLDER; fi
+    - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git $GNOME_DEPLOY_FOLDER
+    - >
+      chmod go+rx
+      $GNOME_DEPLOY_FOLDER
+      $GNOME_DEPLOY_FOLDER/config
+      $GNOME_DEPLOY_FOLDER/config/nginx
+    - chmod go+rw $GNOME_DEPLOY_FOLDER/config/nginx/*
+
+    - ls -la $GNOME_DEPLOY_FOLDER
+    - ls -la $GNOME_DEPLOY_FOLDER/config/nginx
+    - ls -la /etc/ssl/certs/*
+    - >
+      docker run -d --name $CONTAINER_NAME --network $APP_NETWORK
+      --restart unless-stopped
+      -p $PORT_MAPPING1 -p $PORT_MAPPING2
+      -v $GNOME_DEPLOY_FOLDER/config/nginx:/etc/nginx/
+      -v /etc/ssl/certs:/etc/ssl/certs $IMAGE_TAG
+
+stop_proxy_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: webgnome_proxy
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+deploy_api_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    url: https://gnome-dev.orr.noaa.gov
+    on_stop: stop_api_dev
+  variables:
+    IMAGE_TAG: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
+    CONTAINER_NAME: webgnome_api
+    APP_NETWORK: webgnome_net
+    PORT_MAPPING: 9898:9898
+    MODELS_VOLUME: webgnome_models
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - >
+      docker volume inspect $MODELS_VOLUME >/dev/null 2>&1 ||
+      docker volume create $MODELS_VOLUME
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - >
+      docker run -d --network $APP_NETWORK --name $CONTAINER_NAME
+      -p $PORT_MAPPING
+      -v $MODELS_VOLUME:/webgnomeapi/models
+      --restart unless-stopped $IMAGE_TAG
+    - docker ps
+    - docker logs $CONTAINER_NAME
+
+stop_api_dev:
+  stage: deploy
+  only:
+    - develop
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-dev
+    - deploy
+  environment:
+    name: dev-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: webgnome_api
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+
+###
+###
+### Deployment tasks on gnome-stage.orr.noaa.gov
+###
+### - The deployment for gnome-stage.orr.noaa.gov will be such that any change
+###   in the main branch will be automatically deployed to this host.
+###
+###
+
+deploy_redis_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    url: https://gnome-stage.orr.noaa.gov
+    on_stop: stop_redis_stage
+  variables:
+    IMAGE_TAG: redis:latest
+    CONTAINER_NAME: redis
+    DB_VOLUME: redisdata
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - >
+      docker volume inspect $DB_VOLUME >/dev/null 2>&1 ||
+      docker volume create $DB_VOLUME
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - >
+      docker run -d --name $CONTAINER_NAME --network $APP_NETWORK
+      -v $DB_VOLUME:/data
+      --restart unless-stopped $IMAGE_TAG
+
+stop_redis_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: redis
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+deploy_proxy_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    url: https://gnome-stage.orr.noaa.gov
+    on_stop: stop_proxy_stage
+  variables:
+    IMAGE_TAG: nginx:latest
+    CONTAINER_NAME: webgnome_proxy
+    APP_NETWORK: webgnome_net
+    PORT_MAPPING1: 443:443
+    PORT_MAPPING2: 80:80
+    GNOME_DEPLOY_FOLDER: /data/webgnome/gnome-deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+    - if [ -d $GNOME_DEPLOY_FOLDER ]; then rm -rf $GNOME_DEPLOY_FOLDER; fi
+    - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git $GNOME_DEPLOY_FOLDER
+    - >
+      chmod go+rx
+      $GNOME_DEPLOY_FOLDER
+      $GNOME_DEPLOY_FOLDER/config
+      $GNOME_DEPLOY_FOLDER/config/nginx
+    - chmod go+rw $GNOME_DEPLOY_FOLDER/config/nginx/*
+
+    - ls -la $GNOME_DEPLOY_FOLDER
+    - ls -la $GNOME_DEPLOY_FOLDER/config/nginx
+    - ls -la /etc/ssl/certs/*
+    - >
+      docker run -d --name $CONTAINER_NAME --network $APP_NETWORK
+      --restart unless-stopped
+      -p $PORT_MAPPING1 -p $PORT_MAPPING2
+      -v $GNOME_DEPLOY_FOLDER/config/nginx:/etc/nginx/
+      -v /etc/ssl/certs:/etc/ssl/certs $IMAGE_TAG
+
+stop_proxy_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: webgnome_proxy
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+deploy_api_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    url: https://gnome-stage.orr.noaa.gov
+    on_stop: stop_api_stage
+  variables:
+    IMAGE_TAG: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
+    CONTAINER_NAME: webgnome_api
+    APP_NETWORK: webgnome_net
+    PORT_MAPPING: 9898:9898
+    MODELS_VOLUME: webgnome_models
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - >
+      docker volume inspect $MODELS_VOLUME >/dev/null 2>&1 ||
+      docker volume create $MODELS_VOLUME
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - >
+      docker run -d --network $APP_NETWORK --name $CONTAINER_NAME
+      -p $PORT_MAPPING
+      -v $MODELS_VOLUME:/webgnomeapi/models
+      --restart unless-stopped $IMAGE_TAG
+    - docker ps
+    - docker logs $CONTAINER_NAME
+
+stop_api_stage:
+  stage: deploy
+  only:
+    - main
+  except:
+    - pipelines
+    - schedules
+  when: manual
+  tags:
+    - gnome-stage
+    - deploy
+  environment:
+    name: stage-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: webgnome_api
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+
+###
+###
+### Deployment tasks on gnome.orr.noaa.gov
+###
+### - The deployment for gnome.orr.noaa.gov will be such that changes in the
+###   production branch will *not* be automatically deployed to the host.
+###   Rather, the deployment will be handled as a multi-project pipeline
+###   controlled from the CI pipeline of the gnome-deploy project.
+###
+###
+
+
+
+
+###
+###
+### Maintenance tasks
+###
+###
+
+prune_session_folders_dev:
+  stage: maintenance
+  image: registry.orr.noaa.gov/erd/centos-conda/centos7-python$PYTHON_VER
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  environment:
+    name: dev-deployment
+    url: https://gnome-dev.orr.noaa.gov
+  tags:
+    - gnome-dev
+    - deploy
+  variables:
+    CONTAINER_NAME: webgnome_api
+    SCRIPT_NAME: ./prune_old_session_folders.sh
+  script:
+    - docker exec $CONTAINER_NAME /bin/bash $SCRIPT_NAME
+
+prune_session_folders_stage:
+  stage: maintenance
+  image: registry.orr.noaa.gov/erd/centos-conda/centos7-python$PYTHON_VER
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  environment:
+    name: stage-deployment
+    url: https://gnome-stage.orr.noaa.gov
+  tags:
+    - gnome-stage
+    - deploy
+  variables:
+    CONTAINER_NAME: webgnome_api
+    SCRIPT_NAME: ./prune_old_session_folders.sh
+  script:
+    - docker exec $CONTAINER_NAME /bin/bash $SCRIPT_NAME
 
