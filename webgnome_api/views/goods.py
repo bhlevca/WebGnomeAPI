@@ -6,6 +6,8 @@ import socket
 import copy
 import shutil
 import urllib.request
+import logging
+import datetime
 
 import ujson
 import numpy as np
@@ -30,18 +32,12 @@ from ..common.views import (switch_to_existing_session,
                             cors_policy,
                             cors_response)
 
+log = logging.getLogger(__name__)
+
+from libgoods import maps, api
+
 from .. import supported_env_models
 
-import logging
-
-#all WebGNOME API to work without libgoods dependency
-try:
-    from libgoods import maps, api
-except ImportError:
-    pass
-    
-
-log = logging.getLogger(__name__)
 
 goods_maps = Service(name='maps', path='/goods/maps*',
                      description="GOODS MAP API", cors_policy=cors_policy)
@@ -68,8 +64,7 @@ def get_model_metadata(request):
     bounds = request.GET.get('map_bounds', None)
     name = request.GET.get('name', None)
     retval = None
-    model_list = supported_env_models
-
+    model_list = list(supported_env_models.keys())
     if bounds:
         bounds = ujson.loads(bounds)
     if name:
@@ -120,7 +115,7 @@ def get_goods_map(request):
             max_filesize=max_upload_size,
         )
 
-    except maps.FileTooBigError:
+    except api.FileTooBigError:
         raise cors_response(request,
                             HTTPBadRequest('file is too big!  Max size = {}'
                                            .format(max_upload_size)))
@@ -163,34 +158,54 @@ def get_currents(request):
     libGOODS. This file returned from libgoods is then used to create a
     PyCurrentMover object, which is then returned to the client
     '''
+    '''
+    class FetchConfig:
+        """Configuration data class for fetching."""
+
+        model_name: str
+        output_pth: Path
+        start: pd.Timestamp
+        end: pd.Timestamp
+        bbox: Tuple[float, float, float, float]
+        timing: str
+        standard_names: List[str] = field(default_factory=lambda: STANDARD_NAMES)
+        surface_only: bool = False
+    '''
     upload_dir = os.path.relpath(get_session_dir(request))
     params = request.POST
     max_upload_size = eval(request.registry.settings['max_upload_size'])
     bounds = ((float(params['WestLon']), float(params['SouthLat'])),
               (float(params['EastLon']), float(params['NorthLat'])))
+    surface_only = params['surface_only'] not in ('false', 'False', None)
+    cross_dateline = params['cross_dateline'] in ('Yes',)
+
+    #generate a unique model output name
+    start = params['start_time']
+    end = params['end_time']
+    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'
+    file_name, unique_name = gen_unique_filename(fname, upload_dir)
+    output_path = os.path.join(upload_dir, unique_name)
 
     try:
-        fp = api.get_model_data(
-            model_id=params['model_name'].upper(),
-            bounds=bounds,
-            time_interval=(None, None),
-            environmental_parameters=['surface currents'],
-            cross_dateline=bool(int(params['xDateline'])),
-            max_filesize=max_upload_size,
-        )
 
-        _file_name, unique_name = gen_unique_filename(fp.name, upload_dir)
+        fc = api.get_model_file(
+                            params['model_name'].upper(),
+                            supported_env_models[params['model_name'].upper()],
+                            start,
+                            end,
+                            bounds,
+                            surface_only = True,
+                            environmental_parameters="surface currents",
+                            #cross_dateline=False,
+                            #max_filesize=None,
+                            target_pth=output_path,
+                        )
 
-        file_path = os.path.join(upload_dir, unique_name)
-
-        # maybe I should pass session directory location to libgoods?
-        shutil.move(fp, file_path)
-
-        log.info('Successfully uploaded file "{0}"'.format(file_path))
+        log.info('Successfully uploaded file "{0}"'.format(output_path))
 
     except api.FileTooBigError:
             raise cors_response(request, HTTPBadRequest(
                 f'file is too big! Max size = {max_upload_size}'
             ))
 
-    return file_path
+    return output_path

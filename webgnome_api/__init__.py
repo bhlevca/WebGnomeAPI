@@ -20,7 +20,10 @@ from pyramid_redis_sessions import session_factory_from_settings
 
 from webgnome_api.common.views import cors_policy
 from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
-                                          WebgnomeNamespace)
+                                          WebgnomeNamespace,
+                                          GoodsFileNamespace)
+
+from waitress import serve as waitress_serve
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
@@ -29,29 +32,29 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = ['GFS-1_4DEG',
-                        'RTOFS-GLOBAL',
-                        'RTOFS-GLOBAL_2D',
-                        'GFS-1_2DEG',
-                        'GFS-1DEG',
-                        'HYCOM',
-                        'RTOFS-ALASKA',
-                        'RTOFS-WEST',
-                        'RTOFS-EAST',
-                        'WCOFS_2DS',
-                        'NGOFS2_2DS',
-                        'GOMOFS_2DS',
-                        'CREOFS',
-                        'LMHOFS',
-                        'CIOFS',
-                        'LSOFS',
-                        'CBOFS',
-                        'LEOFS',
-                        'DBOFS',
-                        'LOOFS',
-                        'SFBOFS',
-                        'TBOFS',
-                        'NYOFS']
+supported_env_models = {#'GFS-1_4DEG',
+                        #'RTOFS-GLOBAL',
+                        #'RTOFS-GLOBAL_2D',
+                        #'GFS-1_2DEG',
+                        #'GFS-1DEG',
+                        'GOFS':'hycom-forecast-agg',
+                        #'RTOFS-ALASKA',
+                        #'RTOFS-WEST',
+                        #'RTOFS-EAST',
+                        'WCOFS':'coops-forecast-noagg',
+                        'NGOFS2':'coops-forecast-noagg',
+                        'CREOFS':'coops-forecast-noagg',
+                        'LMHOFS':'coops-forecast-noagg',
+                        'CIOFS':'coops-forecast-agg',
+                        'LSOFS':'coops-forecast-agg',
+                        'CBOFS':'coops-forecast-agg',
+                        'LEOFS':'coops-forecast-noagg',
+                        'DBOFS':'coops-forecast-agg',
+                        'LOOFS':'coops-forecast-agg',
+                        'SFBOFS':'coops-forecast-noagg',
+                        'TBOFS':'coops-forecast-agg',
+                        'NYOFS':'coops-forecast-agg',
+                        'GOMOFS':'coops-forecast-agg'}
 
 
 class WebgnomeFormatter(Formatter):
@@ -188,14 +191,19 @@ def server_factory(global_config, host, port):
 
         # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
+        goods_ns = GoodsFileNamespace('/goods')
         sio.register_namespace(ns)
+        sio.register_namespace(goods_ns)
 
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
+        app.application.registry['goods_ns'] = goods_ns
+        #threads = int(app.application.registry.settings.get('waitress.threads', '4'))
 
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
+        #waitress_serve(app, host=host, port=port, expose_tracebacks=True, threads=threads)
 
     return serve
 
