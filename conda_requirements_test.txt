@@ -3,3 +3,4 @@
 
 pytest
 webtest>=2.0
+testfixtures
