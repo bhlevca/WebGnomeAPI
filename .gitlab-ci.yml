@@ -36,6 +36,7 @@ test_src:
   only:
     - develop
     - main
+    - production
   except:
     - pipelines
     - schedules
@@ -64,45 +65,12 @@ test_src:
     - python setup.py compilejson
     - pytest webgnome_api/tests
 
-test_src_production:
-  stage: test_src
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
-  tags:
-    - docker
-    - linux
-  image: registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
-  script:
-    - conda install mamba
-    - yum install redis -y
-    - redis-server --daemonize yes
-
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - mamba install -y --file conda_requirements.txt
-                       --file conda_requirements_test.txt
-                       --file libgoods/libgoods/conda_requirements.txt
-                       --file libgoods/model_catalogs/conda_requirements.txt
-
-    - pip install -r libgoods/model_catalogs/pip_requirements.txt
-
-    - pip install -e libgoods/model_catalogs/
-    - pip install libgoods/libgoods/
-    - pip install .
-
-    - mkdir -p ${HOME}/catalogs/complete
-    - cp -d libgoods/model_catalogs/model_catalogs/catalogs/complete/* ${HOME}/catalogs/complete/
-
-    - python setup.py compilejson
-    - pytest webgnome_api/tests
-
 build_temp_img:
   stage: build_temp_img
   only:
     - main
     - develop
+    - production
   except:
     - pipelines
     - schedules
@@ -117,33 +85,6 @@ build_temp_img:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
     - docker tag registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH pygnome
-    - >
-      docker build -f dockerfile
-      --build-arg CI_COMMIT_BRANCH
-      -t registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
-      .
-
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH.temp
-
-build_temp_img_production:
-  stage: build_temp_img
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
-  tags:
-    - shell
-    - build
-  script:
-    - git clone --depth 1 -b main https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
-    - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git
-
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
-    - docker tag registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH pygnome
-
     - >
       docker build -f dockerfile
       --build-arg CI_COMMIT_BRANCH
