@@ -230,7 +230,7 @@ def create_goods_request(request):
                                       'cross_dateline':cross_dateline,
                                   },
                                   tshift=tshift,
-                                  _debug = True)
+                                  _debug = False)
     
     session_objs[request_id] = goods_req
     goods_req.start()
