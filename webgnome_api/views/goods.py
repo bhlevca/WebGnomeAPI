@@ -1,6 +1,7 @@
 """
 Views for the GOODS interface.
 """
+import multiprocessing
 import os
 import sys
 import threading
@@ -9,6 +10,7 @@ import shutil
 import urllib.request
 import logging
 import datetime
+import pickle
 from uuid import uuid1
 from multiprocessing import Process
 
@@ -320,10 +322,15 @@ def get_goods_requests(request):
     open_requests = [r for r in all_requests if r.state != 'dead']
 
     typ = request.GET.get('request_type', None)
+    rv = None
     if typ:
-        return [r.to_response() for r in open_requests if typ in r.request_type]
+        rv = [r.to_response() for r in open_requests if typ in r.request_type]
     else:
-        return [r.to_response() for r in open_requests]
+        rv = [r.to_response() for r in open_requests]
+    
+    for idx, r in enumerate(open_requests):
+        log.info('>>>>>Req' + r.request_id + ' subset ' + str(r.subset_process.is_alive()))
+    return rv
 
 
 
@@ -406,6 +413,8 @@ class GOODSRequest(object):
             self._subset_xr = subs
 
     def start(self):
+        logger = multiprocessing.log_to_stderr()
+        logger.setLevel(multiprocessing.SUBDEBUG)
         if self.state != 'preparing':
             msg = 'Subset operation {0} already started or completed'.format(self.request_id)
             log.error(msg)
@@ -414,59 +423,57 @@ class GOODSRequest(object):
         self._subset_finished = False
         #create tracker
         #attach
+        message_queue = multiprocessing.Queue()
         self.request_thread = threading.Thread(
             target=self._thread_request_func,
-            args=(self.request_args, log),
+            args=(self.request_args, logger, message_queue),
             daemon=True
         )
         self.request_thread.start()
-        
-    def _thread_request_func(self, request_args, logger):
+ 
+    def _thread_request_func(self, request_args, logger, mq):
         logger.info('START')
-        try:
-            subs = None
-            subs = api.generate_subset_xds(**request_args)
-        except Exception as e:
-            if self._debug:
-                import pdb
-                pdb.post_mortem(sys.exc_info()[2])
-            self.error(str(e), e)
-            return None
-        logger.info('SUBSET COMPLETE')
+        self.subset_process = Process(target=api.subset_process_func, args=(request_args, mq), daemon=True)
+        self.subset_process.start()
+        status = mq.get()
+        result = mq.get()
+        self.subset_process.join()
+
         if self.cancel_event.is_set():
             self.message = 'Cancelled'
             return
+        if self.subset_process.exitcode:
+            logger.info('SUBSET FAILED: exitcode' + str(self.subset_process.exitcode))
+        if status:
+            logger.info('SUBSET COMPLETE')
+            logger.info(str(status))
+            self._subset_xr = pickle.loads(result)
+            logger.info(str(self._subset_xr))
+        else:
+            self.message = status
+            self.error(result)
+        
         self._subset_finished=True
-        self._subset_xr = subs
         self.percent = 0
-        self.subset_size = subs.nbytes
+        self.subset_size = self._subset_xr.nbytes
         if self.subset_size > self._max_size:
             self.too_large()
 
         if self.cancel_event.is_set():
             self.message = 'Cancelled'
             return
-        try:
-            outpath = None
-            self.state = 'requesting'
-            
-            self.request_process = Process(target=api.request_subset, args=(self._subset_xr, self.outpath))
-            self.request_process.start()
-            self.request_process.join()
-            if self.request_process.exitcode:
-                logger.info('REQUEST FAILED')
-
-            #outpath = api.request_subset(self._subset_xr, self.outpath)
-        except Exception as e:
-            # if self._debug:
-            #     import pdb
-            #     pdb.post_mortem(sys.exc_info()[2])
-            self.error(str(e), e)
-            return None
+        self.state = 'requesting'
+        
+        self.request_process = Process(target=api.request_subset, args=(self._subset_xr, self.outpath))
+        self.request_process.start()
+        self.request_process.join()
+        if self.request_process.exitcode:
+            logger.info('REQUEST FAILED: exitcode ' + str(self.request_process.exitcode))
         logger.info('REQUEST COMPLETE')
         if self.cancel_event.is_set():
             self.message = 'Cancelled'
             return
+
         self._request_finished = True
         self.state = 'finished'
         self.percent = 100
@@ -501,6 +508,8 @@ class GOODSRequest(object):
     def cancel_request(self):
         self.cancel_event.set()
         self.state = 'dead'
+        if self.subset_process:
+            self.subset_process.terminate()
         if self.request_process:
             self.request_process.terminate()
         monitor_thread = threading.Thread(target=self._deathwatch, daemon=True)
