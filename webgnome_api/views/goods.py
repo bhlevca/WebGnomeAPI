@@ -433,7 +433,7 @@ class GOODSRequest(object):
  
     def _thread_request_func(self, request_args, logger, mq):
         logger.info('START')
-        self.subset_process = Process(target=api.subset_process_func, args=(request_args, mq), daemon=True)
+        self.subset_process = Process(target=subset_process_func, args=(request_args, mq), daemon=True)
         self.subset_process.start()
         status = mq.get()
         result = mq.get()
@@ -585,3 +585,14 @@ class Tracker(Callback):
         if ndone < ntasks:
             self.model.percent = pct
             self.model.elapsed = elapsed
+
+
+def subset_process_func(request_args, mq):
+    try:
+        result = api.generate_subset_xds(**request_args)
+        mq.put('success')
+        mq.put(pickle.dumps(result))
+    except Exception as e:
+        mq.put('error')
+        mq.put(str(e))
+        raise e
