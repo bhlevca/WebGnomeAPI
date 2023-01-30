@@ -435,8 +435,8 @@ class GOODSRequest(object):
         logger.info('START')
         self.subset_process = Process(target=subset_process_func, args=(request_args, mq), daemon=True)
         self.subset_process.start()
-        status = mq.get()
-        result = mq.get()
+        status = mq.get(timeout=1)
+        result = mq.get(timeout=1)
         self.subset_process.join()
 
         if self.cancel_event.is_set():
@@ -590,9 +590,9 @@ class Tracker(Callback):
 def subset_process_func(request_args, mq):
     try:
         result = api.generate_subset_xds(**request_args)
-        mq.put('success')
-        mq.put(pickle.dumps(result))
+        mq.put('success', timeout=1)
+        mq.put(pickle.dumps(result), timeout=1)
     except Exception as e:
-        mq.put('error')
-        mq.put(str(e))
+        mq.put('error', timeout=1)
+        mq.put(str(e), timeout=1)
         raise e
