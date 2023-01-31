@@ -42,7 +42,6 @@ from ..common.views import (switch_to_existing_session,
 log = logging.getLogger(__name__)
 
 import pandas as pds
-from dask.distributed import Client
 from libgoods import maps, api
 
 from .. import supported_ocean_models, supported_met_models
@@ -421,22 +420,29 @@ class GOODSRequest(object):
             return msg
         self.state = 'subsetting'
         self._subset_finished = False
-        #create tracker
-        #attach
+
         message_queue = multiprocessing.Queue()
+        message_queue.write = message_queue.put
         self.request_thread = threading.Thread(
             target=self._thread_request_func,
             args=(self.request_args, logger, message_queue),
             daemon=True
         )
         self.request_thread.start()
- 
+
     def _thread_request_func(self, request_args, logger, mq):
         logger.info('START')
         self.subset_process = Process(target=subset_process_func, args=(request_args, mq), daemon=True)
         self.subset_process.start()
-        status = mq.get(timeout=1)
-        result = mq.get(timeout=1)
+        msg = '0%'
+        while '%' in msg:
+            logger.debug('SUBSET PROGESS: ' + msg)
+            msg = mq.get()
+            if msg == 'success' or msg == 'error':
+                break
+            msg = msg + '%'
+        status = msg
+        result = mq.get()
         self.subset_process.join()
 
         if self.cancel_event.is_set():
@@ -452,7 +458,7 @@ class GOODSRequest(object):
         else:
             self.message = status
             self.error(result)
-        
+      
         self._subset_finished=True
         self.percent = 0
         self.subset_size = self._subset_xr.nbytes
@@ -585,7 +591,6 @@ class Tracker(Callback):
         if ndone < ntasks:
             self.model.percent = pct
             self.model.elapsed = elapsed
-
 
 def subset_process_func(request_args, mq):
     try:
