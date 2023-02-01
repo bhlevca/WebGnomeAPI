@@ -42,15 +42,15 @@ mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
                 cors_policy=edited_cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
-                     'gnome.movers.c_wind_movers.WindMover',
+                     'gnome.movers.c_wind_movers.PointWindMover',
                      'gnome.movers.random_movers.RandomMover',
                      'gnome.movers.random_movers.IceAwareRandomMover',
                      'gnome.movers.random_movers.RandomMover3D',
                      'gnome.movers.c_current_movers.CatsMover',
                      'gnome.movers.c_current_movers.ComponentMover',
                      'gnome.movers.c_current_movers.CurrentCycleMover',
-                     'gnome.movers.py_current_movers.PyCurrentMover',
-                     'gnome.movers.py_wind_movers.PyWindMover',
+                     'gnome.movers.py_current_movers.GridCurrentMover',
+                     'gnome.movers.py_wind_movers.GridWindMover',
                      'gnome.movers.c_current_movers.c_GridCurrentMover',
                      'gnome.movers.c_current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
@@ -135,17 +135,17 @@ def upload_mover(request):
                  'name': name,
                  'units': 'knots'}
 
-    if ('PyWindMover' in mover_type):
+    if ('GridWindMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridWind')
         basic_json['wind'] = env_obj_base_json
 
-    if ('PyCurrentMover' in mover_type):
+    if ('GridCurrentMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
 
-    if ('c_wind_movers.WindMover' in mover_type):
+    if ('c_wind_movers.PointWindMover' in mover_type):
         basic_json['wind'] = wind_json
 
     request.body = ujson.dumps(basic_json).encode('utf-8')
