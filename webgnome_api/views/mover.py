@@ -246,7 +246,7 @@ def get_grid_centers(request):
         mover = get_session_object(obj_id, request)
 
         if (mover is not None and
-                isinstance(mover, (CurrentMoversBase, PyMover))):
+                isinstance(mover, (CurrentMoversBase))):
             centers = get_center_points(mover)
 
             return centers.tolist()
@@ -317,6 +317,8 @@ def get_grid_signature(mover):
 
 
 def get_cells(mover):
+    if isinstance(mover, PyMover):
+        raise TypeError('get_cells not supported on PyMover objects')
     grid_data = mover.get_grid_data()
 
     if not isinstance(mover, PyMover):
