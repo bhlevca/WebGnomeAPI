@@ -221,14 +221,14 @@ def create_goods_request(request):
                                   outpath=output_path,
                                   request_type=request_type,
                                   request_args={
-                                      'identifier':params['model_name'],
+                                      'model_id':params['model_name'],
                                       'model_source':source,
                                       'start':start,
                                       'end':end,
                                       'bounds':bounds,
-                                      'request_type':request_type,
                                       'surface_only':surface_only,
                                       'cross_dateline':cross_dateline,
+                                      'environmental_parameters':request_type,
                                   },
                                   tshift=tshift,
                                   _debug = False)
@@ -442,7 +442,7 @@ class GOODSRequest(object):
                 break
             msg = msg + '%'
         status = msg
-        result = mq.get()
+        result = mq.get(timeout=1)
         self.subset_process.join()
 
         if self.cancel_event.is_set():
@@ -469,8 +469,9 @@ class GOODSRequest(object):
             self.message = 'Cancelled'
             return
         self.state = 'requesting'
-        
-        self.request_process = Process(target=api.request_subset, args=(self._subset_xr, self.outpath))
+        logger.info('starting download')
+        self.request_process = Process(target=api.get_model_output, args=(self._subset_xr, self.outpath))
+        logger.info('working on it')
         self.request_process.start()
         self.request_process.join()
         if self.request_process.exitcode:
@@ -530,11 +531,11 @@ class GOODSRequest(object):
         from dask.diagnostics import ProgressBar, Profiler
         breakpoint()
         with Profiler() as pb:
-            subs = api.generate_subset_xds(**self.request_args)
+            subs = api.model_ss(**self.request_args)
             pb.visualize()
             
-        with ProgressBar() as pb:
-            api.request_subset(subs, self.outpath)
+        # with ProgressBar() as pb:
+            # api.request_subset(subs, self.outpath)
 
 
     
@@ -594,7 +595,7 @@ class Tracker(Callback):
 
 def subset_process_func(request_args, mq):
     try:
-        result = api.generate_subset_xds(**request_args)
+        result = api.model_ss(**request_args)
         mq.put('success', timeout=1)
         mq.put(pickle.dumps(result), timeout=1)
     except Exception as e:
