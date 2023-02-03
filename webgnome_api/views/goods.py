@@ -442,7 +442,7 @@ class GOODSRequest(object):
                 break
             msg = msg + '%'
         status = msg
-        result = mq.get()
+        result = mq.get(timeout=1)
         self.subset_process.join()
 
         if self.cancel_event.is_set():
