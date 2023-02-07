@@ -469,9 +469,7 @@ class GOODSRequest(object):
             self.message = 'Cancelled'
             return
         self.state = 'requesting'
-        logger.info('starting download')
         self.request_process = Process(target=api.get_model_output, args=(self._subset_xr, self.outpath))
-        logger.info('working on it')
         self.request_process.start()
         self.request_process.join()
         if self.request_process.exitcode:
@@ -531,11 +529,11 @@ class GOODSRequest(object):
         from dask.diagnostics import ProgressBar, Profiler
         breakpoint()
         with Profiler() as pb:
-            subs = api.model_ss(**self.request_args)
+            subs = api.get_model_subset(**self.request_args)
             pb.visualize()
             
-        # with ProgressBar() as pb:
-            # api.request_subset(subs, self.outpath)
+        with ProgressBar() as pb:
+            api.get_model_output(subs, self.outpath)
 
 
     
@@ -595,7 +593,7 @@ class Tracker(Callback):
 
 def subset_process_func(request_args, mq):
     try:
-        result = api.model_ss(**request_args)
+        result = api.get_model_subset(**request_args)
         mq.put('success', timeout=1)
         mq.put(pickle.dumps(result), timeout=1)
     except Exception as e:
