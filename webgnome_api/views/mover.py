@@ -135,12 +135,12 @@ def upload_mover(request):
                  'name': name,
                  'units': 'knots'}
 
-    if ('GridWindMover' in mover_type):
+    if ('py_wind_movers.WindMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridWind')
         basic_json['wind'] = env_obj_base_json
 
-    if ('GridCurrentMover' in mover_type):
+    if ('py_current_movers.CurrentMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
