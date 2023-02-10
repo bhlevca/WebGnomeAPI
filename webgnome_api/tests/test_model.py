@@ -316,7 +316,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
@@ -349,7 +349,7 @@ class NestedModelTests(FunctionalTestBase):
 
         assert 'movers' in model1
         assert model1['movers'][0]['obj_type'] == ('gnome.movers.c_wind_movers'
-                                                   '.WindMover')
+                                                   '.PointWindMover')
         assert 'active_range' in model1['movers'][0]
         assert 'on' in model1['movers'][0]
         assert 'uncertain_angle_scale' in model1['movers'][0]
@@ -366,7 +366,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
@@ -407,7 +407,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_sparse_wind_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
