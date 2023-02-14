@@ -169,7 +169,7 @@ def create_goods_request(request):
     '''
     Uses the payload passed by the client to send information to
     libGOODS. This file returned from libgoods is then used to create a
-    PyCurrentMover object, which is then returned to the client
+    CurrentMover object, which is then returned to the client
     '''
     '''
     class FetchConfig:
