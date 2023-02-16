@@ -2,7 +2,6 @@
 Common Gnome object request handlers.
 """
 from threading import Lock
-from gnome.multi_model_broadcast import ModelBroadcaster
 
 
 def init_session_objects(request, force=False):
@@ -75,6 +74,8 @@ def get_uncertain_models(request):
 
 
 def set_uncertain_models(request):
+    from gnome.multi_model_broadcast import ModelBroadcaster
+
     session_id = request.session.session_id
     uncertain_models = request.registry.settings['uncertain_models']
 
