@@ -37,6 +37,7 @@ from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
                                        cors_response,
                                        json_exception)
+from .goods import GOODSRequest
 
 async_step_api = Service(name='async_step', path='/async_step',
                          description="Async Step API", cors_policy=cors_policy)
@@ -201,46 +202,21 @@ def run_export_model(request):
 
         if active_model and not ns.active_greenlets.get(sid):
             args = (execute_async_model, active_model, ns, sid, request)
-            with gevent.Greenlet.spawn(*args) as gl:
-                ns.active_greenlets[sid] = gl
-                gl.session_hash = request.session_hash
-                gl.link(get_export_cleanup())
-            # gl = ns.active_greenlets[sid] = gevent.spawn(
-            #     execute_async_model,
-            #     active_model,
-            #     ns,
-            #     sid,
-            #     request
-            # )
+            #    gl.link(get_export_cleanup())
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request
+            )
 
-            # gl.session_hash = request.session_hash
-            # gl.link(get_export_cleanup())
+            gl.session_hash = request.session_hash
+            gl.link(get_export_cleanup())
 
             return None
         else:
             return None
-
-def run_model2(request):
-    '''
-    Runs a model and writes output to the web socket. Depends on threading
-    '''
-    log_prefix = 'req{0}: run_model()'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    ns = request.registry.get('sio_ns')
-
-    if ns is None:
-        raise ValueError('no namespace associated with session')
-
-    active_model = get_active_model(request)
-
-    sid = ns.get_sockid_from_sessid(request.session.session_id)
-    if sid is None:
-        raise ValueError('no sock_session associated with pyramid_session')
-    with ns.session(sid) as sock_session:
-        sock_session['num_sent'] = 0
-        sock_session['lock'].set() #important to avoid thread access violations when using Waitress
-
 
 
 @async_step_api.get()
@@ -268,17 +244,17 @@ def run_model(request):
 
         if active_model and not ns.active_greenlets.get(sid):
             args = (execute_async_model, active_model, ns, sid, request)
-            with gevent.Greenlet.spawn(*args) as gl:
-                ns.active_greenlets[sid] = gl
-                gl.session_hash = request.session_hash
-            # gl = ns.active_greenlets[sid] = gevent.spawn(
-            #     execute_async_model,
-            #     active_model,
-            #     ns,
-            #     sid,
-            #     request)
-            # gl.session_hash = request.session_hash
-            # gl.join()
+            # with gevent.Greenlet.spawn(*args) as gl:
+            #     ns.active_greenlets[sid] = gl
+            #     gl.session_hash = request.session_hash
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request)
+            gl.session_hash = request.session_hash
+            gl.join()
             return None
         else:
             return None
@@ -486,10 +462,19 @@ def get_rewind(request):
             if ns:
                 sio = ns.get_sockid_from_sessid(request.session.session_id)
                 if (ns.active_greenlets.get(sio)):
+                    #rewinding while a model is running stops the run
                     with ns.session(sio) as sock_session:
                         ns.active_greenlets.get(sio).kill(block=False)
                         sock_session['num_sent'] = 0
                         sock_session['lock'].clear()
+            
+            session_objs = get_session_objects(request)
+            #clean up any 'dead' GOODS requests
+            for obj in session_objs.values():
+                if isinstance(obj, GOODSRequest) and obj.state == 'dead':
+                    log.info('Removing GOODS request {0}'.format(obj.request_id))
+                    del session_objs[obj.request_id]
+                    
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
