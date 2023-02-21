@@ -1,0 +1,13 @@
+{
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -79.931833,
+        9.399833,
+        0.0
+    ],
+    "name": "Coastal Flow",
+    "filename": "CoastalFlowDAC.cur",
+    "json_": "save",
+    "scale_value": 0.3
+}
