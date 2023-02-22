@@ -49,16 +49,17 @@ test_src:
     - yum install redis -y
     - redis-server --daemonize yes
 
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
+    # this should come from conda via libgoods requirements
+    # - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
+    - git clone --depth 1 -b develop https://gitlab.orr.noaa.gov/gnome/libgoods.git libgoods
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/conda_requirements.txt
                        --file model_catalogs/conda-requirements.txt
 
-    - pip install -r model_catalogs/pip-requirements.txt
+#    - pip install -r model_catalogs/pip-requirements.txt
 
-    - pushd model_catalogs && pip install . && popd
+#    - pushd model_catalogs && pip install . && popd
     - pushd libgoods && pip install . && popd
     - pip install .
 
