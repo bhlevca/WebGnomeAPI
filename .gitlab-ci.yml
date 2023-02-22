@@ -54,7 +54,7 @@ test_src:
                        --file libgoods/conda_requirements.txt
                        #--file model_catalogs/conda-requirements.txt
 
-    - pip install -r model_catalogs/pip-requirements.txt
+    #- pip install -r model_catalogs/pip-requirements.txt
 
     - pushd model_catalogs && pip install . && popd
     - pushd libgoods && pip install . && popd
