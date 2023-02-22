@@ -16,7 +16,7 @@ RUN ls webgnomeapi/libgoods
 
 RUN mamba install -y \
        --file webgnomeapi/conda_requirements.txt \
-       --file webgnomeapi/libgoods/conda_requirements.txt \
+       --file webgnomeapi/libgoods/conda_requirements.txt 
 
 
 RUN cd webgnomeapi/libgoods && pip install .
