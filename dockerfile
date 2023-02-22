@@ -17,8 +17,7 @@ RUN ls webgnomeapi/model_catalogs
 
 RUN mamba install -y \
        --file webgnomeapi/conda_requirements.txt \
-       --file webgnomeapi/libgoods/conda_requirements.txt \
-       --file webgnomeapi/model_catalogs/conda-requirements.txt
+       --file webgnomeapi/libgoods/conda_requirements.txt 
 
 RUN pip install -r webgnomeapi/model_catalogs/pip-requirements.txt
 

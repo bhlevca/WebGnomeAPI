@@ -48,9 +48,7 @@ test_src:
     - conda install mamba
     - yum install redis -y
     - redis-server --daemonize yes
-
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/conda_requirements.txt
@@ -78,8 +76,7 @@ build_temp_img:
     - shell
     - build
   script:
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/model_catalogs.git
-    - git clone --depth 1 -b main https://github.com/NOAA-ORR-ERD/LibGOODS.git libgoods
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git
 
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
