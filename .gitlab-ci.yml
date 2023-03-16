@@ -174,11 +174,8 @@ rename_temp_img:
 
 deploy_redis_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-dev
     - deploy
@@ -208,11 +205,8 @@ deploy_redis_dev:
 
 stop_redis_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-dev
@@ -227,11 +221,8 @@ stop_redis_dev:
 
 deploy_proxy_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-dev
     - deploy
@@ -275,11 +266,8 @@ deploy_proxy_dev:
 
 stop_proxy_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-dev
@@ -294,11 +282,8 @@ stop_proxy_dev:
 
 deploy_api_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-dev
     - deploy
@@ -332,11 +317,8 @@ deploy_api_dev:
 
 stop_api_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-dev
@@ -361,11 +343,8 @@ stop_api_dev:
 
 deploy_redis_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-stage
     - deploy
@@ -394,11 +373,8 @@ deploy_redis_stage:
 
 stop_redis_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-stage
@@ -413,11 +389,8 @@ stop_redis_stage:
 
 deploy_proxy_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-stage
     - deploy
@@ -461,11 +434,8 @@ deploy_proxy_stage:
 
 stop_proxy_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-stage
@@ -480,11 +450,8 @@ stop_proxy_stage:
 
 deploy_api_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-stage
     - deploy
@@ -518,11 +485,8 @@ deploy_api_stage:
 
 stop_api_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-stage
@@ -549,11 +513,8 @@ stop_api_stage:
 
 deploy_redis_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -582,11 +543,8 @@ deploy_redis_production:
 
 stop_redis_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
@@ -601,11 +559,8 @@ stop_redis_production:
 
 deploy_proxy_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -649,11 +604,8 @@ deploy_proxy_production:
 
 stop_proxy_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
