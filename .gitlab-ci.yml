@@ -620,11 +620,8 @@ stop_proxy_production:
 
 deploy_api_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -658,11 +655,8 @@ deploy_api_production:
 
 stop_api_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
