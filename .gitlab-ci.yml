@@ -175,7 +175,7 @@ rename_temp_img:
 deploy_redis_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -206,7 +206,7 @@ deploy_redis_dev:
 stop_redis_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
@@ -222,7 +222,7 @@ stop_redis_dev:
 deploy_proxy_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -267,7 +267,7 @@ deploy_proxy_dev:
 stop_proxy_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
@@ -283,7 +283,7 @@ stop_proxy_dev:
 deploy_api_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -318,7 +318,7 @@ deploy_api_dev:
 stop_api_dev:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
