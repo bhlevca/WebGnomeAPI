@@ -224,14 +224,14 @@ def create_goods_request(request):
                                   outpath=output_path,
                                   request_type=request_type,
                                   request_args={
-                                      'identifier':params['model_name'],
+                                      'model_id':params['model_name'],
                                       'model_source':source,
                                       'start':start,
                                       'end':end,
                                       'bounds':bounds,
-                                      'request_type':request_type,
                                       'surface_only':surface_only,
                                       'cross_dateline':cross_dateline,
+                                      'environmental_parameters':request_type,
                                   },
                                   tshift=tshift,
                                   _debug = False)
@@ -472,8 +472,7 @@ class GOODSRequest(object):
             self.message = 'Cancelled'
             return
         self.state = 'requesting'
-
-        self.request_process = Process(target=api.request_subset, args=(self._subset_xr, self.outpath))
+        self.request_process = Process(target=api.get_model_output, args=(self._subset_xr, self.outpath))
         self.request_process.start()
         self.request_process.join()
         if self.request_process.exitcode:
@@ -533,11 +532,11 @@ class GOODSRequest(object):
         from dask.diagnostics import ProgressBar, Profiler
         breakpoint()
         with Profiler() as pb:
-            subs = api.generate_subset_xds(**self.request_args)
+            subs = api.get_model_subset(**self.request_args)
             pb.visualize()
 
         with ProgressBar() as pb:
-            api.request_subset(subs, self.outpath)
+            api.get_model_output(subs, self.outpath)
 
 
 
@@ -597,7 +596,7 @@ class Tracker(Callback):
 
 def subset_process_func(request_args, mq):
     try:
-        result = api.generate_subset_xds(**request_args)
+        result = api.get_model_subset(**request_args)
         mq.put('success', timeout=1)
         mq.put(pickle.dumps(result), timeout=1)
     except Exception as e:
