@@ -47,6 +47,7 @@ try:
 except ImportError:
     print("libgoods package not available -- its functionality will not be there")
 
+
 from .. import supported_ocean_models, supported_met_models
 
 goods_maps = Service(name='maps', path='/goods/maps*',
