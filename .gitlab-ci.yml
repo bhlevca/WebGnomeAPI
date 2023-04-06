@@ -48,15 +48,11 @@ test_src:
     - conda install mamba
     - yum install redis -y
     - redis-server --daemonize yes
-    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git libgoods
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/conda_requirements.txt
-                       #--file model_catalogs/conda-requirements.txt
 
-    #- pip install -r model_catalogs/pip-requirements.txt
-
-    - pushd model_catalogs && pip install . && popd
     - pushd libgoods && pip install . && popd
     - pip install .
 
@@ -173,16 +169,15 @@ rename_temp_img:
 ###
 ### - The deployment for gnome-dev.orr.noaa.gov will be such that any change
 ###   in the develop branch will be automatically deployed to this host.
+### - In addition, the develop branch deployment can be triggered from the
+###   gnome-deploy project
 ###
 ###
 
 deploy_redis_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -212,11 +207,8 @@ deploy_redis_dev:
 
 stop_redis_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
@@ -231,11 +223,8 @@ stop_redis_dev:
 
 deploy_proxy_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -279,11 +268,8 @@ deploy_proxy_dev:
 
 stop_proxy_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
@@ -298,11 +284,8 @@ stop_proxy_dev:
 
 deploy_api_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-dev
     - deploy
@@ -336,11 +319,8 @@ deploy_api_dev:
 
 stop_api_dev:
   stage: deploy
-  only:
-    - develop
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-dev
@@ -360,16 +340,15 @@ stop_api_dev:
 ###
 ### - The deployment for gnome-stage.orr.noaa.gov will be such that any change
 ###   in the main branch will be automatically deployed to this host.
+### - In addition, the main branch deployment can be triggered from the
+###   gnome-deploy project
 ###
 ###
 
 deploy_redis_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-stage
     - deploy
@@ -398,11 +377,8 @@ deploy_redis_stage:
 
 stop_redis_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-stage
@@ -417,11 +393,8 @@ stop_redis_stage:
 
 deploy_proxy_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-stage
     - deploy
@@ -465,11 +438,8 @@ deploy_proxy_stage:
 
 stop_proxy_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-stage
@@ -484,11 +454,8 @@ stop_proxy_stage:
 
 deploy_api_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   tags:
     - gnome-stage
     - deploy
@@ -522,11 +489,8 @@ deploy_api_stage:
 
 stop_api_stage:
   stage: deploy
-  only:
-    - main
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE =~ /\b(push|merge_request_event|pipeline|schedule)\b/
   when: manual
   tags:
     - gnome-stage
@@ -553,11 +517,8 @@ stop_api_stage:
 
 deploy_redis_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -586,11 +547,8 @@ deploy_redis_production:
 
 stop_redis_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
@@ -605,11 +563,8 @@ stop_redis_production:
 
 deploy_proxy_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -653,11 +608,8 @@ deploy_proxy_production:
 
 stop_proxy_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
@@ -672,11 +624,8 @@ stop_proxy_production:
 
 deploy_api_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   tags:
     - gnome-prod
     - deploy
@@ -710,11 +659,8 @@ deploy_api_production:
 
 stop_api_production:
   stage: deploy
-  only:
-    - production
-  except:
-    - pipelines
-    - schedules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
   when: manual
   tags:
     - gnome-prod
@@ -733,6 +679,7 @@ stop_api_production:
 ### Maintenance tasks
 ###
 ###
+
 
 prune_session_folders_dev:
   stage: maintenance

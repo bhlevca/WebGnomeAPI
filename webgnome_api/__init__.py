@@ -1,6 +1,7 @@
 """
     Main entry point
 """
+
 import os
 import shutil
 import logging
@@ -24,7 +25,6 @@ from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
                                           GoodsFileNamespace)
 
 from waitress import serve as waitress_serve
-
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -32,30 +32,25 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = {#'GFS-1_4DEG',
-                        #'RTOFS-GLOBAL',
-                        #'RTOFS-GLOBAL_2D',
-                        #'GFS-1_2DEG',
-                        #'GFS-1DEG',
-                        'GOFS':'hycom-forecast-agg',
-                        #'RTOFS-ALASKA',
-                        #'RTOFS-WEST',
-                        #'RTOFS-EAST',
-                        'WCOFS':'coops-forecast-noagg',
-                        'NGOFS2':'coops-forecast-noagg',
-                        'CREOFS':'coops-forecast-noagg',
-                        'LMHOFS':'coops-forecast-noagg',
-                        'CIOFS':'coops-forecast-agg',
-                        'LSOFS':'coops-forecast-agg',
-                        'CBOFS':'coops-forecast-agg',
-                        'LEOFS':'coops-forecast-noagg',
-                        'DBOFS':'coops-forecast-agg',
-                        'LOOFS':'coops-forecast-agg',
-                        'SFBOFS':'coops-forecast-noagg',
-                        'TBOFS':'coops-forecast-agg',
-                        'NYOFS':'coops-forecast-agg',
-                        'GOMOFS':'coops-forecast-agg'}
-
+supported_ocean_models = {'GOFS':['hycom-forecast-agg',],
+                        'WCOFS':['coops-forecast-noagg',],
+                        'NGOFS2':['coops-forecast-noagg',],
+                        'CREOFS':['coops-forecast-noagg',],
+                        'LMHOFS':['coops-forecast-noagg',],
+                        'CIOFS':['coops-forecast-agg',],
+                        'LSOFS-FVCOM':['coops-forecast-noagg',],
+                        'CBOFS':['coops-forecast-agg',],
+                        'LEOFS':['coops-forecast-noagg',],
+                        'DBOFS':['coops-forecast-agg',],
+                        'LOOFS-FVCOM':['coops-forecast-noagg',],
+                        'SFBOFS':['coops-forecast-noagg',],
+                        'TBOFS':['coops-forecast-agg',],
+                        'NYOFS':['coops-forecast-agg',],
+                        'GOMOFS':['coops-forecast-agg',]}
+                        
+supported_met_models = {'GFS-1-4DEG':['ucar-forecast-agg',],
+                        'GFS-1-2DEG':['ucar-forecast-agg',],
+                        'GFS-1DEG':['ucar-forecast-agg',]}
 
 class WebgnomeFormatter(Formatter):
     def format(self, record):
@@ -164,6 +159,7 @@ def start_session_cleaner(settings):
             session_id = session_id.decode('utf-8')
 
         cleanup_dir = (Path(session_dir) / session_id).resolve()
+        print(f'Session Cleaner: Cleaning up folder {cleanup_dir}')
 
         try:
             shutil.rmtree(cleanup_dir)

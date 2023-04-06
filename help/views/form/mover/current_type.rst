@@ -8,6 +8,8 @@ At present, only specific output formats are supported (eventually any CF-compli
 
 The **Load NOAA Emergency Response Model (CATS) output** is for loading the hydrodynamic model used by the NOAA Emergency Response Division. 
 
+To select currents from available operational ocean models, choose **Select Currents for Specified Region**. Note, this feature is under active development and may be unreliable.
+
 Choose **Load Deprecated ASCII Formats** for files using the PtCur, GridCur, or GridCurTime formats.
 
 For more information on any of these formats, see the |file_formats_link|.

@@ -122,8 +122,9 @@ def activate_uploaded_model(request):
     # memory.
     # Now that we have our file, is it a zipfile?
     if not is_savezip_valid(zipfile_path):
-        raise cors_response(request,
-                            HTTPBadRequest('File is not a valid zipfile!'))
+        raise cors_response(request, HTTPBadRequest(
+            'File is not a valid zipfile!'
+        ))
 
     # now we try to load our model from the zipfile.
     session_lock = acquire_session_lock(request)
