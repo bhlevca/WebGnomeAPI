@@ -42,7 +42,11 @@ from ..common.views import (switch_to_existing_session,
 log = logging.getLogger(__name__)
 
 import pandas as pds
-from libgoods import maps, api
+try:
+    from libgoods import maps, api
+except ImportError:
+    print("libgoods package not available -- its functionality will not be there")
+
 
 from .. import supported_ocean_models, supported_met_models
 
@@ -84,7 +88,7 @@ def get_model_metadata(request):
         else:
             supported_env_models = {}
     except TypeError:
-        supported_env_models = {**supported_ocean_models, **supported_met_models}  
+        supported_env_models = {**supported_ocean_models, **supported_met_models}
     retval = None
     #model_list = list(supported_env_models.keys())
     if bounds:
@@ -184,10 +188,10 @@ def create_goods_request(request):
         standard_names: List[str] = field(default_factory=lambda: STANDARD_NAMES)
         surface_only: bool = False
     '''
-    
+
     log_prefix = 'req{0}: get_currents()'.format(id(request))
     log.info('>>' + log_prefix)
-    
+
     params = request.POST
     upload_dir = os.path.relpath(get_session_dir(request))
     max_upload_size = eval(request.registry.settings['max_upload_size'])
@@ -201,12 +205,12 @@ def create_goods_request(request):
     include_winds = params.get('include_winds', True) not in ('false', 'False', None)
     if include_winds:
         request_type = [request_type, 'surface winds']
-    
+
     #generate a unique model output name
     start = params['start_time']
     end = params['end_time']
-    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'    
-    file_name, unique_name = gen_unique_filename(fname, upload_dir)   
+    fname = params['model_name'] + '_' + start.split('T')[0] + '_' + end.split('T')[0] + '.nc'
+    file_name, unique_name = gen_unique_filename(fname, upload_dir)
     output_path = os.path.join(upload_dir, unique_name)
     with open(output_path,'w') as fn:
         pass
@@ -221,18 +225,18 @@ def create_goods_request(request):
                                   outpath=output_path,
                                   request_type=request_type,
                                   request_args={
-                                      'identifier':params['model_name'],
+                                      'model_id':params['model_name'],
                                       'model_source':source,
                                       'start':start,
                                       'end':end,
                                       'bounds':bounds,
-                                      'request_type':request_type,
                                       'surface_only':surface_only,
                                       'cross_dateline':cross_dateline,
+                                      'environmental_parameters':request_type,
                                   },
                                   tshift=tshift,
                                   _debug = False)
-    
+
     session_objs[request_id] = goods_req
     goods_req.start()
 
@@ -245,7 +249,7 @@ def goods_request(request):
     This route is used to create, cancel or reconfirm requests
     returns the updated request object
     '''
-    
+
     log_prefix = 'req{0}: interact_request() {1}'.format(id(request), request.POST.get('command', 'NO COMMAND'))
     log.info('>>' + log_prefix)
 
@@ -269,7 +273,7 @@ def goods_request(request):
     elif command == 'reconfirm':
         req_obj.reconfirm()
         return req_obj.to_response()
-    
+
     elif command == '_debugPause':
         req_obj._debugPause()
         return req_obj.to_response()
@@ -311,7 +315,7 @@ def get_goods_requests(request):
     log_prefix = 'req{0}: get_currents()'.format(id(request))
     log.info('>>' + log_prefix)
     session_objs = get_session_objects(request)
-    
+
     params = request.GET
     if params.get('id', None) and params['id'] in session_objs:
         #if GET is provided a single request_id, it will return only that request
@@ -326,7 +330,7 @@ def get_goods_requests(request):
         rv = [r.to_response() for r in open_requests if typ in r.request_type]
     else:
         rv = [r.to_response() for r in open_requests]
-    
+
     for idx, r in enumerate(open_requests):
         log.info('>>>>>Req' + r.request_id + ' subset ' + str(r.subset_process.is_alive()))
     return rv
@@ -358,7 +362,7 @@ class GOODSRequest(object):
                  _reconfirm_timeout=300,
                  ):
         '''
-        Object to represent an open asynchronous file retrieval. 
+        Object to represent an open asynchronous file retrieval.
         '''
         if start_time is None:
             start_time = datetime.datetime.now()
@@ -376,7 +380,7 @@ class GOODSRequest(object):
         self._max_size = _max_size
         self._reconfirm_timeout = _reconfirm_timeout
         self.percent = 0
-        self.message = None #set by worker thread 
+        self.message = None #set by worker thread
         self.request_process = None
         self.pause_event = threading.Event() #lock for main thread to clear on reconfirmation
         self.cancel_event = threading.Event() #event for main thread to set if cancellation desired
@@ -396,14 +400,14 @@ class GOODSRequest(object):
                'message': self.message,
                'outpath': self.outpath,
                'tshift': self.tshift}
-    
+
     @property
     def subset_xr(self):
         if not self._subset_finished:
             raise ValueError('Subset operation not completed')
         else:
             return self._subset_xr
-    
+
     @subset_xr.setter
     def subset_xr(self, subs):
         if not self._subset_finished:
@@ -458,7 +462,7 @@ class GOODSRequest(object):
         else:
             self.message = status
             self.error(result)
-      
+
         self._subset_finished=True
         self.percent = 0
         self.subset_size = self._subset_xr.nbytes
@@ -469,8 +473,7 @@ class GOODSRequest(object):
             self.message = 'Cancelled'
             return
         self.state = 'requesting'
-        
-        self.request_process = Process(target=api.request_subset, args=(self._subset_xr, self.outpath))
+        self.request_process = Process(target=api.get_model_output, args=(self._subset_xr, self.outpath))
         self.request_process.start()
         self.request_process.join()
         if self.request_process.exitcode:
@@ -493,8 +496,8 @@ class GOODSRequest(object):
         if not self.pause_event.wait(timeout=self._reconfirm_timeout):
             self.dead()
             return
-        
-    
+
+
     def error(self, msg, exc=None):
         self.state = 'error'
         self.message = msg
@@ -520,24 +523,24 @@ class GOODSRequest(object):
             self.request_process.terminate()
         monitor_thread = threading.Thread(target=self._deathwatch, daemon=True)
         monitor_thread.start()
-    
+
     def _deathwatch(self):
         self.request_thread.join(timeout=self._reconfirm_timeout)
         if self.request_thread.is_alive():
             print('REQUEST CANCELLATION FAILED')
-    
+
     def test_no_thread(self):
         from dask.diagnostics import ProgressBar, Profiler
         breakpoint()
         with Profiler() as pb:
-            subs = api.generate_subset_xds(**self.request_args)
+            subs = api.get_model_subset(**self.request_args)
             pb.visualize()
-            
+
         with ProgressBar() as pb:
-            api.request_subset(subs, self.outpath)
+            api.get_model_output(subs, self.outpath)
 
 
-    
+
 from dask.callbacks import Callback
 from timeit import default_timer
 class Tracker(Callback):
@@ -571,7 +574,7 @@ class Tracker(Callback):
             self.model.elapsed = elapsed
         else:
             raise errored
-        
+
     def _timer_func(self):
         while self.running:
             elapsed = default_timer() - self.start_time
@@ -594,7 +597,7 @@ class Tracker(Callback):
 
 def subset_process_func(request_args, mq):
     try:
-        result = api.generate_subset_xds(**request_args)
+        result = api.get_model_subset(**request_args)
         mq.put('success', timeout=1)
         mq.put(pickle.dumps(result), timeout=1)
     except Exception as e:

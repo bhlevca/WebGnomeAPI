@@ -33,7 +33,7 @@ __version__ = "0.9"
 logging.basicConfig()
 
 supported_ocean_models = {'GOFS':['hycom-forecast-agg',],
-                        'WCOFS':['ioos-forecast-agg',],
+                        'WCOFS':['coops-forecast-noagg',],
                         'NGOFS2':['coops-forecast-noagg',],
                         'CREOFS':['coops-forecast-noagg',],
                         'LMHOFS':['coops-forecast-noagg',],

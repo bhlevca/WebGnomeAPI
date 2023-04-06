@@ -1,0 +1,43 @@
+    {
+        "name": "Panama Canal Gatun Lake",
+        "geometry": {
+            "coordinates": [-79.879992, 9.198722]
+        },
+        "steps": [
+            {
+                "type": "welcome",
+                "name": "Welcome to Panama Canal Gatun Lake",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='next'>Next</button>",
+                "body": "<p>You will need to do the following in order to set up WebGNOME for Panama Canal, Gatun Lake:</p><ol><li>Set the model run parameters.</li><li>Set the flow rates for Atlantic and Pacific outflow and the Madden Dam.</li><li>Input the wind conditions.</li></ol>"
+            },
+            {
+                "type": "model",
+                "title": "Model Settings",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>"
+            },
+            {
+                "type": "custom",
+                "name": "lakeflow",
+                "title": "Setting Flow Rates",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "module": "define([], function(){ return stepMod})",
+                "functions": {
+                	"setup": "function(modal){}",
+                    "save":  "function(form){}"
+            	},
+                "body": "<p> Controlled releases from the Madden dam split between northwest flow toward Gatun Lake and southwest flow through the Canal into the Pacific. You can choose a climatological estimate for each flow or enter your own value. </p> <form class=form-horizontal role=form> <div class=form-group> <label class=\"control-label col-sm-5\" for=head-flow>Head flow rate:</label> <div class=col-sm-5> <select class=form-control id=head-flow> <option value=high> High (50,000 cfs) </option> <option value=medium> Medium (30,000 cfs) </option> <option value=low> Low (10,000 cfs) </option> <option value=other> Other flow rate </option> </select> </div> </div> <div class=\"form-group head\"> <label class=\"control-label col-sm-5\" for=head-flow-manual>Head flow rate:</label> <div class=col-sm-4> <input type=number class=form-control id=head-flow-manual> </div> <div class=col-sm-3> <select class=form-control id=head-flow-manual-units> <option value=cfs> cfs </option> <option value=kcfs> kcfs </option> </select> </div> </div> <div class=form-group> <label class=\"control-label col-sm-5\" for=tail-flow>Tail flow rate:</label> <div class=col-sm-5> <select class=form-control id=tail-flow> <option value=high> High (3,800 cfs) </option> <option value=medium> Medium (2,250 cfs) </option> <option value=low> Low (700 cfs) </option> <option value=other> Other flow rate </option> </select> </div> </div> <div class=\"form-group tail\"> <label class=\"control-label col-sm-5\" for=tail-flow-manual>Tail flow rate:</label> <div class=col-sm-4> <input type=number class=form-control id=tail-flow-manual> </div> <div class=col-sm-3> <select class=form-control id=tail-flow-manual-units> <option value=cfs> cfs </option> <option value=kcfs> kcfs </option> </select> </div> </div> </form>"
+            },
+            {
+                "type": "text",
+                "title": "Wind Type",
+                "buttons": "<button type='button' class='cancel' data-dismiss='modal'>Cancel</button><button type='button' class='back'>Back</button><button type='button' class='next'>Next</button>",
+                "body": "<p>Wind can significantly influence oil movement and can force oil to move in a different direction from the currents.</p><p>You can choose wind that is constant in direction and speed for the entire model run, or you can choose wind that varies in direction and/or speed over time.</p>"
+            },
+            {
+                "type": "wind"
+            },
+            {
+                "type": "finish"
+            }
+        ]            
+    }

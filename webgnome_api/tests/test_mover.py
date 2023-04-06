@@ -860,7 +860,7 @@ class PyMoverTests(FunctionalTestBase):
         Tests out the API for getting the current info from the
         PyMovers in the model.
     '''
-    req_data = {'obj_type': 'gnome.movers.py_wind_movers.PyWindMover',
+    req_data = {'obj_type': 'gnome.movers.py_wind_movers.WindMover',
                 'name': 'small_gfs_alaska.nc',
                 'filename': str(MODELS_DIR / 'small_gfs_alaska.nc'),
                 'wind': {'data_file': str(MODELS_DIR / 'small_gfs_alaska.nc'),
