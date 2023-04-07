@@ -470,7 +470,7 @@ def get_rewind(request):
             
             session_objs = get_session_objects(request)
             #clean up any 'dead' GOODS requests
-            for obj in session_objs.values():
+            for obj in list(session_objs.values()):
                 if isinstance(obj, GOODSRequest) and obj.state == 'dead':
                     log.info('Removing GOODS request {0}'.format(obj.request_id))
                     del session_objs[obj.request_id]
