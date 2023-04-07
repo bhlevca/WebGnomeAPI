@@ -32,7 +32,8 @@ from webgnome_api.common.session_management import (get_active_model,
                                                     drop_uncertain_models,
                                                     set_uncertain_models,
                                                     acquire_session_lock,
-                                                    get_session_objects)
+                                                    get_session_objects,
+                                                    register_exportable_file)
 
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
@@ -167,9 +168,10 @@ def run_export_model(request):
                 else:
                     if len(temporary_outputters) > 1:
                         # need to zip up outputs
-                        end_filename = model_filename + '_output.zip'
+                        end_basename = model_filename + '_output.zip'
+                        end_filepath = os.path.join(session_path, end_basename)
                         zipfile_ = zipfile.ZipFile(
-                            os.path.join(session_path, end_filename), 'w',
+                            end_filepath, 'w',
                             compression=zipfile.ZIP_DEFLATED
                         )
 
@@ -190,12 +192,14 @@ def run_export_model(request):
                             # special case for shapefile outputter
                             obj_fn = obj_fn + '.zip'
 
-                        end_filename = os.path.basename(obj_fn)
+                        end_basename = os.path.basename(obj_fn)
+                        end_filepath = os.path.join(session_path, end_basename)
 
-                        shutil.move(obj_fn, os.path.join(session_path,
-                                                         end_filename))
+                        shutil.move(obj_fn, end_filepath)
 
-                    ns.emit('export_finished', end_filename, room=sid)
+                    register_exportable_file(request, end_basename, end_filepath)
+
+                    ns.emit('export_finished', end_basename, room=sid)
 
             except Exception:
                 if is_develop_mode(request.registry.settings):
