@@ -100,7 +100,6 @@ def drop_uncertain_models(request):
 
 def register_exportable_file(request, basename, filepath):
     session = request.session
-    breakpoint()
     if 'registered_files' not in session:
         session['registered_files'] = {}
     file_reg = session['registered_files']
