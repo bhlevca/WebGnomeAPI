@@ -71,38 +71,6 @@ def is_develop_mode(settings):
             settings['develop_mode'].lower() == 'true')
 
 
-@export_api.get()
-def get_output_file(request):
-    log_prefix = f'req{id(request)}: get_output_file()'
-    log.info('>>' + log_prefix)
-    session_path = get_session_dir(request)
-
-    log.info(log_prefix + f'session_path: {session_path}')
-    if len(session_path) == 0 or session_path in ('/', '/etc'):
-        # we want to be fairly flexible about where we put our session folder,
-        # but it should at least be something valid
-        raise cors_response(
-            request,
-            HTTPInternalServerError('Session path is invalid!')
-        )
-
-    filename = request.GET.get('filename')
-    if len(filename) > 0 and '/' not in filename:
-        output_path = os.path.join(session_path, filename)
-
-        response = FileResponse(output_path, request)
-        response.headers['Content-Disposition'] = (
-            f'attachment; filename={os.path.basename(output_path)}'
-        )
-
-        log.info('<<' + log_prefix)
-
-        return response
-    else:
-        raise cors_response(request, HTTPNotFound('File(s) requested do not '
-                                                  'exist on the server!'))
-
-
 @export_api.put()
 def run_export_model(request):
     '''
