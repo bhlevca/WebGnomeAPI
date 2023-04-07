@@ -17,7 +17,8 @@ import gevent
 
 from pyramid.response import FileResponse
 
-from pyramid.httpexceptions import (HTTPPreconditionFailed,
+from pyramid.httpexceptions import (HTTPInternalServerError,
+                                    HTTPPreconditionFailed,
                                     HTTPUnprocessableEntity,
                                     HTTPNotFound)
 from cornice import Service
@@ -75,8 +76,17 @@ def get_output_file(request):
     log.info('>>' + log_prefix)
     session_path = get_session_dir(request)
 
+    log.info(log_prefix + f'session_path: {session_path}')
+    if len(session_path) == 0 or session_path in ('/', '/etc'):
+        # we want to be fairly flexible about where we put our session folder,
+        # but it should at least be something valid
+        raise cors_response(
+            request,
+            HTTPInternalServerError('Session path is invalid!')
+        )
+
     filename = request.GET.get('filename')
-    if filename:
+    if len(filename) > 0 and '/' not in filename:
         output_path = os.path.join(session_path, filename)
 
         response = FileResponse(output_path, request)
@@ -462,19 +472,19 @@ def get_rewind(request):
             if ns:
                 sio = ns.get_sockid_from_sessid(request.session.session_id)
                 if (ns.active_greenlets.get(sio)):
-                    #rewinding while a model is running stops the run
+                    # rewinding while a model is running stops the run
                     with ns.session(sio) as sock_session:
                         ns.active_greenlets.get(sio).kill(block=False)
                         sock_session['num_sent'] = 0
                         sock_session['lock'].clear()
-            
+
             session_objs = get_session_objects(request)
             #clean up any 'dead' GOODS requests
             for obj in list(session_objs.values()):
                 if isinstance(obj, GOODSRequest) and obj.state == 'dead':
-                    log.info('Removing GOODS request {0}'.format(obj.request_id))
+                    log.info(f'Removing GOODS request {obj.request_id}')
                     del session_objs[obj.request_id]
-                    
+
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,
