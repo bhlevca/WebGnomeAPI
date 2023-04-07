@@ -31,7 +31,8 @@ from ..common.system_resources import (get_free_space,
 
 from ..common.common_object import (get_session_dir,)
 
-from ..common.session_management import (get_session_objects,)
+from ..common.session_management import (get_session_objects,
+                                         register_exportable_file)
 
 from ..common.views import (switch_to_existing_session,
                             gen_unique_filename,
@@ -160,6 +161,9 @@ def get_goods_map(request):
     file_name, unique_name = gen_unique_filename(fn, upload_dir)
 
     file_path = os.path.join(upload_dir, unique_name)
+
+    log.info('Registering filename ' + file_path)
+    register_exportable_file(request, file_name, file_path)
 
     with open(file_path, 'w') as fp:
         fp.write(contents)
@@ -533,7 +537,7 @@ class GOODSRequest(object):
         from dask.diagnostics import ProgressBar, Profiler
         breakpoint()
         with Profiler() as pb:
-            subs = api.get_model_subset(**self.request_args)
+            subs = api.get_model_file(**self.request_args)
             pb.visualize()
 
         with ProgressBar() as pb:
