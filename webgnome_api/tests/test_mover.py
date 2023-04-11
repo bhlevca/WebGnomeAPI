@@ -130,7 +130,7 @@ class WindMoverTests(BaseMoverTests):
                      'units': 'meter per second'
                      }
 
-    req_data = {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
+    req_data = {'obj_type': 'gnome.movers.c_wind_movers.PointWindMover',
                 'active_range': ('-inf', 'inf'),
                 'on': True,
                 'uncertain_angle_scale': 0.4,
@@ -453,7 +453,7 @@ class CurrentInfoTests(FunctionalTestBase):
                                     'filename': str(MODELS_DIR / 'CLISShio.txt'),
                                     },
                            },
-                          {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
+                          {'obj_type': 'gnome.movers.c_wind_movers.PointWindMover',
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
@@ -759,7 +759,7 @@ class CellInfoTests(FunctionalTestBase):
                            "uncertain_cross": 0.25,
                            "uncertain_along": 0.5,
                            },
-                          {'obj_type': 'gnome.movers.c_wind_movers.WindMover',
+                          {'obj_type': 'gnome.movers.c_wind_movers.PointWindMover',
                            'active_range': ('-inf', 'inf'),
                            'on': True,
                            'uncertain_angle_scale': 0.4,
@@ -860,7 +860,7 @@ class PyMoverTests(FunctionalTestBase):
         Tests out the API for getting the current info from the
         PyMovers in the model.
     '''
-    req_data = {'obj_type': 'gnome.movers.py_wind_movers.PyWindMover',
+    req_data = {'obj_type': 'gnome.movers.py_wind_movers.WindMover',
                 'name': 'small_gfs_alaska.nc',
                 'filename': str(MODELS_DIR / 'small_gfs_alaska.nc'),
                 'wind': {'data_file': str(MODELS_DIR / 'small_gfs_alaska.nc'),

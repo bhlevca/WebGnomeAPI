@@ -1,6 +1,7 @@
 """
     Main entry point
 """
+
 import os
 import shutil
 import logging
@@ -24,7 +25,6 @@ from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
                                           GoodsFileNamespace)
 
 from waitress import serve as waitress_serve
-
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -32,7 +32,7 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_env_models = {#'GFS-1_4DEG',
+supported_ocean_models = {#'GFS-1_4DEG',
                         #'RTOFS-GLOBAL',
                         #'RTOFS-GLOBAL_2D',
                         #'GFS-1_2DEG',
@@ -55,6 +55,11 @@ supported_env_models = {#'GFS-1_4DEG',
                         'TBOFS':'coops-forecast-agg',
                         'NYOFS':'coops-forecast-agg',
                         'GOMOFS':'coops-forecast-agg'}
+
+                        
+supported_met_models = {'GFS-1-4DEG':['ucar-forecast-agg',],
+                        'GFS-1-2DEG':['ucar-forecast-agg',],
+                        'GFS-1DEG':['ucar-forecast-agg',]}
 
 
 class WebgnomeFormatter(Formatter):
@@ -164,6 +169,7 @@ def start_session_cleaner(settings):
             session_id = session_id.decode('utf-8')
 
         cleanup_dir = (Path(session_dir) / session_id).resolve()
+        print(f'Session Cleaner: Cleaning up folder {cleanup_dir}')
 
         try:
             shutil.rmtree(cleanup_dir)

@@ -34,12 +34,9 @@ from webgnome_api.common.helpers import JSONImplementsOneOf
 
 from gnome.model import Model
 
-
 log = logging.getLogger(__name__)
-
 model = Service(name='model', path='/model*obj_id', description="Model API",
                 cors_policy=cors_policy)
-
 implemented_types = ('gnome.model.Model',
                      )
 
@@ -144,7 +141,7 @@ def update_model(request):
         raise cors_exception(request, HTTPNotImplemented)
 
     session_lock = acquire_session_lock(request)
-    log.info('  {} session lock acquired (sess:{}, thr_id: {})'
+    log.info('  {} session lock acquired (sess: {}, thr_id: {})'
              .format(log_prefix, id(session_lock), current_thread().ident))
 
     obj_id = obj_id_from_req_payload(json_request)
@@ -164,7 +161,7 @@ def update_model(request):
                                  with_stacktrace=True)
         finally:
             session_lock.release()
-            log.info('  ' + log_prefix + 'session lock released...')
+            log.info(f'  {log_prefix} session lock released...')
     else:
         session_lock.release()
         log.info('  {} session lock released (sess:{}, thr_id: {})'
@@ -182,12 +179,14 @@ def update_model(request):
 
 @model.delete()
 def delete_object(request):
-    # THIS IS INCOMPLETE DO NOT USE
-    # Deletes the object specified by the 'id' in the request.
-    # Removes all references to the object in the active model and all
-    # component objects, using recursive search.
-    # Also removes object pool references, and sets the name to signify
-    # the object is deleted
+    '''
+        THIS IS INCOMPLETE DO NOT USE
+        Deletes the object specified by the 'id' in the request.
+        Removes all references to the object in the active model and all
+        component objects, using recursive search.
+        Also removes object pool references, and sets the name to signify
+        the object is deleted
+    '''
     log_prefix = 'req({0}): delete_object():'.format(id(request))
     log.info('>>' + log_prefix)
     session_lock = acquire_session_lock(request)

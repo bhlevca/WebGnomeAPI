@@ -17,7 +17,8 @@ import gevent
 
 from pyramid.response import FileResponse
 
-from pyramid.httpexceptions import (HTTPPreconditionFailed,
+from pyramid.httpexceptions import (HTTPInternalServerError,
+                                    HTTPPreconditionFailed,
                                     HTTPUnprocessableEntity,
                                     HTTPNotFound)
 from cornice import Service
@@ -31,12 +32,14 @@ from webgnome_api.common.session_management import (get_active_model,
                                                     drop_uncertain_models,
                                                     set_uncertain_models,
                                                     acquire_session_lock,
-                                                    get_session_objects)
+                                                    get_session_objects,
+                                                    register_exportable_file)
 
 from webgnome_api.common.views import (cors_exception,
                                        cors_policy,
                                        cors_response,
                                        json_exception)
+from .goods import GOODSRequest
 
 async_step_api = Service(name='async_step', path='/async_step',
                          description="Async Step API", cors_policy=cors_policy)
@@ -74,8 +77,17 @@ def get_output_file(request):
     log.info('>>' + log_prefix)
     session_path = get_session_dir(request)
 
+    log.info(log_prefix + f'session_path: {session_path}')
+    if len(session_path) == 0 or session_path in ('/', '/etc'):
+        # we want to be fairly flexible about where we put our session folder,
+        # but it should at least be something valid
+        raise cors_response(
+            request,
+            HTTPInternalServerError('Session path is invalid!')
+        )
+
     filename = request.GET.get('filename')
-    if filename:
+    if len(filename) > 0 and '/' not in filename:
         output_path = os.path.join(session_path, filename)
 
         response = FileResponse(output_path, request)
@@ -156,9 +168,10 @@ def run_export_model(request):
                 else:
                     if len(temporary_outputters) > 1:
                         # need to zip up outputs
-                        end_filename = model_filename + '_output.zip'
+                        end_basename = model_filename + '_output.zip'
+                        end_filepath = os.path.join(session_path, end_basename)
                         zipfile_ = zipfile.ZipFile(
-                            os.path.join(session_path, end_filename), 'w',
+                            end_filepath, 'w',
                             compression=zipfile.ZIP_DEFLATED
                         )
 
@@ -179,12 +192,14 @@ def run_export_model(request):
                             # special case for shapefile outputter
                             obj_fn = obj_fn + '.zip'
 
-                        end_filename = os.path.basename(obj_fn)
+                        end_basename = os.path.basename(obj_fn)
+                        end_filepath = os.path.join(session_path, end_basename)
 
-                        shutil.move(obj_fn, os.path.join(session_path,
-                                                         end_filename))
+                        shutil.move(obj_fn, end_filepath)
 
-                    ns.emit('export_finished', end_filename, room=sid)
+                    register_exportable_file(request, end_basename, end_filepath)
+
+                    ns.emit('export_finished', end_basename, room=sid)
 
             except Exception:
                 if is_develop_mode(request.registry.settings):
@@ -201,46 +216,21 @@ def run_export_model(request):
 
         if active_model and not ns.active_greenlets.get(sid):
             args = (execute_async_model, active_model, ns, sid, request)
-            with gevent.Greenlet.spawn(*args) as gl:
-                ns.active_greenlets[sid] = gl
-                gl.session_hash = request.session_hash
-                gl.link(get_export_cleanup())
-            # gl = ns.active_greenlets[sid] = gevent.spawn(
-            #     execute_async_model,
-            #     active_model,
-            #     ns,
-            #     sid,
-            #     request
-            # )
+            #    gl.link(get_export_cleanup())
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request
+            )
 
-            # gl.session_hash = request.session_hash
-            # gl.link(get_export_cleanup())
+            gl.session_hash = request.session_hash
+            gl.link(get_export_cleanup())
 
             return None
         else:
             return None
-
-def run_model2(request):
-    '''
-    Runs a model and writes output to the web socket. Depends on threading
-    '''
-    log_prefix = 'req{0}: run_model()'.format(id(request))
-    log.info('>>' + log_prefix)
-
-    ns = request.registry.get('sio_ns')
-
-    if ns is None:
-        raise ValueError('no namespace associated with session')
-
-    active_model = get_active_model(request)
-
-    sid = ns.get_sockid_from_sessid(request.session.session_id)
-    if sid is None:
-        raise ValueError('no sock_session associated with pyramid_session')
-    with ns.session(sid) as sock_session:
-        sock_session['num_sent'] = 0
-        sock_session['lock'].set() #important to avoid thread access violations when using Waitress
-
 
 
 @async_step_api.get()
@@ -268,17 +258,17 @@ def run_model(request):
 
         if active_model and not ns.active_greenlets.get(sid):
             args = (execute_async_model, active_model, ns, sid, request)
-            with gevent.Greenlet.spawn(*args) as gl:
-                ns.active_greenlets[sid] = gl
-                gl.session_hash = request.session_hash
-            # gl = ns.active_greenlets[sid] = gevent.spawn(
-            #     execute_async_model,
-            #     active_model,
-            #     ns,
-            #     sid,
-            #     request)
-            # gl.session_hash = request.session_hash
-            # gl.join()
+            # with gevent.Greenlet.spawn(*args) as gl:
+            #     ns.active_greenlets[sid] = gl
+            #     gl.session_hash = request.session_hash
+            gl = ns.active_greenlets[sid] = gevent.spawn(
+                execute_async_model,
+                active_model,
+                ns,
+                sid,
+                request)
+            gl.session_hash = request.session_hash
+            gl.join()
             return None
         else:
             return None
@@ -486,10 +476,19 @@ def get_rewind(request):
             if ns:
                 sio = ns.get_sockid_from_sessid(request.session.session_id)
                 if (ns.active_greenlets.get(sio)):
+                    # rewinding while a model is running stops the run
                     with ns.session(sio) as sock_session:
                         ns.active_greenlets.get(sio).kill(block=False)
                         sock_session['num_sent'] = 0
                         sock_session['lock'].clear()
+
+            session_objs = get_session_objects(request)
+            # clean up any 'dead' GOODS requests
+            for obj in session_objs.values():
+                if isinstance(obj, GOODSRequest) and obj.state == 'dead':
+                    log.info(f'Removing GOODS request {obj.request_id}')
+                    del session_objs[obj.request_id]
+
             active_model.rewind()
         except Exception:
             raise cors_exception(request, HTTPUnprocessableEntity,

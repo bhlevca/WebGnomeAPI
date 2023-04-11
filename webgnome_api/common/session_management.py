@@ -2,7 +2,6 @@
 Common Gnome object request handlers.
 """
 from threading import Lock
-from gnome.multi_model_broadcast import ModelBroadcaster
 
 
 def init_session_objects(request, force=False):
@@ -75,6 +74,8 @@ def get_uncertain_models(request):
 
 
 def set_uncertain_models(request):
+    from gnome.multi_model_broadcast import ModelBroadcaster
+
     session_id = request.session.session_id
     uncertain_models = request.registry.settings['uncertain_models']
 
@@ -96,3 +97,29 @@ def drop_uncertain_models(request):
             uncertain_models[session_id] is not None):
         uncertain_models[session_id].stop()
         uncertain_models[session_id] = None
+
+
+def register_exportable_file(request, basename, filepath):
+    session = request.session
+    if 'registered_files' not in session:
+        session['registered_files'] = {}
+    file_reg = session['registered_files']
+    file_reg[basename] = filepath
+    session['registered_files'] = file_reg
+
+def clear_exportable_files(request):
+    session = request.session
+    session['registered_files'] = {}
+
+def unregister_exportable_file(request, basename):
+    #if for some reason we need to do this...
+    session = request.session
+    if 'registered_files' in session and basename in session['registered_files']:
+        del session['registered_files'][basename]
+
+def get_registered_file(request, basename):
+    session = request.session
+    retval = None
+    if 'registered_files' in session:
+        retval = session['registered_files'].get(basename, None)
+    return retval

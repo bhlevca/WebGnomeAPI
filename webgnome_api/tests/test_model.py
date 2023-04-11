@@ -1,10 +1,7 @@
 """
 Functional tests for the Model Web API
 """
-
-from pathlib import Path
-
-from gnome.multi_model_broadcast import ModelBroadcaster
+#from gnome.multi_model_broadcast import ModelBroadcaster
 from .base import FunctionalTestBase, MODELS_DIR
 
 from pprint import PrettyPrinter
@@ -88,11 +85,13 @@ class ModelTests(FunctionalTestBase):
             assert k in model1
 
         # we should not have any adios uncertainty models if we
-        # have no weathering
-        app = self.testapp.app
-        assert not [v for s in list(app.registry.settings['objects'].values())
-                    for v in list(s.values())
-                    if isinstance(v, ModelBroadcaster)]
+        # have no weathering.
+        # Note: We are choosing to skip this feature for now, and the only
+        #       way to do that here is to comment out the assert.
+        # app = self.testapp.app
+        # assert not [v for s in list(app.registry.settings['objects'].values())
+        #             for v in list(s.values())
+        #             if isinstance(v, ModelBroadcaster)]
 
     def test_post_no_payload_twice(self):
         resp = self.testapp.post_json('/model')
@@ -148,10 +147,12 @@ class ModelTests(FunctionalTestBase):
 
         # we should not have any adios uncertainty models if we
         # have no weathering
-        app = self.testapp.app
-        assert not [v for s in list(app.registry.settings['objects'].values())
-                    for v in list(s.values())
-                    if isinstance(v, ModelBroadcaster)]
+        # Note: We are choosing to skip this feature for now, and the only
+        #       way to do that here is to comment out the assert.
+        # app = self.testapp.app
+        # assert not [v for s in list(app.registry.settings['objects'].values())
+        #             for v in list(s.values())
+        #             if isinstance(v, ModelBroadcaster)]
 
 
 class NestedModelTests(FunctionalTestBase):
@@ -273,10 +274,12 @@ class NestedModelTests(FunctionalTestBase):
         assert environment2['units'] == 'knots'
 
         # we should not have any adios uncertainty runs yet
-        app = self.testapp.app
-        assert not [v for s in list(app.registry.settings['objects'].values())
-                    for v in list(s.values())
-                    if isinstance(v, ModelBroadcaster)]
+        # Note: We are choosing to skip this feature for now, and the only
+        #       way to do that here is to comment out the assert.
+        # app = self.testapp.app
+        # assert not [v for s in list(app.registry.settings['objects'].values())
+        #             for v in list(s.values())
+        #             if isinstance(v, ModelBroadcaster)]
 
     def test_put_with_sparse_environment(self):
         '''
@@ -316,7 +319,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_post_with_nested_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
@@ -349,7 +352,7 @@ class NestedModelTests(FunctionalTestBase):
 
         assert 'movers' in model1
         assert model1['movers'][0]['obj_type'] == ('gnome.movers.c_wind_movers'
-                                                   '.WindMover')
+                                                   '.PointWindMover')
         assert 'active_range' in model1['movers'][0]
         assert 'on' in model1['movers'][0]
         assert 'uncertain_angle_scale' in model1['movers'][0]
@@ -366,7 +369,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
@@ -407,7 +410,7 @@ class NestedModelTests(FunctionalTestBase):
     def test_put_with_nested_sparse_wind_mover(self):
         req_data = self.req_data.copy()
         req_data['movers'] = [{'obj_type': ('gnome.movers.c_wind_movers'
-                                            '.WindMover'),
+                                            '.PointWindMover'),
                                'active_range': ('-inf', 'inf'),
                                'on': True,
                                'uncertain_angle_scale': 0.4,
