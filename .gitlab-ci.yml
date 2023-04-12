@@ -235,7 +235,6 @@ deploy_proxy_dev:
   variables:
     IMAGE_TAG: nginx:latest
     CONTAINER_NAME: webgnome_proxy
-    APP_NETWORK: webgnome_net
     PORT_MAPPING1: 443:443
     PORT_MAPPING2: 80:80
     GNOME_DEPLOY_FOLDER: /data/webgnome/gnome-deploy
@@ -296,7 +295,6 @@ deploy_api_dev:
   variables:
     IMAGE_TAG: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
     CONTAINER_NAME: webgnome_api
-    APP_NETWORK: webgnome_net
     PORT_MAPPING: 9898:9898
     MODELS_VOLUME: webgnome_models
   script:
@@ -405,7 +403,6 @@ deploy_proxy_stage:
   variables:
     IMAGE_TAG: nginx:latest
     CONTAINER_NAME: webgnome_proxy
-    APP_NETWORK: webgnome_net
     PORT_MAPPING1: 443:443
     PORT_MAPPING2: 80:80
     GNOME_DEPLOY_FOLDER: /data/webgnome/gnome-deploy
@@ -466,7 +463,6 @@ deploy_api_stage:
   variables:
     IMAGE_TAG: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
     CONTAINER_NAME: webgnome_api
-    APP_NETWORK: webgnome_net
     PORT_MAPPING: 9898:9898
     MODELS_VOLUME: webgnome_models
   script:
@@ -575,7 +571,6 @@ deploy_proxy_production:
   variables:
     IMAGE_TAG: nginx:latest
     CONTAINER_NAME: webgnome_proxy
-    APP_NETWORK: webgnome_net
     PORT_MAPPING1: 443:443
     PORT_MAPPING2: 80:80
     GNOME_DEPLOY_FOLDER: /data/webgnome/gnome-deploy
@@ -636,7 +631,6 @@ deploy_api_production:
   variables:
     IMAGE_TAG: registry.orr.noaa.gov/gnome/webgnomeapi:$CI_COMMIT_BRANCH
     CONTAINER_NAME: webgnome_api
-    APP_NETWORK: webgnome_net
     PORT_MAPPING: 9898:9898
     MODELS_VOLUME: webgnome_models
   script:
@@ -670,6 +664,47 @@ stop_api_production:
     action: stop
   variables:
     CONTAINER_NAME: webgnome_api
+  script:
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+
+deploy_docs_production:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
+  tags:
+    - gnome-prod
+    - deploy
+  environment:
+    name: production-deployment
+    url: https://gnome.orr.noaa.gov
+    on_stop: stop_docs_production
+  variables:
+    IMAGE_TAG: registry.orr.noaa.gov/gnome/pygnome/docs
+    CONTAINER_NAME: webgnome_docs
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - >
+      docker network inspect $APP_NETWORK >/dev/null 2>&1 ||
+      docker network create -d bridge $APP_NETWORK
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+    - >
+      docker run -d --restart unless-stopped
+      --name $CONTAINER_NAME --network $APP_NETWORK $IMAGE_TAG
+
+stop_docs_production:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production" && $CI_PIPELINE_SOURCE == "pipeline"
+  when: manual
+  tags:
+    - gnome-prod
+    - deploy
+  environment:
+    name: production-deployment
+    action: stop
+  variables:
+    CONTAINER_NAME: webgnome_docs
   script:
     - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
 
