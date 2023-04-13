@@ -57,9 +57,9 @@ supported_ocean_models = {#'GFS-1_4DEG',
                         'GOMOFS':'coops-forecast-agg'}
 
                         
-supported_met_models = {'GFS-1-4DEG':['ucar-forecast-agg',],
-                        'GFS-1-2DEG':['ucar-forecast-agg',],
-                        'GFS-1DEG':['ucar-forecast-agg',]}
+supported_met_models = {'GFS_1_4DEG':['ucar-forecast-agg',],
+                        'GFS_1_2DEG':['ucar-forecast-agg',],
+                        'GFS_1DEG':['ucar-forecast-agg',]}
 
 
 class WebgnomeFormatter(Formatter):
