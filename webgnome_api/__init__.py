@@ -61,7 +61,6 @@ supported_met_models = {'GFS_1_4DEG':['ucar-forecast-agg',],
                         'GFS_1_2DEG':['ucar-forecast-agg',],
                         'GFS_1DEG':['ucar-forecast-agg',]}
 
-
 class WebgnomeFormatter(Formatter):
     def format(self, record):
         # Format the specific record as text.
