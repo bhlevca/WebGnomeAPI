@@ -680,7 +680,7 @@ deploy_docs_production:
     on_stop: stop_docs_production
   variables:
     IMAGE_TAG: registry.orr.noaa.gov/gnome/pygnome/docs
-    CONTAINER_NAME: webgnome_docs
+    CONTAINER_NAME: pygnome_docs
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - >
@@ -704,7 +704,7 @@ stop_docs_production:
     name: production-deployment
     action: stop
   variables:
-    CONTAINER_NAME: webgnome_docs
+    CONTAINER_NAME: pygnome_docs
   script:
     - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
 
