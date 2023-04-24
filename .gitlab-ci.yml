@@ -704,7 +704,7 @@ stop_docs_production:
     name: production-deployment
     action: stop
   variables:
-    CONTAINER_NAME: webgnome_docs
+    CONTAINER_NAME: pygnome_docs
   script:
     - docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
 
