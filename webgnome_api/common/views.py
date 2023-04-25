@@ -336,14 +336,14 @@ def process_upload(request, field_name):
     log.info('Incoming file size: {}'.format(size))
 
     if size > max_upload_size:
-        raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {}'
-                                           .format(max_upload_size)))
+        raise cors_response(request, HTTPBadRequest(
+            f'file is too big!  Max size = {max_upload_size}'
+        ))
 
     if size >= get_free_space(upload_dir):
-        raise cors_response(request,
-                            HTTPInsufficientStorage('Not enough space '
-                                                    'to save the file'))
+        raise cors_response(request, HTTPInsufficientStorage(
+            'Not enough space to save the file'
+        ))
 
     write_to_file(input_file, file_path)
 
@@ -354,9 +354,9 @@ def process_upload(request, field_name):
 
         upload_dir = get_persistent_dir(request)
         if size >= get_free_space(upload_dir):
-            raise cors_response(request,
-                                HTTPInsufficientStorage('Not enough space '
-                                                        'to persist the file'))
+            raise cors_response(request, HTTPInsufficientStorage(
+                'Not enough space to persist the file'
+            ))
 
         persistent_path = os.path.join(upload_dir, file_name)
 
