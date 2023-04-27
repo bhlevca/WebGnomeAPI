@@ -599,6 +599,7 @@ deploy_proxy_production:
       --restart unless-stopped
       -p $PORT_MAPPING1 -p $PORT_MAPPING2
       -v $GNOME_DEPLOY_FOLDER/config/nginx:/etc/nginx/
+      -v $GNOME_DEPLOY_FOLDER/py_gnome_testdata:/usr/share/nginx/html/py_gnome_testdata/
       -v /etc/ssl/certs:/etc/ssl/certs $IMAGE_TAG
 
 stop_proxy_production:
