@@ -109,8 +109,11 @@ def upload_mover(request):
 
     tshift = int(request.POST['tshift'])
     if tshift != 0:
-        for f in file_list:
-            shift_time(f, tshift)
+        if isinstance(file_name, str):
+            shift_time(file_name, tshift)
+        else:
+            for f in file_list:
+                shift_time(f, tshift)
 
     log.info('  {} file_name: {}, name: {}'
              .format(log_prefix, file_name, name))
