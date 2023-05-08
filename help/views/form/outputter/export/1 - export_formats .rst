@@ -1,6 +1,8 @@
 .. keywords
    export, particles, format, netcdf, shapefile, kmz, binary
    
+Formats
+^^^^^^^
 
 WebGNOME can export particle data in various formats for use in other applications (for example, importing into GIS). The most complete format is *NetCDF*. In addition to the locations of the particles over time, physical or chemical properties of the particle are also included. Some examples of particle properties include:
 
