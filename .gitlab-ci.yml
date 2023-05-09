@@ -35,26 +35,14 @@ services:
 
 test_src:
   stage: test_src
-  # should test every branch ?
-  # only:
-  #   - develop
-  #   - main
-  #   - production
-  # except:
-  #   - pipelines
-  #   - schedules
-  # There should be a way to do this, but I can't figure it out
   rules:
     - if: ($CI_COMMIT_BRANCH != "develop" && $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "production")
       variables:
          UPSTREAM_BRANCH: "develop"
-
-  #   - if: pipelines
-  #     when: never
-
-  #   - if: schedules
-  #     when: never
-
+    - if: $CI_PIPELINE_SOURCE == "pipelines"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedules"
+      when: never
   tags:
     - docker
     - linux
