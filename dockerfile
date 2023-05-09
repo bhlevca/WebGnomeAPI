@@ -18,8 +18,10 @@ RUN mamba install -y \
        --file webgnomeapi/conda_requirements.txt \
        --file webgnomeapi/libgoods/conda_requirements.txt 
 
+RUN conda remove --force mc-goods
 
 RUN cd webgnomeapi/libgoods && pip install .
+RUN cd webgnomeapi/mc-goods && pip install .
 RUN cd webgnomeapi && pip install .
 
 RUN cd webgnomeapi && python setup.py compilejson
