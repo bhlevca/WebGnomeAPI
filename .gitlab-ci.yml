@@ -1,6 +1,8 @@
 variables:
   PYTHON_VER: "3.9"
   APP_NETWORK: webgnome_net
+  UPSTREAM_BRANCH: $CI_COMMIT_BRANCH
+
 
 # Ok, here is the strategy I believe we want for our pipeline.
 # - First, we test our sources.
@@ -33,25 +35,44 @@ services:
 
 test_src:
   stage: test_src
-  only:
-    - develop
-    - main
-    - production
-  except:
-    - pipelines
-    - schedules
+  # should test every branch ?
+  # only:
+  #   - develop
+  #   - main
+  #   - production
+  # except:
+  #   - pipelines
+  #   - schedules
+  # There should be a way to do this, but I can't figure it out
+  rules:
+    - if: ($CI_COMMIT_BRANCH != "develop" && $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "production")
+      variables:
+         UPSTREAM_BRANCH: "develop"
+
+  #   - if: pipelines
+  #     when: never
+
+  #   - if: schedules
+  #     when: never
+
   tags:
     - docker
     - linux
-  image: registry.orr.noaa.gov/gnome/pygnome:$CI_COMMIT_BRANCH
+  image: registry.orr.noaa.gov/gnome/pygnome:$UPSTREAM_BRANCH
   script:
     - conda install mamba
     - yum install redis -y
     - redis-server --daemonize yes
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/mc-goods.git
     - mamba install -y --file conda_requirements.txt
                        --file conda_requirements_test.txt
                        --file libgoods/conda_requirements.txt
+
+    # - mamba uninstall --force mc-goods  # --force flag not working?
+    - conda uninstall --force mc-goods
+
+    - pushd mc-goods && pip install . && popd
 
     - pushd libgoods && pip install . && popd
     - pip install .
@@ -73,6 +94,8 @@ build_temp_img:
     - build
   script:
     - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/libgoods.git
+    - git clone --depth 1 -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/mc-goods.git
+
     - git clone --depth 1 -b $CI_COMMIT_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.orr.noaa.gov/gnome/gnome-deploy.git
 
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
