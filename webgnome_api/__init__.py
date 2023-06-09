@@ -32,11 +32,9 @@ __version__ = "0.9"
 
 logging.basicConfig()
 
-supported_ocean_models = {#'GFS-1_4DEG',
+supported_ocean_models = {
                         #'RTOFS-GLOBAL',
                         #'RTOFS-GLOBAL_2D',
-                        #'GFS-1_2DEG',
-                        #'GFS-1DEG',
                         'GOFS':'hycom-forecast-agg',
                         #'RTOFS-ALASKA',
                         #'RTOFS-WEST',
