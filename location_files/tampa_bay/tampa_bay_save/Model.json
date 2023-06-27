@@ -1,55 +1,55 @@
 {
- "obj_type": "gnome.model.Model", 
- "map": {
-  "json_": "save", 
-  "obj_type": "gnome.map.MapFromBNA", 
-  "filename": "TampaBayMap.bna",
-  "refloat_halflife": 1.0
- }, 
-"movers": [
-  {
-   "id": "RandomMover_0.json", 
-   "obj_type": "gnome.movers.random_movers.RandomMover"
-  }, 
-  {
-   "id": "CatsMover_1.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
-  },
-  {
-   "id": "CatsMover_2.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
-  },
-  {
-   "id": "CatsMover_3.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
-  },
-  {
-   "id": "CatsMover_4.json", 
-   "obj_type": "gnome.movers.current_movers.CatsMover"
-  },
-  {
-   "id": "ComponentMover_5.json", 
-   "obj_type": "gnome.movers.current_movers.ComponentMover"
-  }
- ], 
- "environment": [
-  {
-   "id": "Tide_0.json", 
-   "obj_type": "gnome.environment.tide.Tide"
-  },
-  {
-   "id": "Tide_1.json", 
-   "obj_type": "gnome.environment.tide.Tide"
-  },
-  {
-   "id": "Tide_2.json", 
-   "obj_type": "gnome.environment.tide.Tide"
-  },
-  {
-   "id": "Tide_3.json", 
-   "obj_type": "gnome.environment.tide.Tide"
-  }
-], 
- "time_step": 180.0, 
- "json_": "save"
+    "obj_type": "gnome.model.Model",
+    "map": {
+        "json_": "save",
+        "obj_type": "gnome.map.MapFromBNA",
+        "filename": "TampaBayMap.bna",
+        "refloat_halflife": 1.0
+    },
+    "movers": [
+        {
+            "id": "RandomMover_0.json",
+            "obj_type": "gnome.movers.random_movers.RandomMover"
+        },
+        {
+            "id": "CatsMover_1.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "CatsMover_2.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "CatsMover_3.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "CatsMover_4.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "ComponentMover_5.json",
+            "obj_type": "gnome.movers.c_current_movers.ComponentMover"
+        }
+    ],
+    "environment": [
+        {
+            "id": "Tide_0.json",
+            "obj_type": "gnome.environment.tide.Tide"
+        },
+        {
+            "id": "Tide_1.json",
+            "obj_type": "gnome.environment.tide.Tide"
+        },
+        {
+            "id": "Tide_2.json",
+            "obj_type": "gnome.environment.tide.Tide"
+        },
+        {
+            "id": "Tide_3.json",
+            "obj_type": "gnome.environment.tide.Tide"
+        }
+    ],
+    "time_step": 180.0,
+    "json_": "save"
 }

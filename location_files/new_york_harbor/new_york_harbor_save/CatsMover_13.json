@@ -1,18 +1,18 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -74.224833, 
-  40.488500, 
-  0.0
- ], 
- "name": "Ward Pt.", 
- "filename": "WardPt3.cur", 
- "tide": "Tide_12.json", 
- "up_cur_uncertain": 0.5, 
- "down_cur_uncertain": -0.5, 
- "right_cur_uncertain": 0.2, 
- "left_cur_uncertain": -0.2, 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -74.224833,
+        40.4885,
+        0.0
+    ],
+    "name": "Ward Pt.",
+    "filename": "WardPt3.cur",
+    "tide": "Tide_12.json",
+    "up_cur_uncertain": 0.5,
+    "down_cur_uncertain": -0.5,
+    "right_cur_uncertain": 0.2,
+    "left_cur_uncertain": -0.2,
+    "json_": "save",
+    "scale_value": 1.0
 }

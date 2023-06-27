@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -123.7667, 
-  46.219167, 
-  0.0
- ], 
- "name": "Tidal Currents", 
- "filename": "ColumbiaRiverTides.cur", 
- "tide": "Tide_0.json", 
- "json_": "save", 
- "scale_value": -1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -123.7667,
+        46.219167,
+        0.0
+    ],
+    "name": "Tidal Currents",
+    "filename": "ColumbiaRiverTides.cur",
+    "tide": "Tide_0.json",
+    "json_": "save",
+    "scale_value": -1.0
 }

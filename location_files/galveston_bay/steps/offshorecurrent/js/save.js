@@ -1,15 +1,15 @@
-(function (form){
-    var selector = form.selector;
-    var speed = $(selector + ' #speed').val();
-    var speed_units = $(selector + ' #speed-units').val();
-    var direction = $(selector + ' #direction').val();
-    var direction_units = $(selector + ' #direction-units').val();
+(function (form) {
+    var speed = form.find('#speed').val();
+    var speed_units = form.find('#speed-units').val();
+    var direction = form.find('#direction').val();
+    var direction_units = form.find('#direction-units').val();
     var Offshore_Mover = webgnome.model.get('movers').findWhere({'filename': 'Offshore.cur'});
     var cat_v_at_ref = 0.247137;
     var cat_v_at_B = 0.015001;
     var errMsg;
 
     if (!speed || isNaN(parseFloat(speed))) {
+        console.log("Please enter a numerical value for speed!");
         return "Please enter a numerical value for speed!";
     }
 

@@ -1,0 +1,25 @@
+{
+    "obj_type": "gnome.model.Model",
+    "map": {
+        "json_": "save",
+        "obj_type": "gnome.map.MapFromBNA",
+        "filename": "AtlanticShore.bna",
+        "refloat_halflife": 1.0
+    },
+    "movers": [
+        {
+            "id": "RandomMover_0.json",
+            "obj_type": "gnome.movers.random_movers.RandomMover"
+        },
+        {
+            "id": "CatsMover_1.json",
+            "obj_type": "gnome.movers.c_current_movers.CatsMover"
+        },
+        {
+            "id": "ComponentMover_2.json",
+            "obj_type": "gnome.movers.c_current_movers.ComponentMover"
+        }
+    ],
+    "time_step": 720.0,
+    "json_": "save"
+}

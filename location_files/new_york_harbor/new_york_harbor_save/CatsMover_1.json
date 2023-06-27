@@ -1,18 +1,18 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -73.944666, 
-  40.51666, 
-  0.0
- ], 
- "name": "Ambrose Channel", 
- "filename": "Ambrose3.cur", 
- "tide": "Tide_0.json", 
- "up_cur_uncertain": 0.5, 
- "down_cur_uncertain": -0.5, 
- "right_cur_uncertain": 0.2, 
- "left_cur_uncertain": -0.2, 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -73.944666,
+        40.51666,
+        0.0
+    ],
+    "name": "Ambrose Channel",
+    "filename": "Ambrose3.cur",
+    "tide": "Tide_0.json",
+    "up_cur_uncertain": 0.5,
+    "down_cur_uncertain": -0.5,
+    "right_cur_uncertain": 0.2,
+    "left_cur_uncertain": -0.2,
+    "json_": "save",
+    "scale_value": 1.0
 }

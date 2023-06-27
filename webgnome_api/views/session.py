@@ -13,5 +13,6 @@ session = Service(name='session', path='/session',
 @session.post()
 def get_info(request):
     request.session.redis.config_set("notify-keyspace-events", "Ex")
-    init_session_objects(request, force=False) 
+    init_session_objects(request, force=False)
+
     return {'id': request.session.session_id}

@@ -1,0 +1,6 @@
+# These are software packages necessary to test the WebGnomeAPI web server.
+#
+
+pytest
+webtest>=2.0
+testfixtures

@@ -1,17 +1,16 @@
-(function (form){
+(function(form) {
     var CUBIC_METER_PER_SECOND = 0.028316847;
-    var selector = form.selector;
 
     function trinityRiver() {
         var TRIN_U_TO_Q_RATIO = 0.6698 / 15373;
         var Trin_River_Mover = webgnome.model.get('movers').findWhere({'filename': 'TrinityRiver.cur'});
         var t_transport, t_transport_scaled, errMsg;
 
-        var trinFlow = $(selector + ' #trinity-flow').val();
+        var trinFlow = form.find('#trinity-flow').val();
 
         if (trinFlow === "other") {
-            var trinStageHeight = parseFloat($(selector + " #trinity-stageheight").val());
-            var trinStageHeightUnits = $(selector + " #trinity-stageheight-units").val();
+            var trinStageHeight = parseFloat(form.find("#trinity-stageheight").val());
+            var trinStageHeightUnits = form.find("#trinity-stageheight-units").val();
 
             if (isNaN(trinStageHeight)) {
                 return "Please enter a number for Trinity stage height!";
@@ -66,16 +65,16 @@
         var SAN_BUFF_TO_Q_RATIO = 0.7048 / (5.12238 * 1000);
         var San_Buff_River_Mover = webgnome.model.get('movers').findWhere({'filename': 'BuffBayouSanJacinto.cur'});
 
-        var sanJacFlow = $(selector + ' #sanjacinto-flow').val();
-        var buffFlow = $(selector + ' #buffalobayou-flow').val();
+        var sanJacFlow = form.find('#sanjacinto-flow').val();
+        var buffFlow = form.find('#buffalobayou-flow').val();
         var sj_transport, b_transport;
         var a7, a6, a5, a4, a3, a2, a1, a0;
         var terms;
         var errMsg;
 
         if (sanJacFlow === 'other') {
-            var sanJacStageHeight = $(selector + ' #sanjacinto-stageheight').val();
-            var sanJacStageHeightUnits = $(selector + ' #sanjacinto-stageheight-units').val();
+            var sanJacStageHeight = form.find('#sanjacinto-stageheight').val();
+            var sanJacStageHeightUnits = form.find('#sanjacinto-stageheight-units').val();
 
             if (!sanJacStageHeight || isNaN(parseFloat(sanJacStageHeight))) {
                 return "Please enter a number for San Jacinto stage height!";
@@ -118,8 +117,8 @@
         }
 
         if (buffFlow === 'other') {
-            var buffStageHeight = $(selector + ' #buffalobayou-stageheight').val();
-            var buffStageHeightUnits = $(selector + ' #buffalobayou-stageheight-units').val();
+            var buffStageHeight = form.find('#buffalobayou-stageheight').val();
+            var buffStageHeightUnits = form.find('#buffalobayou-stageheight-units').val();
 
             if (!buffStageHeight || isNaN(parseFloat(buffStageHeight))) {
                 return "Please enter a number for Buffalo stage height!";

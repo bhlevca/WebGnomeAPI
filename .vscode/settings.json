@@ -4,11 +4,11 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.pythonPath": "C:/MECP/WebGnome/WebGnomeEnv/Scripts/python.exe",
+    "python.pythonPath": "C:/Users/zhyu/AppData/Local/Programs/Python/Python310/WebGnome/Scripts/python.exe",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
     "python.formatting.provider": "autopep8",
-    "python.formatting.autopep8Path": "C:/MECP/WebGnome/WebGnomeEnv/Scripts/autopep8",
+    "python.formatting.autopep8Path": "C:/Users/zhyu/AppData/Local/Programs/Python/Python310/WebGnome/Scripts/autopep8",
     "python.formatting.autopep8Args": [
         "--max-line-length",
         "70",

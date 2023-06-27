@@ -39,7 +39,8 @@ from .session_management import (get_session_objects,
                                  get_session_object,
                                  acquire_session_lock)
 
-cors_policy = {'credentials': True
+cors_policy = {'credentials': True,
+               'headers': ('Content-Disposition',),
                }
 
 log = logging.getLogger(__name__)
@@ -83,8 +84,8 @@ def cors_exception(request, exception_class, with_stacktrace=False,
     if json_exc is not None:
         http_exc.json_body = json_exc
     if ('develop_mode' in list(request.registry.settings.keys()) and
-                asbool(request.registry.settings['develop_mode'])):
-        if with_stacktrace: #remove false to use
+            asbool(request.registry.settings['develop_mode'])):
+        if with_stacktrace:  # remove false to use
             pass
             import pdb
             pdb.post_mortem(sys.exc_info()[2])
@@ -184,11 +185,10 @@ def get_specifications(request, implemented_types):
 
 
 def delete_object(request):
-    #INCOMPLETE DO NOT USE
+    # INCOMPLETE DO NOT USE
     '''Deletes a Gnome object from both the active model and object registry'''
     log_prefix = 'req({0}): delete_object():'.format(id(request))
     log.info('>>' + log_prefix)
-
 
 
 def create_object(request, implemented_types):
@@ -336,14 +336,14 @@ def process_upload(request, field_name):
     log.info('Incoming file size: {}'.format(size))
 
     if size > max_upload_size:
-        raise cors_response(request,
-                            HTTPBadRequest('file is too big!  Max size = {}'
-                                           .format(max_upload_size)))
+        raise cors_response(request, HTTPBadRequest(
+            f'file is too big!  Max size = {max_upload_size}'
+        ))
 
     if size >= get_free_space(upload_dir):
-        raise cors_response(request,
-                            HTTPInsufficientStorage('Not enough space '
-                                                    'to save the file'))
+        raise cors_response(request, HTTPInsufficientStorage(
+            'Not enough space to save the file'
+        ))
 
     write_to_file(input_file, file_path)
 
@@ -354,15 +354,16 @@ def process_upload(request, field_name):
 
         upload_dir = get_persistent_dir(request)
         if size >= get_free_space(upload_dir):
-            raise cors_response(request,
-                                HTTPInsufficientStorage('Not enough space '
-                                                        'to persist the file'))
+            raise cors_response(request, HTTPInsufficientStorage(
+                'Not enough space to persist the file'
+            ))
 
         persistent_path = os.path.join(upload_dir, file_name)
 
         write_to_file(input_file, persistent_path)
 
     return file_path, file_name
+
 
 def activate_uploaded(request):
     '''
@@ -413,13 +414,15 @@ def gen_unique_filename(filename_in, upload_dir=None):
         file_name, extension = get_file_name_ext(filename_in)
         fmtstring = file_name + '{0}' + extension
         new_fn = fmtstring.format('')
-        i = 1;
+        i = 1
+
         while i < 255:
             if new_fn not in existing_files:
                 return (file_name + extension, new_fn)
             else:
-                new_fn = fmtstring.format(' ('+ str(i) + ')')
-                i+=1
+                new_fn = fmtstring.format(' (' + str(i) + ')')
+                i += 1
+
         raise ValueError('File uploaded too many times')
     else:
         file_name, extension = get_file_name_ext(filename_in)

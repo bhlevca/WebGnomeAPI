@@ -1,19 +1,20 @@
-
 import docutils.core
-import pprint
 
-def iter_keywords(str):
-    lines = str.splitlines()
+
+def iter_keywords(buff):
+    lines = buff.splitlines()
     in_tr = False
     ret = set()
-    for lin in lines:
+
+    for line in lines:
         if in_tr:
-            keyword = lin.strip().lower()
+            keyword = line.strip().lower()
             ret.add(keyword)
-        if "keywords" in lin or "keyword" in lin:
+        if "keywords" in line or "keyword" in line:
             in_tr = True
         else:
             in_tr = False
+
     return ', '.join(sorted(ret))
 
 # NOTE: Use 'sorted(set(...)' to collapse duplicates.

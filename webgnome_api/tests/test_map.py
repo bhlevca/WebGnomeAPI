@@ -1,19 +1,20 @@
 """
 Functional tests for the Gnome Map object Web API
 """
+from pathlib import Path
 from os.path import basename
 import webtest
 import ujson
 
-from .base import FunctionalTestBase
+from .base import FunctionalTestBase, MODELS_DIR
 
 
 class MapTestBase(FunctionalTestBase):
     '''
-        Tests out the Gnome Map object API
+    Tests out the Gnome Map object API
     '''
     req_data = {'obj_type': 'gnome.maps.map.MapFromBNA',
-                'filename': 'models/Test.bna',
+                'filename': str(MODELS_DIR / 'Test.bna'),
                 'refloat_halflife': 1.0
                 }
     fields_to_check = ('id', 'obj_type', 'filename', 'refloat_halflife')
@@ -100,13 +101,13 @@ class MapTestBase(FunctionalTestBase):
         self.check_updates(resp.json_body)
 
     def test_file_upload(self):
-        file_names = ['models/Test.bna',]
+        file_names = [str(MODELS_DIR / 'Test.bna')]
         self.setup_map_file()
         resp = self.testapp.post('/map/upload',
                                  {'session': '1234',
                                   'file_list': ujson.dumps(file_names),
-                                  'name':'Test',
-                                  'obj_type':'gnome.maps.map.MapFromBNA'}
+                                  'name': 'Test',
+                                  'obj_type': 'gnome.maps.map.MapFromBNA'}
                                  )
         map_obj = resp.json_body
 

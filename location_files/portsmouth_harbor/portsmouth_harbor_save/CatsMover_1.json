@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -70.762, 
-  43.088666, 
-  0.0
- ], 
- "filename": "SaraLongBridge.cur", 
- "name": "Sara Long Bridge", 
- "tide": "Tide_0.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -70.762,
+        43.088666,
+        0.0
+    ],
+    "filename": "SaraLongBridge.cur",
+    "name": "Sara Long Bridge",
+    "tide": "Tide_0.json",
+    "json_": "save",
+    "scale_value": 1.0
 }

@@ -1,14 +1,14 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -79.870333, 
-  32.756, 
-  0.0
- ], 
- "name": "Harbor Mouth", 
- "filename": "Harbor_Mouth.cur", 
- "tide": "Tide_9.json", 
- "json_": "save", 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -79.870333,
+        32.756,
+        0.0
+    ],
+    "name": "Harbor Mouth",
+    "filename": "Harbor_Mouth.cur",
+    "tide": "Tide_9.json",
+    "json_": "save",
+    "scale_value": 1.0
 }

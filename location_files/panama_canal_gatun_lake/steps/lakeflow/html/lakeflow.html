@@ -1,0 +1,124 @@
+<p>
+    The flow into the lake is controlled by releases from the Madden Dam and uncontrolled rivers in the rest of the lake watershed. Flow out of the lake is to the Atlantic Ocean via the Gatun and Aqua Clara locks and Gatun Dam, and to the Pacific Ocean through the Pedro Miguel and Cocoli Locks. To set up the currents, set the total flow from the Madden Dam, the total flow to the Atlantic Ocean, and the total flow to the Pacific Ocean. You can choose a climatological estimate for each flow or enter your own value.
+</p>
+
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="control-label col-sm-5" for="head-flow">Atlantic flow rate:</label>
+        <div class="col-sm-5">
+            <select class="form-control" id="head-flow">
+                <option value="68">
+                    High (68 m3/s)
+                </option>
+                <option value="53">
+                    Medium (53 m3/s)
+                </option>
+                <option value="43">
+                    Low (45 m3/s)
+                </option>
+                <option value="other">
+                    Other flow rate
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group head hide">
+        <label class="control-label col-sm-5" for="head-flow-manual">Atlantic flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="head-flow-manual">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="head-flow-manual-units">
+                <option value="m3/s">
+                    m3/s
+                </option>
+                <option value="cfs">
+                    cfs
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-5" for="tail-flow">Pacific flow rate:</label>
+        <div class="col-sm-5">
+            <select class="form-control" id="tail-flow">
+                <option value="51">
+                    High (51 m3/s)
+                </option>
+                <option value="44">
+                    Medium (44 m3/s)
+                </option>
+                <option value="38">
+                    Low (38 m3/s)
+                </option>
+                <option value="other">
+                    Other flow rate
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group tail hide">
+        <label class="control-label col-sm-5" for="tail-flow-manual">Pacific flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="tail-flow-manual">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="tail-flow-manual-units">
+                <option value="m3/s">
+                    m3/s
+                </option>
+                <option value="cfs">
+                    cfs
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-5" for="inlets-flow">Madden Dam flow rate:</label>
+        <div class="col-sm-5">
+            <select class="form-control" id="inlets-flow">
+                <option value="82">
+                    High (82 m3/s)
+                </option>
+                <option value="54">
+                    Medium (54 m3/s)
+                </option>
+                <option value="27">
+                    Low (27 m3/s)
+                </option>
+                <option value="other">
+                    Other flow rate
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group inlets hide">
+        <label class="control-label col-sm-5" for="inlets-flow-manual">Madden Dam flow rate:</label>
+        <div class="col-sm-4">
+            <input type="number" class="form-control" id="inlets-flow-manual">
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="inlets-flow-manual-units">
+                <option value="m3/s">
+                    m3/s
+                </option>
+                <option value="cfs">
+                    cfs
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-7 col-sm-offset-5">
+            <a href="https://panama.aquaticinformatics.net/AQWebPortal/Data/Dashboard" target="_blank">
+                Gatun Lake Flow Information
+            </a>
+        </div>
+    </div>
+</form>

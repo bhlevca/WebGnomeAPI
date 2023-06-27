@@ -1,16 +1,16 @@
 {
- "obj_type": "gnome.movers.current_movers.ComponentMover", 
- "name": "Wind Driven Currents", 
- "filename1": "NNW10.cur", 
- "scale_refpoint": [
-  49.744965, 
-  27.285172, 
-  0.0
- ], 
- "pat1_angle": 337.5, 
- "pat1_speed": 10.0, 
- "pat1_speed_units": 1.0, 
- "pat1_scale_to_value": 0.15, 
- "scale_by": 1, 
- "json_": "save" 
+    "obj_type": "gnome.movers.c_current_movers.ComponentMover",
+    "name": "Wind Driven Currents",
+    "filename1": "NNW10.cur",
+    "scale_refpoint": [
+        49.744965,
+        27.285172,
+        0.0
+    ],
+    "pat1_angle": 337.5,
+    "pat1_speed": 10.0,
+    "pat1_speed_units": 1.0,
+    "pat1_scale_to_value": 0.15,
+    "scale_by": 1,
+    "json_": "save"
 }

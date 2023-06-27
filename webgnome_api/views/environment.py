@@ -13,6 +13,8 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound, HTTPNotImplemented
 
+from cornice import Service
+
 from gnome.environment.environment_objects import GridCurrent, GridWind
 
 from webgnome_api.common.views import (get_object,
@@ -26,17 +28,20 @@ from webgnome_api.common.views import (get_object,
                                        switch_to_existing_session,
                                        activate_uploaded)
 
-from cornice import Service
+from webgnome_api.common.session_management import (get_session_object,
+                                                    acquire_session_lock)
 
-from ..common.session_management import (get_session_object,
-                                         acquire_session_lock)
 log = logging.getLogger(__name__)
+
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape',)
 
 env = Service(name='environment', path='/environment*obj_id',
               description="Environment API",
-              cors_policy=cors_policy,
+              cors_policy=edited_cors_policy,
               # accept='application/json+octet-stream',
               content_type=['application/json', 'binary'])
+
 implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.Wind',
                      'gnome.environment.Water',
@@ -44,6 +49,7 @@ implemented_types = ('gnome.environment.Tide',
                      'gnome.environment.environment_objects.GridCurrent',
                      'gnome.environment.environment_objects.GridWind',
                      )
+
 
 @env.get()
 def get_environment(request):
@@ -98,7 +104,6 @@ def upload_environment(request):
     log_prefix = 'req({0}): upload_environment():'.format(id(request))
     log.info('>>{}'.format(log_prefix))
 
-
     file_list = request.POST['file_list']
     file_list = ujson.loads(file_list)
     name = request.POST['name']
@@ -118,6 +123,7 @@ def upload_environment(request):
 
     log.info('<<{}'.format(log_prefix))
     return cors_response(request, resp)
+
 
 @view_config(route_name='environment_activate', request_method='OPTIONS')
 def activate_environment_options(request):

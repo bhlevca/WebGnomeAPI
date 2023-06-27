@@ -1,13 +1,13 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -136.242371, 
-  68.898544, 
-  0.0
- ], 
- "name": "Mackenzie River (Napoiak)", 
- "filename": "MackenzieRiver_NapoiakChannel.cur", 
- "json_": "save", 
- "scale_value": 0.01
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -136.242371,
+        68.898544,
+        0.0
+    ],
+    "name": "Mackenzie River (Napoiak)",
+    "filename": "MackenzieRiver_NapoiakChannel.cur",
+    "json_": "save",
+    "scale_value": 0.01
 }

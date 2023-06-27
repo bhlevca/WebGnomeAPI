@@ -2,14 +2,15 @@
 Views for the Mover objects.
 This currently includes ??? objects.
 """
-import os
 import logging
+import datetime as dt
 import zlib
 from threading import current_thread
 
 import ujson
 
 import numpy as np
+from netCDF4 import Dataset, num2date, date2num
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -17,38 +18,41 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from cornice import Service
 
-from gnome.movers.current_movers import CurrentMoversBase
+from gnome.movers.c_current_movers import CurrentMoversBase
 from gnome.movers import PyMover
 
-from ..common.views import (get_object,
-                            create_object,
-                            update_object,
-                            cors_policy,
-                            cors_response,
-                            cors_exception,
-                            switch_to_existing_session)
+from webgnome_api.common.views import (get_object,
+                                       create_object,
+                                       update_object,
+                                       cors_policy,
+                                       cors_response,
+                                       cors_exception,
+                                       switch_to_existing_session)
 
-from ..common.session_management import (get_session_object,
-                                         acquire_session_lock)
-from netCDF4 import Dataset, num2date, date2num
-import datetime as dt
+from webgnome_api.common.session_management import (get_session_object,
+                                                    acquire_session_lock)
 
 log = logging.getLogger(__name__)
 
+
+edited_cors_policy = cors_policy.copy()
+edited_cors_policy['headers'] = edited_cors_policy['headers'] + ('shape',)
+
 mover = Service(name='mover', path='/mover*obj_id', description="Mover API",
-                cors_policy=cors_policy)
+                cors_policy=edited_cors_policy)
 
 implemented_types = ('gnome.movers.simple_mover.SimpleMover',
-                     'gnome.movers.wind_movers.WindMover',
+                     'gnome.movers.c_wind_movers.PointWindMover',
                      'gnome.movers.random_movers.RandomMover',
+                     'gnome.movers.random_movers.IceAwareRandomMover',
                      'gnome.movers.random_movers.RandomMover3D',
-                     'gnome.movers.current_movers.CatsMover',
-                     'gnome.movers.current_movers.ComponentMover',
-                     'gnome.movers.current_movers.CurrentCycleMover',
-                     'gnome.movers.py_current_movers.PyCurrentMover',
-                     'gnome.movers.py_wind_movers.PyWindMover',
-                     'gnome.movers.current_movers.GridCurrentMover',
-                     'gnome.movers.current_movers.IceMover',
+                     'gnome.movers.c_current_movers.CatsMover',
+                     'gnome.movers.c_current_movers.ComponentMover',
+                     'gnome.movers.c_current_movers.CurrentCycleMover',
+                     'gnome.movers.py_current_movers.CurrentMover',
+                     'gnome.movers.py_wind_movers.WindMover',
+                     'gnome.movers.c_current_movers.c_GridCurrentMover',
+                     'gnome.movers.c_current_movers.IceMover',
                      'gnome.movers.vertical_movers.RiseVelocityMover',
                      )
 
@@ -97,18 +101,20 @@ def upload_mover(request):
     file_list = ujson.loads(file_list)
     name = request.POST['name']
     file_name = file_list
-    
-    
-    # This enables a time shift for gridded movers. This isn't super awesome here, 
-    # b/c this route is also used for loading point winds. In that case the client 
-    # just passes in a 0 value for tshift. More robust support at the environment level
-    # in pyGNOME would be better.
-    
+
+    # This enables a time shift for gridded movers.
+    # This isn't super awesome here, b/c this route is also used for loading
+    # point winds. In that case the client just passes in a 0 value for tshift.
+    # More robust support at the environment level in pyGNOME would be better.
+
     tshift = int(request.POST['tshift'])
     if tshift != 0:
-        for f in file_list:
-            shift_time(f, tshift)
-        
+        if isinstance(file_name, str):
+            shift_time(file_name, tshift)
+        else:
+            for f in file_list:
+                shift_time(f, tshift)
+
     log.info('  {} file_name: {}, name: {}'
              .format(log_prefix, file_name, name))
 
@@ -132,17 +138,17 @@ def upload_mover(request):
                  'name': name,
                  'units': 'knots'}
 
-    if ('PyWindMover' in mover_type):
+    if ('py_wind_movers.WindMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridWind')
         basic_json['wind'] = env_obj_base_json
 
-    if ('PyCurrentMover' in mover_type):
+    if ('py_current_movers.CurrentMover' in mover_type):
         env_obj_base_json['obj_type'] = ('gnome.environment'
                                          '.environment_objects.GridCurrent')
         basic_json['current'] = env_obj_base_json
 
-    if ('wind_movers.WindMover' in mover_type):
+    if ('c_wind_movers.PointWindMover' in mover_type):
         basic_json['wind'] = wind_json
 
     request.body = ujson.dumps(basic_json).encode('utf-8')
@@ -152,6 +158,7 @@ def upload_mover(request):
 
     log.info('<<{}'.format(log_prefix))
     return cors_response(request, resp)
+
 
 def shift_time(filename, tshift):
     '''
@@ -164,18 +171,17 @@ def shift_time(filename, tshift):
           [-8,'PST (-8)'],
           [-7,'PDT (-7)'],
           [-7,'MST (-7)'],
-          [-6,'MDT (-6)'],       
+          [-6,'MDT (-6)'],
           [-6,'CST (-6)'],
           [-5,'CDT (-5)'],
           [-5,'EST (-5)'],
           [-4,'EDT (-4)'],
           [-3,'ADT (-3)']]
     '''
-    
-    nc = Dataset(filename,'r+')
+    nc = Dataset(filename, 'r+')
     ncvars = nc.variables
     tvar = None
-    
+
     try:
         ncvars['time']
         tvar = 'time'
@@ -187,9 +193,9 @@ def shift_time(filename, tshift):
             except AttributeError:
                 pass
     if tvar is not None:
-        t = ncvars[tvar]        
-        offset = dt.timedelta(hours = tshift)
-        oldtime = num2date(t[:],t.units)
+        t = ncvars[tvar]
+        offset = dt.timedelta(hours=tshift)
+        oldtime = num2date(t[:], t.units)
         newtime = date2num(oldtime + offset, t.units)
         t[:] = newtime
         nc.close()
@@ -243,7 +249,7 @@ def get_grid_centers(request):
         mover = get_session_object(obj_id, request)
 
         if (mover is not None and
-                isinstance(mover, (CurrentMoversBase, PyMover))):
+                isinstance(mover, (CurrentMoversBase))):
             centers = get_center_points(mover)
 
             return centers.tolist()
@@ -314,6 +320,8 @@ def get_grid_signature(mover):
 
 
 def get_cells(mover):
+    if isinstance(mover, PyMover):
+        raise TypeError('get_cells not supported on PyMover objects')
     grid_data = mover.get_grid_data()
 
     if not isinstance(mover, PyMover):

@@ -1,21 +1,21 @@
 {
- "obj_type": "gnome.movers.current_movers.ComponentMover", 
- "name": "Wind Driven Currents", 
- "filename1": "NNWat15kt.cur", 
- "filename2": "WSWat15kt.cur", 
- "scale_refpoint": [
-  -117.1295, 
-  32.644333, 
-  0.0
- ], 
- "pat1_angle": 337.5, 
- "pat1_speed": 15.0, 
- "pat1_speed_units": 1.0, 
- "pat1_scale_to_value": 0.082049, 
- "pat2_angle": 247.5, 
- "pat2_speed": 15.0, 
- "pat2_speed_units": 1.0,
- "pat2_scale_to_value": 0.023113, 
- "scale_by": 2, 
- "json_": "save" 
+    "obj_type": "gnome.movers.c_current_movers.ComponentMover",
+    "name": "Wind Driven Currents",
+    "filename1": "NNWat15kt.cur",
+    "filename2": "WSWat15kt.cur",
+    "scale_refpoint": [
+        -117.1295,
+        32.644333,
+        0.0
+    ],
+    "pat1_angle": 337.5,
+    "pat1_speed": 15.0,
+    "pat1_speed_units": 1.0,
+    "pat1_scale_to_value": 0.082049,
+    "pat2_angle": 247.5,
+    "pat2_speed": 15.0,
+    "pat2_speed_units": 1.0,
+    "pat2_scale_to_value": 0.023113,
+    "scale_by": 2,
+    "json_": "save"
 }

@@ -19,13 +19,46 @@ from pyramid_redis_sessions import session_factory_from_settings
 from redis import StrictRedis
 
 from webgnome_api.common.views import cors_policy
-from webgnome_api.socket.sockserv import (WebgnomeNamespace,
-                                          WebgnomeSocketioServer)
+from webgnome_api.socket.sockserv import (WebgnomeSocketioServer,
+                                          WebgnomeNamespace,
+                                          GoodsFileNamespace)
+
+from waitress import serve as waitress_serve
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 
 __version__ = "0.9"
 
 logging.basicConfig()
 
+supported_ocean_models = {
+                        #'RTOFS-GLOBAL',
+                        #'RTOFS-GLOBAL_2D',
+                        'GOFS':'hycom-forecast-agg',
+                        #'RTOFS-ALASKA',
+                        #'RTOFS-WEST',
+                        #'RTOFS-EAST',
+                        'WCOFS':'ioos-forecast-agg',
+                        'NGOFS2_RGRID':'ioos-forecast-agg',
+                        #'CREOFS':'coops-forecast-noagg',
+                        #'LMHOFS':'coops-forecast-noagg',
+                        'CIOFS':'ioos-forecast-agg',
+                        #'LSOFS':'coops-forecast-agg',
+                        'CBOFS':'ioos-forecast-agg',
+                        #'LEOFS':'coops-forecast-noagg',
+                        'DBOFS':'ioos-forecast-agg',
+                        #'LOOFS':'coops-forecast-agg',
+                        #'SFBOFS':'coops-forecast-noagg',
+                        'TBOFS':'ioos-forecast-agg',
+                        #'NYOFS':'coops-forecast-agg', #this one has missing time steps
+                        'GOMOFS':'ioos-forecast-agg',
+                        'CREOFS_RGRID':'ioos-forecast-agg',
+                        }
+
+                        
+supported_met_models = {'GFS_1_4DEG':['ucar-forecast-agg',],
+                        'GFS_1_2DEG':['ucar-forecast-agg',],
+                        'GFS_1DEG':['ucar-forecast-agg',]}
 
 class WebgnomeFormatter(Formatter):
     def format(self, record):
@@ -129,23 +162,27 @@ def start_session_cleaner(settings):
     redis = StrictRedis(host=host, port=port)
 
     def event_handler(msg, session_dir=session_dir):
-        cleanup_dir = os.path.join(str(session_dir), str(msg['data']))
+        session_id = msg['data']
+        if isinstance(session_id, bytes):
+            session_id = session_id.decode('utf-8')
+
+        cleanup_dir = (Path(session_dir) / session_id).resolve()
+        print(f'Session Cleaner: Cleaning up folder {cleanup_dir}')
 
         try:
             shutil.rmtree(cleanup_dir)
         except OSError as err:
             # not-found error.  Print message & continue.
             if err.errno == 2:
-                print('Session Cleaner: Folder {} does not exist!'
-                      .format(cleanup_dir))
+                print(f'Session Cleaner: Folder {cleanup_dir} does not exist!')
             else:
                 raise
 
     pubsub = redis.pubsub()
     pubsub.psubscribe(**{'__keyevent*__:expired': event_handler})
 
-    settings['redis_pubsub_thread'] = pubsub.run_in_thread(
-        sleep_time=60.0, daemon=True)
+    settings['redis_pubsub_thread'] = pubsub.run_in_thread(sleep_time=60.0,
+                                                           daemon=True)
 
 
 def server_factory(global_config, host, port):
@@ -153,22 +190,26 @@ def server_factory(global_config, host, port):
 
     def serve(app):
         # app is gzip middlware; app.application == webgnome_api
-        sio = WebgnomeSocketioServer(
-            app_settings=global_config,
-            api_app=app.application,
-            async_mode='gevent',
-            # logger=True,
-            # ping_interval=2,
-            # ping_timeout=10
-        )
+        sio = WebgnomeSocketioServer(app_settings=global_config,
+                                     api_app=app.application,
+                                     async_mode='gevent')
+
+        # sio.register_namespace(LoggerNamespace('/logger'))
         ns = WebgnomeNamespace('/')
+        goods_ns = GoodsFileNamespace('/goods')
         sio.register_namespace(ns)
+        sio.register_namespace(goods_ns)
+
         # to allow access to socketio side from pyramid side
         app.application.registry['sio_ns'] = ns
-        # sio.register_namespace(LoggerNamespace('/logger'))
+        app.application.registry['goods_ns'] = goods_ns
+        #threads = int(app.application.registry.settings.get('waitress.threads', '4'))
+
         app = socketio.WSGIApp(sio, app)
         pywsgi.WSGIServer((host, port), app,
                           handler_class=WebSocketHandler).serve_forever()
+        #waitress_serve(app, host=host, port=port, expose_tracebacks=True, threads=threads)
+
     return serve
 
 
@@ -176,8 +217,8 @@ def main(global_config, **settings):
     settings['package_root'] = os.path.abspath(
         os.path.dirname(__file__))
     settings['objects'] = {}
-
     settings['uncertain_models'] = {}
+
     try:
         os.mkdir('ipc_files')
     except OSError as e:
@@ -203,7 +244,6 @@ def main(global_config, **settings):
 
     config.add_route('upload', '/upload')
     config.add_route('activate', '/activate')
-    config.add_route('download', '/download')
     config.add_route('persist', '/persist')
 
     config.add_route('map_upload', '/map/upload')
@@ -226,5 +266,5 @@ def main(global_config, **settings):
         # 'webgnome_api.views.socket_step'
     ])
 
-    wapi = config.make_wsgi_app()  # pyramid object creates a wsgi app
+    wapi = config.make_wsgi_app()
     return wapi

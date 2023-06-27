@@ -1,15 +1,15 @@
 {
- "obj_type": "gnome.movers.current_movers.CatsMover", 
- "scale": true, 
- "scale_refpoint": [
-  -82.761667, 
-  27.756667, 
-  0.0
- ], 
- "name": "Blind Pass", 
- "filename": "BocaCiegaBay.cur", 
- "tide": "Tide_1.json", 
- "json_": "save", 
- "uncertain_eddy_diffusion": 10000.0, 
- "scale_value": 1.0
+    "obj_type": "gnome.movers.c_current_movers.CatsMover",
+    "scale": true,
+    "scale_refpoint": [
+        -82.761667,
+        27.756667,
+        0.0
+    ],
+    "name": "Blind Pass",
+    "filename": "BocaCiegaBay.cur",
+    "tide": "Tide_1.json",
+    "json_": "save",
+    "uncertain_eddy_diffusion": 10000.0,
+    "scale_value": 1.0
 }
