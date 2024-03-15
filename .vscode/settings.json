@@ -4,11 +4,12 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.pythonPath": "C:/Users/zhyu/AppData/Local/Programs/Python/Python310/WebGnome/Scripts/python.exe",
+    "python.pythonPath": "C:/ProgramData/miniforge3/python.exe",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
     "python.formatting.provider": "autopep8",
-    "python.formatting.autopep8Path": "C:/Users/zhyu/AppData/Local/Programs/Python/Python310/WebGnome/Scripts/autopep8",
+
+    "python.formatting.autopep8Path": "C:/ProgramData/miniforge3//Scripts/autopep8",
     "python.formatting.autopep8Args": [
         "--max-line-length",
         "70",
@@ -34,7 +35,7 @@
     // ],
     // to enable sort imports on save
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     // to add environment vars while opening a new vscode terminal (name:val)
     "terminal.integrated.env.linux": {
