@@ -15,6 +15,7 @@ from pyramid.httpexceptions import (HTTPBadRequest, HTTPNotFound,
                                     HTTPNotImplemented,
                                     HTTPUnsupportedMediaType)
 from pyramid.response import Response
+
 from webgnome_api.common.common_object import (CreateObject, UpdateObject,
                                                clean_session_dir,
                                                obj_id_from_req_payload,
@@ -35,8 +36,6 @@ from webgnome_api.views.mover import create_mover
 
 from ..common.common_object import get_persistent_dir, get_session_dir
 from ..common.system_resources import write_to_file
-
-from gnome.model import Model
 
 log = logging.getLogger(__name__)
 model = Service(name='model', path='/model*obj_id', description="Model API",
@@ -80,7 +79,8 @@ def create_mike_hd_config(request):
 
 
 mike_hd_status_file = r'C:\temp\webgnome_mike_hd_status.txt'
-
+mike_hd_result_folder = r'C:\temp\HD Model Setup\Current\Results'
+mike_hd_result_netcdf_folder = os.path.join(mike_hd_result_folder,'netCDF')
 
 def update_hd_status_file(code):
     """
@@ -160,8 +160,13 @@ def run_hd():
     else:
         return 2, "Can't find WebGNOME_DIR in Environment Variables"
 
-
 def copy_netcdf(request):
+    return copy_file(request, mike_hd_result_netcdf_folder,".nc")
+
+def copy_dfsu(request):
+    return copy_file(request,mike_hd_result_folder, "2D all.dfsu")
+
+def copy_file(request, folder, extension):
     """
     Copy the resulting NetCDF file to the session folder
 
@@ -180,12 +185,11 @@ def copy_netcdf(request):
     borrowed from upload_manager
 
     """
-    netcdf_dir = r"C:\temp\HD Model Setup\Current\Results\netCDF"
-    if os.path.isdir(netcdf_dir) and os.path.exists(netcdf_dir):
-        nc_files = [x for x in os.listdir(netcdf_dir) if ".nc" in x]
+    if os.path.isdir(folder) and os.path.exists(folder):
+        nc_files = [x for x in os.listdir(folder) if extension in x]
         if len(nc_files) > 0:
             fn = nc_files[0]
-            input_file = os.path.join(netcdf_dir, fn)
+            input_file = os.path.join(folder, fn)
             upload_dir = os.path.relpath(get_session_dir(request))
             file_name, unique_name = gen_unique_filename(
                 fn, upload_dir)
@@ -225,8 +229,9 @@ def get_mikehd_netcdf(request):
         return cors_response(request, Response(
             ujson.dumps({'error_code': status})))
 
-    # copy netcdf to session folder
+    # copy netcdf and 2D all.dfsu to session folder
     file_name, filepath = copy_netcdf(request)
+    copy_dfsu(request)
 
     # create the mover
     # borrow from upload_mover

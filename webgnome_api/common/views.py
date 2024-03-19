@@ -1,43 +1,30 @@
 """
 Common Gnome object request handlers.
 """
+import logging
 import os
 import sys
 import traceback
-import ujson
 import uuid
-import logging
-
 from threading import current_thread
 
-from pyramid.settings import asbool
+import ujson
+from pyramid.httpexceptions import (HTTPBadRequest, HTTPInsufficientStorage,
+                                    HTTPNotFound, HTTPNotImplemented,
+                                    HTTPUnsupportedMediaType)
 from pyramid.interfaces import ISessionFactory
 from pyramid.response import FileResponse
-from pyramid.httpexceptions import (HTTPBadRequest,
-                                    HTTPNotFound,
-                                    HTTPInsufficientStorage,
-                                    HTTPUnsupportedMediaType,
-                                    HTTPNotImplemented)
+from pyramid.settings import asbool
 
-from .system_resources import (get_free_space,
-                               get_size_of_open_file,
+from .common_object import (CreateObject, ObjectImplementsOneOf,
+                            RegisterObject, UpdateObject, get_persistent_dir,
+                            get_session_dir, obj_id_from_req_payload,
+                            obj_id_from_url)
+from .helpers import FQNamesToList, JSONImplementsOneOf, PyClassFromName
+from .session_management import (acquire_session_lock, get_session_object,
+                                 get_session_objects)
+from .system_resources import (get_free_space, get_size_of_open_file,
                                write_to_file)
-from .helpers import (JSONImplementsOneOf,
-                      FQNamesToList,
-                      PyClassFromName)
-
-from .common_object import (CreateObject,
-                            UpdateObject,
-                            RegisterObject,
-                            ObjectImplementsOneOf,
-                            obj_id_from_url,
-                            obj_id_from_req_payload,
-                            get_session_dir,
-                            get_persistent_dir)
-
-from .session_management import (get_session_objects,
-                                 get_session_object,
-                                 acquire_session_lock)
 
 cors_policy = {'credentials': True,
                'headers': ('Content-Disposition',),
@@ -230,6 +217,9 @@ def update_object(request, implemented_types):
     '''Updates a Gnome object.'''
     log_prefix = 'req({0}): update_object():'.format(id(request))
     log.info('>>' + log_prefix)
+
+    if hasattr(request.body, 'obj_type'):
+        log.info('>>' + request.body.obj_type)
 
     try:
         json_request = ujson.loads(request.body)
