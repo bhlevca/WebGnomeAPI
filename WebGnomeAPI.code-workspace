@@ -4,11 +4,8 @@
 			"path": "."
 		},
 		{
-			"path": "..\\PyGnome"
+			"path": "../PyGnome"
 		}
 	],
-	"settings": {
-		"scm.alwaysShowActions": true,
-		"scm.alwaysShowRepositories": true
-	}
+	"settings": {}
 }

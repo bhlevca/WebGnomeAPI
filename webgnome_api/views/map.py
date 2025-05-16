@@ -133,7 +133,7 @@ def upload_map(request):
     # fixme: why is this not just calling the pygnome code directly?
     request.body = ujson.dumps({'obj_type': 'gnome.maps.map.MapFromBNA',
                                 'filename': file_name,
-                                'refloat_halflife': 6.0,
+                                'refloat_halflife':0.0,  # BH changed from 6.0
                                 'name': name
                                 }).encode('utf-8')
 
@@ -163,7 +163,7 @@ def activate_map(request):
 
     request.body = ujson.dumps({'obj_type': 'gnome.maps.map.MapFromBNA',
                                 'filename': file_path,
-                                'refloat_halflife': 6.0,
+                                'refloat_halflife': 0.0,  # BH changed from 6.0
                                 'name': name
                                 }).encode('utf-8')
 
