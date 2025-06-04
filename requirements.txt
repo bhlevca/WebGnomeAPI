@@ -12,7 +12,7 @@
 #
 # All required packages should be available on the conda-forge channel
 
-python_version >= "3.8"
+python_version >= "3.12"
 
 # numpy is not strictly needed by the API, but is by gnome, etc,
 # and adding it helps keep conda from trying to up- or down-grade it.
@@ -45,3 +45,4 @@ redis
 # for testing:
 pytest
 webtest >= "2.0"
+
